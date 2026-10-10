@@ -5,3 +5,6 @@
 .recipe__paint { min-height: 22px; padding-block: 4px; }
 .recipe__parts { flex: none; font-variant-numeric: tabular-nums; }
 .recipe__paper { align-self: center; font-style: italic; }
+.recipe--wide { grid-template-columns: 130px minmax(0, 1fr); }
+.recipe--wide .recipe__result { min-height: 36px; }
+.recipe--wide .recipe__paints { grid-template-columns: repeat(3, minmax(0, 1fr)); }

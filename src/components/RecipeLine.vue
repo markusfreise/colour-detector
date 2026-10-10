@@ -1,5 +1,5 @@
 <template>
-  <div class="recipe">
+  <div class="recipe" :class="{ 'recipe--wide': wide }">
     <div class="chip recipe__result" :style="chipStyle(recipe.hex)" :title="`Mixed: ${recipe.hex} · ${recipe.dilution}`">
       <span class="chip__strong chip__text recipe__dilution">{{ recipe.dilution }}</span>
       <span class="chip__text">{{ recipe.deltaE.toFixed(1) }} • {{ matchQuality(recipe.deltaE) }}</span>
@@ -33,11 +33,13 @@ import { paintNumber } from '../lib/paintbox.js'
 
 const props = defineProps({
   recipe: { type: Object, required: true },
+  // Wide layout for the printed sheet: one row of ingredients, no empty slots.
+  wide: { type: Boolean, default: false },
 })
 
 const paints = usePaintsStore()
 // The ingredient grid always shows complete rows of four slots.
-const emptySlots = computed(() => (4 - (props.recipe.paints.length % 4)) % 4)
+const emptySlots = computed(() => (props.wide ? 0 : (4 - (props.recipe.paints.length % 4)) % 4))
 
 function formatParts(n) {
   return `${Number.isInteger(n) ? n : n.toFixed(1)} x`

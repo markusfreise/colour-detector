@@ -15,6 +15,7 @@ Visit statistics (Google Analytics) are optional and off by default: without a m
 - **Paint box:** every paint is a chip in its own colour. The paints you have selected sit in a box at the top; the rest are listed below, under Pans and Tubes, each sorted by colour family and number. Click a chip to move it between the two. "Auto" proposes the paints that suit the current picture. The selection is remembered in the browser.
 - **Limits:** restrict mixes to one, two or three paints.
 - **Recolour:** click an area, pick a different target colour, choose between the alternative recipes, or detach a single area from the others that share its colour.
+- **Print / PDF:** prints the picture followed by every colour with its chosen mix; pick "Save as PDF" in the print dialog for a PDF.
 - **Views:** mixed paint, photo colour or the original photo, with outlines and numbers on or off.
 
 ## Match quality

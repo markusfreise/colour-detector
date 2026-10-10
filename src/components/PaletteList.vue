@@ -2,7 +2,12 @@
   <section class="panel palette">
     <header class="palette__header">
       <h2 class="panel__title">Colours</h2>
-      <button class="button button--ghost" type="button" @click="emit('show-paintbox')">Show paint box</button>
+      <div class="palette__actions">
+        <button class="button button--ghost" type="button" :disabled="!analysis.entries.length" @click="print">
+          Print / PDF
+        </button>
+        <button class="button button--ghost" type="button" @click="emit('show-paintbox')">Show paint box</button>
+      </div>
     </header>
     <ol class="palette__list">
       <li
@@ -46,6 +51,11 @@ function summary(entry) {
   if (!recipe) return '–'
   if (!recipe.paints.length) return 'Paper white'
   return recipe.paints.map((p) => paints.byId[p.paintId].name).join(' + ')
+}
+
+// The print stylesheet lays out the sheet; the browser's dialog offers "Save as PDF".
+function print() {
+  window.print()
 }
 
 function toggle(i) {

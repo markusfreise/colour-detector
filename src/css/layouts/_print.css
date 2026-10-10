@@ -1,0 +1,13 @@
+/* Printed sheet (also "Save as PDF"): the picture, then every colour with its chosen mix. */
+@media print {
+  @page { margin: 12mm; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { background: #fff; }
+  .app { max-width: none; padding: 0; }
+  .app__main { display: block; }
+  .app__stage { position: static; }
+  .app__tagline, .app__hint, .app__sidebar, .app__footer, .consent, .paintbox, .painting__status { display: none; }
+  .painting { border: 0; padding: 0; }
+  .painting__canvas { max-height: 150mm; width: auto; max-width: 100%; margin: 0 auto; }
+  .legend { display: block; margin-top: 6mm; }
+}

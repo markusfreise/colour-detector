@@ -1,0 +1,6 @@
+.legend { display: none; }
+.legend__title { font-size: 15px; font-weight: 650; margin-bottom: 8px; }
+.legend__list { display: flex; flex-direction: column; gap: 6px; }
+.legend__item { display: grid; grid-template-columns: 24px minmax(0, 1fr) 36px; gap: 8px; align-items: center; break-inside: avoid; }
+.legend__number { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.legend__share { color: var(--ink-soft); font-size: 12px; text-align: right; }

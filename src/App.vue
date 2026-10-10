@@ -15,6 +15,7 @@
         <PaletteList @show-paintbox="paintBox.open()" />
       </aside>
     </main>
+    <PrintLegend />
     <footer v-if="consent.available" class="app__footer">
       <button class="app__footer-link" type="button" @click="consent.review()">Privacy settings</button>
     </footer>
@@ -32,6 +33,7 @@ import EntryEditor from './components/EntryEditor.vue'
 import PaletteList from './components/PaletteList.vue'
 import PaintBox from './components/PaintBox.vue'
 import ConsentBanner from './components/ConsentBanner.vue'
+import PrintLegend from './components/PrintLegend.vue'
 import { useConsentStore } from './stores/consent.js'
 
 const analysis = useAnalysisStore()

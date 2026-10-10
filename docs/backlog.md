@@ -15,7 +15,7 @@ Mirror of PRD §17. IDs are stable and never reused. One task = one commit.
 | TASK-09 | Release | Deploy via GitHub webhook to markus-freise.de/colour-detective | Push to `main` updates the live site within ~2 min; bad signature → 403 | TASK-01 | Code done – server setup open |
 | TASK-10 | Data model | Verify paint colours against own swatches and fix stock-list conflicts | Notes for 218/360/512/515 resolved; 336 identified; estimates replaced | TASK-02 | Open |
 | TASK-11 | Frontend | Paint management UI: add/edit/delete paints (any vendor), pick from Horadam catalogue, JSON import/export | Custom paint usable in recipes after reload | TASK-08 | Open |
-| TASK-12 | Frontend | Export printable paint-by-number sheet (outlines + numbers + recipe legend) as PNG/PDF | A4 print shows all numbered areas and recipes | TASK-07 | Open |
+| TASK-12 | Frontend | Export printable paint-by-number sheet (outlines + numbers + recipe legend) as PNG/PDF | A4 print shows all numbered areas and recipes | TASK-07 | Done – via the browser's print dialog (Save as PDF) |
 | TASK-13 | Frontend | Save/restore a session (image + settings + recolours) | Reload restores the last session | TASK-07 | Open |
 | TASK-14 | Backend | Calibrate paints from a photo of own swatch card (wash + masstone per paint) | Calibrated colours replace estimates; mixing uses two-point absorbance | TASK-10 | Open |
 | TASK-15 | Backend | Move recipe computation into the worker | No main-thread task > 100 ms on 32 colours | TASK-03 | Open |

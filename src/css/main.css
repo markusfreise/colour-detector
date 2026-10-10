@@ -13,3 +13,5 @@
 @import './components/_recipe.css';
 @import './components/_paintbox.css';
 @import './components/_consent.css';
+@import './components/_legend.css';
+@import './layouts/_print.css';

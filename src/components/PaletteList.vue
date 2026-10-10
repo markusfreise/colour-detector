@@ -22,7 +22,7 @@
     </div>
     <ol class="palette__list">
       <li
-        v-for="{ entry, i, joinTop, joinBottom, label, share, washes } in rows"
+        v-for="{ entry, i, joinTop, joinBottom, label, share, washes, base } in rows"
         :key="entry.id"
         class="palette__item"
         :class="{
@@ -33,7 +33,10 @@
         @click="toggle(i)"
       >
         <span class="palette__number">{{ label }}</span>
-        <span class="palette__pair">
+        <span v-if="base" class="palette__pair" :title="`Base colour of the mix: ${base}`">
+          <span class="swatch palette__base" :style="{ background: base }"></span>
+        </span>
+        <span v-else class="palette__pair">
           <span class="swatch swatch--half" :style="{ background: entry.targetHex }" title="Photo colour"></span>
           <span
             class="swatch swatch--half"
@@ -76,7 +79,9 @@ const rows = computed(() => {
     const mixes = new Map()
     for (const row of list) {
       const mix = mixes.get(row.entry.family)
-      if (!mix) mixes.set(row.entry.family, { ...row, label: parseInt(row.entry.label), share: row.entry.share, washes: 1 })
+      if (!mix) {
+        mixes.set(row.entry.family, { ...row, label: parseInt(row.entry.label), share: row.entry.share, washes: 1, base: baseHex(row.entry) })
+      }
       else {
         if (row.entry.share > mix.entry.share) Object.assign(mix, row)
         mix.share += row.entry.share
@@ -94,6 +99,12 @@ const rows = computed(() => {
     joinBottom: n < list.length - 1 && mix(list[n + 1].entry) === mix(row.entry),
   }))
 })
+
+// The colour of the mix as its recipe gives it, before any water is added or taken away.
+function baseHex(entry) {
+  const recipes = entry.overridden ? entry.recipes : analysis.mixRecipes[entry.group]
+  return recipes?.[entry.chosen]?.hex ?? entry.recipes[entry.chosen]?.hex
+}
 
 // The water level tells the washes of one mix apart.
 function dilution(entry) {

@@ -32,6 +32,7 @@ Vue 3 (Composition API, `<script setup>`) · Pinia · Vite 5 · Vitest · Web Wo
 - `src/stores/` – `paints` (stock + enabled set, localStorage) and `analysis` (image, settings, segmentation, palette entries).
 - `src/data/paints.js` – hard-coded stock. `hex` = colour at strength 1 (mid-strength wash), **not** masstone.
 - `deploy/` – `webhook.php` + `deploy.sh` for the live server.
+- `app/` – native app **Tintmap** (SwiftUI, iOS/iPadOS/macOS, bundle ID `de.markusfreise.tintmap`). `app/Sources/Core/` is a port of `src/lib/`: change both sides together. Details in `app/README.md`.
 
 ## Conventions
 

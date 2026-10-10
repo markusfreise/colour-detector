@@ -1,0 +1,160 @@
+import Foundation
+import Observation
+
+struct PaintBox: Codable, Identifiable, Hashable {
+    var id: String
+    var name: String
+    var paintIDs: [String]
+}
+
+/// All known paints (the built-in stock plus the user's own) and the paint boxes made from them.
+@MainActor
+@Observable
+final class Library {
+    private struct Saved: Codable {
+        var custom: [Paint]
+        var boxes: [PaintBox]
+        var activeID: String
+    }
+
+    let stock: [Paint]
+    let chart: [ChartColour]
+    private(set) var custom: [Paint] = []
+    private(set) var boxes: [PaintBox] = []
+    private(set) var activeID = ""
+    /// Bumped whenever the paints available for mixing changed.
+    private(set) var revision = 0
+
+    private let file = Storage.directory.appendingPathComponent("library.json")
+
+    init() {
+        stock = Storage.bundled("paints", as: [Paint].self) ?? []
+        chart = Storage.bundled("horadam", as: [ChartColour].self) ?? []
+        if let data = try? Data(contentsOf: file), let saved = try? JSONDecoder().decode(Saved.self, from: data), !saved.boxes.isEmpty {
+            custom = saved.custom
+            boxes = saved.boxes
+            activeID = saved.activeID
+        } else {
+            let box = PaintBox(id: "box-1", name: "My paint box", paintIDs: defaultIDs)
+            boxes = [box]
+            activeID = box.id
+        }
+    }
+
+    private var defaultIDs: [String] { stock.filter(\.enabled).map(\.id) }
+
+    var all: [Paint] { stock + custom }
+    var byID: [String: Paint] { Dictionary(all.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a }) }
+
+    private var activeIndex: Int { boxes.firstIndex { $0.id == activeID } ?? 0 }
+    var activeBox: PaintBox { boxes[activeIndex] }
+    var enabledIDs: Set<String> { Set(activeBox.paintIDs) }
+    var enabled: [Paint] {
+        let ids = enabledIDs
+        return all.filter { ids.contains($0.id) }
+    }
+
+    /// The paint box screen: the selected paints as one list, the rest grouped by form.
+    var selected: [Paint] { enabled.sortedForBox() }
+    var available: [PaintGroup] {
+        let ids = enabledIDs
+        return all.filter { !ids.contains($0.id) }.groupedByForm()
+    }
+
+    // MARK: Selection
+
+    func toggle(_ id: String) {
+        var ids = activeBox.paintIDs
+        if let index = ids.firstIndex(of: id) { ids.remove(at: index) } else { ids.append(id) }
+        setEnabled(ids)
+    }
+
+    func setEnabled(_ ids: [String]) {
+        boxes[activeIndex].paintIDs = ids
+        changed()
+    }
+
+    func clear() { setEnabled([]) }
+
+    /// Back to the default selection.
+    func revert() { setEnabled(defaultIDs) }
+
+    // MARK: Boxes
+
+    func addBox(named name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let box = PaintBox(id: "box-\(UUID().uuidString.prefix(8))", name: trimmed.isEmpty ? "Box \(boxes.count + 1)" : trimmed, paintIDs: [])
+        boxes.append(box)
+        activeID = box.id
+        changed()
+    }
+
+    func selectBox(_ id: String) {
+        guard id != activeID else { return }
+        activeID = id
+        changed()
+    }
+
+    func renameBox(_ id: String, to name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, let index = boxes.firstIndex(where: { $0.id == id }) else { return }
+        boxes[index].name = trimmed
+        save()
+    }
+
+    /// The last box cannot be deleted.
+    func deleteBox(_ id: String) {
+        guard boxes.count > 1 else { return }
+        boxes.removeAll { $0.id == id }
+        if activeID == id { activeID = boxes[0].id }
+        changed()
+    }
+
+    // MARK: Own paints
+
+    /// Adds a paint to the library, or updates the one with the same id. New paints go into the active box.
+    func savePaint(_ paint: Paint) {
+        if let index = custom.firstIndex(where: { $0.id == paint.id }) {
+            custom[index] = paint
+        } else {
+            custom.append(paint)
+            boxes[activeIndex].paintIDs.append(paint.id)
+        }
+        changed()
+    }
+
+    func deletePaint(_ id: String) {
+        custom.removeAll { $0.id == id }
+        for index in boxes.indices { boxes[index].paintIDs.removeAll { $0 == id } }
+        changed()
+    }
+
+    func chartColour(number: String) -> ChartColour? {
+        chart.first { $0.number == number.trimmingCharacters(in: .whitespaces) }
+    }
+
+    private func changed() {
+        revision += 1
+        save()
+    }
+
+    private func save() {
+        let saved = Saved(custom: custom, boxes: boxes, activeID: activeID)
+        try? JSONEncoder().encode(saved).write(to: file, options: .atomic)
+    }
+}
+
+enum Storage {
+    /// Application Support/Tintmap, created on first use.
+    static let directory: URL = {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let url = base.appendingPathComponent("Tintmap", isDirectory: true)
+        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        return url
+    }()
+
+    static func bundled<T: Decodable>(_ name: String, as type: T.Type) -> T? {
+        guard let url = Bundle.main.url(forResource: name, withExtension: "json"), let data = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(type, from: data)
+    }
+}

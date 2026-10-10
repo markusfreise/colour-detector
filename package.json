@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "app:data": "node app/scripts/export-data.mjs"
   },
   "dependencies": {
     "pinia": "^2.3.1",

@@ -1,0 +1,35 @@
+{
+  "identifier" : "7A1E5C10",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : true,
+      "internalID" : "6700000001",
+      "localizations" : [
+        {
+          "description" : "Save any number of pictures and paint boxes.",
+          "displayName" : "Tintmap Full Version",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Beliebig viele Bilder und Malkästen speichern.",
+          "displayName" : "Tintmap Vollversion",
+          "locale" : "de"
+        }
+      ],
+      "productID" : "de.markusfreise.tintmap.pro",
+      "referenceName" : "Full Version",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_locale" : "de",
+    "_storefront" : "DEU"
+  },
+  "subscriptionGroups" : [],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

@@ -8,10 +8,16 @@ Everything runs in the browser. There is no backend, no account and no upload: t
 
 Visit statistics (Google Analytics) are optional and off by default: without a measurement ID in `src/config.js` nothing is loaded and no banner appears. With an ID, a consent banner asks first, and the Analytics script is only requested after "Accept".
 
+## Native app
+
+The iOS, iPadOS and macOS app is called **Tintmap** and lives in [`app/`](app/README.md): SwiftUI, with the colour and mixing logic ported from `src/lib/`.
+
 ## Features
 
 - **Colour areas:** the photo is reduced to 2–32 main colours and drawn as flat, numbered areas. A second slider simplifies the shapes into bigger, calmer areas.
 - **Recipes:** for every colour, up to five ways to mix it from the paints in your box — which paints, in what ratio, how much water, and how close the mix gets.
+- **Paint boxes:** keep a box for every set of paints you own, and add paints of any brand to the library.
+- **Collection:** save pictures in the browser with their settings and colour changes; open, rename and delete them.
 - **Paint box:** every paint is a chip in its own colour. The paints you have selected sit in a box at the top; the rest are listed below, under Pans and Tubes, each sorted by colour family and number. Click a chip to move it between the two. "Auto" proposes the paints that suit the current picture. The selection is remembered in the browser.
 - **Limits:** restrict mixes to one, two or three paints.
 - **Recolour:** click an area, pick a different target colour, choose between the alternative recipes, or detach a single area from the others that share its colour.
@@ -37,7 +43,7 @@ Watercolour is a transparent glaze on white paper, so each paint is modelled as 
 
 The stock is hard-coded in `src/data/paints.js`: 53 Schmincke Horadam Aquarell paints (pans and tubes) and one Michael Harding tube. Each paint has a `hex` value, which is its colour at strength 1 — a mid-strength wash on white paper, not the masstone. Most values were sampled from the official Horadam colour chart; a few are estimates and are marked as such in the data.
 
-To use your own paints today, edit that file. A UI for adding paints from other vendors is planned (TASK-11 in the backlog).
+Further paints of any brand can be added in the paint box ("Your own paints"); they are stored in the browser.
 
 ## Develop
 
@@ -63,6 +69,7 @@ The build uses a relative base path, so `dist/` works from any folder on any sta
 | `src/css/` | Plain CSS, BEM, one file per block |
 | `src/data/paints.js` | The paint stock |
 | `deploy/` | GitHub webhook and deploy script for the server |
+| `app/` | Native app Tintmap (SwiftUI, XcodeGen) |
 
 Stack: Vue 3, Pinia, Vite 5, Vitest.
 

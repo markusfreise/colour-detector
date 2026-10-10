@@ -5,6 +5,10 @@
 .button--ghost:hover { color: var(--ink); }
 .checkbox { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
 .segmented { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.segmented--fill { display: flex; }
+.segmented--fill .segmented__option { flex: 1 1 0; min-width: 0; padding-inline: 4px; }
 .segmented__option { border: 0; background: transparent; padding: 5px 12px; cursor: pointer; color: var(--ink-soft); }
-.segmented__option + .segmented__option { border-left: 1px solid var(--line); }
+.segmented__option + .segmented--fill { display: flex; }
+.segmented--fill .segmented__option { flex: 1 1 0; min-width: 0; padding-inline: 4px; }
+.segmented__option { border-left: 1px solid var(--line); }
 .segmented__option--active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }

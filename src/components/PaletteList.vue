@@ -1,6 +1,9 @@
 <template>
   <section class="panel palette">
-    <h2 class="panel__title">Colours <small class="panel__count">{{ analysis.entries.length }}</small></h2>
+    <header class="palette__header">
+      <h2 class="panel__title">Colours <small class="panel__count">{{ analysis.entries.length }}</small></h2>
+      <button class="button button--ghost" type="button" @click="emit('show-paintbox')">Show paint box</button>
+    </header>
     <ol class="palette__list">
       <li
         v-for="(entry, i) in analysis.entries"
@@ -34,6 +37,7 @@
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
 
+const emit = defineEmits(['show-paintbox'])
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 

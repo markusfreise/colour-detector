@@ -9,51 +9,59 @@
       <button class="button button--ghost" type="button" @click="analysis.loadSample()">Sample</button>
     </div>
 
-    <label class="field">
-      <span class="field__label">Colours <output class="field__value">{{ analysis.settings.colours }}</output></span>
-      <input
-        v-model.number="analysis.settings.colours"
-        class="field__range"
-        type="range"
-        min="2"
-        max="32"
-        @change="analysis.analyse()"
-      />
-      <span class="field__hint">More colours = more detail</span>
-    </label>
+    <div class="controls__settings">
+      <label class="field">
+        <span class="field__label">Colours <output class="field__value">{{ analysis.settings.colours }}</output></span>
+        <input
+          v-model.number="analysis.settings.colours"
+          class="field__range"
+          type="range"
+          min="2"
+          max="32"
+          @change="analysis.analyse()"
+        />
+        <span class="field__hint">More colours = more detail</span>
+      </label>
 
-    <label class="field">
-      <span class="field__label">Simplify areas <output class="field__value">{{ analysis.settings.simplify }}</output></span>
-      <input
-        v-model.number="analysis.settings.simplify"
-        class="field__range"
-        type="range"
-        min="0"
-        max="10"
-        @change="analysis.analyse()"
-      />
-      <span class="field__hint">Higher = bigger, calmer shapes</span>
-    </label>
+      <label class="field">
+        <span class="field__label">Simplify areas <output class="field__value">{{ analysis.settings.simplify }}</output></span>
+        <input
+          v-model.number="analysis.settings.simplify"
+          class="field__range"
+          type="range"
+          min="0"
+          max="10"
+          @change="analysis.analyse()"
+        />
+        <span class="field__hint">Higher = bigger, calmer shapes</span>
+      </label>
 
-    <div class="field">
-      <span class="field__label">Max. paints per mix</span>
-      <div class="segmented">
-        <button
-          v-for="n in [1, 2, 3]"
-          :key="n"
-          type="button"
-          class="segmented__option"
-          :class="{ 'segmented__option--active': analysis.settings.maxPaints === n }"
-          @click="setMaxPaints(n)"
-        >
-          {{ n }}
-        </button>
+      <div class="field">
+        <span class="field__label">Max. paints</span>
+        <div class="segmented segmented--fill">
+          <button
+            v-for="n in [1, 2, 3]"
+            :key="n"
+            type="button"
+            class="segmented__option"
+            :class="{ 'segmented__option--active': analysis.settings.maxPaints === n }"
+            @click="setMaxPaints(n)"
+          >
+            {{ n }}
+          </button>
+        </div>
       </div>
     </div>
 
     <div class="field">
-      <span class="field__label">Show</span>
-      <div class="segmented">
+      <div class="field__label">
+        Show
+        <span class="controls__toggles">
+          <label class="checkbox"><input v-model="analysis.settings.outlines" type="checkbox" /> Outlines</label>
+          <label class="checkbox"><input v-model="analysis.settings.numbers" type="checkbox" /> Numbers</label>
+        </span>
+      </div>
+      <div class="segmented segmented--fill">
         <button
           v-for="v in views"
           :key="v.value"
@@ -64,10 +72,6 @@
         >
           {{ v.label }}
         </button>
-      </div>
-      <div class="controls__toggles">
-        <label class="checkbox"><input v-model="analysis.settings.outlines" type="checkbox" /> Outlines</label>
-        <label class="checkbox"><input v-model="analysis.settings.numbers" type="checkbox" /> Numbers</label>
       </div>
     </div>
     <p v-if="analysis.error" class="controls__error">{{ analysis.error }}</p>

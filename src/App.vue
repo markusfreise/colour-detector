@@ -12,15 +12,15 @@
       <aside class="app__sidebar">
         <ControlsPanel />
         <EntryEditor />
-        <PaletteList />
-        <PaintBox />
+        <PaletteList @show-paintbox="paintBox.open()" />
       </aside>
     </main>
+    <PaintBox ref="paintBox" />
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useAnalysisStore } from './stores/analysis.js'
 import PaintingCanvas from './components/PaintingCanvas.vue'
 import ControlsPanel from './components/ControlsPanel.vue'
@@ -29,5 +29,6 @@ import PaletteList from './components/PaletteList.vue'
 import PaintBox from './components/PaintBox.vue'
 
 const analysis = useAnalysisStore()
+const paintBox = ref(null)
 onMounted(() => analysis.loadSample())
 </script>

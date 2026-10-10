@@ -1,3 +1,4 @@
+.palette__header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .palette__list { display: flex; flex-direction: column; gap: 2px; }
 .palette__item { display: flex; align-items: center; gap: 10px; padding: 5px 6px; border-radius: 8px; cursor: pointer; }
 .palette__item:hover { background: var(--paper); }

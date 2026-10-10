@@ -21,3 +21,4 @@ Mirror of PRD §17. IDs are stable and never reused. One task = one commit.
 | TASK-15 | Backend | Move recipe computation into the worker | No main-thread task > 100 ms on 32 colours | TASK-03 | Open |
 | TASK-16 | Test | Component tests with @vue/test-utils | Editor and paint box covered | TASK-07, TASK-08 | Open |
 | TASK-17 | Frontend | Chip layouts for paint box, recipes and colour editor; paint box grouped by form (pans, tubes) then colour-wheel family, sorted by number | Paints show as coloured chips with bold three-digit number; recipes and editor match the Figma frames | TASK-07, TASK-08 | Done |
+| TASK-18 | Frontend | Open the paint box as a centred overlay from a button in the Colours panel; framed Pans/Tubes groups with All/Invert/None; compact controls (three-column settings, full-width Show buttons) | Button opens the overlay; Esc, Close and backdrop click close it; pending changes are applied on close | TASK-17 | Done |

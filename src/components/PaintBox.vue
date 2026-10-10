@@ -1,7 +1,8 @@
 <template>
-  <section class="panel paintbox">
+  <dialog ref="dialog" class="panel paintbox" aria-labelledby="paintbox-title" @click="onBackdrop" @close="onClose">
+    <div class="paintbox__body">
     <header class="paintbox__header">
-      <h2 class="panel__title">
+      <h2 id="paintbox-title" class="panel__title">
         Paint box <small class="panel__count">{{ paints.enabledIds.size }}/{{ paints.all.length }}</small>
       </h2>
       <div class="paintbox__actions">
@@ -9,14 +10,18 @@
         <button class="button button--secondary" type="button" :disabled="!dirty" @click="apply">
           Update mixes
         </button>
+        <button class="button button--ghost" type="button" @click="close">Close</button>
       </div>
     </header>
     <div v-for="group in paints.groups" :key="group.key" class="paintbox__group">
-      <h3 class="paintbox__group-title">
-        {{ group.name }}
-        <button class="paintbox__bulk" type="button" @click="bulk(group, true)">all</button>
-        <button class="paintbox__bulk" type="button" @click="bulk(group, false)">none</button>
-      </h3>
+      <header class="paintbox__group-header">
+        <h3 class="paintbox__group-title">{{ group.name }}</h3>
+        <div class="paintbox__actions">
+          <button class="button button--ghost" type="button" @click="bulk(group, true)">All</button>
+          <button class="button button--ghost" type="button" @click="invert(group)">Invert</button>
+          <button class="button button--ghost" type="button" @click="bulk(group, false)">None</button>
+        </div>
+      </header>
       <div v-for="family in group.families" :key="family.key" class="paintbox__family">
         <h4 class="paintbox__family-title">{{ family.name }}</h4>
         <ul class="paintbox__list">
@@ -41,7 +46,8 @@
         </ul>
       </div>
     </div>
-  </section>
+    </div>
+  </dialog>
 </template>
 
 <script setup>
@@ -54,6 +60,25 @@ import { paintNumber } from '../lib/paintbox.js'
 const paints = usePaintsStore()
 const analysis = useAnalysisStore()
 const dirty = ref(false)
+const dialog = ref(null)
+
+defineExpose({ open: () => dialog.value.showModal() })
+
+// A click on the dialog element itself (not its content) hit the backdrop.
+function onBackdrop(event) {
+  if (event.target === dialog.value) close()
+}
+
+// Closing with pending changes applies them, so the recipes never lag behind the selection.
+function close() {
+  onClose()
+  dialog.value.close()
+}
+
+// Also covers Esc, which closes the dialog without going through close().
+function onClose() {
+  if (dirty.value) apply()
+}
 
 // Tooltip: vendor line, German name, and the stock notes that no longer fit on the chip.
 function describe(p) {
@@ -70,6 +95,11 @@ function toggle(id, on) {
 
 function bulk(group, on) {
   paints.setAll(group.paints.map((p) => p.id), on)
+  dirty.value = true
+}
+
+function invert(group) {
+  paints.invert(group.paints.map((p) => p.id))
   dirty.value = true
 }
 

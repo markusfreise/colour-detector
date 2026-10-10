@@ -6,6 +6,8 @@ Finds the main colours in a photo, works out how to mix each one from your own w
 
 Everything runs in the browser. There is no backend, no account and no upload: the photo never leaves your machine.
 
+Visit statistics (Google Analytics) are optional and off by default: without a measurement ID in `src/config.js` nothing is loaded and no banner appears. With an ID, a consent banner asks first, and the Analytics script is only requested after "Accept".
+
 ## Features
 
 - **Colour areas:** the photo is reduced to 2–32 main colours and drawn as flat, numbered areas. A second slider simplifies the shapes into bigger, calmer areas.

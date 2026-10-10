@@ -1,0 +1,73 @@
+<template>
+  <section v-if="entry" class="panel editor">
+    <header class="editor__header">
+      <h2 class="panel__title">Colour {{ index + 1 }}</h2>
+      <button class="button button--ghost" type="button" @click="analysis.selectEntry(null)">Close</button>
+    </header>
+
+    <div class="editor__compare">
+      <div class="editor__swatch">
+        <span class="swatch swatch--large" :style="{ background: entry.targetHex }"></span>
+        <span class="editor__caption">Target</span>
+      </div>
+      <div class="editor__swatch">
+        <span class="swatch swatch--large" :style="{ background: recipe?.hex }"></span>
+        <span class="editor__caption">Your mix</span>
+      </div>
+    </div>
+
+    <div class="editor__target">
+      <label class="editor__picker">
+        <input type="color" :value="entry.targetHex" @change="onPick" />
+        <span>Change colour</span>
+      </label>
+      <button v-if="entry.overridden" class="button button--ghost" type="button" @click="analysis.resetTarget(index)">
+        Reset to photo
+      </button>
+    </div>
+    <button
+      v-if="analysis.selectedRegion != null && sharedAreas > 1"
+      class="button button--secondary editor__detach"
+      type="button"
+      @click="analysis.detachRegion(analysis.selectedRegion)"
+    >
+      Edit only the clicked area
+    </button>
+
+    <h3 class="editor__subtitle">Recipes</h3>
+    <ul class="editor__recipes">
+      <li
+        v-for="(r, i) in entry.recipes"
+        :key="i"
+        class="editor__recipe"
+        :class="{ 'editor__recipe--active': entry.chosen === i }"
+        @click="analysis.chooseRecipe(index, i)"
+      >
+        <RecipeLine :recipe="r" />
+      </li>
+    </ul>
+    <p v-if="!entry.recipes.length" class="editor__empty">No paints selected in the paint box.</p>
+  </section>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { useAnalysisStore } from '../stores/analysis.js'
+import RecipeLine from './RecipeLine.vue'
+
+const analysis = useAnalysisStore()
+const index = computed(() => analysis.selectedEntry)
+const entry = computed(() => analysis.selected)
+const recipe = computed(() => entry.value?.recipes[entry.value.chosen])
+const sharedAreas = computed(() => {
+  if (!analysis.regionEntry || index.value == null) return 0
+  analysis.renderVersion // re-evaluate after detaching
+  let n = 0
+  for (const e of analysis.regionEntry) if (e === index.value) n++
+  return n
+})
+
+function onPick(event) {
+  analysis.setTarget(index.value, event.target.value)
+}
+</script>

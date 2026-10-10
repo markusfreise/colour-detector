@@ -1,0 +1,5 @@
+.controls__image { display: flex; align-items: center; gap: 8px; }
+.controls__image-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.controls__file { display: none; }
+.controls__toggles { display: flex; gap: 16px; margin-top: 4px; }
+.controls__error { margin-top: 10px; color: var(--rough); }

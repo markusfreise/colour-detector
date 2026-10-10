@@ -1,0 +1,5 @@
+.field { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+.field__label { display: flex; justify-content: space-between; font-weight: 600; }
+.field__value { font-weight: 400; color: var(--ink-soft); }
+.field__range { width: 100%; accent-color: var(--accent); }
+.field__hint { color: var(--ink-soft); font-size: 12px; }

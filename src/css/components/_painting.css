@@ -1,0 +1,4 @@
+.painting { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; }
+.painting__canvas { display: block; width: 100%; height: auto; cursor: crosshair; border-radius: 4px; transition: opacity 0.2s; }
+.painting__canvas--busy { opacity: 0.5; }
+.painting__status { position: absolute; top: 20px; left: 20px; background: var(--surface); padding: 4px 10px; border-radius: 6px; font-weight: 600; }

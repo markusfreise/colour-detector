@@ -1,0 +1,10 @@
+.button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid transparent; border-radius: 8px; padding: 5px 11px; cursor: pointer; background: var(--accent); color: #fff; white-space: nowrap; }
+.button:disabled { opacity: 0.45; cursor: default; }
+.button--secondary { background: var(--accent-soft); color: var(--accent); }
+.button--ghost { background: transparent; border-color: var(--line); color: var(--ink-soft); }
+.button--ghost:hover { color: var(--ink); }
+.checkbox { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.segmented { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.segmented__option { border: 0; background: transparent; padding: 5px 12px; cursor: pointer; color: var(--ink-soft); }
+.segmented__option + .segmented__option { border-left: 1px solid var(--line); }
+.segmented__option--active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }

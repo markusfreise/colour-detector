@@ -51,6 +51,6 @@ onMounted(() => {
   consent.init()
   useProStore().init()
   useCollectionStore().refresh()
-  analysis.loadSample()
+  analysis.loadSample(true)
 })
 </script>

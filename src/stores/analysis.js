@@ -2,16 +2,11 @@ import { defineStore } from 'pinia'
 import { markRaw } from 'vue'
 import { findRecipes, proposePaints, washRecipe, washLetter } from '../lib/mixing.js'
 import { adjustImage, hexToOklab, oklabToHex } from '../lib/color.js'
+import { planMixes, mixesToRequest } from '../lib/mixes.js'
 import { usePaintsStore } from './paints.js'
 
 // Working resolution: the picture is scaled down to about this many pixels, whatever its shape.
 export const WORK_PIXELS = 800 * 600
-
-// Most mixes ever requested from the analysis while filling up to the wanted number.
-const MAX_REQUEST = 64
-
-// A wash may miss its colour by this much (ΔE) before the colour gets a mix of its own.
-const WASH_LIMIT = 3
 
 // Recipes count as the same mix when they use the same paints.
 const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+')
@@ -19,7 +14,6 @@ const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+'
 const SAMPLES = [
   // Temporary: a press photo, to be replaced before anything is published.
   { file: 'sample-stage.webp', name: 'Stage (sample)' },
-  { file: 'sample-lakeside.webp', name: 'Lakeside (sample)' },
   { file: 'sample-portrait.webp', name: 'Portrait (sample)' },
   { file: 'sample-street-dusk.webp', name: 'Street at dusk (sample)' },
   { file: 'sample-cwm-idwal.webp', name: 'Cwm Idwal (sample)' },
@@ -81,7 +75,8 @@ export const useAnalysisStore = defineStore('analysis', {
       colours: 20,
       simplify: 0,
       maxPaints: 3,
-      saturation: 100, // percent, applied to the photo before the analysis
+      variety: 5, // 0 = the picture as accurate as possible, 10 = small areas of another hue keep their mix
+      saturation: 200, // percent, applied to the photo before the analysis
       contrast: 100,
       view: 'mixed', // mixed | target | original
       outlines: true,
@@ -100,7 +95,9 @@ export const useAnalysisStore = defineStore('analysis', {
     },
   },
   actions: {
-    async loadSample() {
+    /** Load the next sample photo; `restart` goes back to the first one (used at start). */
+    async loadSample(restart = false) {
+      if (restart) nextSample = 0
       const sample = SAMPLES[nextSample]
       nextSample = (nextSample + 1) % SAMPLES.length
       await this.loadFromSource(`${import.meta.env.BASE_URL}${sample.file}`, sample.name)
@@ -164,28 +161,17 @@ export const useAnalysisStore = defineStore('analysis', {
       const rgba = adjustImage(this.pixels.rgba, { saturation: saturation / 100, contrast: contrast / 100 })
       this.adjusted = rgba === this.pixels.rgba ? null : markRaw({ rgba, width, height })
       try {
-        // "Colours" counts mixes. The analysis cannot know which of its mixes come out as the same
-        // recipe with the paints at hand, so ask for more until the count is reached (or cannot be).
-        const wanted = this.settings.colours
-        let ask = wanted
-        let best = null // largest result that does not exceed the wanted number
-        let tooMany = Infinity // smallest request that gave too many mixes
-        for (let round = 0; round < 5; round++) {
-          const { jobId, result } = await runSegmentation({ rgba: rgba.slice(), width, height, colours: ask, simplify: this.settings.simplify })
-          if (jobId !== jobCounter) return // a newer analysis superseded this one
-          this.applySegmentation(result)
-          const mixes = this.mixCount
-          if (mixes > wanted) tooMany = Math.min(tooMany, ask)
-          else if (!best || mixes > best.mixes) best = { ask, mixes, result }
-          if (mixes === wanted) break
-          const next =
-            mixes > wanted
-              ? Math.floor(((best?.ask ?? 1) + ask) / 2)
-              : Math.min(MAX_REQUEST, tooMany - 1, Math.max(ask + 1, Math.ceil((ask * wanted) / Math.max(1, mixes))))
-          if (next === ask || next <= (best?.ask ?? 0)) break
-          ask = next
-        }
-        if (best && this.segmentation !== best.result) this.applySegmentation(best.result)
+        // "Colours" counts mixes. The analysis is asked for more, and planMixes joins them down to
+        // the wanted number once the paints are known.
+        const { jobId, result } = await runSegmentation({
+          rgba: rgba.slice(),
+          width,
+          height,
+          colours: mixesToRequest(this.settings.colours),
+          simplify: this.settings.simplify,
+        })
+        if (jobId !== jobCounter) return // a newer analysis superseded this one
+        this.applySegmentation(result)
       } catch (e) {
         this.error = `Analysis failed: ${e.message}`
       } finally {
@@ -230,55 +216,15 @@ export const useAnalysisStore = defineStore('analysis', {
       const old = this.entries
       const oldRegionEntry = this.regionEntry
 
-      const fit = (clusters) => {
-        const anchor = clusters.reduce((x, y) => (y.pixelCount > x.pixelCount ? y : x))
-        return findRecipes(anchor.hex, paints, { maxPaints: this.settings.maxPaints, limit: 5 })
-      }
-      // The same paints in about the same ratio are the same mix, whatever the analysis called them.
-      const mixKey = (recipe) =>
-        recipe ? recipe.paints.map((p) => `${p.paintId}:${Math.round(p.share * 5)}`).sort().join('+') : ''
-      const found = new Map()
-      for (const c of seg.clusters) {
-        if (!c.pixelCount) continue
-        if (!found.has(c.group)) found.set(c.group, [])
-        found.get(c.group).push(c)
-      }
-      const groups = new Map() // mix key -> { group, clusters }
-      for (const [group, clusters] of found) {
-        const key = mixKey(fit(clusters)[0])
-        if (groups.has(key)) groups.get(key).clusters.push(...clusters)
-        else groups.set(key, { group, clusters })
-      }
-      // A wash its mix cannot reach (a paint only gets so deep) moves to the mix with its own best
-      // recipe. That may be a new mix, as long as the wanted number of mixes is not exceeded;
-      // the worst misses on the largest areas go first.
-      const misses = []
-      for (const [key, { clusters }] of groups) {
-        const [base] = fit(clusters)
-        if (!base?.paints.length) continue
-        for (const c of clusters) {
-          const wash = washRecipe(base, c.hex, byId)
-          if (wash.deltaE <= WASH_LIMIT) continue
-          const [own] = findRecipes(c.hex, paints, { maxPaints: this.settings.maxPaints, limit: 1 })
-          if (own && wash.deltaE > own.deltaE + WASH_LIMIT) {
-            misses.push({ cluster: c, from: key, to: mixKey(own), cost: (wash.deltaE - own.deltaE) * c.pixelCount })
-          }
-        }
-      }
-      misses.sort((x, y) => y.cost - x.cost)
-      for (const { cluster, from, to } of misses) {
-        if (to === from || (!groups.has(to) && groups.size >= this.settings.colours)) continue
-        const source = groups.get(from).clusters
-        if (source.length < 2) continue
-        source.splice(source.indexOf(cluster), 1)
-        if (groups.has(to)) groups.get(to).clusters.push(cluster)
-        else groups.set(to, { group: `${groups.get(from).group}/${cluster.index}`, clusters: [cluster] })
-      }
       const washOf = (recipe, hex) => (recipe.paints.length ? washRecipe(recipe, hex, byId) : recipe)
+      const groups = planMixes(seg.clusters, paints, {
+        maxPaints: this.settings.maxPaints,
+        wanted: this.settings.colours,
+        variety: this.settings.variety,
+      })
       const mixRecipes = {}
       const built = []
-      for (const { group, clusters } of groups.values()) {
-        const recipes = fit(clusters)
+      for (const { group, clusters, recipes } of groups) {
         mixRecipes[group] = recipes
         let items = clusters.map((c) => ({ clusters: [c.index], pixels: c.pixelCount, lab: hexToOklab(c.hex) }))
         // Merge washes until every water level of the mix occurs once.

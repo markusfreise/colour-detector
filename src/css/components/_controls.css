@@ -7,4 +7,5 @@
 .controls__settings .field { min-width: 0; }
 .controls__toggles { display: flex; gap: 12px; font-weight: 400; }
 .controls__error { margin-top: 10px; color: var(--rough); }
-.controls__reset { justify-content: flex-end; align-self: end; }
+.controls__hints { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; margin-top: 6px; }
+.controls__reset { padding: 2px 8px; font-size: 12px; }

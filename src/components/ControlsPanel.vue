@@ -96,16 +96,28 @@
         />
       </label>
 
-      <div class="field controls__reset">
-        <button
-          class="button button--ghost"
-          type="button"
-          :disabled="analysis.settings.saturation === 100 && analysis.settings.contrast === 100"
-          @click="resetAdjustment('saturation', 'contrast')"
-        >
-          Reset
-        </button>
-      </div>
+      <label class="field">
+        <span class="field__label">Variety <output class="field__value">{{ analysis.settings.variety }}</output></span>
+        <input
+          v-model.number="analysis.settings.variety"
+          class="field__range"
+          type="range"
+          min="0"
+          max="10"
+          @change="analysis.analyse()"
+        />
+      </label>
+    </div>
+    <div class="controls__hints">
+      <span class="field__hint">Variety: lower = closer overall, higher = small areas keep their own colour</span>
+      <button
+        v-if="analysis.settings.saturation !== 100 || analysis.settings.contrast !== 100"
+        class="button button--ghost controls__reset"
+        type="button"
+        @click="resetAdjustment('saturation', 'contrast')"
+      >
+        Reset saturation and contrast
+      </button>
     </div>
 
     <div class="field">

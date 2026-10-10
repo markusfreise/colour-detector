@@ -16,7 +16,8 @@ The iOS, iPadOS and macOS app is called **Tintmap** and lives in [`app/`](app/RE
 
 - **Colour areas:** the photo is reduced to 2–32 mixes and drawn as flat, numbered areas. Small but distinct colours (lips in a portrait, a red roof) keep a mix of their own instead of being lost among the shades of a large background. A second slider simplifies the shapes into bigger, calmer areas.
 - **Washes:** "Colours" counts mixes. A mix is painted in up to five washes, from very watery to concentrated, so colours that differ only in strength do not use up a mix each. On the picture a wash carries the number of its mix and a letter for the water level (W very watery, L light, M medium, R rich, C concentrated), for example 6L and 6R. In the list the washes of a mix sit together, with the paints named once; untick "Washes" to see only the base colour of each mix.
-- **Saturation and contrast:** adjust the photo before it is analysed.
+- **Saturation and contrast:** adjust the photo before it is analysed. Saturation starts at 200%, which brings out the colours a painter would exaggerate anyway.
+- **Variety:** decides which colours share a mix when there are more than you asked for. Low keeps the picture as a whole as close as possible; high lets small areas of another hue keep their own mix while similar large colours share one.
 - **Recipes:** for every colour, up to five ways to mix it from the paints in your box — which paints, in what ratio, how much water, and how close the mix gets.
 - **Paint boxes:** keep a box for every set of paints you own, and add paints of any brand to the library.
 - **Collection:** save pictures in the browser with their settings and colour changes; open, rename and delete them.
@@ -64,7 +65,7 @@ The build uses a relative base path, so `dist/` works from any folder on any sta
 
 | Path | Contents |
 |---|---|
-| `src/lib/` | Pure logic, framework-free and tested: colour maths, mixing model, segmentation, paint grouping |
+| `src/lib/` | Pure logic, framework-free and tested: colour maths, mixing model, segmentation, mix planning, paint grouping |
 | `src/stores/` | Pinia stores: `paints` (stock and enabled set) and `analysis` (image, settings, areas, recipes) |
 | `src/components/` | Vue 3 components (`<script setup>`) |
 | `src/workers/` | Web Worker for the segmentation |

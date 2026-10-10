@@ -14,22 +14,25 @@
         <button class="button button--ghost" type="button" @click="emit('show-paintbox')">Show paint box</button>
       </div>
     </header>
-    <p v-if="analysis.mixCount < analysis.entries.length" class="palette__key">
-      <span v-for="w in WASH_LETTERS" :key="w.letter"><strong>{{ w.letter }}</strong> {{ w.label }}</span>
-    </p>
+    <div v-if="analysis.mixCount < analysis.entries.length" class="palette__options">
+      <label class="checkbox"><input v-model="analysis.settings.washes" type="checkbox" /> Washes</label>
+      <p v-if="analysis.settings.washes" class="palette__key">
+        <span v-for="w in WASH_LETTERS" :key="w.letter"><strong>{{ w.letter }}</strong> {{ w.label }}</span>
+      </p>
+    </div>
     <ol class="palette__list">
       <li
-        v-for="{ entry, i, joinTop, joinBottom } in rows"
+        v-for="{ entry, i, joinTop, joinBottom, label, share, washes } in rows"
         :key="entry.id"
         class="palette__item"
         :class="{
-          'palette__item--active': analysis.selectedEntry === i,
+          'palette__item--active': analysis.selectedEntry === i || (!analysis.settings.washes && analysis.selected?.family === entry.family),
           'palette__item--join-top': joinTop,
           'palette__item--join-bottom': joinBottom,
         }"
         @click="toggle(i)"
       >
-        <span class="palette__number">{{ entry.label }}</span>
+        <span class="palette__number">{{ label }}</span>
         <span class="palette__pair">
           <span class="swatch swatch--half" :style="{ background: entry.targetHex }" title="Photo colour"></span>
           <span
@@ -41,7 +44,9 @@
         <span class="palette__summary">
           <span v-if="!joinTop" class="palette__paints">{{ summary(entry) }}</span>
           <span class="palette__meta">
-            {{ dilution(entry) }}{{ Math.round(entry.share * 100) || '<1' }}% of image
+            <template v-if="washes > 1">{{ washes }} washes · </template>
+            <template v-else>{{ dilution(entry) }}</template>
+            {{ Math.round(share * 100) || '<1' }}% of image
             <template v-if="entry.overridden"> · changed</template>
           </span>
         </span>
@@ -66,8 +71,25 @@ const paints = usePaintsStore()
 const rows = computed(() => {
   const mix = (entry) => `${entry.family}:${entry.recipes[entry.chosen]?.paints.map((p) => p.paintId).join('+')}`
   const list = analysis.order.map((i) => ({ entry: analysis.entries[i], i }))
+  if (!analysis.settings.washes) {
+    // Only the base colour of each mix: its largest wash, with the area of the whole mix.
+    const mixes = new Map()
+    for (const row of list) {
+      const mix = mixes.get(row.entry.family)
+      if (!mix) mixes.set(row.entry.family, { ...row, label: parseInt(row.entry.label), share: row.entry.share, washes: 1 })
+      else {
+        if (row.entry.share > mix.entry.share) Object.assign(mix, row)
+        mix.share += row.entry.share
+        mix.washes++
+      }
+    }
+    return [...mixes.values()]
+  }
   return list.map((row, n) => ({
     ...row,
+    label: row.entry.label,
+    share: row.entry.share,
+    washes: 1,
     joinTop: n > 0 && mix(list[n - 1].entry) === mix(row.entry),
     joinBottom: n < list.length - 1 && mix(list[n + 1].entry) === mix(row.entry),
   }))

@@ -85,6 +85,7 @@ export const useAnalysisStore = defineStore('analysis', {
       contrast: 100,
       view: 'mixed', // mixed | target | original
       outlines: true,
+      washes: true, // colour list: every wash of a mix, or only its base colour
       numbers: true,
     },
   }),

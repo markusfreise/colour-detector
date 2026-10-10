@@ -18,3 +18,5 @@
 .palette__item--join-top .palette__pair { border-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; }
 .palette__item--join-bottom .palette__pair { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 .palette__item--join-top .swatch, .palette__item--join-bottom .swatch { height: auto; }
+.palette__options { display: flex; align-items: baseline; gap: 12px; margin: 6px 0; font-size: 12px; }
+.palette__options .palette__key { margin: 0; }

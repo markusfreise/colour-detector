@@ -1,4 +1,4 @@
-.app { max-width: 1600px; margin: 0 auto; padding: var(--gap); }
+.app { max-width: 1600px; margin: 0 auto; padding: max(var(--gap), env(safe-area-inset-top)) max(var(--gap), env(safe-area-inset-right)) max(var(--gap), env(safe-area-inset-bottom)) max(var(--gap), env(safe-area-inset-left)); }
 .app__header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin-bottom: var(--gap); }
 .app__title { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
 .app__tagline { color: var(--ink-soft); }

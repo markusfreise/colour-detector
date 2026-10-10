@@ -2,14 +2,26 @@
   <section class="panel controls">
     <div class="controls__image">
       <span class="controls__image-name" :title="analysis.imageName">{{ analysis.imageName }}</span>
+      <span v-if="analysis.savedId" class="controls__saved">In collection</span>
+    </div>
+    <div class="controls__actions">
       <label class="button button--secondary">
-        Upload photo
+        Choose photo
         <input class="controls__file" type="file" accept="image/*" @change="onFile" />
+      </label>
+      <label v-if="hasCamera" class="button button--secondary">
+        Take photo
+        <input class="controls__file" type="file" accept="image/*" capture="environment" @change="onFile" />
       </label>
       <button class="button button--ghost" type="button" title="Load the next sample photo" @click="analysis.loadSample()">
         Sample
       </button>
+      <button class="button button--ghost" type="button" :disabled="!analysis.image" @click="collection.saveCurrent()">
+        Save
+      </button>
+      <button class="button button--ghost" type="button" @click="emit('show-collection')">Collection</button>
     </div>
+    <p v-if="collection.error" class="controls__error">{{ collection.error }}</p>
 
     <div class="controls__settings">
       <label class="field">
@@ -82,8 +94,13 @@
 
 <script setup>
 import { useAnalysisStore } from '../stores/analysis.js'
+import { useCollectionStore } from '../stores/collection.js'
 
+const emit = defineEmits(['show-collection'])
 const analysis = useAnalysisStore()
+const collection = useCollectionStore()
+// "Take photo" opens the camera directly; that only exists on phones and tablets.
+const hasCamera = window.matchMedia?.('(pointer: coarse)').matches ?? false
 const views = [
   { value: 'mixed', label: 'Mixed paint' },
   { value: 'target', label: 'Photo colour' },

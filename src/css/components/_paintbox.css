@@ -13,3 +13,17 @@
 .paintbox__chip:has(.paintbox__checkbox:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
 .paintbox__form { position: absolute; top: 6px; right: 10px; }
 .paintbox__chip--used .paintbox__name { font-weight: 700; }
+.paintbox__boxes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; }
+.paintbox__box-list { flex-wrap: wrap; max-width: 100%; }
+.paintbox__edit { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.paintbox__edit .input { flex: 1 1 180px; }
+.paintbox__own-header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.paintbox__paint-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.paintbox__input { display: flex; flex-direction: column; gap: 4px; font-weight: 600; }
+.paintbox__input--wide { grid-column: span 2; }
+.paintbox__note { grid-column: 1 / -1; color: var(--ink-soft); font-size: 12px; }
+.paintbox__form-actions { grid-column: 1 / -1; display: flex; gap: 6px; }
+.paintbox__own { display: flex; flex-direction: column; gap: 6px; }
+.paintbox__own-item { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.paintbox__own-chip { width: 150px; min-height: 40px; }
+.paintbox__own-vendor { flex: 1; min-width: 80px; color: var(--ink-soft); }

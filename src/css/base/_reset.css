@@ -3,4 +3,4 @@ html, body { margin: 0; }
 body { background: var(--paper); color: var(--ink); font: 14px/1.45 var(--font); }
 h1, h2, h3, p, ul, ol { margin: 0; padding: 0; }
 ul, ol { list-style: none; }
-button, input { font: inherit; color: inherit; }
+button, input, select { font: inherit; color: inherit; }

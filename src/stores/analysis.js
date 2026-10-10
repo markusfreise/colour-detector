@@ -46,11 +46,13 @@ async function loadImage(src) {
 
 export const useAnalysisStore = defineStore('analysis', {
   state: () => ({
-    imageName: 'Cwm Idwal (sample)',
+    imageName: '',
+    savedId: null, // id in the collection when the picture was saved or opened from it
     image: null, // HTMLImageElement (raw)
     pixels: null, // { rgba, width, height } at working resolution (raw)
     segmentation: null, // raw result from worker
     entries: [], // palette entries
+    baseEntries: 0, // entries that came from the analysis (detached areas are appended after them)
     regionEntry: null, // Int32Array region -> entry index (raw)
     renderVersion: 0, // bumped whenever the canvas needs a redraw
     selectedEntry: null,
@@ -84,8 +86,32 @@ export const useAnalysisStore = defineStore('analysis', {
       const url = URL.createObjectURL(file)
       await this.loadFromSource(url, file.name)
     },
+    /** Open a picture from the collection with its saved settings and colour changes. */
+    async loadSaved(record) {
+      Object.assign(this.settings, record.settings)
+      const url = URL.createObjectURL(record.blob)
+      await this.loadFromSource(url, record.name)
+      URL.revokeObjectURL(url)
+      if (this.error) return
+      this.savedId = record.id
+      for (const edit of record.edits ?? []) {
+        const entry = this.entries[edit.index]
+        if (!entry) continue
+        if (edit.targetHex) this.setTarget(edit.index, edit.targetHex)
+        if (entry.recipes[edit.chosen]) entry.chosen = edit.chosen
+      }
+      this.renderVersion++
+    },
+    /** Colour changes worth saving. Detached areas are not kept: they depend on the exact area ids. */
+    exportEdits() {
+      return this.entries
+        .slice(0, this.baseEntries)
+        .map((e, index) => ({ index, targetHex: e.overridden ? e.targetHex : null, chosen: e.chosen }))
+        .filter((e) => e.targetHex || e.chosen)
+    },
     async loadFromSource(src, name) {
       this.error = null
+      this.savedId = null
       try {
         const img = await loadImage(src)
         const scale = Math.min(1, WORK_SIZE / Math.max(img.naturalWidth, img.naturalHeight))
@@ -142,6 +168,7 @@ export const useAnalysisStore = defineStore('analysis', {
         recipes: [],
         chosen: 0,
       }))
+      this.baseEntries = this.entries.length
       this.regionEntry = markRaw(Int32Array.from(result.regions, (r) => clusterToEntry.get(r.cluster)))
       this.segmentation = markRaw(result)
       this.selectedEntry = null

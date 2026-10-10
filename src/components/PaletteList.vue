@@ -41,6 +41,7 @@
 <script setup>
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
+import { isNative, sendNative } from '../lib/native.js'
 
 const emit = defineEmits(['show-paintbox'])
 const analysis = useAnalysisStore()
@@ -55,7 +56,9 @@ function summary(entry) {
 
 // The print stylesheet lays out the sheet; the browser's dialog offers "Save as PDF".
 function print() {
-  window.print()
+  // window.print() does nothing inside the app's web view; the shell prints it instead.
+  if (isNative) sendNative('print')
+  else window.print()
 }
 
 function toggle(i) {

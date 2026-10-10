@@ -1,5 +1,7 @@
 .controls__image { display: flex; align-items: center; gap: 8px; }
 .controls__image-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.controls__saved { flex: none; color: var(--ink-soft); font-size: 12px; }
+.controls__actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .controls__file { display: none; }
 .controls__settings { display: grid; grid-template-columns: 4fr 4fr 3fr; gap: 12px; align-items: start; }
 .controls__settings .field { min-width: 0; }

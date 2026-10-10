@@ -7,7 +7,6 @@
 .paintbox__group--selected { border-color: var(--accent); background: var(--surface); }
 .paintbox__group-title { font-size: 1.4em; font-weight: 650; margin-bottom: 8px; }
 .paintbox__empty { color: var(--ink-soft); }
-.paintbox__list + .paintbox__list { margin-top: 10px; }
 .paintbox__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 6px; }
 .paintbox__chip { position: relative; min-height: 46px; cursor: pointer; }
 .paintbox__checkbox { position: absolute; width: 1px; height: 1px; opacity: 0; }

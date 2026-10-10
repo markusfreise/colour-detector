@@ -25,17 +25,12 @@ export function sortPaints(paints) {
 }
 
 /**
- * Group paints by form (pans, then tubes), then by colour-wheel family, sorted by number.
- * A paint owned as both pan and tube appears in both form groups.
+ * Group paints by form (pans, then tubes); inside a group by colour-wheel family, then number.
+ * A paint owned as both pan and tube appears in both groups.
  */
 export function groupPaints(paints) {
-  return PAINT_FORMS.map((form) => {
-    const inForm = paints.filter((p) => p.forms.some((f) => f.includes(form.key)))
-    const families = COLOUR_FAMILIES.map((family) => ({
-      key: family,
-      name: family[0].toUpperCase() + family.slice(1),
-      paints: inForm.filter((p) => colourFamily(p.hex) === family).sort(byNumber),
-    })).filter((f) => f.paints.length)
-    return { ...form, paints: inForm, families }
-  }).filter((g) => g.paints.length)
+  return PAINT_FORMS.map((form) => ({
+    ...form,
+    paints: sortPaints(paints.filter((p) => p.forms.some((f) => f.includes(form.key)))),
+  })).filter((g) => g.paints.length)
 }

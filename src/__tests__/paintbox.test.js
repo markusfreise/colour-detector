@@ -43,7 +43,7 @@ describe('sortPaints', () => {
 
 describe('groupPaints', () => {
 
-  it('groups by form first, then family, sorted by number', () => {
+  it('groups by form first, sorted by family, then number', () => {
     const groups = groupPaints([
       paint('365', '#e6331d', ['whole pan']),
       paint('208', '#fae409', ['whole pan', 'tube 15 ml']),
@@ -51,9 +51,8 @@ describe('groupPaints', () => {
       paint('496', '#2b61ab', ['tube 15 ml']),
     ])
     expect(groups.map((g) => g.key)).toEqual(['pan', 'tube'])
-    expect(groups[0].families.map((f) => f.key)).toEqual(['yellow', 'red'])
-    expect(groups[0].families[1].paints.map((p) => p.number)).toEqual(['347', '365'])
-    expect(groups[1].families.map((f) => f.key)).toEqual(['yellow', 'blue'])
+    expect(groups[0].paints.map((p) => p.number)).toEqual(['208', '347', '365'])
+    expect(groups[1].paints.map((p) => p.number)).toEqual(['208', '496'])
   })
 
   it('places every stock paint in at least one form group', () => {

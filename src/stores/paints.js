@@ -22,7 +22,7 @@ export const usePaintsStore = defineStore('paints', {
   getters: {
     enabled: (state) => state.all.filter((p) => state.enabledIds.has(p.id)),
     byId: (state) => Object.fromEntries(state.all.map((p) => [p.id, p])),
-    // Paint box: the selected paints as one list, the rest grouped by form and colour family.
+    // Paint box: the selected paints as one list, the rest grouped by form.
     selected: (state) => sortPaints(state.all.filter((p) => state.enabledIds.has(p.id))),
     available: (state) => groupPaints(state.all.filter((p) => !state.enabledIds.has(p.id))),
   },

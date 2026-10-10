@@ -24,8 +24,8 @@
 
       <div v-for="group in paints.available" :key="group.key" class="paintbox__group">
         <h3 class="paintbox__group-title">{{ group.name }}</h3>
-        <ul v-for="family in group.families" :key="family.key" class="paintbox__list">
-          <li v-for="p in family.paints" :key="p.id">
+        <ul class="paintbox__list">
+          <li v-for="p in group.paints" :key="p.id">
             <PaintChip :paint="p" @toggle="toggle(p.id, $event)" />
           </li>
         </ul>

@@ -34,7 +34,7 @@ struct Chip<Content: View>: View {
 
     var body: some View {
         content
-            .font(.caption2)
+            .font(Theme.chip)
             .lineLimit(1)
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
@@ -69,58 +69,82 @@ struct PaintChip: View {
     }
 }
 
-/// A recipe: the mixed colour with how watery it is and how close it gets, then the paints and their parts.
+/// A recipe: the mixed colour on the left with how watery it is and how close it gets,
+/// the paints and their parts as rows on the right.
 struct RecipeView: View {
     let recipe: Recipe
     let paints: [String: Paint]
-    /// One row, for the printed sheet.
+    /// Three paints per row and no empty slots, for the printed sheet.
     var wide = false
+    /// One paint per row with its full name, for narrow screens.
+    var stacked = false
+
+    private var columns: Int { wide ? 3 : stacked ? 1 : 2 }
+    private let rowHeight: CGFloat = 30
+    /// The grid shows complete rows of slots; unused ones are drawn dashed.
+    private var slots: Int { wide ? max(recipe.paints.count, 1) : stacked ? max(recipe.paints.count, 2) : 4 }
+    /// "very concentrated (layer/glaze)" -> "Very concentrated": the tile has no room for the aside.
+    private var dilution: String {
+        let short = recipe.dilution.split(separator: "(").first.map { $0.trimmingCharacters(in: .whitespaces) } ?? recipe.dilution
+        return short.prefix(1).uppercased() + short.dropFirst()
+    }
 
     var body: some View {
-        if wide {
-            HStack(spacing: 6) {
-                result.frame(width: 150)
-                ingredients
+        HStack(alignment: .top, spacing: 6) {
+            Chip(hex: recipe.hex, minHeight: wide ? rowHeight : rowHeight * CGFloat(slots / columns) + 6 * CGFloat(slots / columns - 1)) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(dilution).bold()
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("\(recipe.deltaE.formatted(.number.precision(.fractionLength(1)))) • \(recipe.quality)")
+                }
             }
-        } else {
-            VStack(spacing: 6) {
-                result
-                ingredients
-            }
-        }
-    }
-
-    private var result: some View {
-        Chip(hex: recipe.hex, minHeight: wide ? 36 : 44) {
-            VStack(alignment: .leading, spacing: 1) {
-                Text(recipe.dilution).bold()
-                Text("\(recipe.deltaE.formatted(.number.precision(.fractionLength(1)))) • \(recipe.quality)")
-            }
-        }
-    }
-
-    @ViewBuilder private var ingredients: some View {
-        if recipe.paints.isEmpty {
-            Text("Leave the paper white")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        } else {
-            HStack(spacing: 6) {
-                ForEach(Array(recipe.paints.enumerated()), id: \.offset) { index, item in
-                    if let paint = paints[item.paintID] {
-                        Chip(hex: paint.hex, minHeight: wide ? 36 : 44) {
-                            VStack(alignment: .leading, spacing: 1) {
-                                HStack(spacing: 4) {
-                                    Text(parts(recipe.parts[index])).bold()
-                                    Text(paint.formLabel)
-                                }
-                                Text("\(Text(paint.displayNumber).bold()) \(paint.name)")
+            .frame(width: wide ? 140 : 112)
+            if recipe.paints.isEmpty {
+                Text("Leave the paper white")
+                    .font(Theme.small)
+                    .italic()
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, minHeight: rowHeight, alignment: .leading)
+            } else {
+                Grid(horizontalSpacing: 6, verticalSpacing: 6) {
+                    ForEach(0..<((slots + columns - 1) / columns), id: \.self) { row in
+                        GridRow {
+                            ForEach(0..<columns, id: \.self) { column in
+                                slot(row * columns + column)
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    @ViewBuilder private func slot(_ index: Int) -> some View {
+        if index < recipe.paints.count, let paint = paints[recipe.paints[index].paintID] {
+            HStack(spacing: 6) {
+                Text("\(Text(parts(recipe.parts[index])).bold()) \(paint.formLabel)")
+                    .fixedSize()
+                Spacer(minLength: 0)
+                Text("\(Text(paint.displayNumber).bold()) \(paint.name)")
+                    .truncationMode(.tail)
+            }
+            .font(Theme.chip)
+            .lineLimit(1)
+            .padding(.horizontal, 8)
+            .frame(maxWidth: .infinity, minHeight: rowHeight)
+            .background(Color(hex: paint.hex))
+            .foregroundStyle(Color.ink(on: paint.hex))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(.primary.opacity(0.35), lineWidth: 1))
+            .help(paint.name)
+        } else if wide {
+            Color.clear.frame(maxWidth: .infinity, minHeight: rowHeight)
+        } else {
+            RoundedRectangle(cornerRadius: 6)
+                .strokeBorder(.primary.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                .frame(maxWidth: .infinity, minHeight: rowHeight)
+                .accessibilityHidden(true)
         }
     }
 

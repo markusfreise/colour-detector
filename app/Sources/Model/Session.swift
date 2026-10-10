@@ -3,7 +3,7 @@ import Foundation
 import Observation
 
 enum ViewMode: String, Codable, CaseIterable, Identifiable {
-    case mixed, target, original
+    case mixed, target, original, overlay
 
     var id: String { rawValue }
     var title: String {
@@ -11,6 +11,17 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
         case .mixed: "Mixed paint"
         case .target: "Photo colour"
         case .original: "Photo"
+        case .overlay: "Overlay"
+        }
+    }
+
+    /// For narrow screens.
+    var shortTitle: String {
+        switch self {
+        case .mixed: "Mixed"
+        case .target: "Colour"
+        case .original: "Photo"
+        case .overlay: "Overlay"
         }
     }
 }
@@ -298,13 +309,17 @@ final class Session {
         // Entry index per working pixel.
         let entryMap = seg.regionMap.map { regionEntry[Int($0)] }
 
+        let onPhoto = settings.view == .original || settings.view == .overlay
+        if onPhoto, originalPixels == nil, let image {
+            originalPixels = Pictures.pixels(of: image, width: outW, height: outH)
+        }
+        let blank = [UInt8](repeating: 255, count: outW * outH * 4)
         if settings.view == .original {
-            if originalPixels == nil, let image {
-                originalPixels = Pictures.pixels(of: image, width: outW, height: outH)
-            }
-            out = originalPixels ?? [UInt8](repeating: 255, count: outW * outH * 4)
+            out = originalPixels ?? blank
         } else {
-            out = [UInt8](repeating: 255, count: outW * outH * 4)
+            // Overlay: the colour areas at half strength over the photo.
+            let keep = settings.view == .overlay ? 0.5 : 0
+            out = settings.view == .overlay ? originalPixels ?? blank : blank
             let colours: [(UInt8, UInt8, UInt8)] = entries.enumerated().map { index, entry in
                 var c = ColorMath.rgb(hex: displayHex(entry))
                 if let highlight, highlight != index { c = c * 0.35 + Vec3(255, 255, 255) * 0.65 }
@@ -317,7 +332,13 @@ final class Session {
                         for dy in 0..<scale {
                             for dx in 0..<scale {
                                 let o = ((y * scale + dy) * outW + x * scale + dx) * 4
-                                out[o] = c.0; out[o + 1] = c.1; out[o + 2] = c.2
+                                if keep == 0 {
+                                    out[o] = c.0; out[o + 1] = c.1; out[o + 2] = c.2
+                                } else {
+                                    out[o] = UInt8(Double(out[o]) * keep + Double(c.0) * (1 - keep))
+                                    out[o + 1] = UInt8(Double(out[o + 1]) * keep + Double(c.1) * (1 - keep))
+                                    out[o + 2] = UInt8(Double(out[o + 2]) * keep + Double(c.2) * (1 - keep))
+                                }
                             }
                         }
                     }

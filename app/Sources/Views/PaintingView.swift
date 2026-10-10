@@ -32,7 +32,8 @@ struct PaintingView: View {
                     .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
+        .shadow(color: .black.opacity(0.1), radius: 10, y: 3)
         .animation(.easeOut(duration: 0.2), value: session.busy)
     }
 
@@ -74,7 +75,7 @@ struct NumberedPicture: View {
     let image: CGImage
     let segmentation: Segmentation
     let labels: [Label]
-    var fontSize: CGFloat = 10
+    var fontSize: CGFloat = 14
 
     var body: some View {
         Image(decorative: image, scale: 1)
@@ -83,8 +84,8 @@ struct NumberedPicture: View {
             .overlay {
                 Canvas { context, size in
                     let scale = size.width / Double(segmentation.width)
-                    for label in labels where label.room * scale >= fontSize * 0.75 {
-                        let text = Text(label.text).font(.system(size: fontSize, weight: .semibold)).foregroundStyle(label.color)
+                    for label in labels where label.room * scale >= fontSize * 0.7 {
+                        let text = Text(label.text).font(.system(size: fontSize, weight: .bold)).foregroundStyle(label.color)
                         context.draw(text, at: CGPoint(x: label.x * scale, y: label.y * scale))
                     }
                 }

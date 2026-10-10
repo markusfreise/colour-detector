@@ -25,7 +25,11 @@ struct RootView: View {
                 // Two columns need room: a narrow iPad window gets the phone layout.
                 if sizeClass == .compact || geometry.size.width < 900 { compact } else { regular }
             }
-            .navigationTitle(session.imageName.isEmpty ? "Tintmap" : session.imageName)
+            #if os(macOS)
+            .navigationTitle("Tintmap")
+            #else
+            .navigationTitle("")
+            #endif
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -60,12 +64,16 @@ struct RootView: View {
 
     #if DEBUG
     /// "-screen paintbox|collection|editor|paywall" opens that screen at launch, for screenshots;
+    /// "-view mixed|target|original|overlay" sets what the picture shows;
     /// "-landscape" starts with the landscape sample.
     private func openScreenForScreenshot() async {
         if ProcessInfo.processInfo.arguments.contains("-landscape") { session.loadSample() }
-        guard let flag = ProcessInfo.processInfo.arguments.firstIndex(of: "-screen"),
-              let screen = ProcessInfo.processInfo.arguments.dropFirst(flag + 1).first else { return }
         while session.busy || session.entries.isEmpty { try? await Task.sleep(for: .milliseconds(100)) }
+        let arguments = ProcessInfo.processInfo.arguments
+        if let mode = arguments.firstIndex(of: "-view").flatMap({ arguments.dropFirst($0 + 1).first }).flatMap(ViewMode.init(rawValue:)) {
+            session.settings.view = mode
+        }
+        let screen = arguments.firstIndex(of: "-screen").flatMap { arguments.dropFirst($0 + 1).first } ?? ""
         switch screen {
         case "paintbox": showingPaintBox = true
         case "collection": showingCollection = true
@@ -73,6 +81,12 @@ struct RootView: View {
         case "paywall": showingPaywall = true
         default: break
         }
+        #if os(macOS)
+        if ProcessInfo.processInfo.arguments.contains("-snapshot") {
+            try? await Task.sleep(for: .seconds(2))
+            DebugSnapshot.writeAll()
+        }
+        #endif
     }
     #endif
 
@@ -83,17 +97,17 @@ struct RootView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 PaintingView()
-                Text("Tap an area to see its recipe and change its colour.").font(.footnote).foregroundStyle(.secondary)
-                panel { ControlsView() }
-                panel(title: "Colours") { PaletteView() }
+                Text("Tap an area to see its recipe and change its colour.").font(Theme.small).foregroundStyle(.secondary)
+                Card { ControlsView() }
+                coloursCard
             }
             .padding()
         }
-        .background(.background.secondary)
+        .background(Theme.page)
         .sheet(isPresented: Binding(get: { session.selectedEntry != nil }, set: { if !$0 { session.select(entry: nil) } })) {
             NavigationStack {
                 ScrollView {
-                    EntryEditorView(index: session.selectedEntry ?? 0).padding()
+                    EntryEditorView(index: session.selectedEntry ?? 0, stacked: true).padding()
                 }
                 .navigationTitle("Colour \((session.selectedEntry ?? 0) + 1)")
                 #if os(iOS)
@@ -108,82 +122,98 @@ struct RootView: View {
         }
     }
 
-    /// iPad and Mac: the picture on the left, settings, editor and colours in a column on the right.
+    /// iPad and Mac: the picture on the left, settings, editor and colours as cards in a column on the right.
     private var regular: some View {
         HStack(alignment: .top, spacing: 0) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 PaintingView()
-                Text("Click an area to see its recipe and change its colour.").font(.footnote).foregroundStyle(.secondary)
+                Text("Click an area to see its recipe and change its colour.").font(Theme.small).foregroundStyle(.secondary)
                 Spacer(minLength: 0)
             }
-            .padding()
+            .padding(20)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    panel { ControlsView() }
+                    Card { ControlsView() }
                     if let index = session.selectedEntry {
-                        panel(title: "Colour \(index + 1)", onClose: { session.select(entry: nil) }) { EntryEditorView(index: index) }
+                        Card("Colour \(index + 1)", accent: true) {
+                            Button("Close") { session.select(entry: nil) }.buttonStyle(.outline)
+                        } content: {
+                            EntryEditorView(index: index)
+                        }
                     }
-                    panel(title: "Colours") { PaletteView() }
+                    coloursCard
                 }
-                .padding()
+                .padding([.vertical, .trailing], 20)
+                .padding(.leading, 4)
             }
-            .frame(width: 400)
+            .frame(width: Theme.sidebarWidth)
         }
-        .background(.background.secondary)
+        .background(Theme.page)
     }
 
-    private func panel(title: String? = nil, onClose: (() -> Void)? = nil, @ViewBuilder content: () -> some View) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            if let title {
-                HStack {
-                    Text(title).font(.headline)
-                    Spacer()
-                    if let onClose { Button("Close", action: onClose).buttonStyle(.borderless) }
+    /// The colours with their mixes; printing and the paint box belong to them.
+    private var coloursCard: some View {
+        Card("Colours") {
+            HStack(spacing: 6) {
+                Button("Print") { PrintSheet.print(session: session, library: library) }
+                ShareLink(
+                    item: SheetPDF(name: session.imageName) { PrintSheet.pdf(session: session, library: library) },
+                    preview: SharePreview("\(session.imageName) – colours and mixes")
+                ) {
+                    Text("PDF")
                 }
+                Button("Paint box") {
+                    boxRevision = library.revision
+                    showingPaintBox = true
+                }
+                .buttonStyle(.outlineProminent)
             }
-            content()
+            .buttonStyle(.outline)
+            .disabled(session.entries.isEmpty)
+        } content: {
+            PaletteView()
         }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.background, in: RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: Toolbar
 
     @ToolbarContentBuilder private var toolbar: some ToolbarContent {
-        ToolbarItem(placement: .navigation) {
-            Menu("Photo", systemImage: "photo.badge.plus") {
-                Button("Photo Library", systemImage: "photo.on.rectangle") { showingPhotos = true }
+        ToolbarItemGroup(placement: leading) {
+            Button { showingCollection = true } label: { toolbarLabel("Library", "square.stack") }
+            Button(action: save) { toolbarLabel("Save", "square.and.arrow.down") }
+                .disabled(session.image == nil)
+            Menu {
+                Button("From Photos", systemImage: "photo.on.rectangle") { showingPhotos = true }
+                Button("From Files", systemImage: "folder") { showingFiles = true }
                 #if os(iOS)
                 if CameraPicker.isAvailable {
                     Button("Take Photo", systemImage: "camera") { showingCamera = true }
                 }
                 #endif
-                Button("Choose File", systemImage: "folder") { showingFiles = true }
                 Divider()
                 Button("Sample Photo", systemImage: "sparkles.rectangle.stack") { session.loadSample() }
+            } label: {
+                toolbarLabel("New Image", "plus")
             }
         }
-        ToolbarItemGroup(placement: .primaryAction) {
-            Button("Paint Box", systemImage: "paintpalette") {
-                boxRevision = library.revision
-                showingPaintBox = true
-            }
-            Button("Collection", systemImage: "square.stack") { showingCollection = true }
-            Menu("More", systemImage: "ellipsis.circle") {
-                Button(session.savedID == nil ? "Save to Collection" : "Save Changes", systemImage: "square.and.arrow.down", action: save)
-                Divider()
-                Button("Print", systemImage: "printer") { PrintSheet.print(session: session, library: library) }
-                ShareLink(
-                    item: SheetPDF(name: session.imageName) { PrintSheet.pdf(session: session, library: library) },
-                    preview: SharePreview("\(session.imageName) – colours and mixes")
-                ) {
-                    Label("Share as PDF", systemImage: "square.and.arrow.up")
-                }
-            }
-            .disabled(session.entries.isEmpty)
-        }
+    }
+
+    /// Words on iPhone and iPad, where the bar would otherwise reduce a label to its symbol; symbol and word on the Mac.
+    @ViewBuilder private func toolbarLabel(_ title: String, _ symbol: String) -> some View {
+        #if os(iOS)
+        Text(title)
+        #else
+        Label(title, systemImage: symbol).labelStyle(.titleAndIcon)
+        #endif
+    }
+
+    private var leading: ToolbarItemPlacement {
+        #if os(macOS)
+        .navigation
+        #else
+        .topBarLeading
+        #endif
     }
 
     // MARK: Actions

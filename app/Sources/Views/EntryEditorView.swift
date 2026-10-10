@@ -5,6 +5,8 @@ struct EntryEditorView: View {
     @Environment(Session.self) private var session
     @Environment(Library.self) private var library
     let index: Int
+    /// Narrow screen: recipes list one paint per row.
+    var stacked = false
 
     var body: some View {
         if let entry = session.entries.indices.contains(index) ? session.entries[index] : nil {
@@ -18,13 +20,13 @@ struct EntryEditorView: View {
                         .fixedSize()
                     Spacer()
                     if entry.overridden {
-                        Button("Reset to photo") { session.resetTarget(index) }
+                        Button("Reset to photo") { session.resetTarget(index) }.buttonStyle(.outline)
                     }
                 }
                 if session.selectedRegion != nil, session.areaCount(of: index) > 1 {
-                    Button("Edit only the tapped area") { session.detachSelectedRegion() }
+                    Button("Edit only the tapped area") { session.detachSelectedRegion() }.buttonStyle(.outlineProminent)
                 }
-                Text("Recipes").font(.headline)
+                Text("Recipes").font(Theme.strong)
                 if entry.recipes.isEmpty {
                     Text("No paints selected in the paint box.").foregroundStyle(.secondary)
                 }
@@ -33,10 +35,11 @@ struct EntryEditorView: View {
                     Button {
                         session.chooseRecipe(index, recipeIndex)
                     } label: {
-                        RecipeView(recipe: recipe, paints: paints)
-                            .padding(6)
-                            .background(entry.chosen == recipeIndex ? Color.accentColor.opacity(0.18) : .clear, in: RoundedRectangle(cornerRadius: 10))
-                            .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(entry.chosen == recipeIndex ? Color.accentColor : .clear, lineWidth: 1.5))
+                        RecipeView(recipe: recipe, paints: paints, stacked: stacked)
+                            .padding(8)
+                            .background(entry.chosen == recipeIndex ? Color.accentColor.opacity(0.14) : .clear, in: RoundedRectangle(cornerRadius: 10))
+                            .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(entry.chosen == recipeIndex ? Color.accentColor : Color.primary.opacity(0.12), lineWidth: entry.chosen == recipeIndex ? 1.5 : 1))
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .accessibilityAddTraits(entry.chosen == recipeIndex ? .isSelected : [])
@@ -47,8 +50,8 @@ struct EntryEditorView: View {
 
     private func swatch(_ hex: String, caption: String) -> some View {
         VStack(alignment: .leading, spacing: 3) {
-            Chip(hex: hex, minHeight: 56) { Text(hex) }
-            Text(caption).font(.caption).foregroundStyle(.secondary)
+            Chip(hex: hex, minHeight: 60) { Text(hex) }
+            Text(caption).font(Theme.small).foregroundStyle(.secondary)
         }
     }
 

@@ -43,7 +43,7 @@ Free: one saved picture, one paint box. The purchase lifts both limits (`Store.f
 
 ## Screenshots
 
-Debug builds accept launch arguments: `-screen paintbox|collection|editor|paywall` opens that screen, `-landscape` starts with the landscape sample.
+Debug builds accept launch arguments: `-screen paintbox|collection|editor|paywall` opens that screen, `-view mixed|target|original|overlay` sets what the picture shows, `-landscape` starts with the landscape sample. On the Mac, `-snapshot` also writes every window as a PNG into the app's temporary folder.
 
 ```bash
 xcrun simctl launch <device> de.markusfreise.tintmap -landscape -screen editor

@@ -89,7 +89,7 @@ enum PrintSheet {
                     Text(title).font(.system(size: 15, weight: .semibold)).frame(height: 30, alignment: .top)
                 }
                 if let picture, let segmentation {
-                    NumberedPicture(image: picture, segmentation: segmentation, labels: labels, fontSize: 6)
+                    NumberedPicture(image: picture, segmentation: segmentation, labels: labels, fontSize: 7)
                         .frame(maxWidth: .infinity, maxHeight: PrintSheet.pictureHeight)
                         .frame(height: PrintSheet.pictureHeight + 30, alignment: .top)
                 }

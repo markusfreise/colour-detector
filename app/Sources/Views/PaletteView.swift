@@ -14,25 +14,25 @@ struct PaletteView: View {
                 } label: {
                     HStack(spacing: 10) {
                         Text("\(index + 1)")
-                            .fontWeight(.bold)
+                            .font(Theme.strong)
                             .monospacedDigit()
                             .foregroundStyle(.secondary)
-                            .frame(width: 24, alignment: .trailing)
+                            .frame(width: 26, alignment: .trailing)
                         HStack(spacing: 0) {
                             Color(hex: entry.targetHex)
                             Color(hex: entry.recipe?.hex ?? entry.targetHex)
                         }
-                        .frame(width: 44, height: 28)
+                        .frame(width: 48, height: 34)
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                         .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(.primary.opacity(0.15)))
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text(summary(entry, paints)).lineLimit(1)
-                            Text(meta(entry)).font(.caption).foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(summary(entry, paints)).font(Theme.body).lineLimit(1)
+                            Text(meta(entry)).font(Theme.small).foregroundStyle(.secondary)
                         }
                         Spacer(minLength: 0)
                     }
-                    .padding(.vertical, 5)
-                    .padding(.horizontal, 6)
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 8)
                     .background(session.selectedEntry == index ? Color.accentColor.opacity(0.15) : .clear, in: RoundedRectangle(cornerRadius: 8))
                     .contentShape(Rectangle())
                 }

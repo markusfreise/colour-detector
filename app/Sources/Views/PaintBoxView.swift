@@ -20,7 +20,7 @@ struct PaintBoxView: View {
         var id: Self { self }
     }
 
-    private let columns = [GridItem(.adaptive(minimum: 104), spacing: 6)]
+    private let columns = [GridItem(.adaptive(minimum: 116), spacing: 6)]
 
     var body: some View {
         NavigationStack {
@@ -41,6 +41,7 @@ struct PaintBoxView: View {
                 }
                 .padding()
             }
+            .background(Theme.page)
             .navigationTitle("Paint Box")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
@@ -48,14 +49,6 @@ struct PaintBoxView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
-                }
-                ToolbarItem(placement: .cancellationAction) {
-                    Menu("Select") {
-                        Button("Auto: Paints for This Picture", systemImage: "wand.and.stars", action: auto)
-                            .disabled(session.entries.isEmpty)
-                        Button("Revert to Default", systemImage: "arrow.uturn.backward") { library.revert() }
-                        Button("Clear", systemImage: "xmark.circle", role: .destructive) { library.clear() }
-                    }
                 }
             }
             .sheet(item: $editedPaint) { PaintEditorView(paint: $0) }
@@ -79,34 +72,46 @@ struct PaintBoxView: View {
             }
         }
         #if os(macOS)
-        .frame(minWidth: 640, minHeight: 620)
+        .frame(minWidth: 760, minHeight: 680)
         #endif
     }
 
     // MARK: Boxes
 
+    /// The boxes as buttons with what can be done to them, then what can be done to the selection.
     private var boxBar: some View {
-        HStack {
-            Menu {
-                Picker("Paint box", selection: Binding(get: { library.activeBox.id }, set: { library.selectBox($0) })) {
-                    ForEach(library.boxes) { Text($0.name).tag($0.id) }
+        VStack(alignment: .leading, spacing: 10) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(library.boxes) { box in
+                        Button(box.name) { library.selectBox(box.id) }
+                            .buttonStyle(OutlineButtonStyle(prominent: box.id == library.activeBox.id))
+                            .accessibilityAddTraits(box.id == library.activeBox.id ? .isSelected : [])
+                    }
+                    Button("New Box", systemImage: "plus", action: newBox)
+                    Button("Rename") {
+                        boxName = library.activeBox.name
+                        namingBox = .rename
+                    }
+                    if library.boxes.count > 1 {
+                        Button("Delete Box") { confirmingBoxDelete = true }
+                    }
                 }
-                Divider()
-                Button("New Box", systemImage: "plus", action: newBox)
-                Button("Rename", systemImage: "pencil") {
-                    boxName = library.activeBox.name
-                    namingBox = .rename
-                }
-                if library.boxes.count > 1 {
-                    Button("Delete Box", systemImage: "trash", role: .destructive) { confirmingBoxDelete = true }
-                }
-            } label: {
-                Label(library.activeBox.name, systemImage: "shippingbox")
-                    .font(.headline)
+                .buttonStyle(.outline)
+                .padding(1)
             }
-            .fixedSize()
-            Spacer()
-            Text("\(library.selected.count) paints").foregroundStyle(.secondary)
+            HStack(spacing: 6) {
+                Button("Auto", systemImage: "wand.and.stars", action: auto)
+                    .fixedSize()
+                    .disabled(session.entries.isEmpty)
+                    .help("Select the paints that suit this picture")
+                Button("Revert") { library.revert() }
+                    .help("Back to the default selection")
+                Button("Clear") { library.clear() }
+                Spacer(minLength: 8)
+                Text("\(library.selected.count) selected").font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
+            }
+            .buttonStyle(.outline)
         }
     }
 
@@ -130,13 +135,15 @@ struct PaintBoxView: View {
 
     private func group(title: String?, highlighted: Bool = false, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            if let title { Text(title).font(.title3.weight(.semibold)) }
+            if let title { Text(title).font(Theme.title) }
             content()
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(highlighted ? Color.accentColor : .clear, lineWidth: 1.5))
+        .font(Theme.body)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.cardRadius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(highlighted ? Color.accentColor : Color.primary.opacity(0.06), lineWidth: highlighted ? 1.5 : 1))
+        .shadow(color: .black.opacity(0.06), radius: 8, y: 2)
     }
 
     private func grid(_ paints: [Paint], selected: Bool) -> some View {
@@ -165,14 +172,14 @@ struct PaintBoxView: View {
                     Text(paint.vendor).foregroundStyle(.secondary).lineLimit(1)
                     Spacer()
                     Button("Edit") { editedPaint = paint }
-                    Button("Delete", role: .destructive) { paintToDelete = paint }
+                    Button("Delete") { paintToDelete = paint }
                 }
-                .buttonStyle(.borderless)
+                .buttonStyle(.outline)
             }
             Button("Add Paint", systemImage: "plus") {
                 editedPaint = Paint(id: "custom-\(UUID().uuidString.prefix(8))", vendor: "Schmincke", number: "", name: "", hex: "#c88c5f", forms: ["pan"], source: "custom", custom: true)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.outlineProminent)
         }
     }
 }

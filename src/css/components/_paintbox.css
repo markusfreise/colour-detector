@@ -5,7 +5,7 @@
 .paintbox__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
 .paintbox__group { margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
 .paintbox__group--selected { border-color: var(--accent); background: var(--surface); }
-.paintbox__clear { display: flex; margin: 10px 0 0 auto; }
+.paintbox__group-title { font-size: 1.4em; font-weight: 650; margin-bottom: 8px; }
 .paintbox__empty { color: var(--ink-soft); }
 .paintbox__list + .paintbox__list { margin-top: 10px; }
 .paintbox__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 6px; }

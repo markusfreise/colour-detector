@@ -2,9 +2,7 @@
   <dialog ref="dialog" class="panel paintbox" aria-labelledby="paintbox-title" @click="onBackdrop" @close="onClose">
     <div class="paintbox__body">
       <header class="paintbox__header">
-        <h2 id="paintbox-title" class="panel__title">
-          Paint box <small class="panel__count">{{ paints.enabledIds.size }}/{{ paints.all.length }}</small>
-        </h2>
+        <h2 id="paintbox-title" class="panel__title">Paint box</h2>
         <div class="paintbox__actions">
           <button class="button button--ghost" type="button" @click="reset">Reset</button>
           <button class="button button--secondary" type="button" :disabled="!dirty" @click="apply">
@@ -15,18 +13,16 @@
       </header>
 
       <div class="paintbox__group paintbox__group--selected" aria-label="Selected paints">
-        <template v-if="paints.selected.length">
-          <ul class="paintbox__list">
-            <li v-for="p in paints.selected" :key="p.id">
-              <PaintChip :paint="p" enabled :used="analysis.usedPaintIds.has(p.id)" @toggle="toggle(p.id, $event)" />
-            </li>
-          </ul>
-          <button class="button button--ghost paintbox__clear" type="button" @click="clear">Clear</button>
-        </template>
+        <ul v-if="paints.selected.length" class="paintbox__list">
+          <li v-for="p in paints.selected" :key="p.id">
+            <PaintChip :paint="p" enabled :used="analysis.usedPaintIds.has(p.id)" @toggle="toggle(p.id, $event)" />
+          </li>
+        </ul>
         <p v-else class="paintbox__empty">No paints selected. Click a paint below to add it.</p>
       </div>
 
-      <div v-for="group in paints.available" :key="group.key" class="paintbox__group" :aria-label="`Available ${group.name.toLowerCase()}`">
+      <div v-for="group in paints.available" :key="group.key" class="paintbox__group">
+        <h3 class="paintbox__group-title">{{ group.name }}</h3>
         <ul v-for="family in group.families" :key="family.key" class="paintbox__list">
           <li v-for="p in family.paints" :key="p.id">
             <PaintChip :paint="p" @toggle="toggle(p.id, $event)" />
@@ -68,11 +64,6 @@ function onClose() {
 
 function toggle(id, on) {
   paints.toggle(id, on)
-  dirty.value = true
-}
-
-function clear() {
-  paints.setAll(paints.all.map((p) => p.id), false)
   dirty.value = true
 }
 

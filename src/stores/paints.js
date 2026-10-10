@@ -34,12 +34,6 @@ export const usePaintsStore = defineStore('paints', {
       this.enabledIds = next
       this.persist()
     },
-    setAll(ids, on) {
-      const next = new Set(this.enabledIds)
-      ids.forEach((id) => (on ? next.add(id) : next.delete(id)))
-      this.enabledIds = next
-      this.persist()
-    },
     reset() {
       this.enabledIds = new Set(this.all.filter((p) => p.enabled).map((p) => p.id))
       this.persist()

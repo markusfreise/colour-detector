@@ -6,3 +6,6 @@ dist
 _project-assets
 webhook-config.php
 .env
+.env.localcopy-DELETE
+.staging.json
+.mittwald-probe.json

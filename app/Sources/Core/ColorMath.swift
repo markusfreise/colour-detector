@@ -71,6 +71,26 @@ enum ColorMath {
         hex(rgb: rgb(linear: linear(oklab: lab)))
     }
 
+    /// Saturation and contrast of a picture, applied in OKLab so hues stay put.
+    /// 1 = unchanged, 0 = grey / flat, 2 = double. `rgba` is returned as it is when nothing changes.
+    static func adjust(rgba: [UInt8], saturation: Double = 1, contrast: Double = 1) -> [UInt8] {
+        if saturation == 1, contrast == 1 { return rgba }
+        let lut = (0..<256).map { srgbToLinear(Double($0)) }
+        var out = rgba
+        out.withUnsafeMutableBufferPointer { out in
+            var i = 0
+            while i < out.count {
+                let lab = oklab(linear: Vec3(lut[Int(out[i])], lut[Int(out[i + 1])], lut[Int(out[i + 2])]))
+                // Contrast pivots on mid lightness.
+                let l = min(1, max(0, 0.5 + (lab.x - 0.5) * contrast))
+                let c = rgb(linear: linear(oklab: Vec3(l, lab.y * saturation, lab.z * saturation)))
+                out[i] = UInt8(c.x.rounded()); out[i + 1] = UInt8(c.y.rounded()); out[i + 2] = UInt8(c.z.rounded())
+                i += 4
+            }
+        }
+        return out
+    }
+
     /// Euclidean distance in OKLab, scaled x100 so 1 unit is about a just-noticeable difference.
     static func deltaE(_ a: Vec3, _ b: Vec3) -> Double {
         let d = a - b

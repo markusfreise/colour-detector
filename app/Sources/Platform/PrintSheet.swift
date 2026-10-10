@@ -15,16 +15,17 @@ enum PrintSheet {
     private static let pictureHeight: CGFloat = 400
 
     struct Row {
-        let number: Int
+        let number: String
         let recipe: Recipe?
         let share: String
     }
 
     static func pdf(session: Session, library: Library) -> Data {
         let paints = library.byID
-        var rows = session.entries.enumerated().map { index, entry -> Row in
+        var rows = session.order.map { index -> Row in
+            let entry = session.entries[index]
             let percent = Int((entry.share * 100).rounded())
-            return Row(number: index + 1, recipe: entry.recipe, share: percent == 0 ? "<1%" : "\(percent)%")
+            return Row(number: entry.label, recipe: entry.recipe, share: percent == 0 ? "<1%" : "\(percent)%")
         }
         let picture = session.printImage()
         let labels = pictureLabels(session)
@@ -66,7 +67,7 @@ enum PrintSheet {
             let index = session.regionEntry[region.id]
             guard session.entries.indices.contains(index) else { return nil }
             return NumberedPicture.Label(
-                text: String(index + 1),
+                text: session.entries[index].label,
                 x: Double(region.anchorX) + 0.5,
                 y: Double(region.anchorY) + 0.5,
                 room: Double(region.anchorDist),
@@ -95,7 +96,7 @@ enum PrintSheet {
                 }
                 ForEach(rows, id: \.number) { row in
                     HStack(spacing: 8) {
-                        Text("\(row.number)").font(.system(size: 12, weight: .bold)).frame(width: 22, alignment: .trailing)
+                        Text(row.number).font(.system(size: 12, weight: .bold)).frame(width: 32, alignment: .trailing)
                         if let recipe = row.recipe {
                             RecipeView(recipe: recipe, paints: paints, wide: true)
                         } else {

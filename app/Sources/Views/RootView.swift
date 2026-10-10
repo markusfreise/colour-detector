@@ -55,7 +55,11 @@ struct RootView: View {
             Text(session.error ?? "")
         }
         .task {
-            if session.image == nil { session.loadSample() }
+            #if DEBUG
+            // "-auto" at launch: the paint box picks its paints, as on a fresh install.
+            if ProcessInfo.processInfo.arguments.contains("-auto") { library.switchToAuto() }
+            #endif
+            if session.image == nil { session.loadSample(restart: true) }
             #if DEBUG
             await openScreenForScreenshot()
             #endif
@@ -109,7 +113,7 @@ struct RootView: View {
                 ScrollView {
                     EntryEditorView(index: session.selectedEntry ?? 0, stacked: true).padding()
                 }
-                .navigationTitle("Colour \((session.selectedEntry ?? 0) + 1)")
+                .navigationTitle("Colour \(session.selected?.label ?? "")")
                 #if os(iOS)
                 .navigationBarTitleDisplayMode(.inline)
                 #endif
@@ -136,7 +140,7 @@ struct RootView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Card { ControlsView() }
                     if let index = session.selectedEntry {
-                        Card("Colour \(index + 1)", accent: true) {
+                        Card("Colour \(session.selected?.label ?? "")", accent: true) {
                             Button("Close") { session.select(entry: nil) }.buttonStyle(.outline)
                         } content: {
                             EntryEditorView(index: index)

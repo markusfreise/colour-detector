@@ -43,7 +43,7 @@ struct PaintingView: View {
             guard session.entries.indices.contains(index) else { return nil }
             let onPhoto = session.settings.view == .original
             return NumberedPicture.Label(
-                text: String(index + 1),
+                text: session.entries[index].label,
                 x: Double(region.anchorX) + 0.5,
                 y: Double(region.anchorY) + 0.5,
                 room: Double(region.anchorDist),

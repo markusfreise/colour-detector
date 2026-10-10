@@ -25,6 +25,7 @@
 		997D41B2496A58B0A8CDF28F /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8CE5B7620FD4EFC085F78 /* RootView.swift */; };
 		A7AC78082094A5D6A8808500 /* Library.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD60AE475F8C41975C7F37 /* Library.swift */; };
 		AAE462A709F6B286047733E1 /* Segmentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653FEFFB5A095F61C7DC40F5 /* Segmentation.swift */; };
+		ACC5BFA8E2BF402F9E14E1EC /* Mixes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892FC78A77A3BF681274698B /* Mixes.swift */; };
 		B086A91592E4CF1DF042B6AB /* PaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186C73725045D85988B60B3E /* PaletteView.swift */; };
 		B08C316CC45B00C80421EA93 /* PictureCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2330FD87BD549A0B5A64D2 /* PictureCollection.swift */; };
 		B26C44827A16C1E7E91D002D /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674D17C69881C182E1153124 /* PaywallView.swift */; };
@@ -66,6 +67,7 @@
 		745CDAA0682AC9667D4969DA /* sample-cwm-idwal.webp */ = {isa = PBXFileReference; path = "sample-cwm-idwal.webp"; sourceTree = "<group>"; };
 		87296F931B6A9A109A7B4034 /* Chips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chips.swift; sourceTree = "<group>"; };
 		8788D8484C64CC1D8903CEB9 /* paints.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = paints.json; sourceTree = "<group>"; };
+		892FC78A77A3BF681274698B /* Mixes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mixes.swift; sourceTree = "<group>"; };
 		8A03528745567BF3273C9355 /* ColorMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMath.swift; sourceTree = "<group>"; };
 		8B982E51466E8DDE54DFC9EF /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		8CF1A34E56B04C7CBF9B95E4 /* Tintmap.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Tintmap.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -151,6 +153,7 @@
 			isa = PBXGroup;
 			children = (
 				8A03528745567BF3273C9355 /* ColorMath.swift */,
+				892FC78A77A3BF681274698B /* Mixes.swift */,
 				28821C267403BAEDB114A978 /* Mixing.swift */,
 				653FEFFB5A095F61C7DC40F5 /* Segmentation.swift */,
 			);
@@ -310,6 +313,7 @@
 				96DF6D338ADE25932DB3329A /* DebugSnapshot.swift in Sources */,
 				B9517969DE46139ED9BA0D34 /* EntryEditorView.swift in Sources */,
 				A7AC78082094A5D6A8808500 /* Library.swift in Sources */,
+				ACC5BFA8E2BF402F9E14E1EC /* Mixes.swift in Sources */,
 				EFB81655E9572068E8FB7BDC /* Mixing.swift in Sources */,
 				CA87926FFADE287E9B2E1616 /* Paint.swift in Sources */,
 				03195CA16AC483A5C01335DB /* PaintBoxView.swift in Sources */,

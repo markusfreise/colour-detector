@@ -27,6 +27,13 @@ struct EntryEditorView: View {
                     Button("Edit only the tapped area") { session.detachSelectedRegion() }.buttonStyle(.outlineProminent)
                 }
                 Text("Recipes").font(Theme.strong)
+                let washes = session.washes(of: index)
+                if !washes.isEmpty {
+                    Text("Same mix as \(washes.joined(separator: ", ")) – only the amount of water differs.")
+                        .font(Theme.small)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 if entry.recipes.isEmpty {
                     Text("No paints selected in the paint box.").foregroundStyle(.secondary)
                 }

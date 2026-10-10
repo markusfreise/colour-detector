@@ -26,7 +26,7 @@ Tests run on an iOS simulator (`xcodebuild test`, or Cmd-U in Xcode). On macOS t
 
 | Path | Contents |
 |---|---|
-| `Sources/Core/` | Colour maths, mixing model and segmentation: ports of `src/lib/*.js`. Change both sides together |
+| `Sources/Core/` | Colour maths, mixing model, segmentation and mix planning: ports of `src/lib/*.js`. Change both sides together; `Tests/CoreTests.swift` checks them against reference values from the web logic |
 | `Sources/Model/` | `Library` (paints and paint boxes), `Session` (the picture being worked on), `PictureCollection` (saved pictures) |
 | `Sources/Views/` | SwiftUI screens |
 | `Sources/Platform/` | Picture decoding, camera, PDF and printing |

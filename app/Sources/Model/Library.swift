@@ -5,6 +5,26 @@ struct PaintBox: Codable, Identifiable, Hashable {
     var id: String
     var name: String
     var paintIDs: [String]
+    /// The app picks the paints for each picture.
+    var auto: Bool {
+        get { autoFlag ?? false }
+        set { autoFlag = newValue }
+    }
+
+    /// Nil in boxes saved before Auto existed.
+    fileprivate var autoFlag: Bool?
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, paintIDs
+        case autoFlag = "auto"
+    }
+
+    init(id: String, name: String, paintIDs: [String], auto: Bool = false) {
+        self.id = id
+        self.name = name
+        self.paintIDs = paintIDs
+        autoFlag = auto
+    }
 }
 
 /// All known paints (the built-in stock plus the user's own) and the paint boxes made from them.
@@ -34,8 +54,13 @@ final class Library {
             custom = saved.custom
             boxes = saved.boxes
             activeID = saved.activeID
+            // Boxes saved before Auto existed: an untouched default selection counts as Auto.
+            let defaults = Set(defaultIDs)
+            for index in boxes.indices where boxes[index].autoFlag == nil {
+                boxes[index].auto = Set(boxes[index].paintIDs) == defaults
+            }
         } else {
-            let box = PaintBox(id: "box-1", name: "My paint box", paintIDs: defaultIDs)
+            let box = PaintBox(id: "box-1", name: "My paint box", paintIDs: defaultIDs, auto: true)
             boxes = [box]
             activeID = box.id
         }
@@ -69,10 +94,21 @@ final class Library {
         setEnabled(ids)
     }
 
-    func setEnabled(_ ids: [String]) {
+    /// Any selection made by hand switches Auto off for the box.
+    func setEnabled(_ ids: [String], auto: Bool = false) {
         boxes[activeIndex].paintIDs = ids
+        boxes[activeIndex].auto = auto
         changed()
     }
+
+    /// Lets the app pick the paints for each picture from now on.
+    func switchToAuto() {
+        boxes[activeIndex].auto = true
+        changed()
+    }
+
+    /// Paints Auto may choose from: the default selection and the user's own paints.
+    var autoCandidates: [Paint] { all.filter { $0.enabled || $0.isCustom } }
 
     func clear() { setEnabled([]) }
 

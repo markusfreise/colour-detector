@@ -27,23 +27,57 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
 }
 
 struct AnalysisSettings: Codable, Equatable {
-    var colours = 12
-    var simplify = 4
+    /// Number of mixes; each is painted in one or more washes.
+    var colours = 20
+    var simplify = 0
     var maxPaints = 3
+    /// 0 = the picture as accurate as possible, 10 = small areas of another hue keep their mix.
+    var variety = 5
+    /// Percent, applied to the photo before the analysis.
+    var saturation = 200
+    var contrast = 100
     var view = ViewMode.mixed
     var outlines = true
     var numbers = true
+    /// Colour list: every wash of a mix, or only its base colour.
+    var washes = true
+
+    init() {}
+
+    // Pictures saved by earlier versions lack the newer settings.
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        let defaults = AnalysisSettings()
+        colours = try values.decodeIfPresent(Int.self, forKey: .colours) ?? defaults.colours
+        simplify = try values.decodeIfPresent(Int.self, forKey: .simplify) ?? defaults.simplify
+        maxPaints = try values.decodeIfPresent(Int.self, forKey: .maxPaints) ?? defaults.maxPaints
+        variety = try values.decodeIfPresent(Int.self, forKey: .variety) ?? defaults.variety
+        saturation = try values.decodeIfPresent(Int.self, forKey: .saturation) ?? 100
+        contrast = try values.decodeIfPresent(Int.self, forKey: .contrast) ?? 100
+        view = try values.decodeIfPresent(ViewMode.self, forKey: .view) ?? defaults.view
+        outlines = try values.decodeIfPresent(Bool.self, forKey: .outlines) ?? defaults.outlines
+        numbers = try values.decodeIfPresent(Bool.self, forKey: .numbers) ?? defaults.numbers
+        washes = try values.decodeIfPresent(Bool.self, forKey: .washes) ?? defaults.washes
+    }
 }
 
 /// One colour of the picture with the recipes that mix it.
-struct PaletteEntry: Identifiable {
+struct PaletteEntry: Identifiable, Sendable {
     let id: Int
+    /// The mix this colour is a wash of, as the analysis numbered it.
+    var group = 0
+    /// Water level of the wash within its mix (W, L, M, R, C); empty for paper white.
+    var letter = ""
     let sourceHex: String
     var targetHex: String
     var overridden = false
     var share: Double
     var recipes: [Recipe] = []
     var chosen = 0
+    /// Colours with the same family are painted with the same mix.
+    var family = ""
+    /// What the picture and the list call this colour: mix number plus water level, e.g. 6L.
+    var label = ""
 
     var recipe: Recipe? { recipes.indices.contains(chosen) ? recipes[chosen] : nil }
 }
@@ -59,7 +93,7 @@ struct EntryEdit: Codable {
 @MainActor
 @Observable
 final class Session {
-    static let workSize = 640 // longest side the analysis runs on
+    static let workPixels = 800 * 600 // the analysis runs on about this many pixels, whatever the shape
     static let sourceSize = 1600 // longest side that is kept and saved
     static let renderScale = 2 // picture pixels per working pixel, keeps outlines crisp
 
@@ -75,6 +109,8 @@ final class Session {
     @ObservationIgnored private var originalPixels: [UInt8]? // the photo at render size, for the "Photo" view
     @ObservationIgnored private var analysisRun = 0
     @ObservationIgnored private var recipeRun = 0
+    /// Mix (group) -> its recipes, fitted to the largest wash of the mix.
+    @ObservationIgnored private var mixRecipes: [Int: [Recipe]] = [:]
 
     var imageName = ""
     /// Id in the collection when the picture was saved or opened from it.
@@ -82,6 +118,8 @@ final class Session {
     private(set) var image: CGImage?
     private(set) var segmentation: Segmentation?
     private(set) var entries: [PaletteEntry] = []
+    /// Entry indices in the order of their labels: mix by mix, lightest wash first.
+    private(set) var order: [Int] = []
     /// Entries that came from the analysis; detached areas are appended after them.
     private(set) var baseEntries = 0
     /// Region id -> entry index.
@@ -96,7 +134,8 @@ final class Session {
     var settings = AnalysisSettings() {
         didSet {
             guard settings != oldValue else { return }
-            if settings.maxPaints != oldValue.maxPaints { recomputeAllRecipes() } else { render() }
+            if settings.saturation != oldValue.saturation || settings.contrast != oldValue.contrast { originalPixels = nil }
+            if settings.maxPaints != oldValue.maxPaints || settings.variety != oldValue.variety { recomputeAllRecipes() } else { render() }
         }
     }
 
@@ -110,9 +149,20 @@ final class Session {
         Set(entries.flatMap { $0.recipe?.paints.map(\.paintID) ?? [] })
     }
 
+    /// Number of different mixes; the washes of a mix count once.
+    var mixCount: Int { Set(entries.map(\.family)).count }
+
+    /// The colour of an entry's mix as its recipe gives it, before any water is added or taken away.
+    func baseHex(of entry: PaletteEntry) -> String {
+        let recipes = entry.overridden ? entry.recipes : mixRecipes[entry.group] ?? entry.recipes
+        return (recipes.indices.contains(entry.chosen) ? recipes[entry.chosen].hex : nil) ?? entry.recipe?.hex ?? entry.targetHex
+    }
+
     // MARK: Loading
 
-    func loadSample() {
+    /// Loads the next sample photo; `restart` goes back to the first one (used at start).
+    func loadSample(restart: Bool = false) {
+        if restart { nextSample = 0 }
         let sample = Self.samples[nextSample]
         nextSample = (nextSample + 1) % Self.samples.count
         guard let url = Bundle.main.url(forResource: sample.file, withExtension: "webp"), let data = try? Data(contentsOf: url) else {
@@ -125,8 +175,13 @@ final class Session {
     /// Opens a new photo. Returns false when the data is not a picture.
     @discardableResult
     func load(_ data: Data, name: String, settings: AnalysisSettings? = nil, edits: [EntryEdit] = []) -> Bool {
-        guard let decoded = Pictures.decode(data, maxSide: Self.sourceSize),
-              let work = Pictures.pixels(of: decoded, maxSide: Self.workSize) else {
+        guard let decoded = Pictures.decode(data, maxSide: Self.sourceSize) else {
+            error = "Could not open this picture."
+            return false
+        }
+        let scale = min(1, (Double(Self.workPixels) / Double(decoded.width * decoded.height)).squareRoot())
+        let side = Int((Double(max(decoded.width, decoded.height)) * scale).rounded())
+        guard let work = Pictures.pixels(of: decoded, maxSide: max(1, side)) else {
             error = "Could not open this picture."
             return false
         }
@@ -148,70 +203,228 @@ final class Session {
         guard let pixels else { return }
         analysisRun += 1
         let run = analysisRun
-        let colours = settings.colours
+        // "Colours" counts mixes. The analysis is asked for more, and the planning joins them down
+        // to the wanted number once the paints are known.
+        let colours = Mixes.toRequest(wanted: settings.colours)
         let simplify = settings.simplify
+        let saturation = Double(settings.saturation) / 100
+        let contrast = Double(settings.contrast) / 100
         busy = true
         Task {
             let result = await Task.detached(priority: .userInitiated) {
-                Segmenter.segment(rgba: pixels.rgba, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify)
+                let adjusted = ColorMath.adjust(rgba: pixels.rgba, saturation: saturation, contrast: contrast)
+                return Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify)
             }.value
             guard run == analysisRun else { return } // a newer analysis superseded this one
-            apply(result, edits: edits)
+            segmentation = result
+            entries = []
+            order = []
+            baseEntries = 0
+            regionEntry = []
+            selectedEntry = nil
+            selectedRegion = nil
+            recomputeAllRecipes(edits: edits)
         }
     }
 
-    private func apply(_ result: Segmentation, edits: [EntryEdit]) {
-        // Entries ordered by area (largest first) so numbers are stable and meaningful.
-        let used = result.clusters.filter { $0.pixelCount > 0 }.sorted { $0.pixelCount > $1.pixelCount }
-        let total = Double(result.width * result.height)
-        var clusterToEntry = [Int: Int]()
-        for (i, cluster) in used.enumerated() { clusterToEntry[cluster.index] = i }
-        var next = used.enumerated().map { i, c in
-            PaletteEntry(id: i, sourceHex: c.hex, targetHex: c.hex, share: Double(c.pixelCount) / total)
-        }
-        var chosen = [Int: Int]()
-        for edit in edits where next.indices.contains(edit.index) {
-            if let hex = edit.targetHex {
-                next[edit.index].targetHex = hex
-                next[edit.index].overridden = true
-            }
-            chosen[edit.index] = edit.chosen
-        }
-        entries = next
-        baseEntries = next.count
-        regionEntry = result.regions.map { clusterToEntry[$0.cluster] ?? 0 }
-        segmentation = result
-        selectedEntry = nil
-        selectedRegion = nil
-        recomputeAllRecipes(chosen: chosen)
+    /// What `buildPalette` hands back.
+    private struct Palette: Sendable {
+        var entries: [PaletteEntry]
+        var baseEntries: Int
+        var regionEntry: [Int]
+        var mixRecipes: [Int: [Recipe]]
+        /// The paints Auto picked, when it was asked to.
+        var paintIDs: [String]?
     }
 
-    /// Mixes every colour again, e.g. after the paint box changed.
-    func recomputeAllRecipes(chosen: [Int: Int] = [:]) {
-        guard !entries.isEmpty else { return }
+    /// Builds the colours and their recipes from the analysis and the paint box, e.g. after the
+    /// paint box changed. While the box is on Auto, the paints are picked for this picture first.
+    func recomputeAllRecipes(edits: [EntryEdit] = []) {
+        guard let seg = segmentation else { return }
         recipeRun += 1
         let run = recipeRun
-        let targets = entries.map(\.targetHex)
         let paints = library.enabled.map(\.mixPaint)
+        let candidates = library.activeBox.auto ? library.autoCandidates.map(\.mixPaint) : nil
         let maxPaints = settings.maxPaints
+        let wanted = settings.colours
+        let variety = settings.variety
+        let old = entries
+        let oldBase = baseEntries
+        let oldRegionEntry = regionEntry
         busy = true
         Task {
-            let recipes = await Task.detached(priority: .userInitiated) {
-                var byHex = [String: [Recipe]]()
-                for hex in targets where byHex[hex] == nil {
-                    byHex[hex] = Mixing.findRecipes(target: hex, paints: paints, maxPaints: maxPaints)
-                }
-                return byHex
+            let palette = await Task.detached(priority: .userInitiated) {
+                Self.buildPalette(seg: seg, paints: paints, candidates: candidates, maxPaints: maxPaints, wanted: wanted, variety: variety, old: old, oldBase: oldBase, oldRegionEntry: oldRegionEntry)
             }.value
-            guard run == recipeRun, targets.count == entries.count else { return }
-            for i in entries.indices {
-                entries[i].recipes = recipes[entries[i].targetHex] ?? []
-                let wanted = chosen[i] ?? 0
-                entries[i].chosen = entries[i].recipes.indices.contains(wanted) ? wanted : 0
+            guard run == recipeRun, seg.regions.count == segmentation?.regions.count else { return }
+            if let ids = palette.paintIDs, Set(ids) != library.enabledIDs || !library.activeBox.auto { library.setEnabled(ids, auto: true) }
+            mixRecipes = palette.mixRecipes
+            entries = palette.entries
+            baseEntries = palette.baseEntries
+            regionEntry = palette.regionEntry
+            for edit in edits where edit.index < baseEntries {
+                if let hex = edit.targetHex { applyTarget(edit.index, hex: hex) }
+                if entries[edit.index].recipes.indices.contains(edit.chosen) { entries[edit.index].chosen = edit.chosen }
             }
+            if let selectedEntry, !entries.indices.contains(selectedEntry) { self.selectedEntry = nil }
+            relabel()
             busy = false
             render()
         }
+    }
+
+    /// Recipes count as the same mix when they use the same paints.
+    private nonisolated static func paintKey(_ recipe: Recipe) -> String {
+        recipe.paints.map(\.paintID).sorted().joined(separator: "+")
+    }
+
+    /// The analysis delivers mixes, each split into washes. A mix gets its recipes from its largest
+    /// wash; every other wash is that recipe with more or less water. Washes that end up on the same
+    /// water level are the same instruction for the painter, so they become one colour.
+    /// Colours changed by hand, detached areas and picked recipes are carried over where they still fit.
+    private nonisolated static func buildPalette(
+        seg: Segmentation, paints: [MixPaint], candidates: [MixPaint]?, maxPaints: Int, wanted: Int, variety: Int,
+        old: [PaletteEntry], oldBase: Int, oldRegionEntry: [Int]
+    ) -> Palette {
+        var box = paints
+        var picked: [String]?
+        if let candidates {
+            // Every wash is a target: a wash its mix cannot reach needs paints for a mix of its own.
+            let targets = seg.clusters.filter { $0.pixelCount > 0 }.map { (hex: $0.hex, weight: Double($0.pixelCount)) }
+            let ids = Mixing.proposePaints(targets: targets, paints: candidates, maxPaints: maxPaints)
+            box = candidates.filter { ids.contains($0.id) }
+            picked = ids
+        }
+        let byID = Dictionary(box.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+        let total = Double(seg.width * seg.height)
+        func wash(_ recipe: Recipe, _ hex: String) -> Recipe { Mixing.washRecipe(recipe, target: hex, paints: byID) ?? recipe }
+
+        struct Item {
+            var group: Int
+            var clusters: [Int]
+            var pixels: Int
+            var lab: Vec3
+            var hex = ""
+            var letter = ""
+        }
+        var mixRecipes = [Int: [Recipe]]()
+        var built: [Item] = []
+        for mix in Mixes.plan(clusters: seg.clusters, paints: box, maxPaints: maxPaints, wanted: wanted, variety: variety) {
+            mixRecipes[mix.group] = mix.recipes
+            var items = mix.clusters.map { Item(group: mix.group, clusters: [$0.index], pixels: $0.pixelCount, lab: ColorMath.oklab(hex: $0.hex)) }
+            // Merge washes until every water level of the mix occurs once.
+            while true {
+                var levels: [Item] = []
+                for var item in items {
+                    item.hex = ColorMath.hex(oklab: item.lab)
+                    item.letter = mix.recipes.first.map { Mixing.washLetter(wash($0, item.hex).strength) } ?? ""
+                    if let same = levels.firstIndex(where: { $0.letter == item.letter }) {
+                        let n = Double(levels[same].pixels + item.pixels)
+                        levels[same].lab = (levels[same].lab * Double(levels[same].pixels) + item.lab * Double(item.pixels)) / n
+                        levels[same].pixels += item.pixels
+                        levels[same].clusters += item.clusters
+                    } else {
+                        levels.append(item)
+                    }
+                }
+                let done = levels.count == items.count
+                items = levels
+                if done { break }
+            }
+            built += items
+        }
+
+        // Largest first, so the entry numbers used in saved pictures stay meaningful.
+        let sorted = built.enumerated().sorted { $0.element.pixels != $1.element.pixels ? $0.element.pixels > $1.element.pixels : $0.offset < $1.offset }.map(\.element)
+        var clusterToEntry = [Int: Int]()
+        var entries = sorted.enumerated().map { i, item -> PaletteEntry in
+            for c in item.clusters { clusterToEntry[c] = i }
+            return PaletteEntry(id: i, group: item.group, letter: item.letter, sourceHex: item.hex, targetHex: item.hex, share: Double(item.pixels) / total)
+        }
+        var regionEntry = seg.regions.map { clusterToEntry[$0.cluster] ?? 0 }
+
+        // Carry over what the user changed.
+        var pickedPaints = [Int: String]()
+        var kept = [Int: String]()
+        for e in old where !e.overridden && e.chosen != 0 {
+            if let recipe = e.recipe { pickedPaints[e.group] = paintKey(recipe) }
+        }
+        for e in old.prefix(oldBase) where e.overridden {
+            guard let match = entries.firstIndex(where: { $0.group == e.group && $0.letter == e.letter }) else { continue }
+            entries[match].targetHex = e.targetHex
+            entries[match].overridden = true
+            if e.chosen != 0, let recipe = e.recipe { kept[match] = paintKey(recipe) }
+        }
+        let baseEntries = entries.count
+        for (n, e) in old.dropFirst(oldBase).enumerated() {
+            let id = entries.count
+            let oldIndex = oldBase + n
+            var size = 0
+            for (r, region) in seg.regions.enumerated() where oldRegionEntry.indices.contains(r) && oldRegionEntry[r] == oldIndex {
+                if entries.indices.contains(regionEntry[r]) { entries[regionEntry[r]].share -= Double(region.size) / total }
+                regionEntry[r] = id
+                size += region.size
+            }
+            var entry = PaletteEntry(id: id, group: e.group, letter: e.letter, sourceHex: e.sourceHex, targetHex: e.targetHex, share: Double(size) / total)
+            entry.overridden = e.overridden
+            if e.chosen != 0, let recipe = e.recipe { kept[id] = paintKey(recipe) }
+            entries.append(entry)
+        }
+
+        for i in entries.indices {
+            if entries[i].overridden {
+                entries[i].family = "own-\(i)"
+                entries[i].recipes = Mixing.findRecipes(target: entries[i].targetHex, paints: box, maxPaints: maxPaints)
+            } else {
+                entries[i].family = "mix-\(entries[i].group)"
+                entries[i].recipes = (mixRecipes[entries[i].group] ?? []).map { wash($0, entries[i].targetHex) }
+            }
+            if let wanted = entries[i].overridden ? kept[i] : pickedPaints[entries[i].group] ?? kept[i] {
+                entries[i].chosen = entries[i].recipes.firstIndex { paintKey($0) == wanted } ?? 0
+            }
+        }
+        return Palette(entries: entries, baseEntries: baseEntries, regionEntry: regionEntry, mixRecipes: mixRecipes, paintIDs: picked)
+    }
+
+    /// Recipes of one colour: washes of its mix, or recipes of its own once its colour was changed by hand.
+    private func recomputeRecipes(_ index: Int) {
+        let paints = library.enabled.map(\.mixPaint)
+        if entries[index].overridden {
+            entries[index].family = "own-\(index)"
+            entries[index].recipes = Mixing.findRecipes(target: entries[index].targetHex, paints: paints, maxPaints: settings.maxPaints)
+        } else {
+            let byID = Dictionary(paints.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+            let hex = entries[index].targetHex
+            entries[index].family = "mix-\(entries[index].group)"
+            entries[index].recipes = (mixRecipes[entries[index].group] ?? []).map { Mixing.washRecipe($0, target: hex, paints: byID) ?? $0 }
+        }
+        entries[index].chosen = 0
+    }
+
+    /// Labels: one number per mix, largest first. A mix painted in several washes adds a letter
+    /// for the water level: 6L is mix 6 as a light wash, 6R the same mix rich.
+    private func relabel() {
+        var families: [(key: String, share: Double, members: [Int])] = []
+        for (i, e) in entries.enumerated() {
+            if let f = families.firstIndex(where: { $0.key == e.family }) {
+                families[f].share += e.share
+                families[f].members.append(i)
+            } else {
+                families.append((e.family, e.share, [i]))
+            }
+        }
+        func strength(_ i: Int) -> Double { entries[i].recipes.first?.strength ?? 0 }
+        var next: [Int] = []
+        let sorted = families.enumerated().sorted { $0.element.share != $1.element.share ? $0.element.share > $1.element.share : $0.offset < $1.offset }
+        for (n, family) in sorted.map(\.element).enumerated() {
+            let members = family.members.sorted { strength($0) != strength($1) ? strength($0) < strength($1) : $0 < $1 }
+            let washes = Set(members.map { entries[$0].letter }).count > 1
+            for i in members {
+                entries[i].label = "\(n + 1)\(washes ? entries[i].letter : "")"
+                next.append(i)
+            }
+        }
+        order = next
     }
 
     // MARK: Selection and changes
@@ -235,20 +448,34 @@ final class Session {
 
     func setTarget(_ index: Int, hex: String) {
         guard entries.indices.contains(index), entries[index].targetHex.lowercased() != hex.lowercased() else { return }
+        applyTarget(index, hex: hex)
+        relabel()
+        render()
+    }
+
+    private func applyTarget(_ index: Int, hex: String) {
         entries[index].targetHex = hex
         entries[index].overridden = hex.lowercased() != entries[index].sourceHex.lowercased()
-        entries[index].recipes = Mixing.findRecipes(target: hex, paints: library.enabled.map(\.mixPaint), maxPaints: settings.maxPaints)
-        entries[index].chosen = 0
-        render()
+        recomputeRecipes(index)
     }
 
     func resetTarget(_ index: Int) {
         setTarget(index, hex: entries[index].sourceHex)
     }
 
+    /// A recipe is picked for the whole mix: all its washes change with it.
     func chooseRecipe(_ index: Int, _ recipe: Int) {
-        entries[index].chosen = recipe
+        let family = entries[index].family
+        for i in entries.indices where entries[i].family == family && entries[i].recipes.indices.contains(recipe) {
+            entries[i].chosen = recipe
+        }
         render()
+    }
+
+    /// Labels of the other colours painted with the same mix as the entry.
+    func washes(of index: Int) -> [String] {
+        guard entries.indices.contains(index) else { return [] }
+        return order.filter { $0 != index && entries[$0].family == entries[index].family }.map { entries[$0].label }
     }
 
     /// Number of areas that share the entry's colour.
@@ -262,13 +489,16 @@ final class Session {
         let from = regionEntry[region]
         let source = entries[from]
         let share = Double(segmentation.regions[region].size) / Double(segmentation.width * segmentation.height)
-        var entry = PaletteEntry(id: entries.count, sourceHex: source.sourceHex, targetHex: source.targetHex, share: share)
+        var entry = PaletteEntry(id: entries.count, group: source.group, letter: source.letter, sourceHex: source.sourceHex, targetHex: source.targetHex, share: share)
         entry.overridden = source.overridden
         entry.recipes = source.recipes
         entry.chosen = source.chosen
+        entry.family = source.family
+        entry.label = source.label
         entries.append(entry)
         entries[from].share -= share
         regionEntry[region] = entry.id
+        if let position = order.firstIndex(of: from) { order.insert(entry.id, at: position + 1) } else { order.append(entry.id) }
         selectedEntry = entry.id
         render()
     }
@@ -311,7 +541,10 @@ final class Session {
 
         let onPhoto = settings.view == .original || settings.view == .overlay
         if onPhoto, originalPixels == nil, let image {
-            originalPixels = Pictures.pixels(of: image, width: outW, height: outH)
+            // The photo as the analysis sees it, with saturation and contrast applied.
+            originalPixels = Pictures.pixels(of: image, width: outW, height: outH).map {
+                ColorMath.adjust(rgba: $0, saturation: Double(settings.saturation) / 100, contrast: Double(settings.contrast) / 100)
+            }
         }
         let blank = [UInt8](repeating: 255, count: outW * outH * 4)
         if settings.view == .original {

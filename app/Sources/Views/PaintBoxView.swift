@@ -102,9 +102,11 @@ struct PaintBoxView: View {
             }
             HStack(spacing: 6) {
                 Button("Auto", systemImage: "wand.and.stars", action: auto)
+                    .buttonStyle(OutlineButtonStyle(prominent: library.activeBox.auto))
                     .fixedSize()
                     .disabled(session.entries.isEmpty)
-                    .help("Select the paints that suit this picture")
+                    .help("Let the app select the paints that suit each picture")
+                    .accessibilityAddTraits(library.activeBox.auto ? .isSelected : [])
                 Button("Revert") { library.revert() }
                     .help("Back to the default selection")
                 Button("Clear") { library.clear() }
@@ -124,11 +126,10 @@ struct PaintBoxView: View {
         namingBox = .new
     }
 
-    /// Lets the app pick the paints for the current picture, from the default selection and the user's own paints.
+    /// Lets the app pick the paints for each picture, from the default selection and the user's own paints.
     private func auto() {
-        let targets = session.entries.map { (hex: $0.targetHex, weight: $0.share) }
-        let pool = library.all.filter { $0.enabled || $0.isCustom }.map(\.mixPaint)
-        library.setEnabled(Mixing.proposePaints(targets: targets, paints: pool, maxPaints: session.settings.maxPaints))
+        library.switchToAuto()
+        session.recomputeAllRecipes()
     }
 
     // MARK: Paints

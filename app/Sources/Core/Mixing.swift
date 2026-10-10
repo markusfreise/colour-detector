@@ -5,8 +5,13 @@ import Foundation
 // Model: transparent watercolour behaves roughly like a filter over white paper
 // (Beer-Lambert). Each paint's swatch colour gives a per-channel absorbance
 // A = -ln(reflectance). A mix of paints with amounts a_i reflects
-// exp(-sum a_i * A_i). An amount of 1 means "as strong as the reference swatch";
+// exp(-sum d(a_i) * A_i). An amount of 1 means "as strong as the reference swatch";
 // smaller amounts mean more water, larger amounts mean a richer, darker layer.
+//
+// d(a) is the depth a paint reaches at amount a. It is 1 at amount 1 and levels off at
+// maxDepth: a paint laid on thickly approaches its masstone and does not keep getting
+// darker and more saturated. Without that limit a thick yellow-orange would turn into a
+// deep red-orange, which no amount of that paint gives on paper.
 //
 // Finding a recipe is a non-negative least-squares problem in absorbance space,
 // followed by a small perceptual (OKLab) refinement.
@@ -38,6 +43,20 @@ struct MixPaint: Sendable {
 enum Mixing {
     private static let minReflectance = 0.0005
     private static let maxAmount = 4.0
+    /// Depth of the masstone relative to the reference swatch. An estimate: the stock data holds
+    /// one colour per paint, not its masstone.
+    static let maxDepth = 1.6
+    private static let depthRate = -1 / log(1 - 1 / maxDepth)
+
+    /// Depth reached by a paint at the given amount: 0 at 0, 1 at 1, maxDepth for a thick layer.
+    static func depth(_ amount: Double) -> Double {
+        maxDepth * (1 - exp(-amount / depthRate))
+    }
+
+    /// Amount needed for a depth; depths the paint cannot reach give the largest amount.
+    private static func amount(forDepth d: Double) -> Double {
+        d >= depth(maxAmount) ? maxAmount : -depthRate * log(1 - d / maxDepth)
+    }
     /// Each extra paint in a recipe must buy at least this much deltaE to be preferred.
     private static let extraPaintPenalty = 1.2
 
@@ -55,7 +74,7 @@ enum Mixing {
 
     static func mix(_ absorbances: [Vec3], _ amounts: [Double]) -> Vec3 {
         var total = Vec3(0, 0, 0)
-        for (a, amount) in zip(absorbances, amounts) { total += a * amount }
+        for (a, amount) in zip(absorbances, amounts) { total += a * depth(amount) }
         return Vec3(exp(-total.x), exp(-total.y), exp(-total.z))
     }
 
@@ -132,7 +151,8 @@ enum Mixing {
         func consider(_ indices: [Int]) {
             let columns = indices.map { pool[$0] }
             guard let a = leastSquares(columns, t), a.allSatisfy({ $0 > 0 }) else { return }
-            let amounts = a.map { min(maxAmount, $0) }
+            // The least-squares solution is in depths; turn them into amounts.
+            let amounts = a.map { amount(forDepth: $0) }
             results.append(Candidate(indices: indices, amounts: amounts, deltaE: evaluate(columns, amounts, targetLab)))
         }
 
@@ -170,19 +190,55 @@ enum Mixing {
     }
 
     private static func recipe(_ r: Candidate, paints: [MixPaint], pool: [Vec3]) -> Recipe {
-        let strength = r.amounts.reduce(0, +)
-        let linear = mix(r.indices.map { pool[$0] }, r.amounts)
-        let items = zip(r.indices, r.amounts)
-            .map { RecipeItem(paintID: paints[$0].id, amount: $1, share: strength > 0 ? $1 / strength : 0) }
+        recipe(ids: r.indices.map { paints[$0].id }, absorbances: r.indices.map { pool[$0] }, amounts: r.amounts, deltaE: r.deltaE)
+    }
+
+    private static func recipe(ids: [String], absorbances: [Vec3], amounts: [Double], deltaE: Double) -> Recipe {
+        let strength = amounts.reduce(0, +)
+        let items = zip(ids, amounts)
+            .map { RecipeItem(paintID: $0, amount: $1, share: strength > 0 ? $1 / strength : 0) }
             .sorted { $0.amount > $1.amount }
         return Recipe(
             paints: items,
-            parts: toParts(r.amounts.sorted(by: >)),
+            parts: toParts(amounts.sorted(by: >)),
             strength: strength,
             dilution: describeDilution(strength),
-            hex: ColorMath.hex(rgb: ColorMath.rgb(linear: linear)),
-            deltaE: r.deltaE
+            hex: ColorMath.hex(rgb: ColorMath.rgb(linear: mix(absorbances, amounts))),
+            deltaE: deltaE
         )
+    }
+
+    /// The same mix with more or less water: every amount scaled by one factor so the result
+    /// comes as close to the target as that mix can get. Nil when the recipe has no paints (paper white).
+    static func washRecipe(_ recipe: Recipe, target targetHex: String, paints: [String: MixPaint]) -> Recipe? {
+        guard !recipe.paints.isEmpty else { return nil }
+        let targetLab = ColorMath.oklab(hex: targetHex)
+        let ids = recipe.paints.map(\.paintID)
+        let absorbances = ids.map { absorbance(hex: paints[$0]?.hex ?? "#ffffff") }
+        let base = recipe.paints.map(\.amount)
+        let largest = base.max() ?? 1
+        func error(_ logT: Double) -> Double { evaluate(absorbances, base.map { $0 * exp(logT) }, targetLab) }
+        // Coarse scan over the water level, then golden-section search around the best step.
+        let lo = log(0.02 / largest)
+        let hi = log(maxAmount / largest)
+        let steps = 48
+        var best = lo
+        var bestErr = Double.infinity
+        for i in 0...steps {
+            let t = lo + (hi - lo) * Double(i) / Double(steps)
+            let err = error(t)
+            if err < bestErr { bestErr = err; best = t }
+        }
+        var a = max(lo, best - (hi - lo) / Double(steps))
+        var b = min(hi, best + (hi - lo) / Double(steps))
+        let phi = (5.0.squareRoot() - 1) / 2
+        for _ in 0..<24 {
+            let c = b - (b - a) * phi
+            let d = a + (b - a) * phi
+            if error(c) < error(d) { b = d } else { a = c }
+        }
+        let logT = (a + b) / 2
+        return self.recipe(ids: ids, absorbances: absorbances, amounts: base.map { $0 * exp(logT) }, deltaE: error(logT))
     }
 
     /// Propose a small set of paints that mixes all the given target colours.
@@ -216,6 +272,20 @@ enum Mixing {
         if strength < 1.5 { return "medium" }
         if strength < 2.5 { return "rich" }
         return "very concentrated (layer/glaze)"
+    }
+
+    /// Letters for the water level of a wash, used in the labels on the picture (6L = mix 6 as a light wash).
+    static let washLetters: [(letter: String, label: String)] = [
+        ("W", "very watery"), ("L", "light"), ("M", "medium"), ("R", "rich"), ("C", "concentrated"),
+    ]
+
+    static func washLetter(_ strength: Double) -> String {
+        if strength <= 0.02 { return "" }
+        if strength < 0.35 { return "W" }
+        if strength < 0.8 { return "L" }
+        if strength < 1.5 { return "M" }
+        if strength < 2.5 { return "R" }
+        return "C"
     }
 
     /// Match quality label for a deltaE (OKLab x100) value.

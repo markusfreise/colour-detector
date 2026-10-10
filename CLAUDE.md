@@ -15,8 +15,8 @@ Finds the main colours in a photo, mixes each from Markus' own watercolours and 
 | Local | ~/Sites/colour-detector |
 | Assets | `_project-assets` (symlink into Dropbox, not in the repo) |
 | Paint source | Notion "My Watercolour Stock" |
-| Asana | <URL> |
-| Notion | <URL> |
+| Asana | https://app.asana.com/1/11248644850981/project/1219377120447222 |
+| Notion | https://app.notion.com/p/3f572b1856a18108b71ae7fcb81b6ee4 |
 
 ## Language
 

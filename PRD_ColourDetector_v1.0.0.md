@@ -235,8 +235,8 @@ Blocks: `app`, `panel`, `button`, `segmented`, `field`, `swatch`, `painting`, `c
 | Local | ~/Sites/colour-detector |
 | Assets | …/Dropbox-Personal/Coding/colour-detector/ → symlink `_project-assets` |
 | Paint source | Notion "My Watercolour Stock" |
-| Asana | (see CLAUDE.md) |
-| Notion | (see CLAUDE.md) |
+| Asana | https://app.asana.com/1/11248644850981/project/1219377120447222 |
+| Notion | https://app.notion.com/p/3f572b1856a18108b71ae7fcb81b6ee4 |
 
 ## 19. Open points / TODOs
 

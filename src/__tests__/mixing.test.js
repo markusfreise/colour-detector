@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { findRecipes, mixHex, toParts } from '../lib/mixing.js'
+import { findRecipes, mixHex, toParts, proposePaints } from '../lib/mixing.js'
 import { hexToOklab, deltaE } from '../lib/color.js'
 import { stockPaints } from '../data/paints.js'
 
@@ -39,5 +39,16 @@ describe('mixing', () => {
   })
   it('expresses amounts as simple parts', () => {
     expect(toParts([0.9, 0.3])).toEqual([3, 1])
+  })
+  it('proposes the paints a picture needs and reuses them', () => {
+    const targets = [
+      { hex: '#e6331d', weight: 0.6 },
+      { hex: '#e6331d', weight: 0.3 },
+      { hex: '#fae409', weight: 0.1 },
+    ]
+    expect(proposePaints(targets, [yellow, blue, red]).sort()).toEqual(['r', 'y'])
+  })
+  it('proposes nothing for a white picture', () => {
+    expect(proposePaints([{ hex: '#ffffff', weight: 1 }], [yellow, blue, red])).toEqual([])
   })
 })

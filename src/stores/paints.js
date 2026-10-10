@@ -35,7 +35,10 @@ export const usePaintsStore = defineStore('paints', {
       this.persist()
     },
     clear() {
-      this.enabledIds = new Set()
+      this.setEnabled([])
+    },
+    setEnabled(ids) {
+      this.enabledIds = new Set(ids)
       this.persist()
     },
     reset() {

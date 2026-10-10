@@ -4,6 +4,15 @@
       <header class="paintbox__header">
         <h2 id="paintbox-title" class="panel__title">Paint box</h2>
         <div class="paintbox__actions">
+          <button
+            class="button button--ghost"
+            type="button"
+            title="Select the paints that suit this picture"
+            :disabled="!analysis.entries.length"
+            @click="auto"
+          >
+            Auto
+          </button>
           <button class="button button--ghost" type="button" @click="reset">Revert</button>
           <button class="button button--ghost" type="button" @click="clear">Clear</button>
           <button class="button button--secondary" type="button" :disabled="!dirty" @click="apply">
@@ -38,6 +47,7 @@
 import { ref } from 'vue'
 import { usePaintsStore } from '../stores/paints.js'
 import { useAnalysisStore } from '../stores/analysis.js'
+import { proposePaints } from '../lib/mixing.js'
 import PaintChip from './PaintChip.vue'
 
 const paints = usePaintsStore()
@@ -65,6 +75,14 @@ function onClose() {
 
 function toggle(id, on) {
   paints.toggle(id, on)
+  dirty.value = true
+}
+
+// Let the app pick the paints for the current picture, from the stock's default selection.
+function auto() {
+  const targets = analysis.entries.map((e) => ({ hex: e.targetHex, weight: e.share }))
+  const stock = paints.all.filter((p) => p.enabled)
+  paints.setEnabled(proposePaints(targets, stock, { maxPaints: analysis.settings.maxPaints }))
   dirty.value = true
 }
 

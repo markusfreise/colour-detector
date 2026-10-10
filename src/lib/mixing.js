@@ -168,6 +168,31 @@ export function findRecipes(targetHex, paints, { maxPaints = 3, limit = 5 } = {}
     .map((r) => toRecipe(r))
 }
 
+/**
+ * Propose a small set of paints that mixes all the given target colours.
+ * Works through the targets from the largest area down and, among the recipes that are
+ * nearly as close as the best one, takes the recipe needing the fewest paints not chosen yet.
+ * @param {Array<{hex:string, weight?:number}>} targets
+ * @param {Array<{id:string, hex:string}>} paints  paints to choose from
+ * @param {{maxPaints?: number, tolerance?: number}} options  tolerance = allowed extra ΔE over the best recipe
+ * @returns {string[]} paint ids
+ */
+export function proposePaints(targets, paints, { maxPaints = 3, tolerance = 2 } = {}) {
+  const chosen = new Set()
+  const newPaints = (recipe) => recipe.paints.filter((p) => !chosen.has(p.paintId)).length
+  const byWeight = [...targets].sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0))
+  for (const target of byWeight) {
+    const recipes = findRecipes(target.hex, paints, { maxPaints, limit: 8 })
+    if (!recipes.length) continue
+    const best = Math.min(...recipes.map((r) => r.deltaE))
+    const [pick] = recipes
+      .filter((r) => r.deltaE <= best + tolerance)
+      .sort((x, y) => newPaints(x) - newPaints(y) || x.deltaE - y.deltaE)
+    pick.paints.forEach((p) => chosen.add(p.paintId))
+  }
+  return [...chosen]
+}
+
 function toRecipe({ items, deltaE: err }) {
   const strength = items.reduce((s, it) => s + it.amount, 0)
   const linear = mixAbsorbances(items.map((it) => absorbanceFromHex(it.paint.hex)), items.map((it) => it.amount))

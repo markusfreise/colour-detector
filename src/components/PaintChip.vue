@@ -6,6 +6,7 @@
     :title="description"
   >
     <input class="paintbox__checkbox" type="checkbox" :checked="enabled" @change="emit('toggle', $event.target.checked)" />
+    <span v-if="showForm" class="paintbox__form">{{ paintForms(paint) }}</span>
     <span class="chip__strong">{{ paintNumber(paint.number) }}</span>
     <span class="chip__text paintbox__name">{{ paint.name }}</span>
   </label>
@@ -14,12 +15,14 @@
 <script setup>
 import { computed } from 'vue'
 import { chipStyle } from '../lib/color.js'
-import { paintNumber } from '../lib/paintbox.js'
+import { paintNumber, paintForms } from '../lib/paintbox.js'
 
 const props = defineProps({
   paint: { type: Object, required: true },
   enabled: { type: Boolean, default: false },
   used: { type: Boolean, default: false },
+  // Show P/T (pan/tube) in the corner – for lists that mix both forms.
+  showForm: { type: Boolean, default: false },
 })
 const emit = defineEmits(['toggle'])
 

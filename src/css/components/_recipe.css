@@ -3,7 +3,8 @@
 .recipe__dilution::first-letter { text-transform: uppercase; }
 .recipe__paints { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; align-content: center; }
 .recipe__paint { min-height: 22px; padding-block: 4px; }
-.recipe__parts { flex: none; font-variant-numeric: tabular-nums; }
+.recipe__amount { flex: none; white-space: nowrap; }
+.recipe__parts { font-variant-numeric: tabular-nums; }
 .recipe__paper { align-self: center; font-style: italic; }
 .recipe--wide { grid-template-columns: 130px minmax(0, 1fr); }
 .recipe--wide .recipe__result { min-height: 36px; }

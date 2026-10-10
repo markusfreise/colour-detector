@@ -12,7 +12,10 @@
         :style="chipStyle(paints.byId[item.paintId].hex)"
         :title="paints.byId[item.paintId].name"
       >
-        <span class="chip__strong recipe__parts">{{ formatParts(recipe.parts[i]) }}</span>
+        <span class="recipe__amount">
+          <span class="chip__strong recipe__parts">{{ formatParts(recipe.parts[i]) }}</span>
+          {{ paintForms(paints.byId[item.paintId]) }}
+        </span>
         <span class="chip__text">
           <span class="chip__strong">{{ paintNumber(paints.byId[item.paintId].number) }}</span>
           {{ paints.byId[item.paintId].name }}
@@ -29,7 +32,7 @@ import { computed } from 'vue'
 import { usePaintsStore } from '../stores/paints.js'
 import { matchQuality } from '../lib/mixing.js'
 import { chipStyle } from '../lib/color.js'
-import { paintNumber } from '../lib/paintbox.js'
+import { paintNumber, paintForms } from '../lib/paintbox.js'
 
 const props = defineProps({
   recipe: { type: Object, required: true },

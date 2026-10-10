@@ -12,6 +12,13 @@ export function paintNumber(number) {
   return /^\d+$/.test(n) ? n.padStart(3, '0') : n
 }
 
+/** Short form label: "P" for pan, "T" for tube, "P/T" when owned as both. */
+export function paintForms(paint) {
+  return PAINT_FORMS.filter((form) => paint.forms.some((f) => f.includes(form.key)))
+    .map((form) => form.name[0])
+    .join('/')
+}
+
 function byNumber(a, b) {
   const na = parseInt(String(a.number).replace(/\D/g, ''), 10)
   const nb = parseInt(String(b.number).replace(/\D/g, ''), 10)

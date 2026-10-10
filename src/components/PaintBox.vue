@@ -25,7 +25,7 @@
       <div class="paintbox__group paintbox__group--selected" aria-label="Selected paints">
         <ul v-if="paints.selected.length" class="paintbox__list">
           <li v-for="p in paints.selected" :key="p.id">
-            <PaintChip :paint="p" enabled :used="analysis.usedPaintIds.has(p.id)" @toggle="toggle(p.id, $event)" />
+            <PaintChip :paint="p" enabled show-form :used="analysis.usedPaintIds.has(p.id)" @toggle="toggle(p.id, $event)" />
           </li>
         </ul>
         <p v-else class="paintbox__empty">No paints selected. Click a paint below to add it.</p>

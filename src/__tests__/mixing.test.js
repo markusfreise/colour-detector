@@ -19,6 +19,14 @@ describe('washes', () => {
     expect(wash.strength).toBeCloseTo(0.3, 1)
     expect(wash.paints.map((p) => p.paintId)).toEqual(['b'])
   })
+  it('does not let a thick layer of a paint drift into another colour', () => {
+    const orange = { id: 'o', hex: '#f59e04' }
+    // A yellow-orange stays an orange however thickly it is laid on: it never reaches a red-orange.
+    const thick = hexToOklab(mixHex([orange], [4]))
+    expect(deltaE(thick, hexToOklab('#e85500'))).toBeGreaterThan(5)
+    const wash = washRecipe(findRecipes('#f59e04', [orange])[0], '#e85500', { o: orange })
+    expect(wash.deltaE).toBeGreaterThan(5)
+  })
   it('names the water level with a letter', () => {
     expect([0.2, 0.5, 1, 2, 3].map(washLetter).join('')).toBe('WLMRC')
   })

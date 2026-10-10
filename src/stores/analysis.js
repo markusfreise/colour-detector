@@ -10,6 +10,9 @@ export const WORK_PIXELS = 800 * 600
 // Most mixes ever requested from the analysis while filling up to the wanted number.
 const MAX_REQUEST = 64
 
+// A wash may miss its colour by this much (ΔE) before the colour gets a mix of its own.
+const WASH_LIMIT = 3
+
 // Recipes count as the same mix when they use the same paints.
 const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+')
 // Sample photos; the Sample button steps through them, the first one loads at start.
@@ -244,11 +247,27 @@ export const useAnalysisStore = defineStore('analysis', {
         if (!found.has(c.group)) found.set(c.group, [])
         found.get(c.group).push(c)
       }
+      // A wash the mix cannot reach (a paint only gets so deep) becomes a mix of its own.
       const groups = new Map() // mix key -> { group, clusters }
-      for (const [group, clusters] of found) {
-        const key = mixKey(fit(clusters)[0])
+      const add = (key, group, clusters) => {
         if (groups.has(key)) groups.get(key).clusters.push(...clusters)
         else groups.set(key, { group, clusters })
+      }
+      for (const [group, clusters] of found) {
+        const [base] = fit(clusters)
+        const kept = []
+        for (const c of clusters) {
+          const wash = base?.paints.length ? washRecipe(base, c.hex, byId) : null
+          if (wash && wash.deltaE > WASH_LIMIT) {
+            const [own] = findRecipes(c.hex, paints, { maxPaints: this.settings.maxPaints, limit: 1 })
+            if (own && wash.deltaE > own.deltaE + WASH_LIMIT) {
+              add(mixKey(own), `${group}/${c.index}`, [c])
+              continue
+            }
+          }
+          kept.push(c)
+        }
+        add(mixKey(base), group, kept)
       }
       const washOf = (recipe, hex) => (recipe.paints.length ? washRecipe(recipe, hex, byId) : recipe)
       const mixRecipes = {}

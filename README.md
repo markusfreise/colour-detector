@@ -39,7 +39,7 @@ Each recipe shows a number and a rating, for example `0.8 • excellent`. The nu
 
 ## How the mixing works
 
-Watercolour is a transparent glaze on white paper, so each paint is modelled as a filter: its reference colour gives a per-channel absorbance `A = −ln(reflectance)`, and a mix of paints with amounts `aᵢ` reflects `exp(−Σ aᵢ·Aᵢ)` (Beer–Lambert). Finding a recipe is a non-negative least-squares fit in absorbance space over all 1-, 2- and 3-paint combinations, followed by a perceptual refinement in OKLab. The total amount maps to the water level, from a very watery wash to concentrated.
+Watercolour is a transparent glaze on white paper, so each paint is modelled as a filter: its reference colour gives a per-channel absorbance `A = −ln(reflectance)`, and a mix of paints with amounts `aᵢ` reflects `exp(−Σ d(aᵢ)·Aᵢ)` (Beer–Lambert). `d` is the depth a paint reaches at that amount: 1 at amount 1, levelling off at 1.6 for a thick layer, because a paint approaches its masstone and does not keep getting darker and more saturated. The 1.6 is an estimate; the stock holds one colour per paint, not its masstone. Finding a recipe is a non-negative least-squares fit in absorbance space over all 1-, 2- and 3-paint combinations, followed by a perceptual refinement in OKLab. The total amount maps to the water level, from a very watery wash to concentrated.
 
 ## The paint stock
 

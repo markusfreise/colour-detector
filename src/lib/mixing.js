@@ -3,13 +3,19 @@
 // Model: transparent watercolour behaves roughly like a filter over white paper
 // (Beer–Lambert). Each paint's swatch colour gives a per-channel absorbance
 // A = -ln(reflectance). A mix of paints with amounts a_i reflects
-// exp(-Σ d(a_i)·A_i). An amount of 1 means "as strong as the reference swatch";
-// smaller amounts mean more water, larger amounts mean a richer, darker layer.
+// exp(-d(S)/S · Σ a_i·A_i) with S = Σ a_i. An amount of 1 means "as strong as the
+// reference swatch"; smaller amounts mean more water, larger amounts mean a richer, darker layer.
 //
-// d(a) is the depth a paint reaches at amount a. It is 1 at amount 1 and levels off at
-// MAX_DEPTH: a paint laid on thickly approaches its masstone and does not keep getting
-// darker and more saturated. Without that limit a thick yellow-orange would turn into a
-// deep red-orange, which no amount of that paint gives on paper.
+// d(S) is the depth a wash reaches with the total amount S of paint in it. It is 1 at
+// amount 1 and levels off at MAX_DEPTH: paint laid on thickly approaches its masstone and
+// does not keep getting darker and more saturated. Without that limit a thick yellow-orange
+// would turn into a deep red-orange, which no amount of that paint gives on paper.
+// The limit holds for the mix as a whole, not for each paint: a brush only carries so much
+// pigment, so three bright paints together do not add up to black. Watery mixes still add
+// up paint by paint.
+// How deep a paint can go depends on the paint: blacks, greys and earths have a masstone far
+// darker than their wash, bright paints do not. The limit of a mix is the limit of its paints,
+// weighted by their amounts.
 //
 // Finding a recipe is therefore a non-negative least-squares problem in
 // absorbance space, followed by a small perceptual (OKLab) refinement.
@@ -18,19 +24,35 @@ import { hexToRgb, rgbToLinear, linearToRgb, rgbToHex, linearToOklab, deltaE } f
 
 const MIN_REFLECTANCE = 0.0005
 const MAX_AMOUNT = 4
-// Depth of the masstone relative to the reference swatch. An estimate: the stock data holds
-// one colour per paint, not its masstone.
+// Depth of the masstone relative to the reference swatch, for a bright paint and for a neutral
+// one. Estimates: the stock data holds one colour per paint, not its masstone.
 export const MAX_DEPTH = 1.6
-const DEPTH_RATE = -1 / Math.log(1 - 1 / MAX_DEPTH)
+export const MAX_DEPTH_NEUTRAL = 4
+// OKLab chroma from which a paint counts as fully bright.
+const BRIGHT_CHROMA = 0.15
 
-/** Depth reached by a paint at the given amount: 0 at 0, 1 at 1, MAX_DEPTH for a thick layer. */
-export function depth(amount) {
-  return MAX_DEPTH * (1 - Math.exp(-amount / DEPTH_RATE))
+const limits = new WeakMap()
+
+/** How deep the paint with this absorbance can go: MAX_DEPTH for a bright paint, more the greyer it is. */
+export function depthLimit(A) {
+  let limit = limits.get(A)
+  if (limit === undefined) {
+    const [, a, b] = linearToOklab(A.map((v) => Math.exp(-v)))
+    const grey = Math.max(0, 1 - Math.hypot(a, b) / BRIGHT_CHROMA)
+    limit = MAX_DEPTH + (MAX_DEPTH_NEUTRAL - MAX_DEPTH) * grey
+    limits.set(A, limit)
+  }
+  return limit
 }
 
-// Amount needed for a depth; depths the paint cannot reach give the largest amount.
-function amountForDepth(d) {
-  return d >= depth(MAX_AMOUNT) ? MAX_AMOUNT : -DEPTH_RATE * Math.log(1 - d / MAX_DEPTH)
+/** Depth reached with the given total amount of paint: 0 at 0, 1 at 1, `limit` for a thick layer. */
+export function depth(amount, limit = MAX_DEPTH) {
+  return limit * (1 - Math.pow(1 - 1 / limit, amount))
+}
+
+// Total amount needed for a depth; depths that cannot be reached give the largest amount.
+function amountForDepth(d, limit) {
+  return d >= depth(MAX_AMOUNT, limit) ? MAX_AMOUNT : Math.log(1 - d / limit) / Math.log(1 - 1 / limit)
 }
 // Each extra paint in a recipe must buy at least this much ΔE to be preferred.
 const EXTRA_PAINT_PENALTY = 1.2
@@ -41,8 +63,16 @@ export function absorbanceFromHex(hex) {
 
 export function mixAbsorbances(absorbances, amounts) {
   const total = [0, 0, 0]
+  let sum = 0
+  let limit = 0
   absorbances.forEach((A, i) => {
-    const d = depth(amounts[i])
+    sum += amounts[i]
+    limit += amounts[i] * depthLimit(A)
+  })
+  // Every paint contributes by its share of the depth the whole mix reaches.
+  const scale = sum > 0 ? depth(sum, limit / sum) / sum : 0
+  absorbances.forEach((A, i) => {
+    const d = amounts[i] * scale
     total[0] += A[0] * d
     total[1] += A[1] * d
     total[2] += A[2] * d
@@ -144,8 +174,12 @@ export function findRecipes(targetHex, paints, { maxPaints = 3, limit = 5 } = {}
     const consider = (candidate) => {
       const a = leastSquares(candidate.map((c) => c.A), T)
       if (!a || a.some((v) => !(v > 0))) return
-      // The least-squares solution is in depths; turn them into amounts.
-      const amounts = a.map(amountForDepth)
+      // The least-squares solution is in depths, which add up to the depth of the whole mix:
+      // find the total amount for that depth and share it out in the same proportions.
+      const reach = a.reduce((s, v) => s + v, 0)
+      const limit = candidate.reduce((s, c, i) => s + a[i] * depthLimit(c.A), 0) / reach
+      const sum = amountForDepth(reach, limit)
+      const amounts = a.map((v) => (v * sum) / reach)
       results.push({ candidate, amounts, deltaE: evaluate(candidate, amounts, targetLab) })
     }
 

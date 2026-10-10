@@ -27,6 +27,20 @@ describe('washes', () => {
     const wash = washRecipe(findRecipes('#f59e04', [orange])[0], '#e85500', { o: orange })
     expect(wash.deltaE).toBeGreaterThan(5)
   })
+  it('does not let three bright paints add up to black', () => {
+    const rose = { id: 'p', hex: '#d84563' }
+    const orange = { id: 'o', hex: '#f59e04' }
+    const turquoise = { id: 't', hex: '#00a8b8' }
+    // However much of the mix is laid on, it stays a dark red-brown.
+    const [L] = hexToOklab(mixHex([rose, orange, turquoise], [6.3, 1, 0.7]))
+    expect(L).toBeGreaterThan(0.35)
+    const [best] = findRecipes('#150d08', [rose, orange, turquoise])
+    expect(best.deltaE).toBeGreaterThan(10)
+  })
+  it('lets a neutral paint go much deeper than a bright one', () => {
+    const [black] = hexToOklab(mixHex([{ id: 'k', hex: '#706c63' }], [4]))
+    expect(black).toBeLessThan(0.22)
+  })
   it('names the water level with a letter', () => {
     expect([0.2, 0.5, 1, 2, 3].map(washLetter).join('')).toBe('WLMRC')
   })

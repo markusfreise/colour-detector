@@ -5,13 +5,19 @@ import Foundation
 // Model: transparent watercolour behaves roughly like a filter over white paper
 // (Beer-Lambert). Each paint's swatch colour gives a per-channel absorbance
 // A = -ln(reflectance). A mix of paints with amounts a_i reflects
-// exp(-sum d(a_i) * A_i). An amount of 1 means "as strong as the reference swatch";
-// smaller amounts mean more water, larger amounts mean a richer, darker layer.
+// exp(-d(S)/S * sum a_i * A_i) with S = sum a_i. An amount of 1 means "as strong as the
+// reference swatch"; smaller amounts mean more water, larger amounts mean a richer, darker layer.
 //
-// d(a) is the depth a paint reaches at amount a. It is 1 at amount 1 and levels off at
-// maxDepth: a paint laid on thickly approaches its masstone and does not keep getting
-// darker and more saturated. Without that limit a thick yellow-orange would turn into a
-// deep red-orange, which no amount of that paint gives on paper.
+// d(S) is the depth a wash reaches with the total amount S of paint in it. It is 1 at
+// amount 1 and levels off at maxDepth: paint laid on thickly approaches its masstone and
+// does not keep getting darker and more saturated. Without that limit a thick yellow-orange
+// would turn into a deep red-orange, which no amount of that paint gives on paper.
+// The limit holds for the mix as a whole, not for each paint: a brush only carries so much
+// pigment, so three bright paints together do not add up to black. Watery mixes still add
+// up paint by paint.
+// How deep a paint can go depends on the paint: blacks, greys and earths have a masstone far
+// darker than their wash, bright paints do not. The limit of a mix is the limit of its paints,
+// weighted by their amounts.
 //
 // Finding a recipe is a non-negative least-squares problem in absorbance space,
 // followed by a small perceptual (OKLab) refinement.
@@ -43,19 +49,28 @@ struct MixPaint: Sendable {
 enum Mixing {
     private static let minReflectance = 0.0005
     private static let maxAmount = 4.0
-    /// Depth of the masstone relative to the reference swatch. An estimate: the stock data holds
-    /// one colour per paint, not its masstone.
+    /// Depth of the masstone relative to the reference swatch, for a bright paint and for a neutral
+    /// one. Estimates: the stock data holds one colour per paint, not its masstone.
     static let maxDepth = 1.6
-    private static let depthRate = -1 / log(1 - 1 / maxDepth)
+    static let maxDepthNeutral = 4.0
+    /// OKLab chroma from which a paint counts as fully bright.
+    private static let brightChroma = 0.15
 
-    /// Depth reached by a paint at the given amount: 0 at 0, 1 at 1, maxDepth for a thick layer.
-    static func depth(_ amount: Double) -> Double {
-        maxDepth * (1 - exp(-amount / depthRate))
+    /// How deep the paint with this absorbance can go: maxDepth for a bright paint, more the greyer it is.
+    static func depthLimit(_ a: Vec3) -> Double {
+        let lab = ColorMath.oklab(linear: Vec3(exp(-a.x), exp(-a.y), exp(-a.z)))
+        let grey = max(0, 1 - hypot(lab.y, lab.z) / brightChroma)
+        return maxDepth + (maxDepthNeutral - maxDepth) * grey
     }
 
-    /// Amount needed for a depth; depths the paint cannot reach give the largest amount.
-    private static func amount(forDepth d: Double) -> Double {
-        d >= depth(maxAmount) ? maxAmount : -depthRate * log(1 - d / maxDepth)
+    /// Depth reached with the given total amount of paint: 0 at 0, 1 at 1, `limit` for a thick layer.
+    static func depth(_ amount: Double, limit: Double = maxDepth) -> Double {
+        limit * (1 - pow(1 - 1 / limit, amount))
+    }
+
+    /// Total amount needed for a depth; depths that cannot be reached give the largest amount.
+    private static func amount(forDepth d: Double, limit: Double) -> Double {
+        d >= depth(maxAmount, limit: limit) ? maxAmount : log(1 - d / limit) / log(1 - 1 / limit)
     }
     /// Each extra paint in a recipe must buy at least this much deltaE to be preferred.
     private static let extraPaintPenalty = 1.2
@@ -74,7 +89,15 @@ enum Mixing {
 
     static func mix(_ absorbances: [Vec3], _ amounts: [Double]) -> Vec3 {
         var total = Vec3(0, 0, 0)
-        for (a, amount) in zip(absorbances, amounts) { total += a * depth(amount) }
+        var sum = 0.0
+        var limit = 0.0
+        for (a, amount) in zip(absorbances, amounts) {
+            sum += amount
+            limit += amount * depthLimit(a)
+        }
+        // Every paint contributes by its share of the depth the whole mix reaches.
+        let scale = sum > 0 ? depth(sum, limit: limit / sum) / sum : 0
+        for (a, amount) in zip(absorbances, amounts) { total += a * (amount * scale) }
         return Vec3(exp(-total.x), exp(-total.y), exp(-total.z))
     }
 
@@ -151,8 +174,12 @@ enum Mixing {
         func consider(_ indices: [Int]) {
             let columns = indices.map { pool[$0] }
             guard let a = leastSquares(columns, t), a.allSatisfy({ $0 > 0 }) else { return }
-            // The least-squares solution is in depths; turn them into amounts.
-            let amounts = a.map { amount(forDepth: $0) }
+            // The least-squares solution is in depths, which add up to the depth of the whole mix:
+            // find the total amount for that depth and share it out in the same proportions.
+            let reach = a.reduce(0, +)
+            let limit = zip(a, columns).reduce(0) { $0 + $1.0 * depthLimit($1.1) } / reach
+            let sum = amount(forDepth: reach, limit: limit)
+            let amounts = a.map { $0 * sum / reach }
             results.append(Candidate(indices: indices, amounts: amounts, deltaE: evaluate(columns, amounts, targetLab)))
         }
 

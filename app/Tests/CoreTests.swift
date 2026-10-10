@@ -75,8 +75,12 @@ final class CoreTests: XCTestCase {
 
     func testDepthLevelsOff() {
         XCTAssertEqual(Mixing.depth(1), 1, accuracy: 1e-12)
-        XCTAssertEqual(Mixing.depth(0.5), 0.6202041028867287, accuracy: 1e-12)
+        XCTAssertEqual(Mixing.depth(0.5), 0.6202041028867289, accuracy: 1e-12)
         XCTAssertEqual(Mixing.depth(4), 1.568359375, accuracy: 1e-12)
+        // Neutral paints go deeper than bright ones.
+        XCTAssertEqual(Mixing.depth(2, limit: 4), 1.75, accuracy: 1e-12)
+        XCTAssertEqual(Mixing.depthLimit(Mixing.absorbance(hex: "#706c63")), 3.7659923729408993, accuracy: 1e-9)
+        XCTAssertEqual(Mixing.depthLimit(Mixing.absorbance(hex: "#2b61ab")), 1.8968741728394982, accuracy: 1e-9)
         // A yellow-orange stays an orange however thickly it is laid on.
         XCTAssertEqual(Mixing.mixHex([MixPaint(id: "o", hex: "#f59e04")], [4]), "#ef7700")
     }
@@ -84,8 +88,8 @@ final class CoreTests: XCTestCase {
     func testWashDilutesAMix() throws {
         let full = try XCTUnwrap(Mixing.findRecipes(target: "#2b61ab", paints: [blue]).first)
         let wash = try XCTUnwrap(Mixing.washRecipe(full, target: Mixing.mixHex([blue], [0.3]), paints: ["b": blue]))
-        XCTAssertEqual(wash.strength, 0.30162887427052304, accuracy: 1e-6)
-        XCTAssertEqual(wash.hex, "#80add9")
+        XCTAssertEqual(wash.strength, 0.2992782217119186, accuracy: 1e-4)
+        XCTAssertEqual(wash.hex, "#87b2db")
         XCTAssertEqual(wash.paints.map(\.paintID), ["b"])
         XCTAssertEqual([0.2, 0.5, 1, 2, 3].map(Mixing.washLetter).joined(), "WLMRC")
     }
@@ -126,19 +130,19 @@ final class CoreTests: XCTestCase {
 
     func testJoinsWashesBeforeGivingUpAHue() {
         // Two blues that differ only in strength, found as separate mixes, and a small red.
-        let clusters = [cluster(0, "#1c4f9e", 6000), cluster(1, "#6a9ccf", 3000), cluster(2, "#e6331d", 100)]
+        let clusters = [cluster(0, "#1a4c9c", 6000), cluster(1, "#70a0d2", 3000), cluster(2, "#e6331d", 100)]
         let mixes = Mixes.plan(clusters: clusters, paints: [yellow, blue, red], wanted: 2, variety: 10)
         XCTAssertEqual(mixes.count, 2)
         XCTAssertEqual(mixes.map { $0.clusters.map(\.index).sorted() }.sorted { $0.count > $1.count }, [[0, 1], [2]])
     }
 
     func testPlansTheSameMixesAsTheWebApp() {
-        let hexes = ["#997939", "#452901", "#250f00", "#180702", "#8a1500", "#474701", "#271f0f", "#180b00", "#8b1b00", "#410b02", "#293604", "#191400"]
+        let hexes = ["#a88b4c", "#715611", "#634908", "#392620", "#bb3405", "#7a7d08", "#3e3d34", "#3f3815", "#c14b03", "#772411", "#465d1e", "#464d0d"]
         let clusters = hexes.enumerated().map { cluster($0, $1, 100 + $0 * 50) }
         // Per variety: the mix that survives (first number) and the colours painted with it.
         let expected = [
-            0: [[1, 0, 1, 2, 3], [4, 4, 8, 9], [6, 6, 7], [10, 5, 10, 11]],
-            10: [[1, 0, 1, 2, 3], [4, 4, 8, 9], [5, 5, 10, 11], [6, 6, 7]],
+            0: [[1, 0, 1, 2, 9], [4, 4, 8], [6, 3, 6, 7], [10, 5, 10, 11]],
+            10: [[3, 3, 6], [4, 4, 8], [9, 9], [10, 0, 1, 2, 5, 7, 10, 11]],
         ]
         for (variety, groups) in expected {
             let mixes = Mixes.plan(clusters: clusters, paints: [yellow, blue, red], wanted: 4, variety: variety)

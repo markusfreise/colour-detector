@@ -4,7 +4,8 @@
       <header class="paintbox__header">
         <h2 id="paintbox-title" class="panel__title">Paint box</h2>
         <div class="paintbox__actions">
-          <button class="button button--ghost" type="button" @click="reset">Reset</button>
+          <button class="button button--ghost" type="button" @click="reset">Revert</button>
+          <button class="button button--ghost" type="button" @click="clear">Clear</button>
           <button class="button button--secondary" type="button" :disabled="!dirty" @click="apply">
             Update mixes
           </button>
@@ -64,6 +65,11 @@ function onClose() {
 
 function toggle(id, on) {
   paints.toggle(id, on)
+  dirty.value = true
+}
+
+function clear() {
+  paints.clear()
   dirty.value = true
 }
 

@@ -26,3 +26,4 @@ Mirror of PRD §17. IDs are stable and never reused. One task = one commit.
 | TASK-20 | Frontend | Auto button in the paint box: propose the paints that suit the current picture | Auto replaces the selection with a small set that mixes all colours of the picture | TASK-19 | Done |
 | TASK-21 | Frontend | Consent banner for Google Analytics (GDPR): nothing loads before consent, choice can be changed | Analytics script is only requested after Accept; Decline and later withdrawal stop it; no banner without a measurement ID | TASK-05 | Code done – measurement ID open |
 | TASK-22 | Frontend | Show P / T (pan / tube) on selected paints and in recipes | Collector chips and recipe ingredients carry P, T or P/T | TASK-19 | Done |
+| TASK-23 | Frontend | Second sample photo (street at dusk); Sample button steps through the samples | New sample loads at start; Sample switches to the next one | TASK-06 | Done |

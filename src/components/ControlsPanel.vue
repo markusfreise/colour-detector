@@ -6,7 +6,9 @@
         Upload photo
         <input class="controls__file" type="file" accept="image/*" @change="onFile" />
       </label>
-      <button class="button button--ghost" type="button" @click="analysis.loadSample()">Sample</button>
+      <button class="button button--ghost" type="button" title="Load the next sample photo" @click="analysis.loadSample()">
+        Sample
+      </button>
     </div>
 
     <div class="controls__settings">

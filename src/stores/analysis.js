@@ -4,7 +4,12 @@ import { findRecipes } from '../lib/mixing.js'
 import { usePaintsStore } from './paints.js'
 
 export const WORK_SIZE = 640
-const SAMPLE_IMAGE = `${import.meta.env.BASE_URL}sample-cwm-idwal.webp`
+// Sample photos; the Sample button steps through them, the first one loads at start.
+const SAMPLES = [
+  { file: 'sample-street-dusk.webp', name: 'Street at dusk (sample)' },
+  { file: 'sample-cwm-idwal.webp', name: 'Cwm Idwal (sample)' },
+]
+let nextSample = 0
 
 let worker = null
 let jobCounter = 0
@@ -71,7 +76,9 @@ export const useAnalysisStore = defineStore('analysis', {
   },
   actions: {
     async loadSample() {
-      await this.loadFromSource(SAMPLE_IMAGE, 'Cwm Idwal (sample)')
+      const sample = SAMPLES[nextSample]
+      nextSample = (nextSample + 1) % SAMPLES.length
+      await this.loadFromSource(`${import.meta.env.BASE_URL}${sample.file}`, sample.name)
     },
     async loadFile(file) {
       const url = URL.createObjectURL(file)

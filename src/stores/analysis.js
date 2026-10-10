@@ -208,16 +208,9 @@ export const useAnalysisStore = defineStore('analysis', {
     autoPaints(force = false) {
       const paints = usePaintsStore()
       if (!this.segmentation || !(force || paints.activeBox.auto)) return
-      // One target per mix: its largest wash, weighted with the area of the whole mix.
-      const mixes = new Map()
-      for (const c of this.segmentation.clusters) {
-        if (!c.pixelCount) continue
-        const mix = mixes.get(c.group) ?? { hex: c.hex, largest: 0, weight: 0 }
-        if (c.pixelCount > mix.largest) Object.assign(mix, { hex: c.hex, largest: c.pixelCount })
-        mix.weight += c.pixelCount
-        mixes.set(c.group, mix)
-      }
-      paints.setEnabled(proposePaints([...mixes.values()], paints.autoCandidates, { maxPaints: this.settings.maxPaints }), true)
+      // Every wash is a target: a wash its mix cannot reach needs paints for a mix of its own.
+      const targets = this.segmentation.clusters.filter((c) => c.pixelCount).map((c) => ({ hex: c.hex, weight: c.pixelCount }))
+      paints.setEnabled(proposePaints(targets, paints.autoCandidates, { maxPaints: this.settings.maxPaints }), true)
     },
 
     /**
@@ -250,27 +243,36 @@ export const useAnalysisStore = defineStore('analysis', {
         if (!found.has(c.group)) found.set(c.group, [])
         found.get(c.group).push(c)
       }
-      // A wash the mix cannot reach (a paint only gets so deep) becomes a mix of its own.
       const groups = new Map() // mix key -> { group, clusters }
-      const add = (key, group, clusters) => {
+      for (const [group, clusters] of found) {
+        const key = mixKey(fit(clusters)[0])
         if (groups.has(key)) groups.get(key).clusters.push(...clusters)
         else groups.set(key, { group, clusters })
       }
-      for (const [group, clusters] of found) {
+      // A wash its mix cannot reach (a paint only gets so deep) moves to the mix with its own best
+      // recipe. That may be a new mix, as long as the wanted number of mixes is not exceeded;
+      // the worst misses on the largest areas go first.
+      const misses = []
+      for (const [key, { clusters }] of groups) {
         const [base] = fit(clusters)
-        const kept = []
+        if (!base?.paints.length) continue
         for (const c of clusters) {
-          const wash = base?.paints.length ? washRecipe(base, c.hex, byId) : null
-          if (wash && wash.deltaE > WASH_LIMIT) {
-            const [own] = findRecipes(c.hex, paints, { maxPaints: this.settings.maxPaints, limit: 1 })
-            if (own && wash.deltaE > own.deltaE + WASH_LIMIT) {
-              add(mixKey(own), `${group}/${c.index}`, [c])
-              continue
-            }
+          const wash = washRecipe(base, c.hex, byId)
+          if (wash.deltaE <= WASH_LIMIT) continue
+          const [own] = findRecipes(c.hex, paints, { maxPaints: this.settings.maxPaints, limit: 1 })
+          if (own && wash.deltaE > own.deltaE + WASH_LIMIT) {
+            misses.push({ cluster: c, from: key, to: mixKey(own), cost: (wash.deltaE - own.deltaE) * c.pixelCount })
           }
-          kept.push(c)
         }
-        add(mixKey(base), group, kept)
+      }
+      misses.sort((x, y) => y.cost - x.cost)
+      for (const { cluster, from, to } of misses) {
+        if (to === from || (!groups.has(to) && groups.size >= this.settings.colours)) continue
+        const source = groups.get(from).clusters
+        if (source.length < 2) continue
+        source.splice(source.indexOf(cluster), 1)
+        if (groups.has(to)) groups.get(to).clusters.push(cluster)
+        else groups.set(to, { group: `${groups.get(from).group}/${cluster.index}`, clusters: [cluster] })
       }
       const washOf = (recipe, hex) => (recipe.paints.length ? washRecipe(recipe, hex, byId) : recipe)
       const mixRecipes = {}

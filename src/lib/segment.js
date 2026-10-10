@@ -70,6 +70,11 @@ export function toOklabPixels(rgba, count) {
 // count, and a photo that is mostly dark background would then spend every colour on that
 // background and lose the small, colourful parts (lips, a flower, a sign).
 export const AREA_POWER = 0.4
+// When colours are sorted into mixes, a difference in lightness counts this much of a difference
+// in hue or saturation: a lighter or darker version of a colour is cheap for a painter, a new hue
+// needs a new mix. Lower values keep small areas of a different hue (a yellow light on a red
+// stage) at the price of fewer steps between similar colours.
+export const LIGHTNESS_WEIGHT = 0.5
 // A mix is painted in at most this many washes (water levels).
 export const MAX_WASHES = 5
 // One more wash for every factor of about 1.7 between the weakest and the strongest part of a mix.
@@ -124,7 +129,7 @@ export function colourBins(lab, count) {
  * @returns {{labels: Int32Array, clusters: Array<{group:number, level:number}>}}
  *   labels = cluster per pixel; clusters are ordered mix by mix, lightest wash first
  */
-export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPower = AREA_POWER, maxWashes = MAX_WASHES } = {}) {
+export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPower = AREA_POWER, maxWashes = MAX_WASHES, lightnessWeight = LIGHTNESS_WEIGHT } = {}) {
   const rand = mulberry32(seed)
   const { points, counts, binOf } = colourBins(lab, count)
   const n = counts.length
@@ -150,7 +155,7 @@ export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPo
     const t = strength(i, c)
     const [L, a, b] = linearToOklab([Math.exp(-t * dirs[c * 3]), Math.exp(-t * dirs[c * 3 + 1]), Math.exp(-t * dirs[c * 3 + 2])])
     const dL = L - points[i * 3], da = a - points[i * 3 + 1], db = b - points[i * 3 + 2]
-    return dL * dL + da * da + db * db
+    return lightnessWeight * lightnessWeight * dL * dL + da * da + db * db
   }
 
   // k-means++ seeding: the first mix is the most common colour, the rest are drawn
@@ -379,11 +384,11 @@ export function labelAnchors(regionMap, width, height, regionCount) {
  * @param {Uint8ClampedArray} rgba image data at working resolution
  * @param {{colours:number, simplify:number}} options colours = number of mixes, simplify 0..10
  */
-export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, seed = 7, areaPower, maxWashes } = {}) {
+export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, seed = 7, areaPower, maxWashes, lightnessWeight } = {}) {
   const count = width * height
   const blurred = boxBlur(rgba, width, height, Math.round(simplify / 3))
   const lab = toOklabPixels(blurred, count)
-  const { labels: raw, clusters: found } = clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), { seed, areaPower, maxWashes })
+  const { labels: raw, clusters: found } = clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), { seed, areaPower, maxWashes, lightnessWeight })
   const k = found.length
 
   const smoothed = majorityFilter(raw, width, height, k, Math.ceil(simplify / 2))

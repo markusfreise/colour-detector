@@ -1,0 +1,793 @@
+// Hard-coded watercolour stock (source: Notion "My Watercolour Stock", 2026-10-10).
+// hex = reference colour at strength 1 (a mid-strength wash on white paper).
+// source 'chart'    → sampled from the official Schmincke Horadam colour chart
+// source 'estimate' → not on the chart; estimated from pigment information, verify by swatching
+export const stockPaints = [
+  {
+    "id": "schmincke-horadam-347",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "347",
+    "name": "Cadmium red medium",
+    "nameDe": "Kadmiumrot mittel",
+    "hex": "#e2544d",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true,
+    "note": "Stock list says \"Kadmiumrot\" without number; assumed 347 Cadmium red medium."
+  },
+  {
+    "id": "schmincke-horadam-208",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "208",
+    "name": "Aureolin hue",
+    "nameDe": "Aureolinton",
+    "hex": "#fae409",
+    "forms": [
+      "whole pan",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-214",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "214",
+    "name": "Chrome orange hue",
+    "nameDe": "Chromorangeton",
+    "hex": "#f59e04",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-217",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "217",
+    "name": "Quinacridone gold hue",
+    "nameDe": "Chinacridongoldton",
+    "hex": "#e89e2a",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-218",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "218",
+    "name": "Transparent orange",
+    "nameDe": "Lasurorange",
+    "hex": "#ec680f",
+    "forms": [
+      "whole pan",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true,
+    "note": "Tube is listed as \"218 Gelborange\" – 218 is Transparent orange, Yellow orange is 222. Check the tube."
+  },
+  {
+    "id": "schmincke-horadam-225",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "225",
+    "name": "Cadmium yellow medium",
+    "nameDe": "Kadmiumgelb mittel",
+    "hex": "#f3d104",
+    "forms": [
+      "half pan",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-226",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "226",
+    "name": "Cadmium yellow deep",
+    "nameDe": "Kadmiumgelb dunkel",
+    "hex": "#f2ca0e",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-229",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "229",
+    "name": "Naples yellow",
+    "nameDe": "Neapelgelb",
+    "hex": "#f5cc5c",
+    "forms": [
+      "whole pan",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-230",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "230",
+    "name": "Naples yellow reddish",
+    "nameDe": "Neapelgelb rötlich",
+    "hex": "#e8a664",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-336",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "336",
+    "name": "Quinacridone (unidentified)",
+    "nameDe": "Chinacrido…",
+    "hex": "#ce86b8",
+    "forms": [
+      "half pan"
+    ],
+    "source": "estimate",
+    "enabled": false,
+    "note": "No Horadam 336 exists in the catalogue. Most likely 368 Quinacridone violet – colour taken from 368. Disabled until checked."
+  },
+  {
+    "id": "schmincke-horadam-344",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "344",
+    "name": "Perylene red deep",
+    "nameDe": "Perylenrot tief",
+    "hex": "#dc3345",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-346",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "346",
+    "name": "Ruby red deep",
+    "nameDe": "Rubinrot dunkel",
+    "hex": "#d84563",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-351",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "351",
+    "name": "Ruby red",
+    "nameDe": "Rubinrot",
+    "hex": "#e84974",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-353",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "353",
+    "name": "Permanent carmine",
+    "nameDe": "Permanent Karmin",
+    "hex": "#e54e77",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-356",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "356",
+    "name": "Madder lake rose",
+    "nameDe": "Krapplack Rosa",
+    "hex": "#ef89a6",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-357",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "357",
+    "name": "Alizarin crimson hue",
+    "nameDe": "Alizarin-Karmesin",
+    "hex": "#e05171",
+    "forms": [
+      "whole pan",
+      "tube 15 ml",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-360",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "360",
+    "name": "Permanent red orange",
+    "nameDe": "Permanentrot Orange",
+    "hex": "#ee734a",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true,
+    "note": "Stock list says \"Permanentrot\" – 360 is Permanent red orange, Permanent red is 361. Check the pan."
+  },
+  {
+    "id": "schmincke-horadam-363",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "363",
+    "name": "Scarlet red",
+    "nameDe": "Scharlachrot",
+    "hex": "#e73e46",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-365",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "365",
+    "name": "Vermilion",
+    "nameDe": "Zinnoberrot",
+    "hex": "#e6331d",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-367",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "367",
+    "name": "Purple magenta",
+    "nameDe": "Purpur Magenta",
+    "hex": "#dc4a95",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-369",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "369",
+    "name": "Quinacridone magenta",
+    "nameDe": "Chinacridon Magenta",
+    "hex": "#cf3280",
+    "forms": [
+      "whole pan",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-370",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "370",
+    "name": "Potter's pink",
+    "nameDe": "Potters Pink",
+    "hex": "#c17377",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-472",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "472",
+    "name": "Quinacridone purple",
+    "nameDe": "Chinacridon Purpur",
+    "hex": "#852677",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-473",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "473",
+    "name": "Cobalt violet hue",
+    "nameDe": "Kobaltviolettton",
+    "hex": "#8366aa",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-476",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "476",
+    "name": "Schmincke violet",
+    "nameDe": "Schmincke Violett",
+    "hex": "#8262a6",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-480",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "480",
+    "name": "Mountain blue",
+    "nameDe": "Bergblau",
+    "hex": "#3280c2",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-485",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "485",
+    "name": "Indigo",
+    "nameDe": "Indigo",
+    "hex": "#657994",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-494",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "494",
+    "name": "Ultramarine finest",
+    "nameDe": "Ultramarin feinst",
+    "hex": "#243f8f",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-496",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "496",
+    "name": "Ultramarine blue",
+    "nameDe": "Ultramarinblau",
+    "hex": "#2b61ab",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-498",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "498",
+    "name": "Delft blue",
+    "nameDe": "Tiefblau",
+    "hex": "#607ca9",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-509",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "509",
+    "name": "Cobalt turquoise",
+    "nameDe": "Kobalttürkis",
+    "hex": "#00a8b8",
+    "forms": [
+      "half pan",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-512",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "512",
+    "name": "Chromium oxide green",
+    "nameDe": "Chromoxidgrün stumpf",
+    "hex": "#5d8446",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true,
+    "note": "Tube is listed as \"512 Chromoxidgrün frg.\" – frg. (feurig, viridian) is 511, 512 is stumpf. Check the tube."
+  },
+  {
+    "id": "schmincke-horadam-515",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "515",
+    "name": "Olive green",
+    "nameDe": "Grünoliv",
+    "hex": "#447c52",
+    "forms": [
+      "half pan",
+      "whole pan",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true,
+    "note": "Tube is listed as \"515 Maigrün\" – May green is 524. Check the tube."
+  },
+  {
+    "id": "schmincke-horadam-525",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "525",
+    "name": "Olive green yellowish",
+    "nameDe": "Olivgrün gelblich",
+    "hex": "#757b2a",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-526",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "526",
+    "name": "Permanent green",
+    "nameDe": "Permanentgrün",
+    "hex": "#60b236",
+    "forms": [
+      "half pan",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-645",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "645",
+    "name": "Caput mortuum",
+    "nameDe": "Caput mortuum",
+    "hex": "#7a3e3b",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-655",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "655",
+    "name": "Yellow ochre",
+    "nameDe": "Lichter Ocker",
+    "hex": "#ca8832",
+    "forms": [
+      "whole pan",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true,
+    "note": "Tube listed as \"Ocker\" without number; assumed 655."
+  },
+  {
+    "id": "schmincke-horadam-656",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "656",
+    "name": "Yellow ochre natural",
+    "nameDe": "Lichter Ocker natur",
+    "hex": "#f2c66a",
+    "forms": [
+      "whole pan",
+      "tube 15 ml",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-659",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "659",
+    "name": "Titanium gold ochre",
+    "nameDe": "Titangoldocker",
+    "hex": "#d88e04",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-661",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "661",
+    "name": "Burnt sienna",
+    "nameDe": "Siena gebrannt",
+    "hex": "#de8b62",
+    "forms": [
+      "half pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-662",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "662",
+    "name": "Sepia brown reddish",
+    "nameDe": "Sepiabraun rötlich",
+    "hex": "#53433a",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-663",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "663",
+    "name": "Sepia brown",
+    "nameDe": "Sepiabraun",
+    "hex": "#948371",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true,
+    "note": "Tube listed as \"Sepia\" without number; assumed 663 Sepia brown."
+  },
+  {
+    "id": "schmincke-horadam-669",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "669",
+    "name": "Vandyke brown",
+    "nameDe": "Vandyckbraun",
+    "hex": "#7d6441",
+    "forms": [
+      "whole pan",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-670",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "670",
+    "name": "Madder brown",
+    "nameDe": "Krappbraun",
+    "hex": "#b03224",
+    "forms": [
+      "whole pan",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-672",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "672",
+    "name": "Mahogany brown",
+    "nameDe": "Mahagonibraun",
+    "hex": "#95503a",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-780",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "780",
+    "name": "Ivory black",
+    "nameDe": "Elfenbeinschwarz",
+    "hex": "#706c63",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true,
+    "note": "Stock list has no name for 780; it is Ivory black."
+  },
+  {
+    "id": "schmincke-horadam-782",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "782",
+    "name": "Neutral tint",
+    "nameDe": "Neutraltinte",
+    "hex": "#958484",
+    "forms": [
+      "whole pan",
+      "tube 15 ml",
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-786",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "786",
+    "name": "Anthracite",
+    "nameDe": "Anthrazit",
+    "hex": "#9e9b96",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-787",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "787",
+    "name": "Payne's grey bluish",
+    "nameDe": "Paynesgrau bläulich",
+    "hex": "#687d8c",
+    "forms": [
+      "whole pan"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-920",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "920",
+    "name": "Brilliant opera pink",
+    "nameDe": "Brillant Opernrosa",
+    "hex": "#e62271",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "chart",
+    "enabled": true
+  },
+  {
+    "id": "schmincke-horadam-933",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "933",
+    "name": "Shire green",
+    "nameDe": "Auen Grün",
+    "hex": "#a9bc8f",
+    "forms": [
+      "half pan"
+    ],
+    "source": "estimate",
+    "enabled": true,
+    "note": "Supergranulation. Not on the colour chart – colour estimated."
+  },
+  {
+    "id": "schmincke-horadam-972",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "972",
+    "name": "Galaxy violet",
+    "nameDe": "Galaxy Violett",
+    "hex": "#998cbe",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "estimate",
+    "enabled": true,
+    "note": "Supergranulation (PR233 + PB29). Colour estimated."
+  },
+  {
+    "id": "schmincke-horadam-974",
+    "vendor": "Schmincke",
+    "line": "Horadam Aquarell",
+    "number": "974",
+    "name": "Galaxy brown",
+    "nameDe": "Galaxy Braun",
+    "hex": "#a68c88",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "estimate",
+    "enabled": true,
+    "note": "Supergranulation (PV62 + PBr6). Colour estimated."
+  },
+  {
+    "id": "michael-harding-w311",
+    "vendor": "Michael Harding",
+    "line": "Artists Watercolour",
+    "number": "W311",
+    "name": "Quinacridone bronze",
+    "nameDe": "Quinacridone Bronze",
+    "hex": "#c88c5f",
+    "forms": [
+      "tube 15 ml"
+    ],
+    "source": "estimate",
+    "enabled": true,
+    "note": "Stock list has W311 without a name; identified as Quinacridone Bronze (PY150 + PR209 + PV19). Colour estimated."
+  }
+]

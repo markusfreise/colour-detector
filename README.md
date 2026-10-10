@@ -10,7 +10,7 @@ Everything runs in the browser. There is no backend, no account and no upload: t
 
 - **Colour areas:** the photo is reduced to 2–32 main colours and drawn as flat, numbered areas. A second slider simplifies the shapes into bigger, calmer areas.
 - **Recipes:** for every colour, up to five ways to mix it from the paints in your box — which paints, in what ratio, how much water, and how close the mix gets.
-- **Paint box:** every paint is a chip in its own colour, grouped into pans and tubes and then by colour family (yellow, orange, red, violet, blue, green, neutral). Switch paints on and off; the selection is remembered in the browser.
+- **Paint box:** every paint is a chip in its own colour. The paints you have selected sit in a box at the top; the rest are listed below, pans first, then tubes, each sorted by colour family. Click a chip to move it between the two. The selection is remembered in the browser.
 - **Limits:** restrict mixes to one, two or three paints.
 - **Recolour:** click an area, pick a different target colour, choose between the alternative recipes, or detach a single area from the others that share its colour.
 - **Views:** mixed paint, photo colour or the original photo, with outlines and numbers on or off.

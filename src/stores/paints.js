@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { stockPaints } from '../data/paints.js'
-import { groupPaints } from '../lib/paintbox.js'
+import { groupPaints, sortPaints } from '../lib/paintbox.js'
 
 const STORAGE_KEY = 'colour-detector:enabled-paints'
 
@@ -22,7 +22,9 @@ export const usePaintsStore = defineStore('paints', {
   getters: {
     enabled: (state) => state.all.filter((p) => state.enabledIds.has(p.id)),
     byId: (state) => Object.fromEntries(state.all.map((p) => [p.id, p])),
-    groups: (state) => groupPaints(state.all),
+    // Paint box: the selected paints as one list, the rest grouped by form and colour family.
+    selected: (state) => sortPaints(state.all.filter((p) => state.enabledIds.has(p.id))),
+    available: (state) => groupPaints(state.all.filter((p) => !state.enabledIds.has(p.id))),
   },
   actions: {
     toggle(id, on) {
@@ -35,12 +37,6 @@ export const usePaintsStore = defineStore('paints', {
     setAll(ids, on) {
       const next = new Set(this.enabledIds)
       ids.forEach((id) => (on ? next.add(id) : next.delete(id)))
-      this.enabledIds = next
-      this.persist()
-    },
-    invert(ids) {
-      const next = new Set(this.enabledIds)
-      ids.forEach((id) => (next.has(id) ? next.delete(id) : next.add(id)))
       this.enabledIds = next
       this.persist()
     },

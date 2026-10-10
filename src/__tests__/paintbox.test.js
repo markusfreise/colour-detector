@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { colourFamily } from '../lib/color.js'
-import { paintNumber, groupPaints } from '../lib/paintbox.js'
+import { paintNumber, groupPaints, sortPaints } from '../lib/paintbox.js'
 import { stockPaints } from '../data/paints.js'
 
 describe('colourFamily', () => {
@@ -27,8 +27,21 @@ describe('paintNumber', () => {
   })
 })
 
+const paint = (number, hex, forms) => ({ id: number, number, hex, forms })
+
+describe('sortPaints', () => {
+  it('sorts by colour-wheel family, then number', () => {
+    const sorted = sortPaints([
+      paint('496', '#2b61ab', ['tube 15 ml']),
+      paint('365', '#e6331d', ['whole pan']),
+      paint('347', '#e2544d', ['half pan']),
+      paint('208', '#fae409', ['whole pan']),
+    ])
+    expect(sorted.map((p) => p.number)).toEqual(['208', '347', '365', '496'])
+  })
+})
+
 describe('groupPaints', () => {
-  const paint = (number, hex, forms) => ({ id: number, number, hex, forms })
 
   it('groups by form first, then family, sorted by number', () => {
     const groups = groupPaints([

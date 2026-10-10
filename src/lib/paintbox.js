@@ -18,6 +18,12 @@ function byNumber(a, b) {
   return (na || 0) - (nb || 0) || String(a.number).localeCompare(String(b.number))
 }
 
+/** Paints in colour-wheel order, by number inside each family. */
+export function sortPaints(paints) {
+  const rank = (p) => COLOUR_FAMILIES.indexOf(colourFamily(p.hex))
+  return [...paints].sort((a, b) => rank(a) - rank(b) || byNumber(a, b))
+}
+
 /**
  * Group paints by form (pans, then tubes), then by colour-wheel family, sorted by number.
  * A paint owned as both pan and tube appears in both form groups.

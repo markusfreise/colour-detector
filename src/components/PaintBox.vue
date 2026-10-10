@@ -1,51 +1,38 @@
 <template>
   <dialog ref="dialog" class="panel paintbox" aria-labelledby="paintbox-title" @click="onBackdrop" @close="onClose">
     <div class="paintbox__body">
-    <header class="paintbox__header">
-      <h2 id="paintbox-title" class="panel__title">
-        Paint box <small class="panel__count">{{ paints.enabledIds.size }}/{{ paints.all.length }}</small>
-      </h2>
-      <div class="paintbox__actions">
-        <button class="button button--ghost" type="button" @click="paints.reset()">Reset</button>
-        <button class="button button--secondary" type="button" :disabled="!dirty" @click="apply">
-          Update mixes
-        </button>
-        <button class="button button--ghost" type="button" @click="close">Close</button>
-      </div>
-    </header>
-    <div v-for="group in paints.groups" :key="group.key" class="paintbox__group">
-      <header class="paintbox__group-header">
-        <h3 class="paintbox__group-title">{{ group.name }}</h3>
+      <header class="paintbox__header">
+        <h2 id="paintbox-title" class="panel__title">
+          Paint box <small class="panel__count">{{ paints.enabledIds.size }}/{{ paints.all.length }}</small>
+        </h2>
         <div class="paintbox__actions">
-          <button class="button button--ghost" type="button" @click="bulk(group, true)">All</button>
-          <button class="button button--ghost" type="button" @click="invert(group)">Invert</button>
-          <button class="button button--ghost" type="button" @click="bulk(group, false)">None</button>
+          <button class="button button--ghost" type="button" @click="reset">Reset</button>
+          <button class="button button--secondary" type="button" :disabled="!dirty" @click="apply">
+            Update mixes
+          </button>
+          <button class="button button--ghost" type="button" @click="close">Close</button>
         </div>
       </header>
-      <div v-for="family in group.families" :key="family.key" class="paintbox__family">
-        <h4 class="paintbox__family-title">{{ family.name }}</h4>
-        <ul class="paintbox__list">
-          <li
-            v-for="p in family.paints"
-            :key="p.id"
-            class="paintbox__paint"
-            :class="{ 'paintbox__paint--used': analysis.usedPaintIds.has(p.id) }"
-          >
-            <label class="chip paintbox__chip" :style="chipStyle(p.hex)" :title="describe(p)">
-              <input
-                class="paintbox__checkbox"
-                type="checkbox"
-                :checked="paints.enabledIds.has(p.id)"
-                @change="toggle(p.id, $event.target.checked)"
-              />
-              <span class="paintbox__toggle"></span>
-              <span class="chip__strong">{{ paintNumber(p.number) }}</span>
-              <span class="chip__text paintbox__name">{{ p.name }}</span>
-            </label>
+
+      <div class="paintbox__group paintbox__group--selected" aria-label="Selected paints">
+        <template v-if="paints.selected.length">
+          <ul class="paintbox__list">
+            <li v-for="p in paints.selected" :key="p.id">
+              <PaintChip :paint="p" enabled :used="analysis.usedPaintIds.has(p.id)" @toggle="toggle(p.id, $event)" />
+            </li>
+          </ul>
+          <button class="button button--ghost paintbox__clear" type="button" @click="clear">Clear</button>
+        </template>
+        <p v-else class="paintbox__empty">No paints selected. Click a paint below to add it.</p>
+      </div>
+
+      <div v-for="group in paints.available" :key="group.key" class="paintbox__group" :aria-label="`Available ${group.name.toLowerCase()}`">
+        <ul v-for="family in group.families" :key="family.key" class="paintbox__list">
+          <li v-for="p in family.paints" :key="p.id">
+            <PaintChip :paint="p" @toggle="toggle(p.id, $event)" />
           </li>
         </ul>
       </div>
-    </div>
     </div>
   </dialog>
 </template>
@@ -54,8 +41,7 @@
 import { ref } from 'vue'
 import { usePaintsStore } from '../stores/paints.js'
 import { useAnalysisStore } from '../stores/analysis.js'
-import { chipStyle } from '../lib/color.js'
-import { paintNumber } from '../lib/paintbox.js'
+import PaintChip from './PaintChip.vue'
 
 const paints = usePaintsStore()
 const analysis = useAnalysisStore()
@@ -80,26 +66,18 @@ function onClose() {
   if (dirty.value) apply()
 }
 
-// Tooltip: vendor line, German name, and the stock notes that no longer fit on the chip.
-function describe(p) {
-  const parts = [`${p.vendor} ${p.line}`, p.nameDe]
-  if (p.source === 'estimate') parts.push('colour estimated')
-  if (p.note) parts.push(p.note)
-  return parts.filter(Boolean).join(' · ')
-}
-
 function toggle(id, on) {
   paints.toggle(id, on)
   dirty.value = true
 }
 
-function bulk(group, on) {
-  paints.setAll(group.paints.map((p) => p.id), on)
+function clear() {
+  paints.setAll(paints.all.map((p) => p.id), false)
   dirty.value = true
 }
 
-function invert(group) {
-  paints.invert(group.paints.map((p) => p.id))
+function reset() {
+  paints.reset()
   dirty.value = true
 }
 

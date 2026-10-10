@@ -1,40 +1,45 @@
 <template>
-  <div class="recipe" :class="{ 'recipe--compact': compact }">
-    <span class="recipe__result swatch" :style="{ background: recipe.hex }" :title="`Mixed: ${recipe.hex}`"></span>
-    <div class="recipe__body">
-      <ul v-if="recipe.paints.length" class="recipe__paints">
-        <li v-for="(item, i) in recipe.paints" :key="item.paintId" class="recipe__paint">
-          <span class="recipe__parts">{{ formatParts(recipe.parts[i]) }}</span>
-          <span class="swatch swatch--small" :style="{ background: paints.byId[item.paintId].hex }"></span>
-          <span class="recipe__name">
-            {{ paints.byId[item.paintId].name }}
-            <small class="recipe__number">{{ paints.byId[item.paintId].number }}</small>
-          </span>
-        </li>
-      </ul>
-      <p v-else class="recipe__paper">Leave the paper white</p>
-      <p class="recipe__meta">
-        <span>{{ recipe.dilution }}</span>
-        <span class="recipe__quality" :class="`recipe__quality--${matchQuality(recipe.deltaE)}`">
-          ΔE {{ recipe.deltaE.toFixed(1) }} · {{ matchQuality(recipe.deltaE) }}
-        </span>
-      </p>
+  <div class="recipe">
+    <div class="chip recipe__result" :style="chipStyle(recipe.hex)" :title="`Mixed: ${recipe.hex} · ${recipe.dilution}`">
+      <span class="chip__strong chip__text recipe__dilution">{{ recipe.dilution }}</span>
+      <span class="chip__text">{{ recipe.deltaE.toFixed(1) }} • {{ matchQuality(recipe.deltaE) }}</span>
     </div>
+    <ul v-if="recipe.paints.length" class="recipe__paints">
+      <li
+        v-for="(item, i) in recipe.paints"
+        :key="item.paintId"
+        class="chip chip--row recipe__paint"
+        :style="chipStyle(paints.byId[item.paintId].hex)"
+        :title="paints.byId[item.paintId].name"
+      >
+        <span class="chip__strong recipe__parts">{{ formatParts(recipe.parts[i]) }}</span>
+        <span class="chip__text">
+          <span class="chip__strong">{{ paintNumber(paints.byId[item.paintId].number) }}</span>
+          {{ paints.byId[item.paintId].name }}
+        </span>
+      </li>
+      <li v-for="n in emptySlots" :key="`empty-${n}`" class="chip chip--row chip--empty recipe__paint" aria-hidden="true"></li>
+    </ul>
+    <p v-else class="recipe__paper">Leave the paper white</p>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { usePaintsStore } from '../stores/paints.js'
 import { matchQuality } from '../lib/mixing.js'
+import { chipStyle } from '../lib/color.js'
+import { paintNumber } from '../lib/paintbox.js'
 
-defineProps({
+const props = defineProps({
   recipe: { type: Object, required: true },
-  compact: { type: Boolean, default: false },
 })
 
 const paints = usePaintsStore()
+// The ingredient grid always shows complete rows of four slots.
+const emptySlots = computed(() => (4 - (props.recipe.paints.length % 4)) % 4)
 
 function formatParts(n) {
-  return `${Number.isInteger(n) ? n : n.toFixed(1)}×`
+  return `${Number.isInteger(n) ? n : n.toFixed(1)} x`
 }
 </script>

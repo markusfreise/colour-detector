@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { stockPaints } from '../data/paints.js'
+import { groupPaints } from '../lib/paintbox.js'
 
 const STORAGE_KEY = 'colour-detector:enabled-paints'
 
@@ -21,15 +22,7 @@ export const usePaintsStore = defineStore('paints', {
   getters: {
     enabled: (state) => state.all.filter((p) => state.enabledIds.has(p.id)),
     byId: (state) => Object.fromEntries(state.all.map((p) => [p.id, p])),
-    groups: (state) => {
-      const groups = new Map()
-      for (const p of state.all) {
-        const key = `${p.vendor} · ${p.line}`
-        if (!groups.has(key)) groups.set(key, [])
-        groups.get(key).push(p)
-      }
-      return [...groups].map(([name, paints]) => ({ name, paints }))
-    },
+    groups: (state) => groupPaints(state.all),
   },
   actions: {
     toggle(id, on) {

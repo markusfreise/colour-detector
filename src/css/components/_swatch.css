@@ -1,4 +1,3 @@
 .swatch { display: inline-block; width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(0, 0, 0, 0.12); flex: none; }
 .swatch--small { width: 16px; height: 16px; border-radius: 4px; }
 .swatch--half { width: 18px; height: 28px; border-radius: 0; }
-.swatch--large { width: 100%; height: 56px; border-radius: 8px; }

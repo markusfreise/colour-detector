@@ -20,3 +20,4 @@ Mirror of PRD §17. IDs are stable and never reused. One task = one commit.
 | TASK-14 | Backend | Calibrate paints from a photo of own swatch card (wash + masstone per paint) | Calibrated colours replace estimates; mixing uses two-point absorbance | TASK-10 | Open |
 | TASK-15 | Backend | Move recipe computation into the worker | No main-thread task > 100 ms on 32 colours | TASK-03 | Open |
 | TASK-16 | Test | Component tests with @vue/test-utils | Editor and paint box covered | TASK-07, TASK-08 | Open |
+| TASK-17 | Frontend | Chip layouts for paint box, recipes and colour editor; paint box grouped by form (pans, tubes) then colour-wheel family, sorted by number | Paints show as coloured chips with bold three-digit number; recipes and editor match the Figma frames | TASK-07, TASK-08 | Done |

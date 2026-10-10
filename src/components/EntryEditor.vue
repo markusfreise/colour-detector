@@ -7,11 +7,15 @@
 
     <div class="editor__compare">
       <div class="editor__swatch">
-        <span class="swatch swatch--large" :style="{ background: entry.targetHex }"></span>
+        <span class="chip editor__chip" :style="chipStyle(entry.targetHex)">
+          <span class="chip__text">{{ entry.targetHex }}</span>
+        </span>
         <span class="editor__caption">Target</span>
       </div>
       <div class="editor__swatch">
-        <span class="swatch swatch--large" :style="{ background: recipe?.hex }"></span>
+        <span class="chip editor__chip" :style="chipStyle(recipe?.hex)">
+          <span class="chip__text">{{ recipe?.hex }}</span>
+        </span>
         <span class="editor__caption">Your mix</span>
       </div>
     </div>
@@ -53,6 +57,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
+import { chipStyle } from '../lib/color.js'
 import RecipeLine from './RecipeLine.vue'
 
 const analysis = useAnalysisStore()

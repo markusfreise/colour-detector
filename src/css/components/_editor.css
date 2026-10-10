@@ -2,6 +2,7 @@
 .editor__header { display: flex; justify-content: space-between; align-items: baseline; }
 .editor__compare { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .editor__swatch { display: flex; flex-direction: column; gap: 4px; }
+.editor__chip { min-height: 55px; }
 .editor__caption { color: var(--ink-soft); font-size: 12px; }
 .editor__target { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
 .editor__picker { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; }

@@ -1,0 +1,50 @@
+import { describe, it, expect } from 'vitest'
+import { colourFamily } from '../lib/color.js'
+import { paintNumber, groupPaints } from '../lib/paintbox.js'
+import { stockPaints } from '../data/paints.js'
+
+describe('colourFamily', () => {
+  it('maps paints to their colour-wheel family', () => {
+    expect(colourFamily('#fae409')).toBe('yellow') // Aureolin hue
+    expect(colourFamily('#ec680f')).toBe('orange') // Transparent orange
+    expect(colourFamily('#e6331d')).toBe('red') // Vermilion
+    expect(colourFamily('#cf3280')).toBe('red') // Quinacridone magenta (hue wraps around 0)
+    expect(colourFamily('#8366aa')).toBe('violet') // Cobalt violet hue
+    expect(colourFamily('#243f8f')).toBe('blue') // Ultramarine finest
+    expect(colourFamily('#60b236')).toBe('green') // Permanent green
+    expect(colourFamily('#706c63')).toBe('neutral') // Ivory black
+  })
+})
+
+describe('paintNumber', () => {
+  it('pads plain numbers to three digits', () => {
+    expect(paintNumber('45')).toBe('045')
+    expect(paintNumber(7)).toBe('007')
+    expect(paintNumber('347')).toBe('347')
+  })
+  it('keeps prefixed numbers', () => {
+    expect(paintNumber('W311')).toBe('W311')
+  })
+})
+
+describe('groupPaints', () => {
+  const paint = (number, hex, forms) => ({ id: number, number, hex, forms })
+
+  it('groups by form first, then family, sorted by number', () => {
+    const groups = groupPaints([
+      paint('365', '#e6331d', ['whole pan']),
+      paint('208', '#fae409', ['whole pan', 'tube 15 ml']),
+      paint('347', '#e2544d', ['half pan']),
+      paint('496', '#2b61ab', ['tube 15 ml']),
+    ])
+    expect(groups.map((g) => g.key)).toEqual(['pan', 'tube'])
+    expect(groups[0].families.map((f) => f.key)).toEqual(['yellow', 'red'])
+    expect(groups[0].families[1].paints.map((p) => p.number)).toEqual(['347', '365'])
+    expect(groups[1].families.map((f) => f.key)).toEqual(['yellow', 'blue'])
+  })
+
+  it('places every stock paint in at least one form group', () => {
+    const ids = new Set(groupPaints(stockPaints).flatMap((g) => g.paints.map((p) => p.id)))
+    expect(ids.size).toBe(stockPaints.length)
+  })
+})

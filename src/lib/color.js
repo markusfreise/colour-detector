@@ -72,3 +72,25 @@ export function deltaE(labA, labB) {
 export function contrastText(hex) {
   return hexToOklab(hex)[0] > 0.68 ? '#1d1b18' : '#ffffff'
 }
+
+// Base colours of the colour wheel, in wheel order; 'neutral' collects greys, blacks and other low-chroma paints.
+export const COLOUR_FAMILIES = ['yellow', 'orange', 'red', 'violet', 'blue', 'green', 'neutral']
+
+// Colour-wheel family of a colour, from its OKLCh hue angle.
+export function colourFamily(hex) {
+  const [, a, b] = hexToOklab(hex)
+  if (Math.hypot(a, b) < 0.04) return 'neutral'
+  const hue = ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360
+  if (hue < 35) return 'red'
+  if (hue < 80) return 'orange'
+  if (hue < 110) return 'yellow'
+  if (hue < 200) return 'green'
+  if (hue < 285) return 'blue'
+  if (hue < 345) return 'violet'
+  return 'red'
+}
+
+// CSS custom properties for a chip filled with the given colour (see _chip.css).
+export function chipStyle(hex) {
+  return hex ? { '--chip-colour': hex, '--chip-ink': contrastText(hex) } : {}
+}

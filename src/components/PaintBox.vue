@@ -11,36 +11,35 @@
         </button>
       </div>
     </header>
-    <div v-for="group in paints.groups" :key="group.name" class="paintbox__group">
+    <div v-for="group in paints.groups" :key="group.key" class="paintbox__group">
       <h3 class="paintbox__group-title">
         {{ group.name }}
         <button class="paintbox__bulk" type="button" @click="bulk(group, true)">all</button>
         <button class="paintbox__bulk" type="button" @click="bulk(group, false)">none</button>
       </h3>
-      <ul class="paintbox__list">
-        <li
-          v-for="p in group.paints"
-          :key="p.id"
-          class="paintbox__paint"
-          :class="{
-            'paintbox__paint--off': !paints.enabledIds.has(p.id),
-            'paintbox__paint--used': analysis.usedPaintIds.has(p.id),
-          }"
-        >
-          <label class="paintbox__label" :title="p.note || p.nameDe">
-            <input
-              type="checkbox"
-              :checked="paints.enabledIds.has(p.id)"
-              @change="toggle(p.id, $event.target.checked)"
-            />
-            <span class="swatch swatch--small" :style="{ background: p.hex }"></span>
-            <span class="paintbox__name">{{ p.name }}</span>
-            <small class="paintbox__number">{{ p.number }}</small>
-            <small v-if="p.source === 'estimate'" class="paintbox__flag">est.</small>
-            <small v-if="p.note" class="paintbox__flag paintbox__flag--note">!</small>
-          </label>
-        </li>
-      </ul>
+      <div v-for="family in group.families" :key="family.key" class="paintbox__family">
+        <h4 class="paintbox__family-title">{{ family.name }}</h4>
+        <ul class="paintbox__list">
+          <li
+            v-for="p in family.paints"
+            :key="p.id"
+            class="paintbox__paint"
+            :class="{ 'paintbox__paint--used': analysis.usedPaintIds.has(p.id) }"
+          >
+            <label class="chip paintbox__chip" :style="chipStyle(p.hex)" :title="describe(p)">
+              <input
+                class="paintbox__checkbox"
+                type="checkbox"
+                :checked="paints.enabledIds.has(p.id)"
+                @change="toggle(p.id, $event.target.checked)"
+              />
+              <span class="paintbox__toggle"></span>
+              <span class="chip__strong">{{ paintNumber(p.number) }}</span>
+              <span class="chip__text paintbox__name">{{ p.name }}</span>
+            </label>
+          </li>
+        </ul>
+      </div>
     </div>
   </section>
 </template>
@@ -49,10 +48,20 @@
 import { ref } from 'vue'
 import { usePaintsStore } from '../stores/paints.js'
 import { useAnalysisStore } from '../stores/analysis.js'
+import { chipStyle } from '../lib/color.js'
+import { paintNumber } from '../lib/paintbox.js'
 
 const paints = usePaintsStore()
 const analysis = useAnalysisStore()
 const dirty = ref(false)
+
+// Tooltip: vendor line, German name, and the stock notes that no longer fit on the chip.
+function describe(p) {
+  const parts = [`${p.vendor} ${p.line}`, p.nameDe]
+  if (p.source === 'estimate') parts.push('colour estimated')
+  if (p.note) parts.push(p.note)
+  return parts.filter(Boolean).join(' · ')
+}
 
 function toggle(id, on) {
   paints.toggle(id, on)

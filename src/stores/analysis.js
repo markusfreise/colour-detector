@@ -17,6 +17,8 @@ const WASH_LIMIT = 3
 const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+')
 // Sample photos; the Sample button steps through them, the first one loads at start.
 const SAMPLES = [
+  // Temporary: a press photo, to be replaced before anything is published.
+  { file: 'sample-stage.webp', name: 'Stage (sample)' },
   { file: 'sample-lakeside.webp', name: 'Lakeside (sample)' },
   { file: 'sample-portrait.webp', name: 'Portrait (sample)' },
   { file: 'sample-street-dusk.webp', name: 'Street at dusk (sample)' },

@@ -6,7 +6,6 @@
     :title="description"
   >
     <input class="paintbox__checkbox" type="checkbox" :checked="enabled" @change="emit('toggle', $event.target.checked)" />
-    <span class="paintbox__toggle"></span>
     <span class="chip__strong">{{ paintNumber(paint.number) }}</span>
     <span class="chip__text paintbox__name">{{ paint.name }}</span>
   </label>

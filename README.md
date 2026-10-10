@@ -14,8 +14,8 @@ The iOS, iPadOS and macOS app is called **Tintmap** and lives in [`app/`](app/RE
 
 ## Features
 
-- **Colour areas:** the photo is reduced to 2–32 main colours and drawn as flat, numbered areas. Small but distinct colours (lips in a portrait, a red roof) keep a colour of their own instead of being lost among the shades of a large background. A second slider simplifies the shapes into bigger, calmer areas.
-- **Washes:** colours that differ only in strength share one mix and are painted with more or less water, so 20 colours may need only six mixes. On the picture they carry the number of the mix and a letter for the water level (W very watery, L light, M medium, R rich, C concentrated), for example 6L and 6R. In the list they sit together, with the paints named once.
+- **Colour areas:** the photo is reduced to 2–32 mixes and drawn as flat, numbered areas. Small but distinct colours (lips in a portrait, a red roof) keep a mix of their own instead of being lost among the shades of a large background. A second slider simplifies the shapes into bigger, calmer areas.
+- **Washes:** "Colours" counts mixes. A mix is painted in up to five washes, from very watery to concentrated, so colours that differ only in strength do not use up a mix each. On the picture a wash carries the number of its mix and a letter for the water level (W very watery, L light, M medium, R rich, C concentrated), for example 6L and 6R. In the list the washes of a mix sit together, with the paints named once.
 - **Saturation and contrast:** adjust the photo before it is analysed.
 - **Recipes:** for every colour, up to five ways to mix it from the paints in your box — which paints, in what ratio, how much water, and how close the mix gets.
 - **Paint boxes:** keep a box for every set of paints you own, and add paints of any brand to the library.

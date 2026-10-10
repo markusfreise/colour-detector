@@ -193,10 +193,6 @@ export function proposePaints(targets, paints, { maxPaints = 3, tolerance = 2 } 
   return [...chosen]
 }
 
-// A colour joins another colour's mix as a wash when that costs at most this much extra ΔE
-// over its own best recipe.
-export const WASH_TOLERANCE = 1
-
 /**
  * The same mix with more or less water: every amount scaled by one factor so the result
  * comes as close to the target as that mix can get.
@@ -233,33 +229,6 @@ export function washRecipe(recipe, targetHex, paintsById) {
   const logT = (a + b) / 2
   const factor = Math.exp(logT)
   return toRecipe({ items: candidate.map((c, i) => ({ paint: c.paint, amount: base[i] * factor })), deltaE: error(logT) })
-}
-
-/**
- * Decide which colours can share a mix. Colours are taken from the largest area down; each one
- * either joins the mix of an earlier colour as a wash (same paints in the same ratio, only the
- * water differs) or keeps its own best recipe and becomes a mix others can join.
- * @param {Array<{hex:string, weight?:number, recipes:Recipe[]}>} colours  recipes = own recipes, best first
- * @param {Array<{id:string, hex:string}>} paints
- * @returns {Array<{family:number, wash:Recipe|null}>} family = index of the colour whose mix is used
- */
-export function planWashes(colours, paints, { tolerance = WASH_TOLERANCE } = {}) {
-  const byId = Object.fromEntries(paints.map((p) => [p.id, p]))
-  const order = colours.map((_, i) => i).sort((x, y) => (colours[y].weight ?? 0) - (colours[x].weight ?? 0))
-  const anchors = []
-  const plan = colours.map((_, i) => ({ family: i, wash: null }))
-  for (const i of order) {
-    const own = colours[i].recipes[0]
-    if (!own?.paints.length) continue // paper white, or no paints to mix with
-    let best = null
-    for (const anchor of anchors) {
-      const wash = washRecipe(colours[anchor].recipes[0], colours[i].hex, byId)
-      if (wash.deltaE <= own.deltaE + tolerance && (!best || wash.deltaE < best.wash.deltaE)) best = { family: anchor, wash }
-    }
-    if (best) plan[i] = best
-    else anchors.push(i)
-  }
-  return plan
 }
 
 function toRecipe({ items, deltaE: err }) {

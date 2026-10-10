@@ -32,12 +32,24 @@ describe('segment', () => {
       const v = 20 + Math.round((x + y) * 0.5)
       return [v + 6, v, v - 6]
     })
-    const reds = (options) =>
-      segmentImage(picture, 100, 100, { colours: 6, simplify: 0, ...options }).clusters.filter(
-        (c) => c.pixelCount && hexToOklab(c.hex)[1] > 0.05,
-      )
-    expect(reds()).toHaveLength(1)
-    expect(reds()[0].pixelCount).toBe(100)
+    const seg = segmentImage(picture, 100, 100, { colours: 3, simplify: 0 })
+    const reds = seg.clusters.filter((c) => c.pixelCount && hexToOklab(c.hex)[1] > 0.05)
+    expect(reds).toHaveLength(1)
+    expect(reds[0].pixelCount).toBe(100)
+  })
+  it('paints one hue in several washes instead of several mixes', () => {
+    // The same blue from pale to deep, next to a flat red.
+    const picture = makeImage(120, 40, (x, y) => {
+      if (y >= 30) return [200, 60, 50]
+      const t = Math.pow(0.9 - 0.75 * (x / 119), 1 / 2.2)
+      return [Math.round(255 * Math.pow(t, 3)), Math.round(255 * Math.pow(t, 1.6)), Math.round(255 * Math.pow(t, 0.5))]
+    })
+    const used = segmentImage(picture, 120, 40, { colours: 2, simplify: 0 }).clusters.filter((c) => c.pixelCount)
+    expect(new Set(used.map((c) => c.group)).size).toBe(2)
+    expect(used.length).toBeGreaterThan(3)
+    const blues = used.filter((c) => hexToOklab(c.hex)[2] < 0)
+    expect(new Set(blues.map((c) => c.group)).size).toBe(1)
+    expect(blues.length).toBeGreaterThan(2)
   })
   it('labels 4-connected components', () => {
     const labels = Int32Array.from([0, 0, 1, 1, 0, 1, 1, 1, 0])

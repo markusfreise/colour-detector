@@ -1,7 +1,7 @@
 // Image segmentation into flat colour areas ("paint-by-numbers" style).
 //
 // 1. Optional box blur to suppress texture noise.
-// 2. Weighted k-means++ on the colour histogram in OKLab -> one label per pixel.
+// 2. Clustering into mixes (absorbance directions) and their washes -> one label per pixel.
 // 3. Majority filter passes to smooth ragged edges.
 // 4. Connected components; regions smaller than `minRegion` pixels are merged
 //    into the neighbour they share the longest border with.
@@ -9,7 +9,7 @@
 //
 // Pure functions on typed arrays so it runs in a Web Worker and in tests.
 
-import { srgbToLinear, linearToOklab, oklabToHex } from './color.js'
+import { srgbToLinear, linearToOklab, oklabToLinear, oklabToHex } from './color.js'
 
 export function mulberry32(seed) {
   let a = seed >>> 0
@@ -66,11 +66,15 @@ export function toOklabPixels(rgba, count) {
   return lab
 }
 
-// Clustering defaults. Both exist because plain k-means follows the pixel count: a photo that is
-// mostly dark background spends nearly every colour on shades of that background and loses the
-// small, colourful parts (lips, a flower, a sign).
-export const CHROMA_WEIGHT = 5 // hue/saturation differences count this much more than lightness
-export const AREA_POWER = 0.4 // weight of a colour = (its pixel count) ^ AREA_POWER; 1 = plain k-means
+// Weight of a colour in the clustering = (its pixel count) ^ AREA_POWER; 1 would follow the pixel
+// count, and a photo that is mostly dark background would then spend every colour on that
+// background and lose the small, colourful parts (lips, a flower, a sign).
+export const AREA_POWER = 0.4
+// A mix is painted in at most this many washes (water levels).
+export const MAX_WASHES = 5
+// One more wash for every factor of about 1.7 between the weakest and the strongest part of a mix.
+const WASH_STEP = 0.55
+const MIN_REFLECTANCE = 0.0005
 
 const BIN_L = 50 // histogram steps per unit of L
 const BIN_AB = 100 // histogram steps per unit of a and b
@@ -83,6 +87,7 @@ export function colourBins(lab, count) {
   const index = new Map()
   const sums = []
   const counts = []
+  const binOf = new Int32Array(count)
   for (let p = 0; p < count; p++) {
     const L = lab[p * 3], a = lab[p * 3 + 1], b = lab[p * 3 + 2]
     const key = Math.round(L * BIN_L) * 1048576 + (Math.round(a * BIN_AB) + 512) * 1024 + Math.round(b * BIN_AB) + 512
@@ -95,6 +100,7 @@ export function colourBins(lab, count) {
     }
     sums[i * 3] += L; sums[i * 3 + 1] += a; sums[i * 3 + 2] += b
     counts[i]++
+    binOf[p] = i
   }
   const n = counts.length
   const points = new Float64Array(n * 3)
@@ -103,40 +109,55 @@ export function colourBins(lab, count) {
     points[i * 3 + 1] = sums[i * 3 + 1] / counts[i]
     points[i * 3 + 2] = sums[i * 3 + 2] / counts[i]
   }
-  return { points, counts: Float64Array.from(counts) }
+  return { points, counts: Float64Array.from(counts), binOf }
 }
 
 /**
- * Weighted k-means++ on the colour histogram.
- * Returns a label per pixel and the centroids (plain OKLab).
+ * Cluster the picture into `k` mixes, each painted in one or more washes.
+ *
+ * A watercolour mix with more or less water keeps the direction of its absorbance
+ * (A = -ln reflectance) and only changes its length. So a mix is a direction, and a colour
+ * belongs to the mix whose best wash comes closest to it (OKLab distance). Colours that differ
+ * only in strength therefore share a mix instead of using up one each. Within a mix the
+ * strengths are then split into washes.
+ *
+ * @returns {{labels: Int32Array, clusters: Array<{group:number, level:number}>}}
+ *   labels = cluster per pixel; clusters are ordered mix by mix, lightest wash first
  */
-export function kmeans(lab, count, k, { iterations = 24, seed = 7, chromaWeight = CHROMA_WEIGHT, areaPower = AREA_POWER } = {}) {
+export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPower = AREA_POWER, maxWashes = MAX_WASHES } = {}) {
   const rand = mulberry32(seed)
-  const { points, counts } = colourBins(lab, count)
+  const { points, counts, binOf } = colourBins(lab, count)
   const n = counts.length
-  const kk = Math.min(k, n)
-  // Work in a stretched space: a and b scaled by chromaWeight.
-  const pts = new Float64Array(n * 3)
+  const kk = Math.max(1, Math.min(k, n))
+  const absorb = new Float64Array(n * 3)
   const weight = new Float64Array(n)
   for (let i = 0; i < n; i++) {
-    pts[i * 3] = points[i * 3]
-    pts[i * 3 + 1] = points[i * 3 + 1] * chromaWeight
-    pts[i * 3 + 2] = points[i * 3 + 2] * chromaWeight
+    const linear = oklabToLinear([points[i * 3], points[i * 3 + 1], points[i * 3 + 2]])
+    for (let j = 0; j < 3; j++) absorb[i * 3 + j] = -Math.log(Math.min(1, Math.max(MIN_REFLECTANCE, linear[j])))
     weight[i] = Math.pow(counts[i], areaPower)
   }
-  const centroids = new Float64Array(k * 3)
+  const dirs = new Float64Array(kk * 3)
+  const setDir = (c, x, y, z) => {
+    const len = Math.hypot(x, y, z)
+    // No absorbance at all (pure white) has no direction: use neutral grey.
+    if (len < 1e-9) { dirs[c * 3] = dirs[c * 3 + 1] = dirs[c * 3 + 2] = Math.SQRT1_2 * Math.sqrt(2 / 3) }
+    else { dirs[c * 3] = x / len; dirs[c * 3 + 1] = y / len; dirs[c * 3 + 2] = z / len }
+  }
+  // Strength of bin i as a wash of mix c: its absorbance projected on the mix direction.
+  const strength = (i, c) => Math.max(0, absorb[i * 3] * dirs[c * 3] + absorb[i * 3 + 1] * dirs[c * 3 + 1] + absorb[i * 3 + 2] * dirs[c * 3 + 2])
+  // Squared OKLab distance between bin i and the closest wash of mix c.
   const d2 = (i, c) => {
-    const dL = pts[i * 3] - centroids[c * 3]
-    const da = pts[i * 3 + 1] - centroids[c * 3 + 1]
-    const db = pts[i * 3 + 2] - centroids[c * 3 + 2]
+    const t = strength(i, c)
+    const [L, a, b] = linearToOklab([Math.exp(-t * dirs[c * 3]), Math.exp(-t * dirs[c * 3 + 1]), Math.exp(-t * dirs[c * 3 + 2])])
+    const dL = L - points[i * 3], da = a - points[i * 3 + 1], db = b - points[i * 3 + 2]
     return dL * dL + da * da + db * db
   }
 
-  // k-means++ seeding: the first centre is the most common colour, the rest are drawn
-  // with probability weight x squared distance to the nearest centre so far.
+  // k-means++ seeding: the first mix is the most common colour, the rest are drawn
+  // with probability weight x squared distance to the nearest mix so far.
   let first = 0
   for (let i = 1; i < n; i++) if (counts[i] > counts[first]) first = i
-  centroids.set(pts.subarray(first * 3, first * 3 + 3), 0)
+  setDir(0, absorb[first * 3], absorb[first * 3 + 1], absorb[first * 3 + 2])
   const d = new Float64Array(n).fill(Infinity)
   for (let c = 1; c < kk; c++) {
     let sum = 0
@@ -150,51 +171,69 @@ export function kmeans(lab, count, k, { iterations = 24, seed = 7, chromaWeight 
       r -= d[i] * weight[i]
       if (r <= 0) { chosen = i; break }
     }
-    centroids.set(pts.subarray(chosen * 3, chosen * 3 + 3), c * 3)
+    setDir(c, absorb[chosen * 3], absorb[chosen * 3 + 1], absorb[chosen * 3 + 2])
   }
 
-  // Lloyd iterations on the bins
-  const nearest = (L, a, b) => {
-    let best = 0, bestD = Infinity
-    for (let c = 0; c < kk; c++) {
-      const dL = L - centroids[c * 3], da = a - centroids[c * 3 + 1], db = b - centroids[c * 3 + 2]
-      const dd = dL * dL + da * da + db * db
-      if (dd < bestD) { bestD = dd; best = c }
-    }
-    return best
-  }
+  // Lloyd iterations: assign every bin to its closest mix, then turn each mix to the
+  // weighted mean absorbance of its bins.
+  const group = new Int32Array(n)
   for (let it = 0; it < iterations; it++) {
+    let changed = it === 0
     const sums = new Float64Array(kk * 3)
-    const total = new Float64Array(kk)
     for (let i = 0; i < n; i++) {
-      const c = nearest(pts[i * 3], pts[i * 3 + 1], pts[i * 3 + 2])
-      const w = weight[i]
-      sums[c * 3] += pts[i * 3] * w; sums[c * 3 + 1] += pts[i * 3 + 1] * w; sums[c * 3 + 2] += pts[i * 3 + 2] * w
-      total[c] += w
-    }
-    let moved = 0
-    for (let c = 0; c < kk; c++) {
-      if (!total[c]) continue
-      for (let j = 0; j < 3; j++) {
-        const v = sums[c * 3 + j] / total[c]
-        moved = Math.max(moved, Math.abs(v - centroids[c * 3 + j]))
-        centroids[c * 3 + j] = v
+      let best = 0, bestD = Infinity
+      for (let c = 0; c < kk; c++) {
+        const dd = d2(i, c)
+        if (dd < bestD) { bestD = dd; best = c }
       }
+      if (group[i] !== best) { group[i] = best; changed = true }
+      const w = weight[i]
+      sums[best * 3] += absorb[i * 3] * w; sums[best * 3 + 1] += absorb[i * 3 + 1] * w; sums[best * 3 + 2] += absorb[i * 3 + 2] * w
     }
-    if (moved < 1e-5) break
+    if (!changed) break
+    for (let c = 0; c < kk; c++) {
+      if (sums[c * 3] + sums[c * 3 + 1] + sums[c * 3 + 2] > 1e-9) setDir(c, sums[c * 3], sums[c * 3 + 1], sums[c * 3 + 2])
+    }
+  }
+
+  // Washes: split every mix by strength (log scale, like the water levels of a recipe).
+  const clusters = []
+  const clusterOfBin = new Int32Array(n)
+  for (let c = 0; c < kk; c++) {
+    const members = []
+    for (let i = 0; i < n; i++) if (group[i] === c) members.push(i)
+    if (!members.length) continue
+    const logS = new Map(members.map((i) => [i, Math.log(Math.max(0.02, strength(i, c)))]))
+    members.sort((x, y) => logS.get(x) - logS.get(y))
+    // Range between the 2% and 98% points by pixel count, so a few stray pixels add no wash.
+    const total = members.reduce((sum, i) => sum + counts[i], 0)
+    const at = (share) => {
+      let run = 0
+      for (const i of members) { run += counts[i]; if (run >= total * share) return logS.get(i) }
+      return logS.get(members[members.length - 1])
+    }
+    const lo = at(0.02), hi = at(0.98)
+    const levels = Math.max(1, Math.min(maxWashes, members.length, 1 + Math.round((hi - lo) / WASH_STEP)))
+    const centres = Array.from({ length: levels }, (_, l) => (levels === 1 ? (lo + hi) / 2 : lo + ((hi - lo) * l) / (levels - 1)))
+    const level = new Map()
+    for (let it = 0; it < 12; it++) {
+      const sum = new Float64Array(levels), w = new Float64Array(levels)
+      for (const i of members) {
+        let best = 0
+        for (let l = 1; l < levels; l++) if (Math.abs(logS.get(i) - centres[l]) < Math.abs(logS.get(i) - centres[best])) best = l
+        level.set(i, best)
+        sum[best] += logS.get(i) * weight[i]; w[best] += weight[i]
+      }
+      for (let l = 0; l < levels; l++) if (w[l]) centres[l] = sum[l] / w[l]
+    }
+    const base = clusters.length
+    for (let l = 0; l < levels; l++) clusters.push({ group: c, level: l })
+    for (const i of members) clusterOfBin[i] = base + level.get(i)
   }
 
   const labels = new Int32Array(count)
-  for (let p = 0; p < count; p++) {
-    labels[p] = nearest(lab[p * 3], lab[p * 3 + 1] * chromaWeight, lab[p * 3 + 2] * chromaWeight)
-  }
-  const out = new Float32Array(k * 3)
-  for (let c = 0; c < kk; c++) {
-    out[c * 3] = centroids[c * 3]
-    out[c * 3 + 1] = centroids[c * 3 + 1] / chromaWeight
-    out[c * 3 + 2] = centroids[c * 3 + 2] / chromaWeight
-  }
-  return { labels, centroids: out }
+  for (let p = 0; p < count; p++) labels[p] = clusterOfBin[binOf[p]]
+  return { labels, clusters }
 }
 
 export function majorityFilter(labels, width, height, k, passes) {
@@ -338,20 +377,20 @@ export function labelAnchors(regionMap, width, height, regionCount) {
 /**
  * Full pipeline.
  * @param {Uint8ClampedArray} rgba image data at working resolution
- * @param {{colours:number, simplify:number}} options simplify 0..10
+ * @param {{colours:number, simplify:number}} options colours = number of mixes, simplify 0..10
  */
-export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, seed = 7, chromaWeight, areaPower } = {}) {
+export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, seed = 7, areaPower, maxWashes } = {}) {
   const count = width * height
   const blurred = boxBlur(rgba, width, height, Math.round(simplify / 3))
   const lab = toOklabPixels(blurred, count)
-  const k = Math.max(1, Math.min(colours, count))
-  const { labels: raw, centroids } = kmeans(lab, count, k, { seed, chromaWeight, areaPower })
+  const { labels: raw, clusters: found } = clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), { seed, areaPower, maxWashes })
+  const k = found.length
 
   const smoothed = majorityFilter(raw, width, height, k, Math.ceil(simplify / 2))
   const minRegion = Math.round(count * 0.00004 * Math.pow(simplify + 1, 2.2))
   const labels = mergeSmallRegions(smoothed, width, height, Math.max(2, (simplify + 1) ** 2, minRegion))
 
-  // Recompute cluster colours from the actual (unblurred) pixels they cover.
+  // Cluster colours from the actual (unblurred) pixels they cover.
   const sums = new Float64Array(k * 3)
   const counts = new Int32Array(k)
   const original = toOklabPixels(rgba, count)
@@ -360,13 +399,13 @@ export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, 
     sums[c * 3] += original[p * 3]; sums[c * 3 + 1] += original[p * 3 + 1]; sums[c * 3 + 2] += original[p * 3 + 2]
     counts[c]++
   }
-  const clusters = []
-  for (let c = 0; c < k; c++) {
-    const lab3 = counts[c]
-      ? [sums[c * 3] / counts[c], sums[c * 3 + 1] / counts[c], sums[c * 3 + 2] / counts[c]]
-      : [centroids[c * 3], centroids[c * 3 + 1], centroids[c * 3 + 2]]
-    clusters.push({ index: c, hex: oklabToHex(lab3), pixelCount: counts[c] })
-  }
+  const clusters = found.map(({ group, level }, c) => ({
+    index: c,
+    group, // the mix this colour is a wash of
+    level, // wash within the mix, 0 = lightest
+    hex: counts[c] ? oklabToHex([sums[c * 3] / counts[c], sums[c * 3 + 1] / counts[c], sums[c * 3 + 2] / counts[c]]) : '#ffffff',
+    pixelCount: counts[c],
+  }))
 
   const { regionMap, regionCluster, regionSize } = connectedComponents(labels, width, height)
   const anchors = labelAnchors(regionMap, width, height, regionCluster.length)

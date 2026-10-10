@@ -77,8 +77,8 @@ const sharedAreas = computed(() => {
 
 // Labels of the other colours painted with this mix.
 const washes = computed(() => {
-  if (!entry.value || entry.value.chosen !== 0) return []
-  return analysis.entries.filter((e) => e !== entry.value && e.family === entry.value.family && e.chosen === 0).map((e) => e.label)
+  if (!entry.value) return []
+  return analysis.order.map((i) => analysis.entries[i]).filter((e) => e !== entry.value && e.family === entry.value.family).map((e) => e.label)
 })
 
 function onPick(event) {

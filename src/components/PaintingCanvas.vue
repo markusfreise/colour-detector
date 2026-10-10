@@ -21,6 +21,12 @@ const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
 const analysis = useAnalysisStore()
 const canvas = ref(null)
 
+// Whether an entry is drawn: everything, or only the mix of the selected colour.
+function shown(entryIndex) {
+  const selected = analysis.selected
+  return !selected || analysis.entries[entryIndex].family === selected.family
+}
+
 function draw() {
   const seg = analysis.segmentation
   const el = canvas.value
@@ -44,16 +50,11 @@ function draw() {
     }
   } else {
     const colours = analysis.entries.map((e) => hexToRgb(analysis.displayHex(e)))
-    const sel = analysis.selectedEntry
     const img = new ImageData(width, height)
     for (let p = 0; p < regionMap.length; p++) {
       const entry = analysis.regionEntry[regionMap[p]]
-      let [r, g, b] = colours[entry]
-      if (sel != null && entry !== sel) {
-        r = r * 0.35 + 255 * 0.65
-        g = g * 0.35 + 255 * 0.65
-        b = b * 0.35 + 255 * 0.65
-      }
+      // With a colour selected, only its mix stays: all its washes, the rest of the picture goes blank.
+      const [r, g, b] = shown(entry) ? colours[entry] : [255, 255, 255]
       img.data[p * 4] = r
       img.data[p * 4 + 1] = g
       img.data[p * 4 + 2] = b
@@ -87,6 +88,7 @@ function draw() {
     for (const region of regions) {
       if (region.anchorDist < MIN_LABEL_DIST) continue
       const entryIndex = analysis.regionEntry[region.id]
+      if (view !== 'original' && !shown(entryIndex)) continue
       const entry = analysis.entries[entryIndex]
       ctx.fillStyle = view === 'original' ? '#ffffff' : contrastText(analysis.displayHex(entry))
       ctx.fillText(entry.label, (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE)
@@ -102,7 +104,8 @@ function onClick(event) {
   const y = Math.floor(((event.clientY - rect.top) / rect.height) * seg.height)
   if (x < 0 || y < 0 || x >= seg.width || y >= seg.height) return
   const region = seg.regionMap[y * seg.width + x]
-  if (analysis.selectedRegion === region) analysis.select(null)
+  // A click on the blanked part of the picture brings everything back.
+  if (analysis.selectedRegion === region || !shown(analysis.regionEntry[region])) analysis.select(null)
   else analysis.select(region)
 }
 

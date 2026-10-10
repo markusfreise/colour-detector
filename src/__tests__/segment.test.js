@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { segmentImage, connectedComponents } from '../lib/segment.js'
+import { hexToOklab } from '../lib/color.js'
 
 function makeImage(width, height, fn) {
   const rgba = new Uint8ClampedArray(width * height * 4)
@@ -23,6 +24,20 @@ describe('segment', () => {
     const rgba = makeImage(60, 60, (x, y) => ((x * 7 + y * 13) % 97 === 0 ? [255, 255, 255] : [90, 120, 60]))
     const seg = segmentImage(rgba, 60, 60, { colours: 2, simplify: 4 })
     expect(seg.regions.length).toBe(1)
+  })
+  it('keeps a small colourful part of a mostly dark picture', () => {
+    // A dark, nearly neutral gradient with a muted red patch covering 1% of the picture.
+    const picture = makeImage(100, 100, (x, y) => {
+      if (x >= 45 && x < 55 && y >= 45 && y < 55) return [150, 80, 70]
+      const v = 20 + Math.round((x + y) * 0.5)
+      return [v + 6, v, v - 6]
+    })
+    const reds = (options) =>
+      segmentImage(picture, 100, 100, { colours: 6, simplify: 0, ...options }).clusters.filter(
+        (c) => c.pixelCount && hexToOklab(c.hex)[1] > 0.05,
+      )
+    expect(reds()).toHaveLength(1)
+    expect(reds()[0].pixelCount).toBe(100)
   })
   it('labels 4-connected components', () => {
     const labels = Int32Array.from([0, 0, 1, 1, 0, 1, 1, 1, 0])

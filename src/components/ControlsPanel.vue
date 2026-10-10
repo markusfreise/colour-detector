@@ -67,6 +67,47 @@
       </div>
     </div>
 
+    <div class="controls__settings">
+      <label class="field">
+        <span class="field__label">Saturation <output class="field__value">{{ analysis.settings.saturation }}%</output></span>
+        <input
+          v-model.number="analysis.settings.saturation"
+          class="field__range"
+          type="range"
+          min="0"
+          max="200"
+          step="5"
+          @change="analysis.analyse()"
+          @dblclick="resetAdjustment('saturation')"
+        />
+      </label>
+
+      <label class="field">
+        <span class="field__label">Contrast <output class="field__value">{{ analysis.settings.contrast }}%</output></span>
+        <input
+          v-model.number="analysis.settings.contrast"
+          class="field__range"
+          type="range"
+          min="50"
+          max="200"
+          step="5"
+          @change="analysis.analyse()"
+          @dblclick="resetAdjustment('contrast')"
+        />
+      </label>
+
+      <div class="field controls__reset">
+        <button
+          class="button button--ghost"
+          type="button"
+          :disabled="analysis.settings.saturation === 100 && analysis.settings.contrast === 100"
+          @click="resetAdjustment('saturation', 'contrast')"
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+
     <div class="field">
       <div class="field__label">
         Show
@@ -113,8 +154,15 @@ function onFile(event) {
   event.target.value = ''
 }
 
+// Saturation and contrast back to the photo as it is.
+function resetAdjustment(...keys) {
+  for (const key of keys) analysis.settings[key] = 100
+  analysis.analyse()
+}
+
 function setMaxPaints(n) {
   analysis.settings.maxPaints = n
+  analysis.autoPaints()
   analysis.recomputeAllRecipes()
 }
 </script>

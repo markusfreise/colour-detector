@@ -168,8 +168,10 @@ Single screen, two columns (stacked under 900 px):
 ## 11. Frontend architecture
 - Vue 3 Composition API, Pinia stores `paints` (catalogue + enabled set) and `analysis` (image, settings, segmentation, palette entries).
 - Large typed arrays/images are `markRaw` to keep them out of Vue reactivity; a `renderVersion` counter triggers canvas redraws.
-- Pipeline: image → 640 px working copy → worker `segmentImage()` → `applySegmentation()` → `findRecipes()` per entry.
-- **Segmentation** (`lib/segment.js`): box blur → k-means++ in OKLab (sampled, seeded → deterministic) → majority filter → connected components → merge regions below a size threshold (grows with *Simplify*) → label anchors via chamfer distance transform.
+- Pipeline: image → working copy of about 480,000 pixels → saturation and contrast → worker `segmentImage()` → `applySegmentation()` → `findRecipes()` per entry.
+- **Washes** (`lib/mixing.js`, `planWashes`): from the largest colour down, a colour takes the mix of an earlier colour with all amounts scaled by one factor (`washRecipe`) when that costs at most ΔE 1 more than its own best recipe. Labels are mix number plus water level (W, L, M, R, C), numbered when two washes of a mix share a level (2R1, 2R2).
+- **Saturation / contrast** (`lib/color.js`, `adjustImage`): applied in OKLab to the working pixels before segmentation; 100% = unchanged.
+- **Segmentation** (`lib/segment.js`): box blur → weighted k-means++ on the colour histogram in OKLab (seeded → deterministic; hue and saturation count 5× lightness, a colour's weight is its pixel count^0.4, so small colourful parts keep a colour of their own) → majority filter → connected components → merge regions below a size threshold (grows with *Simplify*) → label anchors via chamfer distance transform.
 - **Mixing** (`lib/mixing.js`): Beer–Lambert model of transparent watercolour on white paper. Per paint absorbance `A = −ln(reflectance)` from its reference colour; mix reflectance `exp(−Σ aᵢ·Aᵢ)`; `aᵢ` = amount relative to reference strength (→ ratio and water). Recipe search = non-negative least squares over all singles, pairs and shortlisted triples, refined by pattern search on OKLab ΔE; one extra ΔE-point penalty per additional paint to prefer simple mixes; "paper white" is a valid answer.
 - No Vue Router, no Axios (no API).
 

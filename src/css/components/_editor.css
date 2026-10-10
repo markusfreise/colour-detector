@@ -13,3 +13,4 @@
 .editor__recipe { border: 1px solid var(--line); border-radius: 8px; padding: 8px; cursor: pointer; }
 .editor__recipe--active { border-color: var(--accent); background: var(--accent-soft); }
 .editor__empty { color: var(--ink-soft); }
+.editor__washes { margin: 0 0 8px; color: var(--ink-soft); font-size: 12px; }

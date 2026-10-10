@@ -20,9 +20,15 @@ function read(key) {
 
 function loadBoxes() {
   const saved = read(BOXES_KEY)
-  if (saved?.boxes?.length) return saved
+  if (saved?.boxes?.length) {
+    // Boxes saved before Auto existed: an untouched default selection counts as Auto.
+    const defaults = defaultIds().sort().join()
+    for (const box of saved.boxes) box.auto ??= [...box.paintIds].sort().join() === defaults
+    return saved
+  }
   // First start, or a selection saved before boxes existed.
-  const box = { id: 'box-1', name: 'My paint box', paintIds: read(LEGACY_KEY) ?? defaultIds() }
+  const legacy = read(LEGACY_KEY)
+  const box = { id: 'box-1', name: 'My paint box', paintIds: legacy ?? defaultIds(), auto: !legacy }
   return { boxes: [box], activeId: box.id }
 }
 
@@ -31,13 +37,17 @@ export const usePaintsStore = defineStore('paints', {
     const { boxes, activeId } = loadBoxes()
     return {
       custom: read(CUSTOM_KEY) ?? [], // paints added by the user
-      boxes, // [{ id, name, paintIds }]
+      boxes, // [{ id, name, paintIds, auto }] auto = the app picks the paints for each picture
       activeId,
     }
   },
   getters: {
     all: (state) => [...stockPaints, ...state.custom],
     activeBox: (state) => state.boxes.find((b) => b.id === state.activeId) ?? state.boxes[0],
+    // Paints Auto may choose from: the default selection and the user's own paints.
+    autoCandidates() {
+      return this.all.filter((p) => p.enabled || p.custom)
+    },
     enabledIds() {
       return new Set(this.activeBox.paintIds)
     },
@@ -65,8 +75,10 @@ export const usePaintsStore = defineStore('paints', {
     clear() {
       this.setEnabled([])
     },
-    setEnabled(ids) {
+    /** Any selection made by hand switches Auto off for the box. */
+    setEnabled(ids, auto = false) {
       this.activeBox.paintIds = [...ids]
+      this.activeBox.auto = auto
       this.persist()
     },
     reset() {
@@ -74,7 +86,7 @@ export const usePaintsStore = defineStore('paints', {
     },
 
     addBox(name) {
-      const box = { id: newId('box'), name: name.trim() || `Box ${this.boxes.length + 1}`, paintIds: [] }
+      const box = { id: newId('box'), name: name.trim() || `Box ${this.boxes.length + 1}`, paintIds: [], auto: false }
       this.boxes.push(box)
       this.activeId = box.id
       this.persist()

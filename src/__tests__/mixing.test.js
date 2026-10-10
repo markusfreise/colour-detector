@@ -1,11 +1,39 @@
 import { describe, it, expect } from 'vitest'
-import { findRecipes, mixHex, toParts, proposePaints } from '../lib/mixing.js'
+import { findRecipes, mixHex, toParts, proposePaints, washRecipe, planWashes, washLetter } from '../lib/mixing.js'
 import { hexToOklab, deltaE } from '../lib/color.js'
 import { stockPaints } from '../data/paints.js'
 
 const yellow = { id: 'y', hex: '#fae409' }
 const blue = { id: 'b', hex: '#2b61ab' }
 const red = { id: 'r', hex: '#e6331d' }
+
+describe('washes', () => {
+  const paints = [yellow, blue, red]
+  const byId = Object.fromEntries(paints.map((p) => [p.id, p]))
+  const colour = (hex, weight) => ({ hex, weight, recipes: findRecipes(hex, paints, { maxPaints: 2 }) })
+
+  it('dilutes a mix to reach a lighter colour of the same hue', () => {
+    const [full] = findRecipes('#2b61ab', [blue])
+    const light = mixHex([blue], [0.3])
+    const wash = washRecipe(full, light, byId)
+    expect(wash.deltaE).toBeLessThan(0.5)
+    expect(wash.strength).toBeCloseTo(0.3, 1)
+    expect(wash.paints.map((p) => p.paintId)).toEqual(['b'])
+  })
+  it('lets colours that differ only in strength share one mix', () => {
+    const plan = planWashes([colour(mixHex([blue], [1.6]), 5), colour(mixHex([blue], [0.4]), 3), colour(mixHex([red], [1]), 1)], paints)
+    expect(plan.map((p) => p.family)).toEqual([0, 0, 2])
+    expect(plan[0].wash).toBeNull()
+    expect(plan[1].wash.strength).toBeCloseTo(0.4, 1)
+  })
+  it('keeps a different hue as a mix of its own', () => {
+    const plan = planWashes([colour('#2b61ab', 2), colour('#e6331d', 1)], paints)
+    expect(plan.map((p) => p.family)).toEqual([0, 1])
+  })
+  it('names the water level with a letter', () => {
+    expect([0.2, 0.5, 1, 2, 3].map(washLetter).join('')).toBe('WLMRC')
+  })
+})
 
 describe('mixing', () => {
   it('mixing a paint with itself at amount 1 gives the paint', () => {

@@ -193,6 +193,75 @@ export function proposePaints(targets, paints, { maxPaints = 3, tolerance = 2 } 
   return [...chosen]
 }
 
+// A colour joins another colour's mix as a wash when that costs at most this much extra ΔE
+// over its own best recipe.
+export const WASH_TOLERANCE = 1
+
+/**
+ * The same mix with more or less water: every amount scaled by one factor so the result
+ * comes as close to the target as that mix can get.
+ * @param {Recipe} recipe  the mix to dilute or strengthen
+ * @param {string} targetHex
+ * @param {Record<string, {id:string, hex:string}>} paintsById
+ * @returns {Recipe|null} null when the recipe has no paints (paper white)
+ */
+export function washRecipe(recipe, targetHex, paintsById) {
+  if (!recipe?.paints.length) return null
+  const targetLab = linearToOklab(rgbToLinear(hexToRgb(targetHex)))
+  const candidate = recipe.paints.map((p) => ({ paint: paintsById[p.paintId], A: absorbanceFromHex(paintsById[p.paintId].hex) }))
+  const base = recipe.paints.map((p) => p.amount)
+  const error = (logT) => evaluate(candidate, base.map((v) => v * Math.exp(logT)), targetLab)
+  // Coarse scan over the water level, then golden-section search around the best step.
+  const lo = Math.log(0.02 / Math.max(...base))
+  const hi = Math.log(MAX_AMOUNT / Math.max(...base))
+  const steps = 48
+  let best = lo, bestErr = Infinity
+  for (let i = 0; i <= steps; i++) {
+    const t = lo + ((hi - lo) * i) / steps
+    const err = error(t)
+    if (err < bestErr) { bestErr = err; best = t }
+  }
+  let a = Math.max(lo, best - (hi - lo) / steps)
+  let b = Math.min(hi, best + (hi - lo) / steps)
+  const phi = (Math.sqrt(5) - 1) / 2
+  for (let i = 0; i < 24; i++) {
+    const c = b - (b - a) * phi
+    const d = a + (b - a) * phi
+    if (error(c) < error(d)) b = d
+    else a = c
+  }
+  const logT = (a + b) / 2
+  const factor = Math.exp(logT)
+  return toRecipe({ items: candidate.map((c, i) => ({ paint: c.paint, amount: base[i] * factor })), deltaE: error(logT) })
+}
+
+/**
+ * Decide which colours can share a mix. Colours are taken from the largest area down; each one
+ * either joins the mix of an earlier colour as a wash (same paints in the same ratio, only the
+ * water differs) or keeps its own best recipe and becomes a mix others can join.
+ * @param {Array<{hex:string, weight?:number, recipes:Recipe[]}>} colours  recipes = own recipes, best first
+ * @param {Array<{id:string, hex:string}>} paints
+ * @returns {Array<{family:number, wash:Recipe|null}>} family = index of the colour whose mix is used
+ */
+export function planWashes(colours, paints, { tolerance = WASH_TOLERANCE } = {}) {
+  const byId = Object.fromEntries(paints.map((p) => [p.id, p]))
+  const order = colours.map((_, i) => i).sort((x, y) => (colours[y].weight ?? 0) - (colours[x].weight ?? 0))
+  const anchors = []
+  const plan = colours.map((_, i) => ({ family: i, wash: null }))
+  for (const i of order) {
+    const own = colours[i].recipes[0]
+    if (!own?.paints.length) continue // paper white, or no paints to mix with
+    let best = null
+    for (const anchor of anchors) {
+      const wash = washRecipe(colours[anchor].recipes[0], colours[i].hex, byId)
+      if (wash.deltaE <= own.deltaE + tolerance && (!best || wash.deltaE < best.wash.deltaE)) best = { family: anchor, wash }
+    }
+    if (best) plan[i] = best
+    else anchors.push(i)
+  }
+  return plan
+}
+
 function toRecipe({ items, deltaE: err }) {
   const strength = items.reduce((s, it) => s + it.amount, 0)
   const linear = mixAbsorbances(items.map((it) => absorbanceFromHex(it.paint.hex)), items.map((it) => it.amount))
@@ -224,6 +293,24 @@ export function describeDilution(strength) {
   if (strength < 1.5) return 'medium'
   if (strength < 2.5) return 'rich'
   return 'very concentrated (layer/glaze)'
+}
+
+// Letter for the water level of a wash, used in the labels on the picture (6L = mix 6 as a light wash).
+export const WASH_LETTERS = [
+  { letter: 'W', label: 'very watery' },
+  { letter: 'L', label: 'light' },
+  { letter: 'M', label: 'medium' },
+  { letter: 'R', label: 'rich' },
+  { letter: 'C', label: 'concentrated' },
+]
+
+export function washLetter(strength) {
+  if (strength <= 0.02) return ''
+  if (strength < 0.35) return 'W'
+  if (strength < 0.8) return 'L'
+  if (strength < 1.5) return 'M'
+  if (strength < 2.5) return 'R'
+  return 'C'
 }
 
 /** Match quality label for a ΔE (OKLab ×100) value. */

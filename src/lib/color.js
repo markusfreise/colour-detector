@@ -60,6 +60,27 @@ export function oklabToHex(lab) {
   return rgbToHex(linearToRgb(oklabToLinear(lab)))
 }
 
+/**
+ * Saturation and contrast of a picture, applied in OKLab so hues stay put.
+ * @param {Uint8ClampedArray} rgba
+ * @param {{saturation?: number, contrast?: number}} options  1 = unchanged, 0 = grey / flat, 2 = double
+ * @returns {Uint8ClampedArray} a new array, or `rgba` itself when nothing changes
+ */
+export function adjustImage(rgba, { saturation = 1, contrast = 1 } = {}) {
+  if (saturation === 1 && contrast === 1) return rgba
+  const lut = new Float32Array(256)
+  for (let i = 0; i < 256; i++) lut[i] = srgbToLinear(i)
+  const out = new Uint8ClampedArray(rgba.length)
+  for (let i = 0; i < rgba.length; i += 4) {
+    const [L, a, b] = linearToOklab([lut[rgba[i]], lut[rgba[i + 1]], lut[rgba[i + 2]]])
+    // Contrast pivots on mid lightness.
+    const L2 = Math.min(1, Math.max(0, 0.5 + (L - 0.5) * contrast))
+    const [r, g, bl] = oklabToLinear([L2, a * saturation, b * saturation])
+    out[i] = linearToSrgb(r); out[i + 1] = linearToSrgb(g); out[i + 2] = linearToSrgb(bl); out[i + 3] = rgba[i + 3]
+  }
+  return out
+}
+
 // Euclidean distance in OKLab, scaled ×100 so 1 unit ≈ a just-noticeable difference.
 export function deltaE(labA, labB) {
   const dL = labA[0] - labB[0]

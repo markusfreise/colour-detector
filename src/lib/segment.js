@@ -1,7 +1,7 @@
 // Image segmentation into flat colour areas ("paint-by-numbers" style).
 //
 // 1. Optional box blur to suppress texture noise.
-// 2. k-means++ clustering in OKLab -> one label per pixel.
+// 2. Weighted k-means++ on the colour histogram in OKLab -> one label per pixel.
 // 3. Majority filter passes to smooth ragged edges.
 // 4. Connected components; regions smaller than `minRegion` pixels are merged
 //    into the neighbour they share the longest border with.
@@ -66,68 +66,135 @@ export function toOklabPixels(rgba, count) {
   return lab
 }
 
-function dist2(lab, p, c, ci) {
-  const dL = lab[p * 3] - c[ci * 3]
-  const da = lab[p * 3 + 1] - c[ci * 3 + 1]
-  const db = lab[p * 3 + 2] - c[ci * 3 + 2]
-  return dL * dL + da * da + db * db
+// Clustering defaults. Both exist because plain k-means follows the pixel count: a photo that is
+// mostly dark background spends nearly every colour on shades of that background and loses the
+// small, colourful parts (lips, a flower, a sign).
+export const CHROMA_WEIGHT = 5 // hue/saturation differences count this much more than lightness
+export const AREA_POWER = 0.4 // weight of a colour = (its pixel count) ^ AREA_POWER; 1 = plain k-means
+
+const BIN_L = 50 // histogram steps per unit of L
+const BIN_AB = 100 // histogram steps per unit of a and b
+
+/**
+ * Histogram of the picture's colours in OKLab: one point per occupied bin (mean colour, pixel count).
+ * Clustering runs on these points, so it is exact (no sampling) and independent of the picture size.
+ */
+export function colourBins(lab, count) {
+  const index = new Map()
+  const sums = []
+  const counts = []
+  for (let p = 0; p < count; p++) {
+    const L = lab[p * 3], a = lab[p * 3 + 1], b = lab[p * 3 + 2]
+    const key = Math.round(L * BIN_L) * 1048576 + (Math.round(a * BIN_AB) + 512) * 1024 + Math.round(b * BIN_AB) + 512
+    let i = index.get(key)
+    if (i === undefined) {
+      i = counts.length
+      index.set(key, i)
+      sums.push(0, 0, 0)
+      counts.push(0)
+    }
+    sums[i * 3] += L; sums[i * 3 + 1] += a; sums[i * 3 + 2] += b
+    counts[i]++
+  }
+  const n = counts.length
+  const points = new Float64Array(n * 3)
+  for (let i = 0; i < n; i++) {
+    points[i * 3] = sums[i * 3] / counts[i]
+    points[i * 3 + 1] = sums[i * 3 + 1] / counts[i]
+    points[i * 3 + 2] = sums[i * 3 + 2] / counts[i]
+  }
+  return { points, counts: Float64Array.from(counts) }
 }
 
-export function kmeans(lab, count, k, { iterations = 12, sampleSize = 30000, seed = 7 } = {}) {
+/**
+ * Weighted k-means++ on the colour histogram.
+ * Returns a label per pixel and the centroids (plain OKLab).
+ */
+export function kmeans(lab, count, k, { iterations = 24, seed = 7, chromaWeight = CHROMA_WEIGHT, areaPower = AREA_POWER } = {}) {
   const rand = mulberry32(seed)
-  const sampleN = Math.min(count, sampleSize)
-  const sample = new Int32Array(sampleN)
-  for (let i = 0; i < sampleN; i++) sample[i] = sampleN === count ? i : Math.floor(rand() * count)
-
-  // k-means++ seeding on the sample
-  const centroids = new Float32Array(k * 3)
-  const first = sample[Math.floor(rand() * sampleN)]
-  centroids.set(lab.subarray(first * 3, first * 3 + 3), 0)
-  const d = new Float64Array(sampleN).fill(Infinity)
-  for (let c = 1; c < k; c++) {
-    let sum = 0
-    for (let i = 0; i < sampleN; i++) {
-      d[i] = Math.min(d[i], dist2(lab, sample[i], centroids, c - 1))
-      sum += d[i]
-    }
-    let r = rand() * sum
-    let chosen = sample[sampleN - 1]
-    for (let i = 0; i < sampleN; i++) {
-      r -= d[i]
-      if (r <= 0) { chosen = sample[i]; break }
-    }
-    centroids.set(lab.subarray(chosen * 3, chosen * 3 + 3), c * 3)
+  const { points, counts } = colourBins(lab, count)
+  const n = counts.length
+  const kk = Math.min(k, n)
+  // Work in a stretched space: a and b scaled by chromaWeight.
+  const pts = new Float64Array(n * 3)
+  const weight = new Float64Array(n)
+  for (let i = 0; i < n; i++) {
+    pts[i * 3] = points[i * 3]
+    pts[i * 3 + 1] = points[i * 3 + 1] * chromaWeight
+    pts[i * 3 + 2] = points[i * 3 + 2] * chromaWeight
+    weight[i] = Math.pow(counts[i], areaPower)
+  }
+  const centroids = new Float64Array(k * 3)
+  const d2 = (i, c) => {
+    const dL = pts[i * 3] - centroids[c * 3]
+    const da = pts[i * 3 + 1] - centroids[c * 3 + 1]
+    const db = pts[i * 3 + 2] - centroids[c * 3 + 2]
+    return dL * dL + da * da + db * db
   }
 
-  // Lloyd iterations on the sample
-  const assign = (p) => {
+  // k-means++ seeding: the first centre is the most common colour, the rest are drawn
+  // with probability weight x squared distance to the nearest centre so far.
+  let first = 0
+  for (let i = 1; i < n; i++) if (counts[i] > counts[first]) first = i
+  centroids.set(pts.subarray(first * 3, first * 3 + 3), 0)
+  const d = new Float64Array(n).fill(Infinity)
+  for (let c = 1; c < kk; c++) {
+    let sum = 0
+    for (let i = 0; i < n; i++) {
+      d[i] = Math.min(d[i], d2(i, c - 1))
+      sum += d[i] * weight[i]
+    }
+    let r = rand() * sum
+    let chosen = n - 1
+    for (let i = 0; i < n; i++) {
+      r -= d[i] * weight[i]
+      if (r <= 0) { chosen = i; break }
+    }
+    centroids.set(pts.subarray(chosen * 3, chosen * 3 + 3), c * 3)
+  }
+
+  // Lloyd iterations on the bins
+  const nearest = (L, a, b) => {
     let best = 0, bestD = Infinity
-    for (let c = 0; c < k; c++) {
-      const dd = dist2(lab, p, centroids, c)
+    for (let c = 0; c < kk; c++) {
+      const dL = L - centroids[c * 3], da = a - centroids[c * 3 + 1], db = b - centroids[c * 3 + 2]
+      const dd = dL * dL + da * da + db * db
       if (dd < bestD) { bestD = dd; best = c }
     }
     return best
   }
   for (let it = 0; it < iterations; it++) {
-    const sums = new Float64Array(k * 3)
-    const counts = new Int32Array(k)
-    for (let i = 0; i < sampleN; i++) {
-      const p = sample[i]
-      const c = assign(p)
-      sums[c * 3] += lab[p * 3]; sums[c * 3 + 1] += lab[p * 3 + 1]; sums[c * 3 + 2] += lab[p * 3 + 2]
-      counts[c]++
+    const sums = new Float64Array(kk * 3)
+    const total = new Float64Array(kk)
+    for (let i = 0; i < n; i++) {
+      const c = nearest(pts[i * 3], pts[i * 3 + 1], pts[i * 3 + 2])
+      const w = weight[i]
+      sums[c * 3] += pts[i * 3] * w; sums[c * 3 + 1] += pts[i * 3 + 1] * w; sums[c * 3 + 2] += pts[i * 3 + 2] * w
+      total[c] += w
     }
-    for (let c = 0; c < k; c++) {
-      if (!counts[c]) continue
-      centroids[c * 3] = sums[c * 3] / counts[c]
-      centroids[c * 3 + 1] = sums[c * 3 + 1] / counts[c]
-      centroids[c * 3 + 2] = sums[c * 3 + 2] / counts[c]
+    let moved = 0
+    for (let c = 0; c < kk; c++) {
+      if (!total[c]) continue
+      for (let j = 0; j < 3; j++) {
+        const v = sums[c * 3 + j] / total[c]
+        moved = Math.max(moved, Math.abs(v - centroids[c * 3 + j]))
+        centroids[c * 3 + j] = v
+      }
     }
+    if (moved < 1e-5) break
   }
 
   const labels = new Int32Array(count)
-  for (let p = 0; p < count; p++) labels[p] = assign(p)
-  return { labels, centroids }
+  for (let p = 0; p < count; p++) {
+    labels[p] = nearest(lab[p * 3], lab[p * 3 + 1] * chromaWeight, lab[p * 3 + 2] * chromaWeight)
+  }
+  const out = new Float32Array(k * 3)
+  for (let c = 0; c < kk; c++) {
+    out[c * 3] = centroids[c * 3]
+    out[c * 3 + 1] = centroids[c * 3 + 1] / chromaWeight
+    out[c * 3 + 2] = centroids[c * 3 + 2] / chromaWeight
+  }
+  return { labels, centroids: out }
 }
 
 export function majorityFilter(labels, width, height, k, passes) {
@@ -273,12 +340,12 @@ export function labelAnchors(regionMap, width, height, regionCount) {
  * @param {Uint8ClampedArray} rgba image data at working resolution
  * @param {{colours:number, simplify:number}} options simplify 0..10
  */
-export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, seed = 7 } = {}) {
+export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, seed = 7, chromaWeight, areaPower } = {}) {
   const count = width * height
   const blurred = boxBlur(rgba, width, height, Math.round(simplify / 3))
   const lab = toOklabPixels(blurred, count)
   const k = Math.max(1, Math.min(colours, count))
-  const { labels: raw, centroids } = kmeans(lab, count, k, { seed })
+  const { labels: raw, centroids } = kmeans(lab, count, k, { seed, chromaWeight, areaPower })
 
   const smoothed = majorityFilter(raw, width, height, k, Math.ceil(simplify / 2))
   const minRegion = Math.round(count * 0.00004 * Math.pow(simplify + 1, 2.2))

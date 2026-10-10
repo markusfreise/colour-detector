@@ -1,7 +1,7 @@
 <template>
   <section v-if="entry" class="panel editor">
     <header class="editor__header">
-      <h2 class="panel__title">Colour {{ index + 1 }}</h2>
+      <h2 class="panel__title">Colour {{ entry.label }}</h2>
       <button class="button button--ghost" type="button" @click="analysis.selectEntry(null)">Close</button>
     </header>
 
@@ -39,6 +39,9 @@
     </button>
 
     <h3 class="editor__subtitle">Recipes</h3>
+    <p v-if="washes.length" class="editor__washes">
+      Same mix as {{ washes.join(', ') }} – only the amount of water differs.
+    </p>
     <ul class="editor__recipes">
       <li
         v-for="(r, i) in entry.recipes"
@@ -70,6 +73,12 @@ const sharedAreas = computed(() => {
   let n = 0
   for (const e of analysis.regionEntry) if (e === index.value) n++
   return n
+})
+
+// Labels of the other colours painted with this mix.
+const washes = computed(() => {
+  if (!entry.value || entry.value.chosen !== 0) return []
+  return analysis.entries.filter((e) => e !== entry.value && e.family === entry.value.family && e.chosen === 0).map((e) => e.label)
 })
 
 function onPick(event) {

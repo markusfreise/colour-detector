@@ -5,9 +5,11 @@
         <h2 id="paintbox-title" class="panel__title">Paint box</h2>
         <div class="paintbox__actions">
           <button
-            class="button button--ghost"
+            class="button"
+            :class="paints.activeBox.auto ? 'button--secondary' : 'button--ghost'"
             type="button"
-            title="Select the paints that suit this picture"
+            :aria-pressed="paints.activeBox.auto"
+            title="Let the app select the paints that suit each picture"
             :disabled="!analysis.entries.length"
             @click="auto"
           >
@@ -127,7 +129,6 @@ import { ref } from 'vue'
 import { usePaintsStore } from '../stores/paints.js'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { useProStore, FREE_BOXES } from '../stores/pro.js'
-import { proposePaints } from '../lib/mixing.js'
 import { chipStyle } from '../lib/color.js'
 import { paintNumber, paintForms } from '../lib/paintbox.js'
 import { horadamCatalogue } from '../data/horadam-catalogue.js'
@@ -169,9 +170,7 @@ function toggle(id, on) {
 
 // Let the app pick the paints for the current picture, from the default selection and the user's own paints.
 function auto() {
-  const targets = analysis.entries.map((e) => ({ hex: e.targetHex, weight: e.share }))
-  const stock = paints.all.filter((p) => p.enabled || p.custom)
-  paints.setEnabled(proposePaints(targets, stock, { maxPaints: analysis.settings.maxPaints }))
+  analysis.autoPaints(true)
   dirty.value = true
 }
 

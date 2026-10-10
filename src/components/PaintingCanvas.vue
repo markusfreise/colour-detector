@@ -32,7 +32,16 @@ function draw() {
   const { view, outlines, numbers } = analysis.settings
 
   if (view === 'original') {
-    ctx.drawImage(analysis.image, 0, 0, el.width, el.height)
+    // With saturation or contrast changed, show the photo as the analysis sees it.
+    if (analysis.adjusted) {
+      const off = document.createElement('canvas')
+      off.width = width
+      off.height = height
+      off.getContext('2d').putImageData(new ImageData(analysis.adjusted.rgba, width, height), 0, 0)
+      ctx.drawImage(off, 0, 0, el.width, el.height)
+    } else {
+      ctx.drawImage(analysis.image, 0, 0, el.width, el.height)
+    }
   } else {
     const colours = analysis.entries.map((e) => hexToRgb(analysis.displayHex(e)))
     const sel = analysis.selectedEntry
@@ -80,7 +89,7 @@ function draw() {
       const entryIndex = analysis.regionEntry[region.id]
       const entry = analysis.entries[entryIndex]
       ctx.fillStyle = view === 'original' ? '#ffffff' : contrastText(analysis.displayHex(entry))
-      ctx.fillText(String(entryIndex + 1), (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE)
+      ctx.fillText(entry.label, (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE)
     }
   }
 }

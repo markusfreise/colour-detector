@@ -1,0 +1,8 @@
+node_modules
+dist
+.DS_Store
+*.log
+.deploy.lock
+_project-assets
+webhook-config.php
+.env

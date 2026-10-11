@@ -1,20 +1,19 @@
 // Image segmentation into flat colour areas ("paint-by-numbers" style).
 //
-// 1. Optional box blur (from Simplify 2 on).
-// 2. Noise goes: the picture is cut into small patches along its edges and every pixel takes the
+// 1. Noise goes: the picture is cut into small patches along its edges and every pixel takes the
 //    colour of its patch (smooth.js).
-// 3. Clustering into mixes (absorbance directions) and their washes -> one label per pixel.
-// 4. The outlines of the areas are rounded (smooth.js).
-// 5. Connected components; areas too small for a brush join a neighbour, unless they stand out
-//    (an eye, a mouth).
-// 6. A label anchor per region (the pixel furthest from its border).
+// 2. Clustering into mixes (absorbance directions) and their washes -> one label per pixel.
+// 3. Calm areas (`calmAreas`): the details that stay are found (an eye, a letter), areas that are
+//    too small or too alike join, and the outlines are rounded. Simplify only turns this step up;
+//    the colours found do not change with it.
+// 4. Connected components and a label anchor per region (the pixel furthest from its border).
 //
 // Pure functions on typed arrays so it runs in a Web Worker and in tests.
 
 import { srgbToLinear, linearToOklab, oklabToLinear, oklabToHex, hexToOklab } from './color.js'
 import { geometricAreas } from './geometric.js'
 import { boxMask } from './details.js'
-import { compactPatches, patchColours, softColours, labelColours, smoothOutlines, mergeSmallAreas } from './smooth.js'
+import { compactPatches, patchColours, findDetails, mergeAreas, roundOutlines } from './smooth.js'
 
 export function mulberry32(seed) {
   let a = seed >>> 0
@@ -86,22 +85,35 @@ export const MAX_WASHES = 5
 const WASH_STEP = 0.55
 const MIN_REFLECTANCE = 0.0005
 
-// Side of the patches the picture is cut into before its colours are found, in pixels at Simplify 0.
+// Side of the patches the picture is cut into before its colours are found, in pixels.
 const PATCH_STEP = 5
 // Patches closer in colour than about this (OKLab) are evened out with each other.
 const PATCH_BLEND = 0.035
-// Rounding of the outlines at Simplify 0: the window around a pixel, and how much its own colour
-// counts against what is around it (see `smoothOutlines`).
+// Sizes in pixels are meant for a picture of this many pixels and scale with the picture
+// (areas with its pixels, the rounding window with its side).
+const REFERENCE_PIXELS = 480000
+// The smallest area that is no detail, in pixels at Simplify 0; it grows with (Simplify + 1) ^ MIN_AREA_POWER.
+const MIN_AREA = 72
+const MIN_AREA_POWER = 1.3
+// Nothing smaller than this many pixels is ever an area of its own, whatever the size of the picture.
+const SMALLEST_AREA = 6
+// Two areas join while that costs less than this at Simplify 0 (see `mergeAreas` for the cost),
+// and MERGE_GROWTH times more with every step of Simplify.
+const MERGE_LIMIT = 0.02
+const MERGE_GROWTH = 1.25
+// Before the details are looked for, the pieces of one thing join: at this part of MERGE_LIMIT.
+const TIDY_LIMIT = 0.25
+// A small area is a detail when losing it would cost at least this at Simplify 0 (see
+// `findDetails`), and DETAIL_GROWTH times more with every step: details go later than areas join,
+// so a face still has eyes when its cheeks are one area.
+const DETAIL_LIMIT = 0.04
+const DETAIL_GROWTH = 1.1
+// Rounding of the outlines: the window around a pixel at Simplify 0, and what a step of Simplify adds.
 const OUTLINE_RADIUS = 3
-const OUTLINE_FIDELITY = 40
-// The smallest area at Simplify 0, as a part of the picture (about 72 pixels of 480,000).
-const MIN_AREA = 0.00015
-// A smaller area stays when its colour is this far (OKLab) from everything around it.
-const KEEP_CONTRAST = 0.15
-// ... and it is at least this part of the smallest area at Simplify 0 (growing with Simplify).
-const KEEP_SIZE = 0.25
-// The smallest area inside a focus box, in pixels.
-const FOCUS_MIN_AREA = 6
+const OUTLINE_RADIUS_STEP = 0.3
+const OUTLINE_PASSES = 2
+// Inside a focus box the areas are as at Simplify 0, and both limits are this part of theirs there.
+const FOCUS_LIMIT = 0.5
 
 const BIN_L = 50 // histogram steps per unit of L
 const BIN_AB = 100 // histogram steps per unit of a and b
@@ -412,50 +424,84 @@ export function labelAnchors(regionMap, width, height, regionCount) {
 }
 
 /**
+ * Calm areas from the labels of the clustering, in five steps:
+ * 1. pieces of a few pixels join a neighbour, so that a letter or an eye is one area;
+ * 2. the details are found: small or thin areas that stand out. They stay as they are from here on;
+ * 3. areas join: the ones too small for a brush always, larger ones while it costs little;
+ * 4. the outlines are rounded;
+ * 5. what the rounding cut off or made too small joins a neighbour.
+ * `simplify` (0..10) raises the smallest area, both limits and the rounding; the joining goes
+ * through every step up to it, so a higher step joins what the lower one left. Inside `where`
+ * (a mask of the focus boxes) the areas are those of Simplify 0, with half the limits.
+ * @param {Int32Array} raw  cluster per pixel
+ * @param {Float32Array} lab  colour per pixel, without noise
+ * @returns {Int32Array} cluster per pixel
+ */
+export function calmAreas(raw, lab, width, height, k, simplify, where = null) {
+  const count = width * height
+  const minSizeAt = (level) => Math.max(SMALLEST_AREA, Math.round(MIN_AREA * (count / REFERENCE_PIXELS) * Math.pow(level + 1, MIN_AREA_POWER)))
+  const mergeLimitAt = (level) => MERGE_LIMIT * Math.pow(MERGE_GROWTH, level)
+  const detailLimitAt = (level) => DETAIL_LIMIT * Math.pow(DETAIL_GROWTH, level)
+  const radiusAt = (level) => Math.max(1, Math.round((OUTLINE_RADIUS + level * OUTLINE_RADIUS_STEP) * Math.sqrt(count / REFERENCE_PIXELS)))
+
+  // One stage per step of Simplify below the one asked for, then that one (see `mergeAreas`).
+  const stageAt = (level) => ({ minSize: minSizeAt(level), limit: mergeLimitAt(level), detailLimit: detailLimitAt(level) })
+  const stages = []
+  for (let level = 0; level < simplify; level++) stages.push(stageAt(level))
+  const last = stageAt(simplify)
+  stages.push(last)
+  const inside = { minSize: minSizeAt(0), limit: mergeLimitAt(0) * FOCUS_LIMIT, detailLimit: detailLimitAt(0) * FOCUS_LIMIT }
+
+  const tidy = mergeAreas(raw, lab, width, height, [{ minSize: SMALLEST_AREA, limit: MERGE_LIMIT * TIDY_LIMIT }])
+  const details = findDetails(tidy, lab, width, height, { minSize: SMALLEST_AREA, maxSize: last.minSize })
+  const merged = mergeAreas(tidy, lab, width, height, stages, { details, where, inside })
+  // The details that are left: no outline of theirs is rounded.
+  const fixed = new Uint8Array(count)
+  for (let p = 0; p < count; p++) fixed[p] = details[p] > 0 && details[p] >= (where && where[p] ? inside : last).detailLimit ? 1 : 0
+  const rounded = roundOutlines(merged, width, height, k, { radius: radiusAt(simplify), passes: OUTLINE_PASSES, fixed })
+  if (where && simplify > 0) {
+    const fine = roundOutlines(merged, width, height, k, { radius: radiusAt(0), passes: OUTLINE_PASSES, fixed, only: where })
+    for (let p = 0; p < count; p++) if (where[p]) rounded[p] = fine[p]
+  }
+  return mergeAreas(rounded, lab, width, height, [last], { details, where, inside })
+}
+
+/**
  * Full pipeline.
  * @param {Uint8ClampedArray} rgba image data at working resolution
  * @param {{colours:number, simplify:number, geometric:boolean}} options colours = number of mixes,
  *   simplify 0..10, geometric = areas as polygons with straight edges instead of their organic outline,
  *   anchors = hex colours that are the mixes (then `colours` is not used),
- *   focus = boxes [left, top, right, bottom] (0..1) in which the areas are not simplified
+ *   focus = boxes [left, top, right, bottom] (0..1) in which the areas stay as fine as at Simplify 0
+ *   and details are kept more readily, whatever `simplify` is
  */
 export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, focus = null, seed = 7, areaPower, maxWashes, lightnessWeight } = {}) {
   const count = width * height
-  const blurred = boxBlur(rgba, width, height, Math.round(simplify / 3))
   // Noise goes before the colours are found: every pixel takes the colour of its patch.
-  const noisy = toOklabPixels(blurred, count)
-  const patches = compactPatches(noisy, width, height, PATCH_STEP + simplify * 0.5)
-  const lab = patchColours(noisy, width, height, patches, { blend: PATCH_BLEND * (1 + simplify * 0.15) })
+  const original = toOklabPixels(rgba, count)
+  const patches = compactPatches(original, width, height, PATCH_STEP)
+  const lab = patchColours(original, width, height, patches, { blend: PATCH_BLEND })
   const { labels: raw, clusters: found } = clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), {
     seed, areaPower, maxWashes, lightnessWeight,
     // Given colours (hex) as the mixes, instead of finding them.
     anchors: given?.length ? given.map(hexToOklab) : null,
   })
   const k = found.length
-
-  const tones = labelColours(raw, lab, k)
-  const soft = softColours(lab, width, height, 1 + Math.floor(simplify / 4))
-  const smoothed = smoothOutlines(raw, soft, tones, width, height, k, {
-    radius: OUTLINE_RADIUS,
-    passes: simplify < 3 ? 1 : 2,
-    fidelity: OUTLINE_FIDELITY / (1 + simplify * 0.15),
-  })
-  const minRegion = Math.max(2, Math.round(count * MIN_AREA * Math.pow(simplify + 1, 1.3)))
-  const merged = mergeSmallAreas(smoothed, lab, width, height, minRegion, { keepSize: count * MIN_AREA * KEEP_SIZE * (1 + simplify), keepContrast: KEEP_CONTRAST })
-  let labels = geometric ? geometricAreas(merged, width, height, simplify) : merged
-  if (focus?.length) {
-    // Where the details are, the areas stay fine: outlines are only tidied and only specks go.
-    const where = boxMask(focus, width, height)
-    const tidy = smoothOutlines(raw, lab, tones, width, height, k, { radius: 1, passes: 1, fidelity: OUTLINE_FIDELITY * 2 })
-    const fine = Int32Array.from(labels)
-    for (let p = 0; p < count; p++) if (where[p]) fine[p] = tidy[p]
-    labels = mergeSmallAreas(fine, lab, width, height, FOCUS_MIN_AREA)
+  const where = focus?.length ? boxMask(focus, width, height) : null
+  const calm = calmAreas(raw, lab, width, height, k, simplify, where)
+  let labels = calm
+  if (geometric) {
+    labels = geometricAreas(calm, width, height, simplify)
+    if (where) {
+      // Where the details are, the areas keep their own outlines; what that cuts off joins a neighbour.
+      for (let p = 0; p < count; p++) if (where[p]) labels[p] = calm[p]
+      labels = mergeAreas(labels, lab, width, height, [{ minSize: SMALLEST_AREA }])
+    }
   }
 
-  // Cluster colours from the actual (unblurred) pixels they cover.
+  // Cluster colours from the pixels of the photo they cover, not from the colours of the patches.
   const sums = new Float64Array(k * 3)
   const counts = new Int32Array(k)
-  const original = toOklabPixels(rgba, count)
   for (let p = 0; p < count; p++) {
     const c = labels[p]
     sums[c * 3] += original[p * 3]; sums[c * 3 + 1] += original[p * 3 + 1]; sums[c * 3 + 2] += original[p * 3 + 2]

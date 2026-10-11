@@ -1,29 +1,51 @@
-// Calm colour areas: the steps of `segmentImage` that keep noise out of the areas and round their outlines.
+// Calm colour areas: the steps of `segmentImage` that keep noise out of the areas, decide which
+// small things stay, join what is too alike to be painted apart and round the outlines.
 //
 // 1. The picture is cut into small compact patches that follow its edges (`compactPatches`).
 // 2. Every patch gets one robust colour, evened out with the patches around it that are nearly the
 //    same colour (`patchColours`). Pixels then take the colour of their patch, so noise, grain and
 //    JPEG blocks are gone before the colours are clustered, while an edge stays where it is.
-//    Within one colour the patches run into each other, so a slow change (fog, sky, skin) gives
-//    curved outlines and not the outlines of patches.
-// 3. After clustering, the outlines are rounded (`smoothOutlines`): a pixel takes the colour most
-//    pixels around it have, unless its own colour (slightly out of focus, `softColours`) clearly
-//    says otherwise.
-// 4. Areas too small for a brush join a neighbour (`mergeSmallAreas`), unless they stand out.
+// 3. After clustering, the details are found (`findDetails`): the small or thin areas that stand
+//    out from what is around them (an eye, a letter, a wire). They are decided once, as a whole,
+//    and no later step touches them.
+// 4. Areas join (`mergeAreas`): what is too small for a brush always, larger areas while it costs
+//    the picture little.
+// 5. The outlines are rounded (`roundOutlines`): a pixel takes the label most pixels around it have.
 //
-// Pure functions on typed arrays, like the rest of the pipeline.
-
-import { connectedComponents } from './segment.js'
+// Pure functions on typed arrays, like the rest of the pipeline. Nothing here imports segment.js.
 
 // How much the distance to the centre of a patch counts against a difference in colour (OKLab):
 // higher gives rounder patches, lower lets them follow faint edges (and noise).
 const COMPACTNESS = 0.08
 const PATCH_ROUNDS = 4
+// A pixel is left out of the colour of its patch when it is further from the mean of the patch
+// than this many times the average pixel of the patch (plus a little, for a patch that is flat).
+const STRAY = 1.5
+const STRAY_EXTRA = 0.005
 // A pixel this far (OKLab) from the colour of its patch is not noise but something small of its
 // own (a highlight in an eye, a wire against the sky): it keeps its colour.
 const OWN_COLOUR = 0.09
-// Part of the window around a pixel that a colour must hold before the pixel can take it.
+// How far the colour of a patch reaches into the patches around it, in patch sides.
+const PATCH_REACH = 0.6
+// The window of `roundOutlines` is a disc in which a pixel at the rim counts this much less than
+// the one in the middle (the rim lies ROUND_FALLOFF standard deviations out).
+const ROUND_FALLOFF = 1.5
+// Part of the window around a pixel that a label must hold before the pixel can take it.
 const MIN_SHARE = 0.2
+// A detail differs at least this much (OKLab) from the colour around it ...
+const DETAIL_CONTRAST = 0.12
+// ... taken this many pixels away from it ...
+const DETAIL_RING = 3
+// ... where at most this part of the pixels is as close as DETAIL_ALIKE to its colour.
+const DETAIL_ALIKE = 0.06
+const DETAIL_ALIKE_SHARE = 0.25
+// An area larger than `maxSize` can still be a detail when it is thin: at most this many pixels
+// per pixel of outline (a wire, a line of writing).
+const DETAIL_THIN = 1.5
+// Details of one colour this close together (pixels) are one group ...
+const DETAIL_GROUP = 8
+// ... when each is worth at least this part of what a detail on its own must be worth.
+const DETAIL_WEAKEST = 0.5
 
 /**
  * Cut the picture into compact patches of about step x step pixels that follow its edges
@@ -83,17 +105,25 @@ export function compactPatches(lab, width, height, step) {
 }
 
 /**
- * The picture with every pixel in the colour of its patch.
- * The colour of a patch is the mean of its pixels without the ones that stray (so a patch that
- * holds a bit of something else is not tinted by it), then evened out `rounds` times with the
- * patches around it, each counting the less the further its colour is away (`blend` = the
- * difference in OKLab at which a neighbour hardly counts any more): noise that is larger than a
- * patch goes, an edge between two different colours stays.
+ * The picture with every pixel in the colour of its patch: the robust colour of the patch
+ * (`robustColours`), evened out with the patches around it (`evenColours`) and run smoothly from
+ * patch to patch (`spreadColours`). Noise that is larger than a patch goes, an edge between two
+ * different colours stays. `blend` = the difference in OKLab at which a neighbour hardly counts.
  * @returns {Float32Array} OKLab per pixel
  */
-export function patchColours(lab, width, height, { patchOf, cols, rows }, { blend = 0.03, rounds = 4 } = {}) {
-  const count = width * height
-  const n = cols * rows
+export function patchColours(lab, width, height, patches, { blend = 0.03, rounds = 4 } = {}) {
+  const { robust, sizes } = robustColours(lab, patches.patchOf, patches.cols * patches.rows)
+  const even = evenColours(robust, sizes, patches.cols, patches.rows, blend, rounds)
+  return spreadColours(lab, width, height, patches, sizes, robust, even, blend)
+}
+
+/**
+ * One colour per patch: the mean of its pixels without the ones that stray, so a patch that holds
+ * a bit of something else is not tinted by it.
+ * @returns {{robust: Float64Array, sizes: Float64Array}}  OKLab and pixel count per patch
+ */
+export function robustColours(lab, patchOf, n) {
+  const count = patchOf.length
   const mean = new Float64Array(n * 3)
   const sizes = new Float64Array(n)
   for (let p = 0; p < count; p++) {
@@ -111,23 +141,30 @@ export function patchColours(lab, width, height, { patchOf, cols, rows }, { blen
     away[p] = Math.sqrt(dL * dL + da * da + db * db)
     spread[c] += away[p]
   }
-  // Robust colour: the mean of the pixels that are not far out.
-  let colour = new Float64Array(n * 3)
+  const robust = new Float64Array(n * 3)
   const kept = new Float64Array(n)
   for (let p = 0; p < count; p++) {
     const c = patchOf[p]
-    if (away[p] > 1.5 * (spread[c] / sizes[c]) + 0.005) continue
-    colour[c * 3] += lab[p * 3]; colour[c * 3 + 1] += lab[p * 3 + 1]; colour[c * 3 + 2] += lab[p * 3 + 2]
+    if (away[p] > STRAY * (spread[c] / sizes[c]) + STRAY_EXTRA) continue
+    robust[c * 3] += lab[p * 3]; robust[c * 3 + 1] += lab[p * 3 + 1]; robust[c * 3 + 2] += lab[p * 3 + 2]
     kept[c]++
   }
   for (let c = 0; c < n; c++) {
-    for (let j = 0; j < 3; j++) colour[c * 3 + j] = kept[c] ? colour[c * 3 + j] / kept[c] : mean[c * 3 + j]
+    for (let j = 0; j < 3; j++) robust[c * 3 + j] = kept[c] ? robust[c * 3 + j] / kept[c] : mean[c * 3 + j]
   }
-  const robust = colour
-  // Even out with the eight patches around, by size and by closeness in colour.
+  return { robust, sizes }
+}
+
+/**
+ * Even out the colours of the patches, `rounds` times, with the eight patches around each: every
+ * neighbour counts by its size and the less the further its colour is away.
+ * @returns {Float64Array} OKLab per patch
+ */
+export function evenColours(colours, sizes, cols, rows, blend, rounds) {
   const falloff = 1 / (blend * blend)
+  let colour = colours
   for (let round = 0; round < rounds; round++) {
-    const next = new Float64Array(n * 3)
+    const next = new Float64Array(colour.length)
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const c = row * cols + col
@@ -151,8 +188,20 @@ export function patchColours(lab, width, height, { patchOf, cols, rows }, { blen
     }
     colour = next
   }
-  // Where every patch lies, and how much each of the patches around it counts for its pixels:
-  // nothing across an edge, so the edge stays sharp.
+  return colour
+}
+
+/**
+ * Give every pixel the colours of its patch and the patches around it, each by how near its
+ * centre is and by how alike the two patches are (nothing across an edge, so the edge stays
+ * sharp). Within one colour the picture then runs smoothly from patch to patch instead of in
+ * steps. A pixel far from the `robust` colour of its patch (OWN_COLOUR) keeps its own colour.
+ * @param {Float64Array} colours  OKLab per patch, after `evenColours`
+ * @returns {Float32Array} OKLab per pixel
+ */
+export function spreadColours(lab, width, height, { patchOf, cols, rows }, sizes, robust, colours, blend) {
+  const count = width * height
+  const n = cols * rows
   const centre = new Float64Array(n * 2)
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -160,27 +209,25 @@ export function patchColours(lab, width, height, { patchOf, cols, rows }, { blen
       centre[c * 2] += x; centre[c * 2 + 1] += y
     }
   }
+  for (let c = 0; c < n; c++) if (sizes[c]) { centre[c * 2] /= sizes[c]; centre[c * 2 + 1] /= sizes[c] }
+  // alike[c * 9 + i] = how much the i-th of the nine patches at and around c counts for the pixels of c.
   const alike = new Float32Array(n * 9)
-  const sharp = 1 / (blend * blend * 0.5)
+  const sharp = 2 / (blend * blend)
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       const c = row * cols + col
       if (!sizes[c]) continue
-      centre[c * 2] /= sizes[c]; centre[c * 2 + 1] /= sizes[c]
       for (let i = 0; i < 9; i++) {
         const rr = row + Math.floor(i / 3) - 1, cc = col + (i % 3) - 1
         if (rr < 0 || rr >= rows || cc < 0 || cc >= cols || !sizes[rr * cols + cc]) continue
         const q = rr * cols + cc
-        const dL = colour[q * 3] - colour[c * 3], da = colour[q * 3 + 1] - colour[c * 3 + 1], db = colour[q * 3 + 2] - colour[c * 3 + 2]
+        const dL = colours[q * 3] - colours[c * 3], da = colours[q * 3 + 1] - colours[c * 3 + 1], db = colours[q * 3 + 2] - colours[c * 3 + 2]
         alike[c * 9 + i] = Math.exp(-(dL * dL + da * da + db * db) * sharp)
       }
     }
   }
-  // A pixel gets the colours of its patch and the patches around it, each by how near its centre
-  // is: within one colour the picture runs smoothly from patch to patch instead of in steps, so
-  // the outlines of the areas become curves and not the outlines of patches.
-  const step = Math.sqrt(count / n)
-  const nearness = 1 / (2 * (0.6 * step) * (0.6 * step))
+  const reach = PATCH_REACH * Math.sqrt(count / n)
+  const nearness = 1 / (2 * reach * reach)
   const out = new Float32Array(count * 3)
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -199,56 +246,14 @@ export function patchColours(lab, width, height, { patchOf, cols, rows }, { blen
         const q = (row + Math.floor(i / 3) - 1) * cols + col + (i % 3) - 1
         const dx = x - centre[q * 2], dy = y - centre[q * 2 + 1]
         const w = like * Math.exp(-(dx * dx + dy * dy) * nearness)
-        L += colour[q * 3] * w; a += colour[q * 3 + 1] * w; b += colour[q * 3 + 2] * w; total += w
+        L += colours[q * 3] * w; a += colours[q * 3 + 1] * w; b += colours[q * 3 + 2] * w; total += w
       }
-      if (total > 1e-12) { out[p * 3] = L / total; out[p * 3 + 1] = a / total; out[p * 3 + 2] = b / total }
-      else { out[p * 3] = colour[c * 3]; out[p * 3 + 1] = colour[c * 3 + 1]; out[p * 3 + 2] = colour[c * 3 + 2] }
+      // No patch near enough to count: the colour of its own patch.
+      if (total > 0) { out[p * 3] = L / total; out[p * 3 + 1] = a / total; out[p * 3 + 2] = b / total }
+      else { out[p * 3] = colours[c * 3]; out[p * 3 + 1] = colours[c * 3 + 1]; out[p * 3 + 2] = colours[c * 3 + 2] }
     }
   }
   return out
-}
-
-/**
- * The colours of a picture slightly out of focus: the mean over a square of `radius` pixels around
- * every pixel. Used to place outlines: a jagged edge between two colours becomes an even slope,
- * and the outline runs along its middle. (A stronger blur would lose strokes one pixel wide.)
- * @returns {Float32Array} OKLab per pixel
- */
-export function softColours(lab, width, height, radius) {
-  const tmp = new Float32Array(lab.length), out = new Float32Array(lab.length)
-  meanAlong(lab, tmp, width, height, 3, width * 3, radius)
-  meanAlong(tmp, out, height, width, width * 3, 3, radius)
-  return out
-}
-
-// Running mean over 2 x radius + 1 values along every line (`step` from pixel to pixel, `stride`
-// from line to line); at the ends the line is continued with its last pixel.
-function meanAlong(src, dst, length, lines, step, stride, radius) {
-  const span = 2 * radius + 1
-  for (let line = 0; line < lines; line++) {
-    for (let j = 0; j < 3; j++) {
-      const start = line * stride + j
-      let sum = 0
-      for (let i = -radius; i <= radius; i++) sum += src[start + Math.min(length - 1, Math.max(0, i)) * step]
-      for (let i = 0; i < length; i++) {
-        dst[start + i * step] = sum / span
-        sum += src[start + Math.min(length - 1, i + radius + 1) * step] - src[start + Math.max(0, i - radius) * step]
-      }
-    }
-  }
-}
-
-/** Mean colour (OKLab) of the pixels of every label; labels without pixels stay at 0. */
-export function labelColours(labels, lab, k) {
-  const colours = new Float64Array(k * 3)
-  const sizes = new Float64Array(k)
-  for (let p = 0; p < labels.length; p++) {
-    const c = labels[p]
-    colours[c * 3] += lab[p * 3]; colours[c * 3 + 1] += lab[p * 3 + 1]; colours[c * 3 + 2] += lab[p * 3 + 2]
-    sizes[c]++
-  }
-  for (let c = 0; c < k; c++) if (sizes[c]) { colours[c * 3] /= sizes[c]; colours[c * 3 + 1] /= sizes[c]; colours[c * 3 + 2] /= sizes[c] }
-  return colours
 }
 
 // Widen a mask by `radius` pixels along its lines: `step` from pixel to pixel in a line of
@@ -273,21 +278,19 @@ function widen(mask, out, length, lines, step, stride, radius) {
 /**
  * Round the outlines of the areas of a label map.
  * Every pixel near an outline takes the label that most pixels around it have (a round window of
- * `radius` pixels, near pixels counting more), weighed against how well the colour of that label
- * fits the pixel: `fidelity` x the squared OKLab distance. So an outline between two similar
- * colours becomes a calm curve and specks go, while a thin or small shape in a clearly different
- * colour (a spire, an eye) holds its ground.
- * @param {Float32Array} lab  colour per pixel
- * @param {Float64Array} colours  colour per label (see `labelColours`)
+ * `radius` pixels, near pixels counting more), `passes` times. Teeth, steps and thin tongues
+ * narrower than the window go, and an outline becomes a curve a brush can follow.
+ * Pixels marked in `fixed` (the details) are counted but never changed; with `only` (a mask)
+ * nothing outside it is changed.
  */
-export function smoothOutlines(labels, lab, colours, width, height, k, { radius = 3, passes = 2, fidelity = 40 } = {}) {
+export function roundOutlines(labels, width, height, k, { radius = 3, passes = 2, fixed = null, only = null } = {}) {
   if (radius < 1 || passes < 1) return labels
-  // The window: a disc, near pixels counting more.
-  const sigma = radius / 1.5
+  const sigma = radius / ROUND_FALLOFF
   const offX = [], offY = [], offW = []
   let total = 0
   for (let dy = -radius; dy <= radius; dy++) {
     for (let dx = -radius; dx <= radius; dx++) {
+      // The disc: every pixel whose middle is within radius + 1/2 of the middle of the window.
       if (dx * dx + dy * dy > (radius + 0.5) * (radius + 0.5)) continue
       const w = Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma))
       offX.push(dx); offY.push(dy); offW.push(w)
@@ -295,7 +298,6 @@ export function smoothOutlines(labels, lab, colours, width, height, k, { radius 
     }
   }
   const taps = offW.length
-  const reach = Math.ceil(radius * 0.6)
   const weight = Float32Array.from(offW, (w) => w / total)
   const shift = Int32Array.from(offX, (dx, i) => offY[i] * width + dx)
   const votes = new Float32Array(k)
@@ -303,26 +305,24 @@ export function smoothOutlines(labels, lab, colours, width, height, k, { radius 
   const edge = new Uint8Array(labels.length), across = new Uint8Array(labels.length), near = new Uint8Array(labels.length)
   let src = labels
   for (let pass = 0; pass < passes; pass++) {
-    // Only pixels near an outline are looked at: further away no other colour holds enough of the
-    // window. After the first pass that is: near a pixel that changed.
-    let any = pass > 0
+    // Only pixels within `radius` of an outline can change: further away the window holds one
+    // label. After the first pass that is: within `radius` of a pixel that changed.
     if (pass === 0) for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const p = y * width + x
-        if (x < width - 1 && src[p] !== src[p + 1]) { edge[p] = edge[p + 1] = 1; any = true }
-        if (y < height - 1 && src[p] !== src[p + width]) { edge[p] = edge[p + width] = 1; any = true }
+        if (x < width - 1 && src[p] !== src[p + 1]) edge[p] = edge[p + 1] = 1
+        if (y < height - 1 && src[p] !== src[p + width]) edge[p] = edge[p + width] = 1
       }
     }
-    widen(edge, across, width, height, 1, width, reach)
-    widen(across, near, height, width, width, 1, reach)
-    if (!any) break
+    widen(edge, across, width, height, 1, width, radius)
+    widen(across, near, height, width, width, 1, radius)
     const dst = Int32Array.from(src)
     edge.fill(0)
     let changed = false
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const p = y * width + x
-        if (!near[p]) continue
+        if (!near[p] || (fixed && fixed[p]) || (only && !only[p])) continue
         let found = 0
         if (x >= radius && x < width - radius && y >= radius && y < height - radius) {
           for (let i = 0; i < taps; i++) {
@@ -339,20 +339,14 @@ export function smoothOutlines(labels, lab, colours, width, height, k, { radius 
             votes[c] += weight[i]
           }
         }
+        // The label with the most votes; on a tie the pixel stays as it is, then the lower label
+        // wins. A label that is hardly there (MIN_SHARE) cannot take the pixel.
         const own = src[p]
-        let best = own, least = Infinity
-        if (found > 1) {
-          const L = lab[p * 3], a = lab[p * 3 + 1], b = lab[p * 3 + 2]
-          for (let i = 0; i < found; i++) {
-            const c = seen[i]
-            // A colour that is hardly there cannot take the pixel: otherwise a colour between two
-            // others would creep along the edge between them, pass after pass.
-            if (c !== own && votes[c] < MIN_SHARE) continue
-            const dL = L - colours[c * 3], da = a - colours[c * 3 + 1], db = b - colours[c * 3 + 2]
-            const cost = fidelity * (dL * dL + da * da + db * db) - votes[c]
-            // On a tie the pixel stays as it is, then the lower label wins: the same result every time.
-            if (cost < least - 1e-9 || (Math.abs(cost - least) <= 1e-9 && (c === own || (best !== own && c < best)))) { least = cost; best = c }
-          }
+        let best = own
+        for (let i = 0; i < found; i++) {
+          const c = seen[i]
+          if (c === own || votes[c] < MIN_SHARE) continue
+          if (votes[c] > votes[best] || (votes[c] === votes[best] && best !== own && c < best)) best = c
         }
         for (let i = 0; i < found; i++) votes[seen[i]] = 0
         if (best !== own) { dst[p] = best; edge[p] = 1; changed = true }
@@ -365,69 +359,313 @@ export function smoothOutlines(labels, lab, colours, width, height, k, { radius 
 }
 
 /**
- * Join every area smaller than `minRegion` pixels with a neighbour: the one it shares a long
- * border with and is close to in colour. Unlike `mergeSmallRegions` this always finishes: an area
- * only ever joins a larger one, round after round, until no small area is left.
- * A small area that stands out stays (an eye, a mouth, a lit window): its colour is at least
- * `keepContrast` (OKLab) away from everything around it and it has at least `keepSize` pixels;
- * the stronger the contrast, the smaller it may be (black letters on white).
- * @param {Float32Array} lab  colour per pixel
+ * The areas of a label map: connected pixels of one label (4 neighbours), numbered row by row.
+ * The same areas as `connectedComponents` in segment.js, on typed arrays only.
+ * @returns {{areaOf: Int32Array, labelOf: Int32Array, sizeOf: Int32Array, count: number}}
  */
-export function mergeSmallAreas(labels, lab, width, height, minRegion, { keepSize = Infinity, keepContrast = Infinity } = {}) {
-  let current = labels
-  for (let round = 0; round < 40; round++) {
-    const { regionMap, regionCluster, regionSize } = connectedComponents(current, width, height)
-    const n = regionSize.length
-    let anySmall = false
-    for (let r = 0; r < n; r++) if (regionSize[r] < minRegion) { anySmall = true; break }
-    if (!anySmall) return current
-    const colour = labelColours(regionMap, lab, n)
-    // Border length of every small area with each of its neighbours.
-    const border = new Map()
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const p = y * width + x
-        const r = regionMap[p]
-        if (regionSize[r] >= minRegion) continue
-        for (let side = 0; side < 4; side++) {
-          const q = side === 0 ? (x > 0 ? p - 1 : -1) : side === 1 ? (x < width - 1 ? p + 1 : -1) : side === 2 ? (y > 0 ? p - width : -1) : (y < height - 1 ? p + width : -1)
-          if (q < 0) continue
-          const rq = regionMap[q]
-          if (rq === r) continue
-          let m = border.get(r)
-          if (!m) { m = new Map(); border.set(r, m) }
-          m.set(rq, (m.get(rq) || 0) + 1)
+export function findAreas(labels, width, height) {
+  const total = labels.length
+  const areaOf = new Int32Array(total).fill(-1)
+  const labelOf = new Int32Array(total), sizeOf = new Int32Array(total)
+  const stack = new Int32Array(total)
+  let count = 0
+  for (let start = 0; start < total; start++) {
+    if (areaOf[start] !== -1) continue
+    const label = labels[start]
+    let top = 0, size = 0
+    stack[top++] = start
+    areaOf[start] = count
+    while (top) {
+      const p = stack[--top]
+      size++
+      const x = p % width
+      if (x > 0 && areaOf[p - 1] === -1 && labels[p - 1] === label) { areaOf[p - 1] = count; stack[top++] = p - 1 }
+      if (x < width - 1 && areaOf[p + 1] === -1 && labels[p + 1] === label) { areaOf[p + 1] = count; stack[top++] = p + 1 }
+      if (p >= width && areaOf[p - width] === -1 && labels[p - width] === label) { areaOf[p - width] = count; stack[top++] = p - width }
+      if (p + width < total && areaOf[p + width] === -1 && labels[p + width] === label) { areaOf[p + width] = count; stack[top++] = p + width }
+    }
+    labelOf[count] = label
+    sizeOf[count] = size
+    count++
+  }
+  return { areaOf, labelOf: labelOf.slice(0, count), sizeOf: sizeOf.slice(0, count), count }
+}
+
+/**
+ * The details of a label map: the small things worth keeping (an eye, a mouth, a letter, a lit
+ * window, a wire). One rule decides it, for a whole area at a time and before anything is joined
+ * or rounded, so a detail is kept whole or not at all. An area can be a detail when
+ * - it has `minSize` to `maxSize` pixels, or more when it is thin (DETAIL_THIN);
+ * - its colour is at least DETAIL_CONTRAST (OKLab) away from the colour around it: the mean of
+ *   the pixels DETAIL_RING away from it. The strip between a dark and a light area is therefore
+ *   none: what is around it is, taken together, its own colour;
+ * - hardly any of those pixels has its colour (DETAIL_ALIKE_SHARE), so a bump on a larger area
+ *   of nearly the same colour is none either.
+ * What it is worth is what losing it would cost: its thickness (pixels per pixel of outline) x
+ * the square of that distance in colour. A thin stroke is worth much when it is strong (a
+ * letter), a faint shape has to be thick. The caller keeps the details worth more than a limit.
+ * Such areas of one colour that lie close together are a group (the letters of a line, the
+ * pieces of a wire) and are worth what the best of them is worth, so that they stay or go
+ * together; but none more than 1 / DETAIL_WEAKEST times its own worth.
+ * @param {Float32Array} lab  colour per pixel
+ * @returns {Float32Array} per pixel: the worth of the detail it belongs to, 0 where there is none
+ */
+export function findDetails(labels, lab, width, height, { minSize = 1, maxSize = Infinity } = {}) {
+  const total = labels.length
+  const { areaOf, sizeOf, count } = findAreas(labels, width, height)
+  // The pixels of every area in a row: first[r] .. first[r + 1] in `pixels`.
+  const first = new Int32Array(count + 1)
+  for (let r = 0; r < count; r++) first[r + 1] = first[r] + sizeOf[r]
+  const filled = first.slice(0, count)
+  const pixels = new Int32Array(total)
+  for (let p = 0; p < total; p++) pixels[filled[areaOf[p]]++] = p
+  const ring = [-DETAIL_RING, DETAIL_RING, -DETAIL_RING * width, DETAIL_RING * width]
+  // worth[r] = what losing area r would cost; -1 when it cannot be a detail.
+  const worth = new Float64Array(count).fill(-1)
+  const colour = new Float64Array(count * 3)
+  for (let r = 0; r < count; r++) {
+    const size = sizeOf[r]
+    if (size < minSize) continue
+    let L = 0, a = 0, b = 0
+    for (let i = first[r]; i < first[r + 1]; i++) { const p = pixels[i]; L += lab[p * 3]; a += lab[p * 3 + 1]; b += lab[p * 3 + 2] }
+    L /= size; a /= size; b /= size
+    let outline = 0, around = 0, alike = 0, sL = 0, sa = 0, sb = 0
+    for (let i = first[r]; i < first[r + 1]; i++) {
+      const p = pixels[i]
+      const x = p % width, y = (p - x) / width
+      if (x > 0 && areaOf[p - 1] !== r) outline++
+      if (x < width - 1 && areaOf[p + 1] !== r) outline++
+      if (y > 0 && areaOf[p - width] !== r) outline++
+      if (y < height - 1 && areaOf[p + width] !== r) outline++
+      for (let side = 0; side < 4; side++) {
+        if (side === 0 ? x < DETAIL_RING : side === 1 ? x >= width - DETAIL_RING : side === 2 ? y < DETAIL_RING : y >= height - DETAIL_RING) continue
+        const q = p + ring[side]
+        if (areaOf[q] === r) continue
+        const dL = lab[q * 3] - L, da = lab[q * 3 + 1] - a, db = lab[q * 3 + 2] - b
+        if (dL * dL + da * da + db * db < DETAIL_ALIKE * DETAIL_ALIKE) alike++
+        sL += lab[q * 3]; sa += lab[q * 3 + 1]; sb += lab[q * 3 + 2]
+        around++
+      }
+    }
+    if (!around || !outline || alike > around * DETAIL_ALIKE_SHARE) continue
+    if (size > maxSize && size > outline * DETAIL_THIN) continue
+    const dL = sL / around - L, da = sa / around - a, db = sb / around - b
+    const contrast2 = dL * dL + da * da + db * db
+    if (contrast2 < DETAIL_CONTRAST * DETAIL_CONTRAST) continue
+    worth[r] = (size / outline) * contrast2
+    colour[r * 3] = L; colour[r * 3 + 1] = a; colour[r * 3 + 2] = b
+  }
+  // Groups: group[r] = the area that stands for the group of r.
+  const group = new Int32Array(count)
+  for (let r = 0; r < count; r++) group[r] = r
+  const head = (r) => {
+    while (group[r] !== r) { group[r] = group[group[r]]; r = group[r] }
+    return r
+  }
+  // A grid of cells; an area is noted in the cells within half a cell of its pixels, and joins
+  // the group of the area noted there before it when the two are about one colour.
+  const cellsAcross = Math.ceil(width / DETAIL_GROUP) + 1, half = DETAIL_GROUP >> 1
+  const noted = new Int32Array(cellsAcross * (Math.ceil(height / DETAIL_GROUP) + 1)).fill(-1)
+  for (let r = 0; r < count; r++) {
+    if (worth[r] < 0) continue
+    for (let i = first[r]; i < first[r + 1]; i++) {
+      const x = pixels[i] % width, y = (pixels[i] - x) / width
+      for (let corner = 0; corner < 4; corner++) {
+        const cx = Math.max(0, x + (corner & 1 ? half : -half)), cy = Math.max(0, y + (corner & 2 ? half : -half))
+        const cell = Math.floor(cy / DETAIL_GROUP) * cellsAcross + Math.floor(cx / DETAIL_GROUP)
+        const other = noted[cell]
+        if (other < 0) { noted[cell] = r; continue }
+        if (other === r) continue
+        const dL = colour[other * 3] - colour[r * 3], da = colour[other * 3 + 1] - colour[r * 3 + 1], db = colour[other * 3 + 2] - colour[r * 3 + 2]
+        if (dL * dL + da * da + db * db >= DETAIL_CONTRAST * DETAIL_CONTRAST) continue
+        const g = head(r), h = head(other)
+        if (g !== h) group[Math.max(g, h)] = Math.min(g, h)
+      }
+    }
+  }
+  const best = new Float64Array(count)
+  for (let r = 0; r < count; r++) {
+    if (worth[r] < 0) continue
+    const g = head(r)
+    if (worth[r] > best[g]) best[g] = worth[r]
+  }
+  const out = new Float32Array(total)
+  for (let r = 0; r < count; r++) {
+    if (worth[r] < 0) continue
+    const value = Math.min(best[head(r)], worth[r] / DETAIL_WEAKEST)
+    for (let i = first[r]; i < first[r + 1]; i++) out[pixels[i]] = value
+  }
+  return out
+}
+
+/**
+ * Join areas of a label map until every area left is worth painting on its own, in `stages`: each
+ * a `{ minSize, limit, detailLimit }`, worked through one after the other on what the one before
+ * left. So the areas of a later stage are always made of whole areas of an earlier one, and
+ * raising the stages step by step (Simplify) can only lower the number of areas.
+ * In a stage one of three things holds for an area:
+ * - it is a detail (its pixels are worth `detailLimit` or more on average, see `findDetails`
+ *   for `details`): it counts as large enough, however small it is;
+ * - else, when it is smaller than `minSize` pixels: it joins the neighbour that costs least,
+ *   whatever the cost;
+ * - an area that is large enough joins a neighbour only while that costs less than `limit`,
+ *   cheapest pair first.
+ * The cost of joining two areas is what the picture loses: the square of the distance of their
+ * colours (OKLab) x the pixels that change colour (about the size of the smaller one) / the
+ * length of the outline that goes. So patches of nearly one colour inside a coat or a cheek run
+ * together, and two large areas with a short common outline stay apart.
+ * The joined area takes the label of the larger of the two; a detail that takes in an area too
+ * small to stay keeps its own.
+ * For an area with most of its pixels inside `where` (a mask, 1 = inside) the stage does not
+ * count: `inside` (`{ minSize, limit, detailLimit }`) is used at every stage.
+ *
+ * Works in rounds on the list of neighbours: in every round each area picks its cheapest
+ * neighbour, and two areas that pick each other join (a small area joins without being picked).
+ * There is no limit on the rounds and none is needed: the cheapest pair of all always pick each
+ * other, so a round either joins something, leaving fewer areas, or is the last of its stage.
+ * On equal cost the neighbour with the lower number is picked; areas are numbered row by row.
+ * @param {Float32Array} lab  colour per pixel
+ * @param {Array<{minSize?: number, limit?: number, detailLimit?: number}>} stages
+ */
+export function mergeAreas(labels, lab, width, height, stages, { details = null, where = null, inside = null } = {}) {
+  const total = labels.length
+  const { areaOf, labelOf, sizeOf, count } = findAreas(labels, width, height)
+  if (count < 2) return labels
+  // Per area: size, sum of its colours, sum of the worth of its pixels as details, pixels in `where`.
+  const size = Float64Array.from(sizeOf)
+  const sum = new Float64Array(count * 3)
+  const worth = new Float64Array(count), within = new Float64Array(count)
+  for (let p = 0; p < total; p++) {
+    const r = areaOf[p]
+    sum[r * 3] += lab[p * 3]; sum[r * 3 + 1] += lab[p * 3 + 1]; sum[r * 3 + 2] += lab[p * 3 + 2]
+    if (details) worth[r] += details[p]
+    if (where && where[p]) within[r]++
+  }
+  // The neighbours: one entry a * count + b (a < b) per pixel side between two areas, sorted, then
+  // counted: pairs of areas with the length of their common outline.
+  const keys = new Float64Array(total * 2)
+  let sides = 0
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const p = y * width + x, r = areaOf[p]
+      if (x < width - 1 && r !== areaOf[p + 1]) keys[sides++] = Math.min(r, areaOf[p + 1]) * count + Math.max(r, areaOf[p + 1])
+      if (y < height - 1 && r !== areaOf[p + width]) keys[sides++] = Math.min(r, areaOf[p + width]) * count + Math.max(r, areaOf[p + width])
+    }
+  }
+  keys.subarray(0, sides).sort()
+  const lengths = new Float64Array(sides)
+  let pairs = 0
+  for (let i = 0; i < sides; i++) {
+    if (pairs && keys[pairs - 1] === keys[i]) lengths[pairs - 1]++
+    else { keys[pairs] = keys[i]; lengths[pairs++] = 1 }
+  }
+
+  // into[r] = the area r has joined (itself when it has joined none).
+  const into = new Int32Array(count)
+  for (let r = 0; r < count; r++) into[r] = r
+  const end = (r) => {
+    while (into[r] !== r) { into[r] = into[into[r]]; r = into[r] }
+    return r
+  }
+  // Per area, for the stage at hand: the cost up to which it joins, whether it is a detail,
+  // whether it is too small to stay.
+  const limitOf = new Float64Array(count)
+  const kept = new Uint8Array(count), small = new Uint8Array(count), open = new Uint8Array(count)
+  const pick = new Int32Array(count)
+  const least = new Float64Array(count)
+  // Area `go` becomes part of area `stay`.
+  const join = (stay, go) => {
+    into[go] = stay
+    within[stay] += within[go]
+    size[stay] += size[go]
+    sum[stay * 3] += sum[go * 3]; sum[stay * 3 + 1] += sum[go * 3 + 1]; sum[stay * 3 + 2] += sum[go * 3 + 2]
+  }
+  for (const stage of stages) {
+    for (;;) {
+      // Two joined areas that came to lie side by side with one label are one area to the eye.
+      let joined = false
+      for (let i = 0; i < pairs; i++) {
+        const a = end(Math.floor(keys[i] / count)), b = end(keys[i] - Math.floor(keys[i] / count) * count)
+        if (a === b || labelOf[a] !== labelOf[b]) continue
+        const stay = size[a] >= size[b] ? a : b, go = stay === a ? b : a
+        worth[stay] += worth[go]
+        join(stay, go)
+        joined = true
+      }
+      if (!joined) {
+        for (let r = 0; r < count; r++) {
+          if (into[r] !== r) continue
+          const rule = inside && within[r] * 2 > size[r] ? inside : stage
+          limitOf[r] = rule.limit ?? 0
+          kept[r] = details && worth[r] > 0 && worth[r] >= (rule.detailLimit ?? Infinity) * size[r] ? 1 : 0
+          small[r] = !kept[r] && size[r] < (rule.minSize ?? 1) ? 1 : 0
+        }
+        // An area with nothing but details around it is part of them (the inside of a letter): it stays too.
+        if (details) {
+          open.fill(0)
+          for (let i = 0; i < pairs; i++) {
+            const a = Math.floor(keys[i] / count), b = keys[i] - a * count
+            if (!kept[b]) open[a] = 1
+            if (!kept[a]) open[b] = 1
+          }
+          for (let r = 0; r < count; r++) if (!open[r]) small[r] = 0
+        }
+        pick.fill(-1)
+        least.fill(Infinity)
+        for (let i = 0; i < pairs; i++) {
+          const a = Math.floor(keys[i] / count), b = keys[i] - a * count
+          const dL = sum[a * 3] / size[a] - sum[b * 3] / size[b], da = sum[a * 3 + 1] / size[a] - sum[b * 3 + 1] / size[b], db = sum[a * 3 + 2] / size[a] - sum[b * 3 + 2] / size[b]
+          const cost = (dL * dL + da * da + db * db) * (size[a] * size[b] / (size[a] + size[b])) / lengths[i]
+          // Two areas that are large enough join only when it is cheap enough for both.
+          // The pairs come sorted, so on equal cost the lower neighbour is picked.
+          const free = cost < Math.min(limitOf[a], limitOf[b])
+          if ((small[a] || free) && cost < least[a]) { least[a] = cost; pick[a] = b }
+          if ((small[b] || free) && cost < least[b]) { least[b] = cost; pick[b] = a }
+        }
+        for (let r = 0; r < count; r++) {
+          const other = pick[r]
+          if (other < 0 || (!small[r] && pick[other] !== r)) continue
+          const a = end(r), b = end(other)
+          if (a === b) continue
+          // The larger one stays (the lower one when they are equal) and takes the other in; but a
+          // detail is not lost to an area that is too small to stay itself.
+          const stay = kept[a] && small[b] ? a : kept[b] && small[a] ? b : size[a] > size[b] || (size[a] === size[b] && a < b) ? a : b
+          const go = stay === a ? b : a
+          // What a detail takes in becomes part of it; a detail taken in is none any more.
+          worth[stay] = kept[stay] ? worth[stay] * (size[stay] + size[go]) / size[stay] : 0
+          join(stay, go)
+          joined = true
         }
       }
-    }
-    // target[r] = the area r joins, or -1 when it stays.
-    const target = new Int32Array(n).fill(-1)
-    let joins = 0
-    for (const [r, m] of border) {
-      let best = -1, bestScore = -1, closest = Infinity
-      for (const [q, length] of m) {
-        const d = Math.hypot(colour[q * 3] - colour[r * 3], colour[q * 3 + 1] - colour[r * 3 + 1], colour[q * 3 + 2] - colour[r * 3 + 2])
-        if (d < closest) closest = d
-        // Only into a larger area (or an equal one that comes later): two small areas never swap.
-        if (regionSize[q] < regionSize[r] || (regionSize[q] === regionSize[r] && q < r)) continue
-        const score = length / (0.03 + d)
-        if (score > bestScore) { bestScore = score; best = q }
+      if (!joined) break
+      // The neighbours of the joined areas: the same pairs under their new numbers, counted again.
+      let left = 0
+      for (let i = 0; i < pairs; i++) {
+        const a = end(Math.floor(keys[i] / count)), b = end(keys[i] - Math.floor(keys[i] / count) * count)
+        if (a === b) continue
+        keys[left] = Math.min(a, b) * count + Math.max(a, b)
+        lengths[left++] = lengths[i]
       }
-      if (closest >= keepContrast && regionSize[r] * closest >= keepSize * keepContrast) continue
-      if (best >= 0) { target[r] = best; joins++ }
+      pairs = combinePairs(keys, lengths, left)
     }
-    if (!joins) return current
-    // Follow the joins to their end, so that a chain of small areas goes in one round.
-    const cluster = regionCluster.slice()
-    for (let r = 0; r < n; r++) {
-      if (target[r] < 0) continue
-      let end = target[r]
-      while (target[end] >= 0) end = target[end]
-      cluster[r] = regionCluster[end]
-    }
-    const next = new Int32Array(current.length)
-    for (let p = 0; p < next.length; p++) next[p] = cluster[regionMap[p]]
-    current = next
   }
-  return current
+  const out = new Int32Array(total)
+  for (let p = 0; p < total; p++) out[p] = labelOf[end(areaOf[p])]
+  return out
+}
+
+// Sort the first `n` pairs by key and add up the lengths of equal ones, in place.
+// @returns {number} how many different pairs are left
+function combinePairs(keys, lengths, n) {
+  const order = new Int32Array(n)
+  for (let i = 0; i < n; i++) order[i] = i
+  order.sort((i, j) => keys[i] - keys[j] || i - j)
+  const sortedKeys = new Float64Array(n), sortedLengths = new Float64Array(n)
+  for (let i = 0; i < n; i++) { sortedKeys[i] = keys[order[i]]; sortedLengths[i] = lengths[order[i]] }
+  let left = 0
+  for (let i = 0; i < n; i++) {
+    if (left && keys[left - 1] === sortedKeys[i]) lengths[left - 1] += sortedLengths[i]
+    else { keys[left] = sortedKeys[i]; lengths[left] = sortedLengths[i]; left++ }
+  }
+  return left
 }

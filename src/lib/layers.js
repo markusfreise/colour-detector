@@ -117,10 +117,15 @@ const ACCENT_PRICE = 0.5
 // hue or saturation: a small bright yellow is then worth as much as a much larger dark.
 const COLOUR_CHROMA = 0.1
 const COLOUR_LIGHTNESS = 0.5
-// For the accent for the darks a miss counts by how dark the picture is there: fully below
-// OKLab lightness DARK_FULL, not at all above DARK_FROM.
-const DARK_FROM = 0.6
+// The accent for the darks is dark: one coat of it on white paper is darker than DARK_COAT
+// (OKLab lightness), or there is none. It goes on parts of the picture darker than DARK_FROM,
+// and a miss counts by how dark the picture is there, fully below DARK_FULL.
+const DARK_COAT = 0.45
+const DARK_FROM = 0.5
 const DARK_FULL = 0.3
+// An accent is a step too. It need not pay like a wash, it is there for the small things, but it
+// must lower the mean distance of the whole picture by at least this.
+const ACCENT_STEP_PRICE = 0.05
 // An accent does not go on near-neutral pixels (below this chroma) in paper-white surroundings
 // (mean lightness above PAPER_LIGHTNESS over about PAPER_WINDOW pixels each way): print on white,
 // glints, the grain of a white wall are not what a brush is for.
@@ -397,18 +402,39 @@ const paintsOf = (chosen) => new Set(chosen.map((layer) => layer.paint))
 function planWashes(set, paints, options) {
   const maxRatio = options.graded && options.maxCoats > 1 ? MAX_RATIO : 1
   let best = null
-  for (const ratios of maxRatio > 1 && !options.start ? [[1], RATIOS] : [maxRatio > 1 ? RATIOS : [1]]) {
-    const chosen = searchWashes(set, paints, { ...options, ratios, maxRatio })
-    const combos = combinations(tablesOf(chosen), pricesOf(chosen))
-    const { best: combo, error } = closest(combos, set.points, set.n)
-    let sum = chosen.reduce((steps, layer) => steps + layer.top, 0) * STEP_PRICE
-    for (let i = 0; i < set.n; i++) {
-      const clean = dulling(set.points[i * 3 + 1], set.points[i * 3 + 2])
-      sum += (set.weights[i] / 100) * (error[i] + (combos.work[combo[i]] + clean * combos.dull[combo[i]]) * 100)
+  // Adding one paint at a time, the last paint can pay for itself where a plan with one paint
+  // less, found on its own, does as well with fewer steps. So that plan is looked at too.
+  const counts = options.start || options.count < 3 ? [options.count] : [options.count, options.count - 1]
+  const starts = maxRatio > 1 && !options.start ? [[1], RATIOS] : [maxRatio > 1 ? RATIOS : [1]]
+  for (const [count, ratios] of counts.flatMap((c) => starts.map((r) => [c, r]))) {
+    let chosen = searchWashes(set, paints, { ...options, count, ratios, maxRatio })
+    let sum = planCost(chosen, set)
+    // The search judges a step by a shortcut. Counted exactly, with every colour free to choose
+    // among all combinations, a coat or a whole layer may not pay after all: it goes.
+    for (let pruned = true; pruned && chosen.length > 1; ) {
+      pruned = false
+      for (let k = 0; k < chosen.length; k++) {
+        const less = chosen.map((layer, i) => (i === k ? { ...layer, top: layer.top - 1 } : layer)).filter((layer) => layer.top > 0)
+        const cost = planCost(less, set)
+        if (cost <= sum + 1e-9) { chosen = less; sum = cost; pruned = true; break }
+      }
     }
     if (!best || sum < best.sum - 1e-9) best = { chosen, sum }
   }
   return best.chosen
+}
+
+// What a plan of washes costs: the mean distance of the colours, each with the combination that
+// suits it best, plus the work in those combinations, plus the steps.
+function planCost(chosen, set) {
+  const combos = combinations(tablesOf(chosen), pricesOf(chosen))
+  const { best, error } = closest(combos, set.points, set.n)
+  let sum = chosen.reduce((steps, layer) => steps + layer.top, 0) * STEP_PRICE
+  for (let i = 0; i < set.n; i++) {
+    const clean = dulling(set.points[i * 3 + 1], set.points[i * 3 + 2])
+    sum += (set.weights[i] / 100) * (error[i] + (combos.work[best[i]] + clean * combos.dull[best[i]]) * 100)
+  }
+  return sum
 }
 
 // One run of the search: add the paint that pays most, one at a time, as long as one pays;
@@ -563,7 +589,7 @@ function residual({ base, points, counts }) {
 // - 'colour': a colour of the picture that is missing. Misses count by the chroma of the picture
 //   and by how much of that colour the washes lack (a hue that is not there at all counts fully,
 //   one that is only too pale hardly), lightness counts less, and the accent must bring hue and
-//   saturation closer.
+//   saturation closer. The dark parts of the picture are left to the accent for the darks.
 // - 'dark': a dark part that comes out too light. Misses count by how dark the picture is there.
 // - 'any': every miss, saturated ones more.
 function accentGain(candidate, table, spots, role, apply = false) {
@@ -594,7 +620,7 @@ function accentGain(candidate, table, spots, role, apply = false) {
     if (withIt >= without) continue
     let weight = detail[i]
     if (role === 'colour') {
-      if (onHue >= offHue || chroma < COLOUR_CHROMA / 2) continue
+      if (onHue >= offHue || chroma < COLOUR_CHROMA / 2 || L < DARK_FROM) continue
       weight *= (chroma / COLOUR_CHROMA) * missing
     } else if (role === 'dark') {
       if (L >= baseL || L >= DARK_FROM) continue
@@ -610,10 +636,18 @@ function accentGain(candidate, table, spots, role, apply = false) {
   return { gain, share }
 }
 
+// Whether one coat of this wash on white paper is dark enough for the accent for the darks.
+function darkCoat(candidate, strength) {
+  const d = depth(strength, candidate.limit)
+  writeLab(Math.exp(-d * candidate.A[0]), Math.exp(-d * candidate.A[1]), Math.exp(-d * candidate.A[2]), scratch, 0)
+  return scratch[0] < DARK_COAT
+}
+
 // The accents: one strong wash at a time, of the paint and strength that take most away from what
 // is left over, as long as one pays. The first is for a colour of the picture that is missing,
 // the second for the darks, a third for whatever is missed most; a role nothing pays for is
-// passed over. So with more accents allowed the first ones stay the same.
+// passed over, and when no paint is dark enough there is no accent for the darks. So with more
+// accents allowed the first ones stay the same.
 function chooseAccents(washes, spots, paints, count) {
   const chosen = []
   const pool = paints.map((paint) => {
@@ -625,6 +659,7 @@ function chooseAccents(washes, spots, paints, count) {
   for (const role of ['colour', 'dark', 'any']) {
     if (chosen.length >= count || !spots.n || size * 2 > MAX_COMBINATIONS) break
     const gainOf = (candidate, strength) => {
+      if (role === 'dark' && !darkCoat(candidate, strength)) return 0
       const { gain, share } = accentGain(candidate, tableOf(candidate, strength), spots, role)
       return share > ACCENT_SHARE * 100 ? 0 : gain
     }
@@ -711,7 +746,9 @@ function describeLayers(chosen, unused, maxCoats) {
       ratio: layer.ratio,
       washes: Array.from({ length: maxCoats }, (_, c) => washAt(c)),
       depths: Array.from({ length: maxCoats + 1 }, (_, c) => depth(under + coatAmount(Math.min(c, layer.top), layer.strength, layer.ratio), layer.limit) - depth(under, layer.limit)),
-      hexes: Array.from({ length: maxCoats + 1 }, (_, c) => linearHex(filters, c * 3)),
+      // Of an accent over its own wash paint, `filters` is what it adds there; the colour to
+      // prepare and to test on white paper is that of the wash by itself.
+      hexes: under ? ['#ffffff', ...Array.from({ length: maxCoats }, () => linearHex(filterTable(layer.A, layer.limit, layer.strength, 1, 1), 3))] : Array.from({ length: maxCoats + 1 }, (_, c) => linearHex(filters, c * 3)),
       filters,
     }
   })
@@ -1091,8 +1128,9 @@ export function layerImage(rgba, width, height, paints, { count, paintIds, maxCo
       const dL = all.lab[q * 3] - lab[p * 3], da = all.lab[q * 3 + 1] - lab[p * 3 + 1], db = all.lab[q * 3 + 2] - lab[p * 3 + 2]
       return Math.sqrt(dL * dL + da * da + db * db) + all.work[q] + clean[p] * all.dull[q]
     }
+    const darks = layers[k].role === 'dark'
     for (let p = 0; p < pixels; p++) {
-      if (clutter[p]) continue
+      if (clutter[p] || (darks && lab[p * 3] >= DARK_FROM)) continue
       // Over the washes as they are ...
       const without = costOf(code[p], p)
       let withIt = costOf(code[p] + radix[k], p)
@@ -1111,7 +1149,10 @@ export function layerImage(rgba, width, height, paints, { count, paintIds, maxCo
     regionCluster.forEach((on, r) => { if (on) shapes.push(r) })
     shapes.sort((x, y) => worth[y] - worth[x] || x - y)
     const kept = new Uint8Array(regionCluster.length)
-    for (const r of shapes.slice(0, ACCENT_SHAPES)) if (worth[r] > 0) kept[r] = 1
+    let bought = 0
+    for (const r of shapes.slice(0, ACCENT_SHAPES)) if (worth[r] > 0) { kept[r] = 1; bought += worth[r] }
+    // All its shapes together must be worth the step.
+    if ((bought / pixels) * 100 < ACCENT_STEP_PRICE) kept.fill(0)
     for (let p = 0; p < pixels; p++) {
       calmed[p] = kept[regionMap[p]]
       code[p] += calmed[p] * radix[k]

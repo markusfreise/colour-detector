@@ -95,7 +95,7 @@ export const useAnalysisStore = defineStore('analysis', {
       mode: 'mix', // mix = colours mixed on the palette; layer = glazes of a few base paints
       layerCount: 5, // layer mode: base paints the app proposes
       layerSimplify: 4, // layer mode: its own "Simplify areas"; every layer has to be painted by hand
-      layerAccents: 2, // layer mode: accent layers at most (a strong wash on small areas, painted last)
+      layerAccents: 3, // layer mode: accent layers at most (a strong wash on small areas, painted last)
       maxCoats: 2, // layer mode: coats of one wash an area can get
       colours: 20,
       simplify: 0,

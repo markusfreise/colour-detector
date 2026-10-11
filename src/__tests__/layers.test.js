@@ -427,3 +427,47 @@ describe('what accents are for', () => {
     expect(res.combos[res.comboMap[40 * 160 + 4]].hex).toBe('#ffffff')
   })
 })
+
+describe('the accent for the darks', () => {
+  const pale = { id: 'p', hex: '#a0d0eb' }
+  // A pale blue picture with a little very dark in it.
+  const colours = (paint) => colourSet([
+    { hex: glaze([paint, 0.5]), weight: 600 },
+    { hex: glaze([paint, 1]), weight: 397 },
+    { hex: glaze([paint, 1], [black, 3.5]), weight: 3 },
+  ])
+
+  it('is dark: one coat of it on white paper is a dark colour', () => {
+    const fit = fitLayers(colours(pale), [pale, yellow, blue, black], { maxCoats: 2, accents: 2 })
+    const dark = fit.layers.filter((l) => l.role === 'dark')
+    expect(dark).toHaveLength(1)
+    expect(hexToOklab(dark[0].hexes[1])[0]).toBeLessThan(0.46)
+    expect(dark[0].strength).toBeGreaterThan(0.8)
+    expect(fit.coats[2][fit.layers.indexOf(dark[0])]).toBe(1)
+    // The same holds when the paint of the accent is also a wash: the colour to prepare is the
+    // accent's own stroke on white, not what it adds over the wash.
+    const reuse = fitLayers(colourSet([{ hex: glaze([blue, 0.15]), weight: 600 }, { hex: glaze([blue, 0.3]), weight: 397 }, { hex: glaze([blue, 3.5]), weight: 3 }]), [blue], { maxCoats: 2, accents: 2 })
+    for (const layer of reuse.layers.filter((l) => l.role === 'dark')) expect(hexToOklab(layer.hexes[1])[0]).toBeLessThan(0.46)
+  })
+
+  it('is left out when no paint is dark enough, and a pale layer is never called dark', () => {
+    for (const accents of [1, 2, 3]) {
+      const fit = fitLayers(colours(pale), [pale, yellow], { maxCoats: 2, accents })
+      expect(fit.layers.some((l) => l.role === 'dark')).toBe(false)
+      for (const layer of fit.layers) if (layer.kind === 'accent') expect(['colour', 'any']).toContain(layer.role)
+    }
+  })
+
+  it('goes on the dark parts of a picture only', () => {
+    const light = hexToRgb(glaze([pale, 1])), mid = hexToRgb(glaze([blue, 0.5])), deep = hexToRgb(glaze([blue, 0.5], [black, 3.5]))
+    // A light field, a mid-blue band, and dark strokes in both.
+    const rgba = makeImage(120, 120, (x, y) => ((x + 2 * y) % 80 < 3 ? deep : y < 80 ? light : mid))
+    const res = layerImage(rgba, 120, 120, [pale, blue, black], { paintIds: ['p', 'b', 'k'], maxCoats: 2, simplify: 2, accents: 2 })
+    const dark = res.layers.find((l) => l.role === 'dark')
+    expect(hexToOklab(dark.hexes[1])[0]).toBeLessThan(0.46)
+    let on = 0, onDark = 0
+    for (let p = 0; p < 120 * 120; p++) if (dark.coatMap[p]) { on++; if ((p % 120 + 2 * Math.floor(p / 120)) % 80 < 3) onDark++ }
+    expect(on).toBeGreaterThan(200)
+    expect(onDark / on).toBeGreaterThan(0.9)
+  })
+})

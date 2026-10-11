@@ -17,4 +17,7 @@
 @import './components/_pro.css';
 @import './components/_consent.css';
 @import './components/_legend.css';
+@import './components/_layers.css';
+@import './components/_steps.css';
+@import './components/_layersheet.css';
 @import './layouts/_print.css';

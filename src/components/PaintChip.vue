@@ -1,11 +1,11 @@
 <template>
   <label
     class="chip paintbox__chip"
-    :class="{ 'paintbox__chip--used': used }"
+    :class="{ 'paintbox__chip--used': used, 'paintbox__chip--disabled': disabled }"
     :style="chipStyle(paint.hex)"
     :title="description"
   >
-    <input class="paintbox__checkbox" type="checkbox" :checked="enabled" @change="emit('toggle', $event.target.checked)" />
+    <input class="paintbox__checkbox" type="checkbox" :checked="enabled" :disabled="disabled" @change="emit('toggle', $event.target.checked)" />
     <span v-if="showForm" class="paintbox__form">{{ paintForms(paint) }}</span>
     <span class="chip__strong">{{ paintNumber(paint.number) }}</span>
     <span class="chip__text paintbox__name">{{ paint.name }}</span>
@@ -21,6 +21,8 @@ const props = defineProps({
   paint: { type: Object, required: true },
   enabled: { type: Boolean, default: false },
   used: { type: Boolean, default: false },
+  // Cannot be added right now (layer mode with all its layers taken).
+  disabled: { type: Boolean, default: false },
   // Show P/T (pan/tube) in the corner – for lists that mix both forms.
   showForm: { type: Boolean, default: false },
 })

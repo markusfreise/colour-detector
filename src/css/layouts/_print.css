@@ -6,8 +6,11 @@
   .app { max-width: none; padding: 0; }
   .app__main { display: block; }
   .app__stage { position: static; }
-  .app__tagline, .app__hint, .app__sidebar, .app__footer, .consent, .paintbox, .collection, .pro, .painting__status { display: none; }
+  .app__tagline, .app__hint, .app__sidebar, .app__footer, .consent, .paintbox, .collection, .pro, .painting__status, .steps { display: none; }
   .painting { border: 0; padding: 0; }
-  .painting__canvas { max-height: 150mm; width: auto; max-width: 100%; margin: 0 auto; }
+  .painting__canvas { max-height: 150mm; }
   .legend { display: block; margin-top: 6mm; }
+  /* Layer mode prints its own pictures: the finished one and one per layer. */
+  .app--layer .app__main { display: none; }
+  .layersheet { display: block; }
 }

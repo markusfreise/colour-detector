@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { markRaw } from 'vue'
 import { findRecipes, proposePaints, washRecipe, washLetter } from '../lib/mixing.js'
-import { adjustImage, hexToOklab, oklabToHex } from '../lib/color.js'
+import { adjustImage, hexToOklab, oklabToHex, rgbToHex, deltaE } from '../lib/color.js'
 import { planMixes, mixesToRequest } from '../lib/mixes.js'
 import { usePaintsStore } from './paints.js'
+import { renderLayers } from '../lib/layers.js'
 
 // Working resolution: the picture is scaled down to about this many pixels, whatever its shape.
 export const WORK_PIXELS = 800 * 600
@@ -30,6 +31,7 @@ function getWorker() {
   return worker
 }
 
+// One job for the worker; `kind: 'layers'` asks for layer mode instead of the mix analysis.
 function runSegmentation(payload) {
   const jobId = ++jobCounter
   const w = getWorker()
@@ -69,9 +71,17 @@ export const useAnalysisStore = defineStore('analysis', {
     renderVersion: 0, // bumped whenever the canvas needs a redraw
     selectedEntry: null,
     selectedRegion: null,
+    // Layer mode (glazing): the picture as coats of a few base paints.
+    layers: null, // result of layerImage (raw); null until analysed or without base paints
+    layerShown: [], // per layer: shown in the picture
+    layerStep: null, // index into layers.steps while the painting order is walked through
+    layerPoint: null, // { x, y } of the clicked spot, in working pixels
     busy: false,
     error: null,
     settings: {
+      mode: 'mix', // mix = colours mixed on the palette; layer = glazes of a few base paints
+      layerCount: 5, // layer mode: base paints the app proposes
+      maxCoats: 2, // layer mode: coats of one wash an area can get
       colours: 20,
       simplify: 0,
       maxPaints: 3,
@@ -85,6 +95,39 @@ export const useAnalysisStore = defineStore('analysis', {
   }),
   getters: {
     selected: (state) => (state.selectedEntry == null ? null : state.entries[state.selectedEntry]),
+    layerMode: (state) => state.settings.mode === 'layer',
+    /**
+     * What the picture shows of each layer: true = all its coats, false = none, a number = that
+     * many coats. While the painting order is walked through, it is the paper after that step.
+     */
+    layerView(state) {
+      if (!state.layers) return []
+      const step = state.layerStep == null ? null : state.layers.steps[state.layerStep]
+      if (!step) return state.layers.layers.map((_, k) => state.layerShown[k] !== false)
+      return state.layers.layers.map((_, k) => (k < step.layer ? true : k === step.layer ? step.coat : false))
+    },
+    /** The one layer shown on its own, or null. */
+    layerSolo() {
+      if (this.layerStep != null) return null
+      const shown = this.layerView.map((v, k) => (v ? k : -1)).filter((k) => k >= 0)
+      return shown.length === 1 ? shown[0] : null
+    },
+    /** What the clicked spot gets: photo colour, layered colour and the coats of every layer. */
+    layerSpot(state) {
+      const result = state.layers
+      const point = state.layerPoint
+      if (!result || !point || !state.pixels) return null
+      const p = point.y * result.width + point.x
+      const source = state.adjusted ?? state.pixels
+      const combo = result.combos[result.comboMap[p]]
+      const photo = rgbToHex([source.rgba[p * 4], source.rgba[p * 4 + 1], source.rgba[p * 4 + 2]])
+      return {
+        photo,
+        layered: combo.hex,
+        deltaE: deltaE(hexToOklab(photo), hexToOklab(combo.hex)),
+        coats: combo.coats,
+      }
+    },
     /** Number of different mixes; the washes of a mix count once. */
     mixCount: (state) => new Set(state.entries.map((e) => e.family)).size,
     usedPaintIds: (state) => {
@@ -159,6 +202,7 @@ export const useAnalysisStore = defineStore('analysis', {
       const { saturation, contrast } = this.settings
       const rgba = adjustImage(this.pixels.rgba, { saturation: saturation / 100, contrast: contrast / 100 })
       this.adjusted = rgba === this.pixels.rgba ? null : markRaw({ rgba, width, height })
+      if (this.layerMode) return this.analyseLayers(rgba, width, height)
       try {
         // "Colours" counts mixes. The analysis is asked for more, and planMixes joins them down to
         // the wanted number once the paints are known.
@@ -176,6 +220,90 @@ export const useAnalysisStore = defineStore('analysis', {
       } finally {
         this.busy = false
       }
+    },
+
+    /**
+     * Layer mode: glazes of the base paints. On Auto the app proposes the paints from the paint
+     * box's Auto pool, otherwise the ones chosen in the paint box are fitted.
+     */
+    async analyseLayers(rgba, width, height) {
+      const paints = usePaintsStore()
+      const box = paints.activeBox
+      const pool = (box.layerAuto ? paints.autoCandidates : paints.layerPaints).map(({ id, hex }) => ({ id, hex }))
+      this.layerStep = null
+      this.layerPoint = null
+      try {
+        if (!pool.length) {
+          this.layers = null
+          return
+        }
+        const { jobId, result } = await runSegmentation({
+          kind: 'layers',
+          rgba: rgba.slice(),
+          width,
+          height,
+          paints: pool,
+          count: this.settings.layerCount,
+          paintIds: box.layerAuto ? undefined : box.layerIds,
+          maxCoats: this.settings.maxCoats,
+          simplify: this.settings.simplify,
+        })
+        if (jobId !== jobCounter || !this.layerMode) return // superseded
+        if (box.layerAuto) paints.setLayerPaints(result.paintIds, true)
+        this.layers = markRaw(result)
+        this.layerShown = result.layers.map(() => true)
+        this.renderVersion++
+      } catch (e) {
+        this.error = `Analysis failed: ${e.message}`
+      } finally {
+        this.busy = false
+      }
+    },
+
+    /** Layer mode: the picture as RGBA at working resolution, for the current view. */
+    layerPixels() {
+      return this.layers ? renderLayers(this.layers, this.layerView) : null
+    },
+
+    setMode(mode) {
+      if (mode === this.settings.mode) return
+      this.settings.mode = mode
+      if (mode === 'layer' && this.settings.view === 'target') this.settings.view = 'mixed'
+      this.select(null)
+      this.layerStep = null
+      this.layerPoint = null
+      this.analyse()
+    },
+
+    /** Tick or untick a layer. The last one stays: a picture with nothing on it helps nobody. */
+    showLayer(index, on) {
+      this.layerStep = null
+      const next = this.layerView.map((v) => !!v)
+      next[index] = on
+      if (!next.some(Boolean)) return
+      this.layerShown = next
+      this.renderVersion++
+    },
+
+    /** One layer on its own; again on the same layer, or with null, all of them. */
+    soloLayer(index) {
+      const solo = this.layerStep == null && this.layerSolo === index
+      this.layerStep = null
+      this.layerShown = this.layers.layers.map((_, k) => index == null || solo || k === index)
+      this.renderVersion++
+    },
+
+    /** Walk through the painting order: step = index into layers.steps, null ends the walk. */
+    goToStep(step) {
+      if (!this.layers) return
+      this.layerStep = step == null ? null : Math.min(this.layers.steps.length - 1, Math.max(0, step))
+      if (this.layerStep == null) this.layerShown = this.layers.layers.map(() => true)
+      this.renderVersion++
+    },
+
+    selectPoint(point) {
+      this.layerPoint = point
+      this.renderVersion++
     },
 
     applySegmentation(result) {
@@ -207,6 +335,8 @@ export const useAnalysisStore = defineStore('analysis', {
      * Colours changed by hand, detached areas and picked recipes are carried over where they still fit.
      */
     recomputeAllRecipes() {
+      // Layer mode has no recipes: a changed paint box means the layers are planned again.
+      if (this.layerMode) return this.analyse()
       const seg = this.segmentation
       if (!seg) return
       const paints = usePaintsStore().enabled

@@ -23,8 +23,26 @@
     </div>
     <p v-if="collection.error" class="controls__error">{{ collection.error }}</p>
 
+    <div class="field">
+      <span class="field__label">Method</span>
+      <div class="segmented segmented--fill">
+        <button
+          v-for="m in methods"
+          :key="m.value"
+          type="button"
+          class="segmented__option"
+          :class="{ 'segmented__option--active': analysis.settings.mode === m.value }"
+          :title="m.title"
+          @click="analysis.setMode(m.value)"
+        >
+          {{ m.label }}
+        </button>
+      </div>
+      <span v-if="analysis.layerMode" class="field__hint">Layer: a few paints, each glazed over the dried one before.</span>
+    </div>
+
     <div class="controls__settings">
-      <label class="field">
+      <label v-if="!analysis.layerMode" class="field">
         <span class="field__label">Colours <output class="field__value">{{ analysis.settings.colours }}</output></span>
         <input
           v-model.number="analysis.settings.colours"
@@ -35,6 +53,21 @@
           @change="analysis.analyse()"
         />
         <span class="field__hint">More colours = more detail</span>
+      </label>
+      <label v-else class="field">
+        <span class="field__label">Layers <output class="field__value">{{ layerCount }}</output></span>
+        <input
+          v-model.number="analysis.settings.layerCount"
+          class="field__range"
+          type="range"
+          min="2"
+          :max="MAX_LAYER_PAINTS"
+          :disabled="!paints.activeBox.layerAuto"
+          @change="analysis.analyse()"
+        />
+        <span class="field__hint">
+          {{ paints.activeBox.layerAuto ? 'More layers = more colours, more drying' : 'Chosen by hand. Auto in the paint box picks again.' }}
+        </span>
       </label>
 
       <label class="field">
@@ -50,7 +83,7 @@
         <span class="field__hint">Higher = bigger, calmer shapes</span>
       </label>
 
-      <div class="field">
+      <div v-if="!analysis.layerMode" class="field">
         <span class="field__label">Max. paints</span>
         <div class="segmented segmented--fill">
           <button
@@ -60,6 +93,22 @@
             class="segmented__option"
             :class="{ 'segmented__option--active': analysis.settings.maxPaints === n }"
             @click="setMaxPaints(n)"
+          >
+            {{ n }}
+          </button>
+        </div>
+      </div>
+      <div v-else class="field">
+        <span class="field__label">Max. coats</span>
+        <div class="segmented segmented--fill">
+          <button
+            v-for="n in [1, 2, 3]"
+            :key="n"
+            type="button"
+            class="segmented__option"
+            :class="{ 'segmented__option--active': analysis.settings.maxCoats === n }"
+            title="How many times the same wash may go over one area"
+            @click="setMaxCoats(n)"
           >
             {{ n }}
           </button>
@@ -96,7 +145,7 @@
         />
       </label>
 
-      <label class="field">
+      <label v-if="!analysis.layerMode" class="field">
         <span class="field__label">Variety <output class="field__value">{{ analysis.settings.variety }}</output></span>
         <input
           v-model.number="analysis.settings.variety"
@@ -109,7 +158,7 @@
       </label>
     </div>
     <div class="controls__hints">
-      <span class="field__hint">Variety: lower = closer overall, higher = small areas keep their own colour</span>
+      <span v-if="!analysis.layerMode" class="field__hint">Variety: lower = closer overall, higher = small areas keep their own colour</span>
       <button
         v-if="analysis.settings.saturation !== 100 || analysis.settings.contrast !== 100"
         class="button button--ghost controls__reset"
@@ -146,19 +195,36 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { useCollectionStore } from '../stores/collection.js'
+import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 
 const emit = defineEmits(['show-collection'])
 const analysis = useAnalysisStore()
 const collection = useCollectionStore()
 // "Take photo" opens the camera directly; that only exists on phones and tablets.
 const hasCamera = window.matchMedia?.('(pointer: coarse)').matches ?? false
-const views = [
-  { value: 'mixed', label: 'Mixed paint' },
-  { value: 'target', label: 'Photo colour' },
-  { value: 'original', label: 'Photo' },
+const paints = usePaintsStore()
+const methods = [
+  { value: 'mix', label: 'Mix', title: 'Mix every colour on the palette and paint each area once' },
+  { value: 'layer', label: 'Layer', title: 'Glaze a few paints over each other, light to dark' },
 ]
+// Layer mode has no colour per area to compare with, only the layered picture and the photo.
+const views = computed(() =>
+  analysis.layerMode
+    ? [
+        { value: 'mixed', label: 'Layered paint' },
+        { value: 'original', label: 'Photo' },
+      ]
+    : [
+        { value: 'mixed', label: 'Mixed paint' },
+        { value: 'target', label: 'Photo colour' },
+        { value: 'original', label: 'Photo' },
+      ],
+)
+// On Auto the slider says how many paints to propose; by hand it shows how many were chosen.
+const layerCount = computed(() => (paints.activeBox.layerAuto ? analysis.settings.layerCount : paints.activeBox.layerIds.length))
 
 function onFile(event) {
   const file = event.target.files?.[0]
@@ -169,6 +235,11 @@ function onFile(event) {
 // Saturation and contrast back to the photo as it is.
 function resetAdjustment(...keys) {
   for (const key of keys) analysis.settings[key] = 100
+  analysis.analyse()
+}
+
+function setMaxCoats(n) {
+  analysis.settings.maxCoats = n
   analysis.analyse()
 }
 

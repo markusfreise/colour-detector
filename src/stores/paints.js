@@ -6,6 +6,9 @@ const LEGACY_KEY = 'colour-detector:enabled-paints'
 const BOXES_KEY = 'colour-detector:boxes'
 const CUSTOM_KEY = 'colour-detector:custom-paints'
 
+// Layer mode takes at most this many base paints: every one is a layer to paint and to let dry.
+export const MAX_LAYER_PAINTS = 6
+
 const defaultIds = () => stockPaints.filter((p) => p.enabled).map((p) => p.id)
 const newId = (prefix) => `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
 
@@ -23,12 +26,16 @@ function loadBoxes() {
   if (saved?.boxes?.length) {
     // Boxes saved before Auto existed: an untouched default selection counts as Auto.
     const defaults = defaultIds().sort().join()
-    for (const box of saved.boxes) box.auto ??= [...box.paintIds].sort().join() === defaults
+    for (const box of saved.boxes) {
+      box.auto ??= [...box.paintIds].sort().join() === defaults
+      box.layerIds ??= []
+      box.layerAuto ??= true
+    }
     return saved
   }
   // First start, or a selection saved before boxes existed.
   const legacy = read(LEGACY_KEY)
-  const box = { id: 'box-1', name: 'My paint box', paintIds: legacy ?? defaultIds(), auto: !legacy }
+  const box = { id: 'box-1', name: 'My paint box', paintIds: legacy ?? defaultIds(), auto: !legacy, layerIds: [], layerAuto: true }
   return { boxes: [box], activeId: box.id }
 }
 
@@ -37,7 +44,9 @@ export const usePaintsStore = defineStore('paints', {
     const { boxes, activeId } = loadBoxes()
     return {
       custom: read(CUSTOM_KEY) ?? [], // paints added by the user
-      boxes, // [{ id, name, paintIds, auto }] auto = the app picks the paints for each picture
+      // [{ id, name, paintIds, auto, layerIds, layerAuto }] auto = the app picks the paints for each
+      // picture; layerIds = the base paints of layer mode, kept apart from the mix selection
+      boxes,
       activeId,
     }
   },
@@ -47,6 +56,11 @@ export const usePaintsStore = defineStore('paints', {
     // Paints Auto may choose from: the default selection and the user's own paints.
     autoCandidates() {
       return this.all.filter((p) => p.enabled || p.custom)
+    },
+    // Layer mode: the base paints, one layer each.
+    layerPaints() {
+      const byId = this.byId
+      return this.activeBox.layerIds.map((id) => byId[id]).filter(Boolean)
     },
     enabledIds() {
       return new Set(this.activeBox.paintIds)
@@ -84,9 +98,20 @@ export const usePaintsStore = defineStore('paints', {
     reset() {
       this.setEnabled(defaultIds())
     },
+    /** The base paints of layer mode. Choosing them by hand switches their Auto off. */
+    setLayerPaints(ids, auto = false) {
+      this.activeBox.layerIds = [...ids].slice(0, MAX_LAYER_PAINTS)
+      this.activeBox.layerAuto = auto
+      this.persist()
+    },
+    toggleLayerPaint(id, on) {
+      const ids = this.activeBox.layerIds.filter((p) => p !== id)
+      if (on ?? ids.length === this.activeBox.layerIds.length) ids.push(id)
+      this.setLayerPaints(ids)
+    },
 
     addBox(name) {
-      const box = { id: newId('box'), name: name.trim() || `Box ${this.boxes.length + 1}`, paintIds: [], auto: false }
+      const box = { id: newId('box'), name: name.trim() || `Box ${this.boxes.length + 1}`, paintIds: [], auto: false, layerIds: [], layerAuto: true }
       this.boxes.push(box)
       this.activeId = box.id
       this.persist()
@@ -134,7 +159,10 @@ export const usePaintsStore = defineStore('paints', {
     },
     deletePaint(id) {
       this.custom = this.custom.filter((p) => p.id !== id)
-      for (const box of this.boxes) box.paintIds = box.paintIds.filter((p) => p !== id)
+      for (const box of this.boxes) {
+        box.paintIds = box.paintIds.filter((p) => p !== id)
+        box.layerIds = box.layerIds.filter((p) => p !== id)
+      }
       this.persist()
     },
 

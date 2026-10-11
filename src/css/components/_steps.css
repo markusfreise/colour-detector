@@ -1,0 +1,10 @@
+/* Walk through the painting order, under the picture (layer mode). */
+.steps { margin-top: 10px; }
+.steps__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.steps__text { flex: 1; min-width: 220px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.steps__swatch { flex: none; }
+.steps__hint { margin-top: 6px; color: var(--ink-soft); font-size: 13px; }
+@media (max-width: 900px) {
+  .steps__text { order: -1; flex-basis: 100%; }
+  .steps__bar .button { flex: 1; min-height: 44px; }
+}

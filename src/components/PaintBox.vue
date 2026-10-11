@@ -2,23 +2,23 @@
   <dialog ref="dialog" class="panel paintbox" aria-labelledby="paintbox-title" @click="onBackdrop" @close="onClose">
     <div class="paintbox__body">
       <header class="paintbox__header">
-        <h2 id="paintbox-title" class="panel__title">Paint box</h2>
+        <h2 id="paintbox-title" class="panel__title">{{ layerMode ? 'Paint box: base paints' : 'Paint box' }}</h2>
         <div class="paintbox__actions">
           <button
             class="button"
-            :class="paints.activeBox.auto ? 'button--secondary' : 'button--ghost'"
+            :class="autoOn ? 'button--secondary' : 'button--ghost'"
             type="button"
-            :aria-pressed="paints.activeBox.auto"
-            title="Let the app select the paints that suit each picture"
-            :disabled="!analysis.entries.length"
+            :aria-pressed="autoOn"
+            :title="layerMode ? 'Let the app choose the base paints for this picture' : 'Let the app select the paints that suit each picture'"
+            :disabled="!analysis.pixels"
             @click="auto"
           >
             Auto
           </button>
-          <button class="button button--ghost" type="button" @click="reset">Revert</button>
+          <button v-if="!layerMode" class="button button--ghost" type="button" @click="reset">Revert</button>
           <button class="button button--ghost" type="button" @click="clear">Clear</button>
           <button class="button button--secondary" type="button" :disabled="!dirty" @click="apply">
-            Update mixes
+            {{ layerMode ? 'Update layers' : 'Update mixes' }}
           </button>
           <button class="button button--ghost" type="button" @click="close">Close</button>
         </div>
@@ -49,20 +49,27 @@
         <button class="button button--ghost" type="button" @click="boxMode = null">Cancel</button>
       </form>
 
-      <div class="paintbox__group paintbox__group--selected" aria-label="Selected paints">
-        <ul v-if="paints.selected.length" class="paintbox__list">
-          <li v-for="p in paints.selected" :key="p.id">
-            <PaintChip :paint="p" enabled show-form :used="analysis.usedPaintIds.has(p.id)" @toggle="toggle(p.id, $event)" />
+      <p v-if="layerMode" class="paintbox__note">
+        Layer mode paints with a few base paints, one layer each ({{ selected.length }} of {{ MAX_LAYER_PAINTS }}). They are
+        kept apart from the paints selected for mixing.
+        <template v-if="full"> {{ MAX_LAYER_PAINTS }} layers at most: remove one before adding another.</template>
+      </p>
+      <div class="paintbox__group paintbox__group--selected" :aria-label="layerMode ? 'Base paints' : 'Selected paints'">
+        <ul v-if="selected.length" class="paintbox__list">
+          <li v-for="p in selected" :key="p.id">
+            <PaintChip :paint="p" enabled show-form :used="!layerMode && analysis.usedPaintIds.has(p.id)" @toggle="toggle(p.id, $event)" />
           </li>
         </ul>
-        <p v-else class="paintbox__empty">No paints selected. Click a paint below to add it.</p>
+        <p v-else class="paintbox__empty">
+          {{ layerMode ? 'No base paints chosen. Click a paint below to add it, or press Auto.' : 'No paints selected. Click a paint below to add it.' }}
+        </p>
       </div>
 
-      <div v-for="group in paints.available" :key="group.key" class="paintbox__group">
+      <div v-for="group in available" :key="group.key" class="paintbox__group">
         <h3 class="paintbox__group-title">{{ group.name }}</h3>
         <ul class="paintbox__list">
           <li v-for="p in group.paints" :key="p.id">
-            <PaintChip :paint="p" @toggle="toggle(p.id, $event)" />
+            <PaintChip :paint="p" :disabled="full" @toggle="toggle(p.id, $event)" />
           </li>
         </ul>
       </div>
@@ -125,12 +132,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { usePaintsStore } from '../stores/paints.js'
+import { computed, ref } from 'vue'
+import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { useProStore, FREE_BOXES } from '../stores/pro.js'
 import { chipStyle } from '../lib/color.js'
-import { paintNumber, paintForms } from '../lib/paintbox.js'
+import { paintNumber, paintForms, groupPaints, sortPaints } from '../lib/paintbox.js'
 import { horadamCatalogue } from '../data/horadam-catalogue.js'
 import PaintChip from './PaintChip.vue'
 
@@ -143,6 +150,17 @@ const boxMode = ref(null) // 'new' | 'rename' | null
 const boxName = ref('')
 const paintForm = ref(null) // the paint being added or edited
 const confirming = ref(null) // 'box' or a paint id: the delete button was clicked once
+
+// In layer mode the dialog edits the base paints of the box instead of its selection for mixing.
+const layerMode = computed(() => analysis.layerMode)
+const autoOn = computed(() => (layerMode.value ? paints.activeBox.layerAuto : paints.activeBox.auto))
+const selected = computed(() => (layerMode.value ? sortPaints(paints.layerPaints) : paints.selected))
+const available = computed(() => {
+  if (!layerMode.value) return paints.available
+  const base = new Set(paints.activeBox.layerIds)
+  return groupPaints(paints.all.filter((p) => !base.has(p.id)))
+})
+const full = computed(() => layerMode.value && paints.activeBox.layerIds.length >= MAX_LAYER_PAINTS)
 
 defineExpose({ open: () => dialog.value.showModal() })
 
@@ -164,18 +182,30 @@ function onClose() {
 }
 
 function toggle(id, on) {
-  paints.toggle(id, on)
+  if (layerMode.value) {
+    if (on && full.value) return // the chip stays unticked; the note above says why
+    paints.toggleLayerPaint(id, on)
+  } else {
+    paints.toggle(id, on)
+  }
   dirty.value = true
 }
 
 // Let the app pick the paints for the current picture, from the default selection and the user's own paints.
 function auto() {
+  if (layerMode.value) {
+    // The proposal needs the picture, so it is made when the layers are planned again.
+    paints.setLayerPaints(paints.activeBox.layerIds, true)
+    apply()
+    return
+  }
   analysis.autoPaints(true)
   dirty.value = true
 }
 
 function clear() {
-  paints.clear()
+  if (layerMode.value) paints.setLayerPaints([])
+  else paints.clear()
   dirty.value = true
 }
 

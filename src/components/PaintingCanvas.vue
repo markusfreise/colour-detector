@@ -6,7 +6,7 @@
       :class="{ 'painting__canvas--busy': analysis.busy }"
       @click="onClick"
     ></canvas>
-    <p v-if="analysis.busy" class="painting__status">Analysing…</p>
+    <p v-if="analysis.busy" class="painting__status">{{ analysis.layerMode ? 'Planning layers…' : 'Analysing…' }}</p>
   </div>
 </template>
 
@@ -14,6 +14,7 @@
 import { ref, watch, onMounted } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
+import { drawLayerView, drawOutlines, labelFont, paintPixels } from './layerView.js'
 
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
@@ -27,10 +28,23 @@ function shown(entryIndex) {
   return !selected || analysis.entries[entryIndex].family === selected.family
 }
 
+// The photo as the analysis sees it: with saturation and contrast applied when they are changed.
+function drawPhoto(ctx, el, width, height) {
+  if (analysis.adjusted) paintPixels(ctx, el, analysis.adjusted.rgba, width, height, true)
+  else ctx.drawImage(analysis.image, 0, 0, el.width, el.height)
+}
+
 function draw() {
-  const seg = analysis.segmentation
   const el = canvas.value
-  if (!seg || !el) return
+  if (!el) return
+  if (analysis.layerMode) drawLayers(el)
+  else drawMixes(el)
+}
+
+// Mix mode: flat numbered areas, one colour per wash of a mix.
+function drawMixes(el) {
+  const seg = analysis.segmentation
+  if (!seg || !analysis.regionEntry) return
   const { width, height, regionMap, regions } = seg
   el.width = width * SCALE
   el.height = height * SCALE
@@ -38,53 +52,29 @@ function draw() {
   const { view, outlines, numbers } = analysis.settings
 
   if (view === 'original') {
-    // With saturation or contrast changed, show the photo as the analysis sees it.
-    if (analysis.adjusted) {
-      const off = document.createElement('canvas')
-      off.width = width
-      off.height = height
-      off.getContext('2d').putImageData(new ImageData(analysis.adjusted.rgba, width, height), 0, 0)
-      ctx.drawImage(off, 0, 0, el.width, el.height)
-    } else {
-      ctx.drawImage(analysis.image, 0, 0, el.width, el.height)
-    }
+    drawPhoto(ctx, el, width, height)
   } else {
     const colours = analysis.entries.map((e) => hexToRgb(analysis.displayHex(e)))
-    const img = new ImageData(width, height)
+    const img = new Uint8ClampedArray(width * height * 4)
     for (let p = 0; p < regionMap.length; p++) {
       const entry = analysis.regionEntry[regionMap[p]]
       // With a colour selected, only its mix stays: all its washes, the rest of the picture goes blank.
       const [r, g, b] = shown(entry) ? colours[entry] : [255, 255, 255]
-      img.data[p * 4] = r
-      img.data[p * 4 + 1] = g
-      img.data[p * 4 + 2] = b
-      img.data[p * 4 + 3] = 255
+      img[p * 4] = r
+      img[p * 4 + 1] = g
+      img[p * 4 + 2] = b
+      img[p * 4 + 3] = 255
     }
-    const off = document.createElement('canvas')
-    off.width = width
-    off.height = height
-    off.getContext('2d').putImageData(img, 0, 0)
-    ctx.imageSmoothingEnabled = false
-    ctx.drawImage(off, 0, 0, el.width, el.height)
+    paintPixels(ctx, el, img, width, height)
   }
 
   if (outlines) {
-    ctx.fillStyle = view === 'original' ? 'rgba(255,255,255,0.75)' : 'rgba(40,36,30,0.55)'
     const entryAt = (p) => analysis.regionEntry[regionMap[p]]
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const p = y * width + x
-        const e = entryAt(p)
-        if (x < width - 1 && entryAt(p + 1) !== e) ctx.fillRect((x + 1) * SCALE - 0.5, y * SCALE, 1, SCALE)
-        if (y < height - 1 && entryAt(p + width) !== e) ctx.fillRect(x * SCALE, (y + 1) * SCALE - 0.5, SCALE, 1)
-      }
-    }
+    drawOutlines(ctx, width, height, SCALE, (p, q) => entryAt(p) !== entryAt(q), view === 'original' ? 'rgba(255,255,255,0.75)' : 'rgba(40,36,30,0.55)')
   }
 
   if (numbers) {
-    ctx.font = `600 ${11 * (SCALE / 2)}px system-ui, sans-serif`
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
+    labelFont(ctx, SCALE)
     for (const region of regions) {
       if (region.anchorDist < MIN_LABEL_DIST) continue
       const entryIndex = analysis.regionEntry[region.id]
@@ -96,14 +86,56 @@ function draw() {
   }
 }
 
+// Layer mode: the paper with the ticked layers on it. One layer alone shows its coats as numbers;
+// a step of the painting order outlines what is painted in that step.
+function drawLayers(el) {
+  const result = analysis.layers
+  if (!result) {
+    // No base paints: blank paper in the shape of the picture.
+    if (analysis.pixels) {
+      el.width = analysis.pixels.width * SCALE
+      el.height = analysis.pixels.height * SCALE
+      const ctx = el.getContext('2d')
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(0, 0, el.width, el.height)
+    }
+    return
+  }
+  const { view, outlines, numbers } = analysis.settings
+  const ctx = drawLayerView(el, result, {
+    show: analysis.layerView,
+    step: analysis.layerStep == null ? null : result.steps[analysis.layerStep],
+    outlines,
+    numbers,
+    scale: SCALE,
+    backdrop: view === 'original' ? (context, canvasEl) => drawPhoto(context, canvasEl, result.width, result.height) : null,
+  })
+
+  const point = analysis.layerPoint
+  if (point) {
+    // The spot whose layers are listed next to the picture.
+    const x = (point.x + 0.5) * SCALE, y = (point.y + 0.5) * SCALE
+    ctx.lineWidth = 3
+    ctx.strokeStyle = '#ffffff'
+    ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2); ctx.stroke()
+    ctx.lineWidth = 1.5
+    ctx.strokeStyle = '#1d1b18'
+    ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2); ctx.stroke()
+  }
+}
+
 function onClick(event) {
-  const seg = analysis.segmentation
-  if (!seg) return
+  const size = analysis.layerMode ? analysis.layers : analysis.segmentation
+  if (!size) return
   const rect = canvas.value.getBoundingClientRect()
-  const x = Math.floor(((event.clientX - rect.left) / rect.width) * seg.width)
-  const y = Math.floor(((event.clientY - rect.top) / rect.height) * seg.height)
-  if (x < 0 || y < 0 || x >= seg.width || y >= seg.height) return
-  const region = seg.regionMap[y * seg.width + x]
+  const x = Math.floor(((event.clientX - rect.left) / rect.width) * size.width)
+  const y = Math.floor(((event.clientY - rect.top) / rect.height) * size.height)
+  if (x < 0 || y < 0 || x >= size.width || y >= size.height) return
+  if (analysis.layerMode) {
+    analysis.selectPoint({ x, y })
+    return
+  }
+  const region = size.regionMap[y * size.width + x]
   // A click on the blanked part of the picture brings everything back.
   if (analysis.selectedRegion === region || !shown(analysis.regionEntry[region])) analysis.select(null)
   else analysis.select(region)
@@ -113,6 +145,7 @@ watch(
   () => [
     analysis.renderVersion,
     analysis.selectedEntry,
+    analysis.settings.mode,
     analysis.settings.view,
     analysis.settings.outlines,
     analysis.settings.numbers,

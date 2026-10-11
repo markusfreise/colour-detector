@@ -27,3 +27,4 @@
 .paintbox__own-item { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .paintbox__own-chip { width: 150px; min-height: 40px; }
 .paintbox__own-vendor { flex: 1; min-width: 80px; color: var(--ink-soft); }
+.paintbox__chip--disabled { opacity: 0.45; cursor: not-allowed; }

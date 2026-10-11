@@ -13,7 +13,7 @@
       </div>
       <div class="editor__swatch">
         <span class="chip editor__chip" :style="chipStyle(spot.layered)">
-          <span class="chip__text">{{ spot.deltaE.toFixed(1) }} • {{ matchQuality(spot.deltaE) }}</span>
+          <span class="chip__text" :title="`Distance to the photo: ${spot.deltaE.toFixed(1)}`">Match: {{ matchQuality(spot.deltaE) }}</span>
         </span>
         <span class="editor__caption">Layered</span>
       </div>
@@ -21,7 +21,7 @@
     <h3 class="editor__subtitle">Layers on this spot</h3>
     <p v-if="!painted" class="editor__empty">Leave the paper white.</p>
     <ol class="layers__spot">
-      <li v-for="row in rows.filter((r) => r.used)" :key="row.number">
+      <li v-for="row in rows.filter((r) => r.coats)" :key="row.number">
         <button
           class="layers__spot-row"
           :class="{ 'layers__spot-row--none': !row.coats }"
@@ -37,6 +37,7 @@
         </button>
       </li>
     </ol>
+    <p v-if="painted && skipped.length" class="layers__note">Not painted here: {{ skipped.join(', ') }}.</p>
   </section>
 </template>
 
@@ -55,7 +56,7 @@ const painted = computed(() => spot.value.coats.some(Boolean))
 // Every layer in painting order with the coats this spot gets.
 const rows = computed(() =>
   analysis.layers.layers.map((layer, k) => ({
-    number: k + 1,
+    number: analysis.layerNumbers[k],
     used: layer.top > 0,
     name: `${paints.byId[layer.paintId]?.name ?? layer.paintId}${layer.kind === 'accent' ? ' (accent)' : ''}`,
     coats: spot.value.coats[k],
@@ -64,4 +65,6 @@ const rows = computed(() =>
     step: spot.value.coats[k] ? analysis.layers.steps.findIndex((s) => s.layer === k && s.coat === spot.value.coats[k]) : -1,
   })),
 )
+// Numbers of the layers that leave this spot alone.
+const skipped = computed(() => rows.value.filter((r) => r.used && !r.coats).map((r) => r.number))
 </script>

@@ -95,7 +95,7 @@ export const useAnalysisStore = defineStore('analysis', {
       mode: 'mix', // mix = colours mixed on the palette; layer = glazes of a few base paints
       layerCount: 5, // layer mode: base paints the app proposes
       layerSimplify: 4, // layer mode: its own "Simplify areas"; every layer has to be painted by hand
-      layerVariety: 5, // layer mode: 0 = the picture as a whole, 10 = small colourful parts count for more
+      layerAccents: 2, // layer mode: accent layers at most (a strong wash on small areas, painted last)
       maxCoats: 2, // layer mode: coats of one wash an area can get
       colours: 20,
       simplify: 0,
@@ -120,6 +120,14 @@ export const useAnalysisStore = defineStore('analysis', {
       const step = state.layerStep == null ? null : state.layers.steps[state.layerStep]
       if (!step) return state.layers.layers.map((_, k) => state.layerShown[k] !== false)
       return state.layers.layers.map((_, k) => (k < step.layer ? true : k === step.layer ? step.coat : false))
+    },
+    /**
+     * The number a layer goes by in the interface: painted layers count 1, 2, 3 in painting order;
+     * a paint that got no layer has none (null).
+     */
+    layerNumbers(state) {
+      let n = 0
+      return state.layers ? state.layers.layers.map((layer) => (layer.top > 0 ? ++n : null)) : []
     },
     /** The one layer shown on its own, or null. */
     layerSolo() {
@@ -292,10 +300,10 @@ export const useAnalysisStore = defineStore('analysis', {
     async analyseLayers(rgba, width, height, token = ++analysisToken) {
       const paints = usePaintsStore()
       const box = paints.activeBox
-      const { layerCount, maxCoats, layerVariety } = this.settings
-      const proposalKey = [pictureSerial, box.id, layerCount, maxCoats, layerVariety].join('/')
+      const { layerCount, maxCoats, layerAccents } = this.settings
+      const proposalKey = [pictureSerial, box.id, layerCount, maxCoats, layerAccents].join('/')
       // Propose only when there is nothing to keep: a new picture or box, another number of layers or
-      // coats, another variety (the best paints depend on those), or Auto pressed.
+      // coats or accents (the best paints depend on those), or Auto pressed.
       const propose = box.layerAuto && !(layerProposal === proposalKey && box.layerIds.length)
       const pool = (propose ? paints.autoCandidates : paints.layerPaints).map(({ id, hex }) => ({ id, hex }))
       this.layerStep = null
@@ -318,7 +326,7 @@ export const useAnalysisStore = defineStore('analysis', {
           paintIds: propose ? undefined : [...box.layerIds],
           maxCoats: this.settings.maxCoats,
           simplify: this.settings.layerSimplify,
-          variety: this.settings.layerVariety,
+          accents: this.settings.layerAccents,
         })
         if (token !== analysisToken || !this.layerMode) return // superseded
         // The proposal goes to the box it was made for, also when another box was opened meanwhile.

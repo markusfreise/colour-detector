@@ -6,3 +6,4 @@
 .layersheet__table th, .layersheet__table td { padding: 3px 6px; border-bottom: 1px solid #ccc; text-align: left; vertical-align: middle; }
 .layersheet__layer { margin: 8mm 0 0; break-inside: avoid; }
 .layersheet__caption { display: flex; flex-direction: column; gap: 2px; margin-bottom: 3mm; font-size: 11px; }
+.layersheet__note { margin-top: 6mm; font-size: 10px; color: #555; }

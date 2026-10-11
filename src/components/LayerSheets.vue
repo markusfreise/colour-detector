@@ -23,6 +23,10 @@
       </figcaption>
       <img class="layersheet__picture" :src="row.image" :alt="`Layer ${row.number}: ${row.name}`" />
     </figure>
+    <p class="layersheet__note">
+      The colours are estimates from one swatch per paint. Opaque or granulating paints glaze less cleanly than shown: test
+      every wash on a scrap first.
+    </p>
   </section>
 </template>
 
@@ -58,7 +62,7 @@ function build() {
       const used = layer.coats.filter((c) => c.share > 0).length
       const more = Array.from({ length: Math.max(0, used - 1) }, (_, i) => `Coat ${i + 2} on the ${Array.from({ length: used - i - 1 }, (__, j) => `${i + 2 + j}s`).join(' and ')}.`)
       return {
-        number: k + 1,
+        number: analysis.layerNumbers[k],
         name: `${paint ? `${paintNumber(paint.number)} ${paint.name}` : layer.paintId}${accent ? ' (accent)' : ''}`,
         hex: layer.hexes[1],
         dilution: layer.guide ?? layer.dilution.replace(/ \(.*\)$/, ''),

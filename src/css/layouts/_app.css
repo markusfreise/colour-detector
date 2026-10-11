@@ -12,5 +12,6 @@
   .app__main { grid-template-columns: 1fr; }
   .app__stage { position: static; }
 }
-/* Layer mode has the step walk under the picture: leave it room in the window. */
-.app--layer .painting__canvas { max-height: calc(100vh - 250px); }
+/* Layer mode: the whole picture stays in the window, since its areas are compared layer by layer. */
+.app--layer .painting__canvas { width: auto; max-width: 100%; max-height: calc(100vh - 190px); margin: 0 auto; }
+.steps--active ~ .painting .painting__canvas { max-height: calc(100vh - 270px); }

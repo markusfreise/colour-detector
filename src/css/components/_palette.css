@@ -1,4 +1,4 @@
-.palette__header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px; }
+.palette__header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .palette__actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .palette__count { display: block; white-space: nowrap; font-weight: 400; color: var(--ink-soft); font-size: 12px; }
 .palette__key { display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 6px 0; color: var(--ink-soft); font-size: 12px; }

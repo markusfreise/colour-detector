@@ -1,5 +1,4 @@
 .painting { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; }
-/* The whole picture stays in view, with room for the line of text under it: a tall photo is not wider than it needs to be. */
-.painting__canvas { display: block; width: auto; height: auto; max-width: 100%; max-height: calc(100vh - 170px); margin: 0 auto; cursor: crosshair; border-radius: 4px; transition: opacity 0.2s; }
+.painting__canvas { display: block; width: 100%; height: auto; cursor: crosshair; border-radius: 4px; transition: opacity 0.2s; }
 .painting__canvas--busy { opacity: 0.5; }
 .painting__status { position: absolute; top: 20px; left: 20px; background: var(--surface); padding: 4px 10px; border-radius: 6px; font-weight: 600; }

@@ -19,5 +19,6 @@
 @import './components/_legend.css';
 @import './components/_layers.css';
 @import './components/_steps.css';
+@import './components/_layerstrip.css';
 @import './components/_layersheet.css';
 @import './layouts/_print.css';

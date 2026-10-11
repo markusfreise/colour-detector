@@ -1,15 +1,17 @@
-/* Walk through the painting order, under the picture (layer mode). */
-.steps { margin-top: 10px; }
+/* Walk through the painting order, above the picture (layer mode). */
+.steps { margin-bottom: 10px; }
 .steps__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.steps__text { flex: 1; min-width: 220px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.steps__swatch { flex: none; }
-.steps__hint { margin-top: 6px; color: var(--ink-soft); font-size: 13px; }
+.steps__text { flex: 1; min-width: 220px; }
+.steps__close { margin-left: auto; }
+.steps__body { display: flex; align-items: flex-start; gap: 12px; margin-top: 8px; }
+.steps__target { flex: none; width: 150px; min-height: 54px; }
+.steps__lines { display: flex; flex-direction: column; gap: 2px; margin: 0; font-size: 13px; }
+.steps__lines div { display: flex; gap: 6px; }
+.steps__lines dt { flex: none; width: 40px; font-weight: 650; }
+.steps__lines dd { margin: 0; }
+.steps__warn { margin-top: 6px; color: var(--rough); font-size: 13px; }
 @media (max-width: 900px) {
   .steps__text { order: -1; flex-basis: 100%; }
   .steps__bar .button { flex: 1; min-height: 44px; }
+  .steps__close { margin-left: 0; }
 }
-.steps__body { display: flex; align-items: flex-start; gap: 10px; margin-top: 8px; }
-.steps__body .steps__hint { margin-top: 0; }
-.steps__target { flex: none; width: 150px; min-height: 44px; }
-.steps__warn { display: block; color: var(--rough); }
-.steps__note { display: block; }

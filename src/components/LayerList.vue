@@ -1,15 +1,12 @@
 <template>
   <section class="panel layers">
-    <header class="palette__header">
+    <header class="layers__header">
       <h2 class="panel__title">
         Layers
-        <span v-if="result" class="palette__count">
-          {{ used }} {{ used === 1 ? 'layer' : 'layers' }}, {{ result.steps.length }}
-          {{ result.steps.length === 1 ? 'step' : 'steps' }}
-        </span>
+        <span v-if="result" class="palette__count">{{ countText }}</span>
       </h2>
       <div class="palette__actions">
-        <button v-if="result && !allShown" class="button button--ghost" type="button" @click="analysis.soloLayer(null)">All</button>
+        <button class="button button--ghost" type="button" :disabled="!result || allShown" @click="analysis.soloLayer(null)">All</button>
         <button class="button button--ghost" type="button" :disabled="!result" @click="print">Print / PDF</button>
         <button class="button button--ghost" type="button" @click="emit('show-paintbox')">Show paint box</button>
       </div>
@@ -23,81 +20,53 @@
       </div>
     </div>
 
-    <ol v-if="result" class="layers__list">
-      <li
-        v-for="row in rows"
-        :key="row.index"
-        class="layers__item"
-        :class="{ 'layers__item--active': row.solo, 'layers__item--current': row.current, 'layers__item--unused': !row.used }"
-      >
-        <span v-if="!row.used" class="layers__tick"></span>
-        <label v-else class="checkbox layers__tick" :title="`Show layer ${row.number} in the picture`">
-          <input
-            type="checkbox"
-            :checked="row.shown"
-            :aria-label="`Show layer ${row.number}, ${row.name}`"
-            @change="onTick(row, $event)"
-          />
-          <span class="layers__number">{{ row.number }}</span>
-        </label>
-        <button
-          class="layers__row"
-          type="button"
-          :disabled="!row.used"
-          :aria-pressed="row.solo"
-          :title="!row.used ? 'This paint adds too little to be worth a layer' : row.solo ? 'Show all layers' : 'Show only this layer'"
-          @click="analysis.soloLayer(row.index)"
+    <template v-for="group in groups" :key="group.title">
+      <h3 v-if="group.title" class="editor__subtitle">{{ group.title }}</h3>
+      <ol class="layers__list">
+        <li
+          v-for="row in group.rows"
+          :key="row.index"
+          class="layers__item"
+          :class="{ 'layers__item--active': row.solo, 'layers__item--current': row.current }"
         >
-          <span class="swatch" :style="{ background: row.hex }" title="One coat on white paper"></span>
-          <span class="palette__summary layers__summary">
-            <span class="palette__paints">
-              {{ row.name }}
-              <span v-if="row.accent" class="layers__kind">accent</span>
+          <label class="checkbox layers__tick" :title="`Show layer ${row.number} in the picture`">
+            <input type="checkbox" :checked="row.shown" :aria-label="`Show layer ${row.number}, ${row.name}`" @change="onTick(row, $event)" />
+            <span class="layers__number">{{ row.number }}</span>
+          </label>
+          <button class="layers__row" type="button" :aria-pressed="row.solo" :title="row.title" @click="analysis.soloLayer(row.index)">
+            <span class="swatch" :style="{ background: row.hex }" title="One stroke on white paper. An estimate from one swatch: test the wash on a scrap first."></span>
+            <span class="palette__summary layers__summary">
+              <span class="layers__name">{{ row.name }}</span>
+              <span class="palette__meta">{{ row.meta }}</span>
             </span>
-            <span v-if="row.used" class="palette__meta">{{ row.guide }}</span>
-            <span class="palette__meta">{{ row.meta }}</span>
-          </span>
-        </button>
-        <!-- One segment per coat, in the colour that many coats give on white paper. -->
-        <div v-if="row.used" class="palette__bar palette__bar--washes layers__coats">
-          <button
-            v-for="coat in row.coats"
-            :key="coat.coats"
-            class="palette__wash"
-            :class="{ 'palette__wash--active': coat.step === analysis.layerStep }"
-            type="button"
-            :style="{ background: coat.hex, color: coat.ink }"
-            :title="`Coat ${coat.coats}: ${percent(coat.share)}% of image. Click to see this step.`"
-            :aria-label="`Coat ${coat.coats} of layer ${row.number}: show this step`"
-            :aria-pressed="coat.step === analysis.layerStep"
-            @click="analysis.goToStep(coat.step)"
-          >
-            {{ coat.coats }}
           </button>
-        </div>
-      </li>
-    </ol>
+          <!-- With two or more coats: one segment per coat, in the colour that many coats give on white paper. -->
+          <div v-if="row.coats.length > 1" class="palette__bar palette__bar--washes layers__coats">
+            <button
+              v-for="coat in row.coats"
+              :key="coat.coats"
+              class="palette__wash"
+              :class="{ 'palette__wash--active': coat.step === analysis.layerStep }"
+              type="button"
+              :style="{ background: coat.hex, color: coat.ink }"
+              :title="`Coat ${coat.coats}: ${percent(coat.share)}% of image. Click to see this step.`"
+              :aria-label="`Coat ${coat.coats} of layer ${row.number}: show this step`"
+              :aria-pressed="coat.step === analysis.layerStep"
+              @click="analysis.goToStep(coat.step)"
+            >
+              {{ coat.coats }}
+            </button>
+          </div>
+        </li>
+      </ol>
+    </template>
 
     <template v-if="result">
-      <p v-if="analysis.layerSolo != null && analysis.settings.numbers" class="layers__note">
-        The numbers are coats: 1 = one pass, 2 = two passes. The first pass goes over every numbered area, the second
-        only over the 2s and higher.
+      <p v-if="unused.length" class="layers__note">{{ unusedText }}</p>
+      <p v-if="result.deltaE.rough >= 0.1" class="layers__note layers__note--warn">
+        {{ percent(result.deltaE.rough) }}% of the picture is out of reach of these paints. Compare with Photo, or swap a paint.
       </p>
       <p class="layers__note">Ticks only change what the picture shows. Change the paints in the paint box.</p>
-      <p class="layers__note">
-        Distance to the photo: {{ result.deltaE.mean.toFixed(1) }} on average ({{ matchQuality(result.deltaE.mean) }}).
-        <template v-if="result.deltaE.rough >= 0.02">
-          {{ percent(result.deltaE.rough) }}% of the picture stays clearly off: too light, too dark or too dull with
-          these paints and washes. Compare with Photo.
-        </template>
-      </p>
-      <p class="layers__note">
-        The colours are estimates from one swatch per paint. Opaque or granulating paints glaze less cleanly than shown;
-        test the washes on a scrap first.
-      </p>
-      <p v-if="result.steps.length > 12" class="layers__note layers__note--warn">
-        {{ result.steps.length }} coats is a long session. Fewer layers or coats shorten it.
-      </p>
     </template>
   </section>
 </template>
@@ -116,47 +85,77 @@ const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 
 const result = computed(() => analysis.layers)
-// Paints that got a layer; a proposed or chosen paint that does not pay is listed but not painted.
-const used = computed(() => result.value.layers.filter((l) => l.top > 0).length)
 const percent = (share) => Math.round(share * 100) || '<1'
 const allShown = computed(() => analysis.layerStep == null && analysis.layerView.every(Boolean))
+const paintName = (id) => {
+  const paint = paints.byId[id]
+  return paint ? `${paintNumber(paint.number)} ${paint.name}` : id
+}
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 
-// One row per layer, in painting order: lightest first.
+// One row per painted layer, in painting order: the washes light to dark, then the accents.
 const rows = computed(() => {
+  if (!result.value) return []
   const view = analysis.layerView
   const step = analysis.layerStep == null ? null : result.value.steps[analysis.layerStep]
-  return result.value.layers.map((layer, index) => {
-    const paint = paints.byId[layer.paintId]
-    const used = layer.coats.filter((c) => c.share > 0)
-    const accent = layer.kind === 'accent'
-    const share = layer.coats[0]?.share ?? 0
-    // What the picture gains from this layer: the mean distance to the photo without it and with it.
-    const gain = layer.buys ? layer.buys.without - layer.buys.with : 0
-    const coatsText = accent ? 'a strong wash on small areas, painted last' : used.length === 1 ? '1 coat' : `up to ${used.length} coats`
-    return {
-      index,
-      number: index + 1,
-      paintId: layer.paintId,
-      name: paint ? `${paintNumber(paint.number)} ${paint.name}` : layer.paintId,
-      hex: layer.hexes[1],
-      used: used.length > 0,
-      accent,
-      guide: layer.guide ?? layer.dilution.replace(/ \(.*\)$/, ''),
-      meta: used.length
-        ? `${coatsText} · ${percent(share)}% of image${gain >= 0.05 ? ` · brings the picture ${gain.toFixed(1)} closer` : ''}`
-        : 'Not needed for this picture: it would add too little.',
-      share,
-      shown: !!view[index],
-      solo: analysis.layerSolo === index,
-      current: step?.layer === index,
-      coats: used.map((c) => ({
-        ...c,
-        ink: contrastText(c.hex),
-        step: result.value.steps.findIndex((s) => s.layer === index && s.coat === c.coats),
-      })),
-    }
-  })
+  return result.value.layers
+    .map((layer, index) => ({ layer, index }))
+    .filter(({ layer }) => layer.top > 0)
+    .map(({ layer, index }) => {
+      const coats = layer.coats.filter((c) => c.share > 0)
+      const accent = layer.kind === 'accent'
+      const share = layer.coats[0]?.share ?? 0
+      // What the picture gains from this layer: the mean distance to the photo without it and with it.
+      const gain = layer.buys ? layer.buys.without - layer.buys.with : 0
+      const solo = analysis.layerSolo === index
+      const wash = layer.water >= 1 ? `1:${layer.water} with water, like ${layer.consistency}` : layer.guide
+      return {
+        index,
+        number: analysis.layerNumbers[index],
+        accent,
+        name: paintName(layer.paintId),
+        hex: layer.hexes[1],
+        meta: [wash, accent || coats.length < 2 ? null : `${coats.length} coats`, `${percent(share)}%`].filter(Boolean).join(' · '),
+        title: `${solo ? 'Show all layers.' : 'Show only this layer.'}${gain >= 0.05 ? ` It brings the picture ${gain.toFixed(1)} closer to the photo.` : ''}`,
+        shown: !!view[index],
+        solo,
+        current: step?.layer === index,
+        coats: coats.map((c) => ({
+          ...c,
+          ink: contrastText(c.hex),
+          step: result.value.steps.findIndex((s) => s.layer === index && s.coat === c.coats),
+        })),
+      }
+    })
 })
+const groups = computed(() => {
+  const washes = rows.value.filter((r) => !r.accent)
+  const accents = rows.value.filter((r) => r.accent)
+  return [
+    ...(washes.length ? [{ title: '', rows: washes }] : []),
+    ...(accents.length ? [{ title: 'Accents, painted last', rows: accents }] : []),
+  ]
+})
+const countText = computed(() => {
+  const washes = rows.value.filter((r) => !r.accent).length
+  const accents = rows.value.length - washes
+  const parts = [plural(washes, 'layer'), accents ? plural(accents, 'accent') : null, plural(result.value.steps.length, 'step')]
+  return `${parts.filter(Boolean).join(', ')} · match: ${matchQuality(result.value.deltaE.mean)}`
+})
+
+// Paints that got no layer because they would add too little to this picture.
+const unused = computed(() => result.value.layers.filter((l) => !(l.top > 0)).map((l) => paintName(l.paintId)))
+const unusedText = computed(() =>
+  paints.activeBox.layerAuto
+    ? `Not needed for this picture: ${unused.value.join(', ')}.`
+    : `No layer for ${unused.value.join(', ')}: ${unused.value.length === 1 ? 'it adds' : 'they add'} too little here. Swap ${unused.value.length === 1 ? 'it' : 'them'} in the paint box.`,
+)
+
+// The store refuses to untick the last layer shown; put the tick back so the box does not lie.
+function onTick(row, event) {
+  analysis.showLayer(row.index, event.target.checked)
+  event.target.checked = !!analysis.layerView[row.index]
+}
 
 // Hand the choice of the base paints back to the app.
 function auto() {
@@ -167,15 +166,9 @@ function auto() {
 async function print() {
   if (isNative) return sendNative('print')
   // The sheets are built on `beforeprint`, but the page only renders them a tick later, which is
-  // too late for a print started from this click. So they are built and rendered first.
+  // too late for the print snapshot. So build them first and print once they are in the page.
   window.dispatchEvent(new Event('beforeprint'))
   await nextTick()
   window.print()
-}
-
-// The last shown layer cannot be unticked: put the tick back where the store refused.
-function onTick(row, event) {
-  analysis.showLayer(row.index, event.target.checked)
-  event.target.checked = !!analysis.layerView[row.index]
 }
 </script>

@@ -6,9 +6,10 @@
     </header>
     <main class="app__main">
       <div class="app__stage">
-        <PaintingCanvas />
         <LayerSteps />
-        <p class="app__hint">{{ hint }}</p>
+        <PaintingCanvas />
+        <LayerStrip />
+        <p v-if="hint" class="app__hint">{{ hint }}</p>
       </div>
       <aside class="app__sidebar">
         <ControlsPanel @show-collection="collectionDialog.open()" />
@@ -43,6 +44,7 @@ import EntryEditor from './components/EntryEditor.vue'
 import PaletteList from './components/PaletteList.vue'
 import LayerList from './components/LayerList.vue'
 import LayerSteps from './components/LayerSteps.vue'
+import LayerStrip from './components/LayerStrip.vue'
 import LayerArea from './components/LayerArea.vue'
 import LayerSheets from './components/LayerSheets.vue'
 import PaintBox from './components/PaintBox.vue'
@@ -61,10 +63,13 @@ const paintBox = ref(null)
 const collectionDialog = ref(null)
 const hint = computed(() => {
   if (!analysis.layerMode) return 'Click an area to see its recipe and change its colour.'
-  if (analysis.settings.numbers && analysis.layerStep == null && analysis.layerSolo == null && analysis.layers) {
-    return 'Numbers show the coats of one layer. Click a layer in the list to see them. Click the picture to see what a spot gets.'
+  if (!analysis.layers || analysis.layerStep != null) return ''
+  const solo = analysis.layerSolo
+  if (solo == null) return 'Click a layer in the list to see only that one. Click the picture to see what a spot gets.'
+  if (analysis.settings.numbers && analysis.layers.layers[solo].top > 1) {
+    return 'Numbers are coats: paint every numbered area once, then the 2s again when dry.'
   }
-  return 'Click the picture to see which layers a spot gets.'
+  return 'Paint the coloured areas with this wash. Click the layer again to see all.'
 })
 onMounted(() => {
   consent.init()

@@ -39,7 +39,7 @@
           {{ m.label }}
         </button>
       </div>
-      <span v-if="analysis.layerMode" class="field__hint">Layer: a few paints, each glazed over the dried one before.</span>
+      <span v-if="analysis.layerMode" class="field__hint">Layer: a few thin washes, each painted over the dry one before.</span>
     </div>
 
     <div class="controls__settings">
@@ -109,7 +109,7 @@
             class="segmented__option"
             :class="{ 'segmented__option--active': analysis.settings.maxCoats === n }"
             :aria-pressed="analysis.settings.maxCoats === n"
-            title="How many times the same wash may go over one area"
+            title="How often one wash may be painted over itself"
             @click="setMaxCoats(n)"
           >
             {{ n }}
@@ -147,10 +147,10 @@
         />
       </label>
 
-      <label class="field">
-        <span class="field__label">Variety <output class="field__value">{{ analysis.settings[varietyKey] }}</output></span>
+      <label v-if="!analysis.layerMode" class="field">
+        <span class="field__label">Variety <output class="field__value">{{ analysis.settings.variety }}</output></span>
         <input
-          v-model.number="analysis.settings[varietyKey]"
+          v-model.number="analysis.settings.variety"
           class="field__range"
           type="range"
           min="0"
@@ -158,9 +158,26 @@
           @change="analysis.analyse()"
         />
       </label>
+      <label v-else class="field">
+        <span class="field__label">Accents <output class="field__value">{{ analysis.settings.layerAccents }}</output></span>
+        <input
+          v-model.number="analysis.settings.layerAccents"
+          class="field__range"
+          type="range"
+          min="0"
+          max="3"
+          @change="analysis.analyse()"
+        />
+      </label>
     </div>
     <div class="controls__hints">
-      <span class="field__hint">Variety: lower = closer overall, higher = small areas keep their own colour</span>
+      <span class="field__hint">
+        {{
+          analysis.layerMode
+            ? 'Accents: small strong touches painted last, for the darkest and the brightest spots'
+            : 'Variety: lower = closer overall, higher = small areas keep their own colour'
+        }}
+      </span>
       <button
         v-if="analysis.settings.saturation !== 100 || analysis.settings.contrast !== 100"
         class="button button--ghost controls__reset"
@@ -225,9 +242,8 @@ const views = computed(() =>
         { value: 'original', label: 'Photo' },
       ],
 )
-// Layer mode keeps its own smoothing and variety: its areas are painted several times over.
+// Layer mode keeps its own smoothing: its areas are painted several times over.
 const simplifyKey = computed(() => (analysis.layerMode ? 'layerSimplify' : 'simplify'))
-const varietyKey = computed(() => (analysis.layerMode ? 'layerVariety' : 'variety'))
 // On Auto the slider says how many paints to propose; by hand it shows how many were chosen.
 const layerCount = computed(() => (paints.activeBox.layerAuto ? analysis.settings.layerCount : paints.activeBox.layerIds.length))
 

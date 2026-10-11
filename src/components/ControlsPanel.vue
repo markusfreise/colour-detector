@@ -211,6 +211,9 @@
       <div class="field__label">
         Show
         <span class="controls__toggles">
+          <label v-if="analysis.settings.view === 'sketch'" class="checkbox" title="Quarters and diagonals, to transfer the sketch to paper">
+            <input v-model="analysis.settings.guides" type="checkbox" /> Guides
+          </label>
           <label class="checkbox"><input v-model="analysis.settings.outlines" type="checkbox" /> Outlines</label>
           <label class="checkbox"><input v-model="analysis.settings.numbers" type="checkbox" /> Numbers</label>
         </span>

@@ -130,6 +130,7 @@ export const useAnalysisStore = defineStore('analysis', {
       maxCoats: 2, // layer mode: coats of one wash an area can get
       colours: 20,
       simplify: 0,
+      guides: true, // sketch: guide lines for transferring it to paper (quarters and diagonals)
       details: true, // with an AI plan: show the final wash of fine dark details
       ai: false, // the colours to mix and the paints are chosen by an AI model (once asked for this picture)
       geometric: false, // areas as polygons with straight edges that overlap, instead of their organic outline

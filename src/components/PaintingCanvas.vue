@@ -98,6 +98,22 @@ function drawSketch(el) {
     rgba[p * 4] = 60; rgba[p * 4 + 1] = 58; rgba[p * 4 + 2] = 56; rgba[p * 4 + 3] = ink
   }
   paintPixels(ctx, el, rgba, width, height, true)
+  if (analysis.settings.guides) drawGuides(ctx, el.width, el.height)
+}
+
+// Guide lines for transferring the sketch to paper: the picture in quarters each way, its two
+// diagonals and the diamond between the middles of its sides.
+function drawGuides(ctx, w, h) {
+  ctx.save()
+  ctx.strokeStyle = 'rgba(90, 190, 240, 0.75)'
+  ctx.lineWidth = Math.max(2, Math.round(w / 500))
+  ctx.beginPath()
+  const line = (x0, y0, x1, y1) => { ctx.moveTo(x0 * w, y0 * h); ctx.lineTo(x1 * w, y1 * h) }
+  for (const t of [0.25, 0.5, 0.75]) { line(t, 0, t, 1); line(0, t, 1, t) }
+  line(0, 0, 1, 1); line(1, 0, 0, 1)
+  line(0.5, 0, 0, 0.5); line(0.5, 0, 1, 0.5); line(0, 0.5, 0.5, 1); line(1, 0.5, 0.5, 1)
+  ctx.stroke()
+  ctx.restore()
 }
 
 // Mix mode: flat numbered areas, one colour per wash of a mix.
@@ -210,6 +226,7 @@ watch(
     analysis.settings.mode,
     analysis.settings.view,
     analysis.settings.details,
+    analysis.settings.guides,
     analysis.aiDetails,
     analysis.sketchKey,
     analysis.settings.outlines,

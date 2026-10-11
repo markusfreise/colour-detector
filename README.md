@@ -28,7 +28,7 @@ The iOS, iPadOS and macOS app is called **Tintmap** and lives in [`app/`](app/RE
 - **Limits:** restrict mixes to one, two or three paints.
 - **Recolour:** click an area, pick a different target colour, choose between the alternative recipes, or detach a single area from the others that share its colour.
 - **Print / PDF:** prints the picture followed by every colour with its chosen mix; pick "Save as PDF" in the print dialog for a PDF.
-- **Views:** mixed paint, photo colour, the original photo or a pencil sketch (the edges of the photo itself: where the colour changes sharply along a line; mist, soft gradients and texture give no lines), with outlines and numbers on or off.
+- **Views:** mixed paint, photo colour, the original photo or a pencil sketch (the edges of the photo itself: where the colour changes sharply along a line; mist, soft gradients and texture give no lines; with guide lines in quarters and diagonals for transferring it to paper), with outlines and numbers on or off.
 
 ## Match quality
 

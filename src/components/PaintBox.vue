@@ -66,12 +66,19 @@
       </div>
 
       <div v-for="group in available" :key="group.key" class="paintbox__group">
-        <h3 class="paintbox__group-title">{{ group.name }}</h3>
-        <ul class="paintbox__list">
+        <div class="paintbox__group-header">
+          <h3 class="paintbox__group-title">{{ group.name }}</h3>
+          <label class="checkbox" :title="`Let Auto choose from ${group.name}`">
+            <input type="checkbox" :checked="!autoOff.has(group.key)" @change="setAutoGroup(group.key, $event.target.checked)" />
+            Use for Auto
+          </label>
+        </div>
+        <ul v-if="group.paints.length" class="paintbox__list">
           <li v-for="p in group.paints" :key="p.id">
             <PaintChip :paint="p" :disabled="full" @toggle="toggle(p.id, $event)" />
           </li>
         </ul>
+        <p v-else class="paintbox__empty">All of these are selected.</p>
       </div>
 
       <div class="paintbox__group">
@@ -158,8 +165,9 @@ const selected = computed(() => (layerMode.value ? sortPaints(paints.layerPaints
 const available = computed(() => {
   if (!layerMode.value) return paints.available
   const base = new Set(paints.activeBox.layerIds)
-  return groupPaints(paints.all.filter((p) => !base.has(p.id)))
+  return groupPaints(paints.all, (p) => !base.has(p.id))
 })
+const autoOff = computed(() => new Set(paints.activeBox.autoOff))
 const full = computed(() => layerMode.value && paints.activeBox.layerIds.length >= MAX_LAYER_PAINTS)
 
 defineExpose({ open: () => dialog.value.showModal() })
@@ -191,7 +199,13 @@ function toggle(id, on) {
   dirty.value = true
 }
 
-// Let the app pick the paints for the current picture, from the default selection and the user's own paints.
+// A group joins or leaves the paints Auto chooses from; with Auto on, the choice is made again.
+function setAutoGroup(key, on) {
+  paints.setAutoGroup(key, on)
+  if (autoOn.value && analysis.pixels) auto()
+}
+
+// Let the app pick the paints for the current picture, from the groups ticked for Auto.
 function auto() {
   if (layerMode.value) {
     // The proposal needs the picture, so it is made while the layers are planned again.

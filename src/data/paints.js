@@ -2,6 +2,11 @@
 // hex = reference colour at strength 1 (a mid-strength wash on white paper).
 // source 'chart'    → sampled from the official Schmincke Horadam colour chart
 // source 'estimate' → not on the chart; estimated from pigment information, verify by swatching
+// source 'swatch'   → sampled from a photo of the paint as a wash on white paper (travel box, 2026-10-11).
+//                     These paints have the place in the box as number (row A–C, column 1–6) and the
+//                     name of the nearest Horadam colour; A1 is an opaque white and has no entry.
+//                     Travel box paints with source 'chart' were identified by hand and carry the name
+//                     and the chart colour of that Horadam paint.
 export const stockPaints = [
   {
     "id": "schmincke-horadam-347",
@@ -789,5 +794,260 @@ export const stockPaints = [
     "source": "estimate",
     "enabled": true,
     "note": "Stock list has W311 without a name; identified as Quinacridone Bronze (PY150 + PR209 + PV19). Colour estimated."
+  },
+  {
+    "id": "travelbox-a2",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "A2",
+    "name": "Transparent ochre",
+    "nameDe": "Lasur Ocker",
+    "hex": "#ffdf80",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "swatch",
+    "enabled": false,
+    "note": "Place A2 in the travel box. Named after the nearest Horadam colour (match 1.2)."
+  },
+  {
+    "id": "travelbox-a3",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "A3",
+    "name": "Cadmium yellow light",
+    "nameDe": "Kadmiumgelb hell",
+    "hex": "#f9e730",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "chart",
+    "enabled": false,
+    "note": "Place A3 in the travel box. Name and colour of the Horadam paint Cadmium yellow light, set by hand."
+  },
+  {
+    "id": "travelbox-a4",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "A4",
+    "name": "Turner's yellow",
+    "nameDe": "Turners Gelb",
+    "hex": "#fabd04",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "chart",
+    "enabled": false,
+    "note": "Place A4 in the travel box. Name and colour of the Horadam paint Turner's yellow, set by hand."
+  },
+  {
+    "id": "travelbox-a5",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "A5",
+    "name": "Yellow orange",
+    "nameDe": "Gelborange",
+    "hex": "#f7a801",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "chart",
+    "enabled": false,
+    "note": "Place A5 in the travel box. Name and colour of the Horadam paint Yellow orange, set by hand."
+  },
+  {
+    "id": "travelbox-a6",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "A6",
+    "name": "Cadmium orange deep",
+    "nameDe": "Kadmiumorange dunkel",
+    "hex": "#ff811b",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "swatch",
+    "enabled": false,
+    "note": "Place A6 in the travel box. Named after the nearest Horadam colour (choice 2, match 2.4)."
+  },
+  {
+    "id": "travelbox-b1",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "B1",
+    "name": "Scarlet red",
+    "nameDe": "Scharlachrot",
+    "hex": "#f6535f",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "swatch",
+    "enabled": false,
+    "note": "Place B1 in the travel box. Named after the nearest Horadam colour (match 1.8)."
+  },
+  {
+    "id": "travelbox-b2",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "B2",
+    "name": "Paris blue",
+    "nameDe": "Pariserblau",
+    "hex": "#78c4e9",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "swatch",
+    "enabled": false,
+    "note": "Place B2 in the travel box. Named after the nearest Horadam colour (choice 2, match 1.1)."
+  },
+  {
+    "id": "travelbox-b3",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "B3",
+    "name": "Phthalo sapphire blue",
+    "nameDe": "Phthalo Saphirblau",
+    "hex": "#69bfde",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "swatch",
+    "enabled": false,
+    "note": "Place B3 in the travel box. Named after the nearest Horadam colour (match 0.7)."
+  },
+  {
+    "id": "travelbox-b4",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "B4",
+    "name": "Delft blue",
+    "nameDe": "Tiefblau",
+    "hex": "#607ca9",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "chart",
+    "enabled": false,
+    "note": "Place B4 in the travel box. Name and colour of the Horadam paint Delft blue, set by hand."
+  },
+  {
+    "id": "travelbox-b5",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "B5",
+    "name": "Brilliant purple",
+    "nameDe": "Brillant Purpur",
+    "hex": "#aa1a79",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "swatch",
+    "enabled": false,
+    "note": "Place B5 in the travel box. Named after the nearest Horadam colour (match 4.7)."
+  },
+  {
+    "id": "travelbox-b6",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "B6",
+    "name": "Cobalt green dark",
+    "nameDe": "Kobaltgrün tief",
+    "hex": "#48886d",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "chart",
+    "enabled": false,
+    "note": "Place B6 in the travel box. Name and colour of the Horadam paint Cobalt green dark, set by hand."
+  },
+  {
+    "id": "travelbox-c1",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "C1",
+    "name": "Cobalt green pure",
+    "nameDe": "Kobaltgrün rein",
+    "hex": "#4ba464",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "chart",
+    "enabled": false,
+    "note": "Place C1 in the travel box. Name and colour of the Horadam paint Cobalt green pure, set by hand."
+  },
+  {
+    "id": "travelbox-c2",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "C2",
+    "name": "Permanent green",
+    "nameDe": "Permanentgrün",
+    "hex": "#60b236",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "chart",
+    "enabled": false,
+    "note": "Place C2 in the travel box. Name and colour of the Horadam paint Permanent green, set by hand."
+  },
+  {
+    "id": "travelbox-c3",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "C3",
+    "name": "Naples yellow",
+    "nameDe": "Neapelgelb",
+    "hex": "#f5cc5c",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "chart",
+    "enabled": false,
+    "note": "Place C3 in the travel box. Name and colour of the Horadam paint Naples yellow, set by hand."
+  },
+  {
+    "id": "travelbox-c4",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "C4",
+    "name": "Cadmium red orange",
+    "nameDe": "Kadmiumrot Orange",
+    "hex": "#e9451d",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "swatch",
+    "enabled": false,
+    "note": "Place C4 in the travel box. Named after the nearest Horadam colour (match 0.7)."
+  },
+  {
+    "id": "travelbox-c5",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "C5",
+    "name": "Gold brown",
+    "nameDe": "Goldbraun",
+    "hex": "#d99154",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "swatch",
+    "enabled": false,
+    "note": "Place C5 in the travel box. Named after the nearest Horadam colour (match 0.4)."
+  },
+  {
+    "id": "travelbox-c6",
+    "vendor": "Travelbox",
+    "line": "",
+    "number": "C6",
+    "name": "Sepia brown reddish",
+    "nameDe": "Sepiabraun rötlich",
+    "hex": "#46372b",
+    "forms": [
+      "travelbox"
+    ],
+    "source": "swatch",
+    "enabled": false,
+    "note": "Place C6 in the travel box. Named after the nearest Horadam colour (match 0.5)."
   }
 ]

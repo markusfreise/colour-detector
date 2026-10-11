@@ -28,7 +28,12 @@
           <span class="palette__number">{{ mix.number }}</span>
           <span class="swatch palette__base" :style="{ background: mix.hex }" :title="`Base colour of the mix: ${mix.hex}`"></span>
           <span class="palette__summary">
-            <span class="palette__paints">{{ mix.names }}</span>
+            <span class="palette__paints">
+              <template v-for="(paint, i) in mix.paints" :key="paint.id">
+                <template v-if="i"> + </template><strong>{{ paint.number }}</strong> {{ paint.name }}
+              </template>
+              <template v-if="!mix.paints.length">{{ mix.names }}</template>
+            </span>
             <span class="palette__meta">
               <template v-if="mix.washes.length > 1">{{ mix.washes.length }} washes · </template>
               <template v-else-if="mix.dilution">{{ mix.dilution }} · </template>
@@ -110,6 +115,7 @@ const mixes = computed(() => {
         ink: contrastText(paint.hex),
         parts,
         name: paint.name,
+        number: paintNumber(paint.number),
         title: `${parts} x ${paintNumber(paint.number)} ${paint.name}`,
       }
     })
@@ -118,7 +124,8 @@ const mixes = computed(() => {
       number: parseInt(base.entry.label),
       base: base.index,
       hex: recipe?.hex ?? base.entry.targetHex,
-      names: !recipe ? '–' : used.length ? used.map((p) => p.name).join(' + ') : 'Paper white',
+      // Shown in place of the paints when there are none.
+      names: recipe ? 'Paper white' : '–',
       recipeText: used.map((p) => p.title).join(', '),
       paints: used,
       dilution: own?.paints.length ? shortDilution(own) : '',

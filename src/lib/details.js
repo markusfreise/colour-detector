@@ -1,5 +1,5 @@
 // What a painter puts in last and draws first: the small dark details that carry a picture
-// (eyes, a mouth, a window), and the outlines of the main shapes as a pencil sketch.
+// (eyes, a mouth, a window), and the edges of its shapes as a pencil sketch.
 // Where to look comes from boxes (from the AI's answer); what is there is taken from the picture.
 
 import { connectedComponents } from './segment.js'
@@ -87,20 +87,126 @@ export function detailWash(lab, width, height, where) {
   return { mask: out, pixels, shapes, lab: pixels ? sum.map((v) => v / pixels) : null }
 }
 
+// Blur of one channel with a square of the given radius (twice, which comes close to a soft blur).
+function soften(values, width, height, radius) {
+  let src = values
+  for (let pass = 0; pass < 2; pass++) {
+    const tmp = new Float32Array(src.length), dst = new Float32Array(src.length)
+    for (let y = 0; y < height; y++) {
+      let sum = 0, n = 0
+      for (let x = -radius; x < width; x++) {
+        if (x + radius < width) { sum += src[y * width + x + radius]; n++ }
+        if (x - radius - 1 >= 0) { sum -= src[y * width + x - radius - 1]; n-- }
+        if (x >= 0) tmp[y * width + x] = sum / n
+      }
+    }
+    for (let x = 0; x < width; x++) {
+      let sum = 0, n = 0
+      for (let y = -radius; y < height; y++) {
+        if (y + radius < height) { sum += tmp[(y + radius) * width + x]; n++ }
+        if (y - radius - 1 >= 0) { sum -= tmp[(y - radius - 1) * width + x]; n-- }
+        if (y >= 0) dst[y * width + x] = sum / n
+      }
+    }
+    src = dst
+  }
+  return src
+}
+
+// An edge counts from this change of colour per pixel on (OKLab); weaker ones only as part of a stronger line.
+const EDGE = 0.022
+const EDGE_WEAK = 0.4
+// Colour differences count for more than lightness: a shape often differs from its surroundings in hue only.
+const CHROMA_WEIGHT = 1.6
+
 /**
- * The lines of a pencil sketch from a coarse map of areas: 0 = paper, 1 = a light line,
- * 2 = a firm line. Lines inside `strong` (the main subjects) are firm; without it all are.
- * @param {Int32Array} regionMap  area per pixel
+ * The lines of a pencil sketch from the edges of the picture itself: where the colour changes
+ * sharply along a line of some length. Mist, soft gradients and texture give no lines.
+ * 0 = paper, 1 = a light line, 2 = a firm line. With `strong` (the main subjects) the lines
+ * inside it are firm and the ones outside need to be longer to be drawn at all.
+ * @param {Float32Array} lab  OKLab per pixel
  * @param {Uint8Array|null} strong  1 = inside a main subject
  */
-export function sketchLines(regionMap, width, height, strong = null) {
-  const lines = new Uint8Array(width * height)
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
+export function edgeSketch(lab, width, height, strong = null) {
+  const count = width * height
+  const side = Math.sqrt(count)
+  const radius = Math.max(1, Math.round(side * 0.003))
+  const channels = [0, 1, 2].map((c) => {
+    const values = new Float32Array(count)
+    const weight = c ? CHROMA_WEIGHT : 1
+    for (let p = 0; p < count; p++) values[p] = lab[p * 3 + c] * weight
+    return soften(values, width, height, radius)
+  })
+  // Strength and direction of the change at every pixel.
+  const mag = new Float32Array(count), gx = new Float32Array(count), gy = new Float32Array(count)
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
       const p = y * width + x
-      const edge = (x < width - 1 && regionMap[p + 1] !== regionMap[p]) || (y < height - 1 && regionMap[p + width] !== regionMap[p])
-      if (edge) lines[p] = !strong || strong[p] ? 2 : 1
+      let sx = 0, sy = 0, m = 0
+      for (const v of channels) {
+        const dx = (v[p - width + 1] + 2 * v[p + 1] + v[p + width + 1] - v[p - width - 1] - 2 * v[p - 1] - v[p + width - 1]) / 8
+        const dy = (v[p + width - 1] + 2 * v[p + width] + v[p + width + 1] - v[p - width - 1] - 2 * v[p - width] - v[p - width + 1]) / 8
+        m += dx * dx + dy * dy
+        // The direction of the channel that changes most decides where the line runs.
+        if (dx * dx + dy * dy > sx * sx + sy * sy) { sx = dx; sy = dy }
+      }
+      mag[p] = Math.sqrt(m); gx[p] = sx; gy[p] = sy
     }
+  }
+  // In a noisy or busy picture every pixel changes a little: an edge has to stand out from that.
+  const sample = []
+  for (let p = 0; p < count; p += 7) sample.push(mag[p])
+  sample.sort((a, b) => a - b)
+  const edge = Math.max(EDGE, sample[Math.floor(sample.length * 0.5)] * 3.5, sample[Math.floor(sample.length * 0.85)] * 1.4)
+  // Thin lines: a pixel stays only where it is the strongest across its edge.
+  const thin = new Float32Array(count)
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const p = y * width + x
+      const m = mag[p]
+      if (m < edge * EDGE_WEAK) continue
+      const ax = Math.abs(gx[p]), ay = Math.abs(gy[p])
+      let q1, q2
+      if (ax > ay * 2.414) { q1 = p - 1; q2 = p + 1 }
+      else if (ay > ax * 2.414) { q1 = p - width; q2 = p + width }
+      else if (gx[p] * gy[p] > 0) { q1 = p - width - 1; q2 = p + width + 1 }
+      else { q1 = p - width + 1; q2 = p + width - 1 }
+      if (m >= mag[q1] && m > mag[q2]) thin[p] = m
+    }
+  }
+  // Lines: pixels that hang together, kept when they hold a clear edge and are long enough.
+  const lines = new Uint8Array(count)
+  const seen = new Uint8Array(count)
+  const stack = new Int32Array(count)
+  const minLength = Math.max(8, Math.round(side * 0.03))
+  for (let start = 0; start < count; start++) {
+    if (!thin[start] || seen[start]) continue
+    let top = 0, size = 0, peak = 0, inside = 0
+    stack[top++] = start
+    seen[start] = 1
+    const members = []
+    while (top) {
+      const p = stack[--top]
+      members.push(p)
+      size++
+      if (thin[p] > peak) peak = thin[p]
+      if (strong?.[p]) inside++
+      const x = p % width
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const q = p + dy * width + dx
+          if ((!dx && !dy) || q < 0 || q >= count || x + dx < 0 || x + dx >= width || seen[q] || !thin[q]) continue
+          seen[q] = 1
+          stack[top++] = q
+        }
+      }
+    }
+    if (peak < edge) continue
+    const subject = !strong || inside * 2 > size
+    // Outside the main subjects only long, clear lines are worth drawing.
+    if (size < (subject ? minLength : minLength * 3)) continue
+    const firm = strong ? subject : peak >= edge * 1.8
+    for (const p of members) lines[p] = firm ? 2 : 1
   }
   return lines
 }

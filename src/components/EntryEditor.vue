@@ -1,5 +1,5 @@
 <template>
-  <section v-if="entry" class="panel editor">
+  <section v-if="entry" ref="panel" class="panel editor">
     <header class="editor__header">
       <h2 class="panel__title">Colour {{ entry.label }}</h2>
       <button class="button button--ghost" type="button" @click="analysis.selectEntry(null)">Close</button>
@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { chipStyle } from '../lib/color.js'
 import RecipeLine from './RecipeLine.vue'
@@ -67,6 +67,17 @@ const analysis = useAnalysisStore()
 const index = computed(() => analysis.selectedEntry)
 const entry = computed(() => analysis.selected)
 const recipe = computed(() => entry.value?.recipes[entry.value.chosen])
+
+// An area clicked in the picture brings its colour into view; the panel may be below the fold.
+const panel = ref(null)
+watch(
+  () => analysis.selectedRegion,
+  async (region) => {
+    if (region == null) return
+    await nextTick()
+    panel.value?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' })
+  },
+)
 const sharedAreas = computed(() => {
   if (!analysis.regionEntry || index.value == null) return 0
   analysis.renderVersion // re-evaluate after detaching

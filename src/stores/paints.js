@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { stockPaints } from '../data/paints.js'
-import { groupPaints, sortPaints } from '../lib/paintbox.js'
+import { groupPaints, sortPaints, paintGroupKeys, AUTO_OFF_DEFAULT, HOUSE_VENDOR } from '../lib/paintbox.js'
 
 const LEGACY_KEY = 'colour-detector:enabled-paints'
 const BOXES_KEY = 'colour-detector:boxes'
@@ -30,12 +30,13 @@ function loadBoxes() {
       box.auto ??= [...box.paintIds].sort().join() === defaults
       box.layerIds ??= []
       box.layerAuto ??= true
+      box.autoOff ??= [...AUTO_OFF_DEFAULT]
     }
     return saved
   }
   // First start, or a selection saved before boxes existed.
   const legacy = read(LEGACY_KEY)
-  const box = { id: 'box-1', name: 'My paint box', paintIds: legacy ?? defaultIds(), auto: !legacy, layerIds: [], layerAuto: true }
+  const box = { id: 'box-1', name: 'My paint box', paintIds: legacy ?? defaultIds(), auto: !legacy, layerIds: [], layerAuto: true, autoOff: [...AUTO_OFF_DEFAULT] }
   return { boxes: [box], activeId: box.id }
 }
 
@@ -44,8 +45,9 @@ export const usePaintsStore = defineStore('paints', {
     const { boxes, activeId } = loadBoxes()
     return {
       custom: read(CUSTOM_KEY) ?? [], // paints added by the user
-      // [{ id, name, paintIds, auto, layerIds, layerAuto }] auto = the app picks the paints for each
-      // picture; layerIds = the base paints of layer mode, kept apart from the mix selection
+      // [{ id, name, paintIds, auto, layerIds, layerAuto, autoOff }] auto = the app picks the paints for each
+      // picture; layerIds = the base paints of layer mode, kept apart from the mix selection;
+      // autoOff = keys of the groups Auto does not choose from
       boxes,
       activeId,
     }
@@ -53,9 +55,12 @@ export const usePaintsStore = defineStore('paints', {
   getters: {
     all: (state) => [...stockPaints, ...state.custom],
     activeBox: (state) => state.boxes.find((b) => b.id === state.activeId) ?? state.boxes[0],
-    // Paints Auto may choose from: the default selection and the user's own paints.
+    // Paints Auto may choose from: the groups ticked for Auto in the paint box. A Schmincke stock paint
+    // outside the default selection is held back (its colour is not checked yet).
     autoCandidates() {
-      return this.all.filter((p) => p.enabled || p.custom)
+      const off = new Set(this.activeBox.autoOff)
+      const held = (p) => !p.enabled && !p.custom && p.vendor === HOUSE_VENDOR
+      return this.all.filter((p) => !held(p) && paintGroupKeys(p).some((key) => !off.has(key)))
     },
     // Layer mode: the base paints, one layer each.
     layerPaints() {
@@ -76,7 +81,7 @@ export const usePaintsStore = defineStore('paints', {
       return sortPaints(this.enabled)
     },
     available() {
-      return groupPaints(this.all.filter((p) => !this.enabledIds.has(p.id)))
+      return groupPaints(this.all, (p) => !this.enabledIds.has(p.id))
     },
   },
   actions: {
@@ -98,6 +103,14 @@ export const usePaintsStore = defineStore('paints', {
     reset() {
       this.setEnabled(defaultIds())
     },
+    /** Whether Auto may choose from the paints of a group (`key` as in the paint box groups). */
+    setAutoGroup(key, on) {
+      const off = new Set(this.activeBox.autoOff)
+      if (on) off.delete(key)
+      else off.add(key)
+      this.activeBox.autoOff = [...off]
+      this.persist()
+    },
     /**
      * The base paints of layer mode. Choosing them by hand switches their Auto off and is limited
      * to MAX_LAYER_PAINTS; a proposal may add a paint or two for its accents.
@@ -114,7 +127,7 @@ export const usePaintsStore = defineStore('paints', {
     },
 
     addBox(name) {
-      const box = { id: newId('box'), name: name.trim() || `Box ${this.boxes.length + 1}`, paintIds: [], auto: false, layerIds: [], layerAuto: true }
+      const box = { id: newId('box'), name: name.trim() || `Box ${this.boxes.length + 1}`, paintIds: [], auto: false, layerIds: [], layerAuto: true, autoOff: [...AUTO_OFF_DEFAULT] }
       this.boxes.push(box)
       this.activeId = box.id
       this.persist()

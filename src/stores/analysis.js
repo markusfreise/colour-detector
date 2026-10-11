@@ -115,7 +115,7 @@ export const useAnalysisStore = defineStore('analysis', {
     aiPlan: null, // { key, serial, plan, usage, cost, provider, model } of the last answer
     aiDetails: null, // { key, mask, hex, paintId, dilution, pixels, shapes } the final wash of details (raw)
     aiMatch: null, // { key, on, off } distance to the photo with and without the AI's choices, per method
-    sketch: null, // { key, regionMap, width, height } the main shapes for the pencil sketch (raw)
+    sketch: null, // { key, lines, width, height } the pencil sketch: 0 paper, 1 light line, 2 firm line (raw)
     aiBusy: false,
     aiError: null,
     pictureStamp: 0, // counts the pictures opened
@@ -147,6 +147,10 @@ export const useAnalysisStore = defineStore('analysis', {
     layerMode: (state) => state.settings.mode === 'layer',
     /** What an AI plan belongs to: the picture as it is analysed. */
     aiKey: (state) => [state.pictureStamp, state.settings.saturation, state.settings.contrast].join('/'),
+    /** What a sketch belongs to: the picture, and the AI's answer for it once there is one. */
+    sketchKey(state) {
+      return `${state.pictureStamp}/${state.aiPlan?.key === this.aiKey ? state.aiPlan.serial : 0}`
+    },
     /** The AI's plan for this picture, when AI is switched on and has been asked. */
     aiActive(state) {
       return state.settings.ai && state.aiPlan?.key === this.aiKey ? state.aiPlan.plan : null
@@ -569,15 +573,25 @@ export const useAnalysisStore = defineStore('analysis', {
       })
     },
 
-    /** The main shapes of the picture, for the pencil sketch; worked out when the sketch is first shown. */
+    /**
+     * The pencil sketch, worked out when it is first shown: the edges of the photo as it is
+     * (a raised saturation would only add noise), firm inside the main subjects the AI named.
+     */
     async ensureSketch() {
-      const source = this.adjusted ?? this.pixels
-      const key = this.aiKey
+      const source = this.pixels
+      const key = this.sketchKey
       if (!source || this.sketch?.key === key || sketchRunning === key) return
       sketchRunning = key
+      const plan = this.aiPlan?.key === this.aiKey ? this.aiPlan.plan : null
       try {
-        const { result } = await runSegmentation({ kind: 'sketch', rgba: source.rgba.slice(), width: source.width, height: source.height })
-        if (key !== this.aiKey) return
+        const { result } = await runSegmentation({
+          kind: 'sketch',
+          rgba: source.rgba.slice(),
+          width: source.width,
+          height: source.height,
+          subjects: plan?.subjects.map((s) => [...s.box]),
+        })
+        if (key !== this.sketchKey) return
         this.sketch = markRaw({ key, ...result })
         this.renderVersion++
       } catch (e) {

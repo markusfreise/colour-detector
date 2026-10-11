@@ -29,7 +29,6 @@ import { ref, watch, onMounted } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
 import { drawLayerView, drawOutlines, labelFont, paintPixels } from './layerView.js'
-import { boxMask, sketchLines } from '../lib/details.js'
 
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
@@ -75,29 +74,26 @@ function drawDetails(el) {
   paintPixels(el.getContext('2d'), el, rgba, details.width, details.height)
 }
 
-// The pencil sketch to start from: the outlines of the main shapes, firm inside the main subjects
-// the AI named, and the fine dark details.
+// The pencil sketch to start from: the edges of the photo, firm inside the main subjects the AI
+// named, and the fine dark details.
 function drawSketch(el) {
-  const source = analysis.adjusted ?? analysis.pixels
+  const source = analysis.pixels
   if (!source) return
   el.width = source.width * SCALE
   el.height = source.height * SCALE
   const ctx = el.getContext('2d')
   ctx.fillStyle = '#ffffff'
   ctx.fillRect(0, 0, el.width, el.height)
-  const sketch = analysis.sketch?.key === analysis.aiKey ? analysis.sketch : null
+  const sketch = analysis.sketch?.key === analysis.sketchKey ? analysis.sketch : null
   if (!sketch) {
     analysis.ensureSketch()
     return
   }
-  const { width, height } = sketch
-  const plan = analysis.aiPlan?.key === analysis.aiKey ? analysis.aiPlan.plan : null
-  const strong = plan?.subjects.length ? boxMask(plan.subjects.map((s) => s.box), width, height, 0.05) : null
-  const lines = sketchLines(sketch.regionMap, width, height, strong)
-  const details = analysis.aiDetails?.key === analysis.aiKey ? analysis.aiDetails.mask : null
+  const { width, height, lines } = sketch
+  const details = analysis.aiDetails?.key === analysis.aiKey && analysis.aiDetails.width === width ? analysis.aiDetails.mask : null
   const rgba = new Uint8ClampedArray(width * height * 4)
   for (let p = 0; p < lines.length; p++) {
-    const ink = details?.[p] ? 235 : lines[p] === 2 ? 190 : lines[p] === 1 ? 70 : 0
+    const ink = details?.[p] ? 235 : lines[p] === 2 ? 215 : lines[p] === 1 ? 95 : 0
     if (!ink) continue
     rgba[p * 4] = 60; rgba[p * 4 + 1] = 58; rgba[p * 4 + 2] = 56; rgba[p * 4 + 3] = ink
   }
@@ -215,6 +211,7 @@ watch(
     analysis.settings.view,
     analysis.settings.details,
     analysis.aiDetails,
+    analysis.sketchKey,
     analysis.settings.outlines,
     analysis.settings.numbers,
   ],

@@ -80,7 +80,7 @@ describe('fitting layers to colours', () => {
 
   it('does not let coats of a bright paint drift past its masstone', () => {
     const colours = colourSet([1, 2, 3, 4].map((c) => ({ hex: glaze([yellow, c * 0.2]) })))
-    const [layer] = fitLayers(colours, [yellow], { maxCoats: 4, variety: 0 }).layers
+    const [layer] = fitLayers(colours, [yellow], { maxCoats: 4, accents: 0 }).layers
     const limit = depthLimit(absorbanceFromHex(yellow.hex))
     expect(layer.top).toBeGreaterThan(1)
     expect(layer.depths[4]).toBeLessThanOrEqual(limit)
@@ -95,8 +95,8 @@ describe('fitting layers to colours', () => {
   it('grades the coats only when asked to', () => {
     // A very light and a deep blue: one wash painted up to three times cannot do both well.
     const colours = colourSet([{ hex: glaze([blue, 0.08]) }, { hex: glaze([blue, 0.4]) }, { hex: glaze([blue, 2]) }])
-    const even = fitLayers(colours, [blue], { variety: 0 })
-    const graded = fitLayers(colours, [blue], { graded: true, variety: 0 })
+    const even = fitLayers(colours, [blue], { accents: 0 })
+    const graded = fitLayers(colours, [blue], { graded: true, accents: 0 })
     expect(even.layers[0].ratio).toBe(1)
     expect(new Set(even.layers[0].washes.map((w) => w.strength)).size).toBe(1)
     expect(graded.layers[0].ratio).toBeGreaterThan(1.5)
@@ -173,15 +173,15 @@ describe('layers of a picture', () => {
   it('is deterministic', () => {
     const rand = mulberry32(3)
     const rgba = makeImage(64, 48, (x, y) => [40 + ((x * 3) % 200) + rand() * 15, 60 + y * 3 + rand() * 15, 220 - x * 2])
-    const run = () => layerImage(rgba, 64, 48, [yellow, blue, red, black], { count: 3, simplify: 2 })
+    const run = () => layerImage(rgba, 64, 48, [yellow, blue, red, black], { count: 3, simplify: 2, accents: 0 })
     const a = run(), b = run()
     expect(a.paintIds).toEqual(b.paintIds)
     expect(a.layers.map((l) => l.strength)).toEqual(b.layers.map((l) => l.strength))
     expect(a.comboMap).toEqual(b.comboMap)
     expect(a.combos).toEqual(b.combos)
     expect(a.steps).toEqual(b.steps)
-    // The same paints, proposed from the colours of the picture alone.
-    expect(proposeLayerPaints(pictureColours(rgba, 64, 48), [yellow, blue, red, black], { count: 3 })).toEqual(a.paintIds)
+    // The same washes, proposed from the colours of the picture alone.
+    expect(proposeLayerPaints(pictureColours(rgba, 64, 48), [yellow, blue, red, black], { count: 3, accents: 0 })).toEqual(a.paintIds)
   })
 
   it('shows any subset of the layers', () => {
@@ -261,7 +261,7 @@ describe('accents', () => {
   ])
 
   it('gives the small dark part a strong wash of its own, painted last', () => {
-    const fit = fitLayers(colours, [black, blue], { maxCoats: 2, variety: 8 })
+    const fit = fitLayers(colours, [black, blue], { maxCoats: 2, accents: 2 })
     expect(fit.layers.map((l) => [l.paintId, l.kind])).toEqual([['b', 'wash'], ['k', 'accent']])
     const [wash, accent] = fit.layers
     expect(accent.top).toBe(1)
@@ -274,7 +274,7 @@ describe('accents', () => {
   })
 
   it('plans only washes at variety 0', () => {
-    const fit = fitLayers(colours, [black, blue], { maxCoats: 2, variety: 0 })
+    const fit = fitLayers(colours, [black, blue], { maxCoats: 2, accents: 0 })
     expect(fit.layers.every((l) => l.kind === 'wash')).toBe(true)
     expect(fit.deltaE[2]).toBeGreaterThan(20)
   })
@@ -285,7 +285,7 @@ describe('accents', () => {
       { hex: glaze([blue, 0.3]), weight: 397 },
       { hex: glaze([blue, 3.5]), weight: 3 },
     ])
-    const fit = fitLayers(deep, [blue], { maxCoats: 2, variety: 8 })
+    const fit = fitLayers(deep, [blue], { maxCoats: 2, accents: 2 })
     expect(fit.layers.map((l) => l.kind)).toEqual(['wash', 'accent'])
     const [wash, accent] = fit.layers
     const limit = depthLimit(absorbanceFromHex(blue.hex))
@@ -297,15 +297,17 @@ describe('accents', () => {
     const pale = hexToRgb(glaze([blue, 0.2])), dark = hexToRgb(glaze([blue, 0.2], [black, 3.5]))
     // 3 px lines, 40 px apart: a few percent of the picture.
     const rgba = makeImage(120, 120, (x, y) => ((x + 2 * y) % 80 < 3 ? dark : pale))
-    const plain = layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, variety: 0 })
-    const res = layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, variety: 8 })
+    const plain = layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, accents: 0 })
+    const res = layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, accents: 2 })
     expect(plain.layers.some((l) => l.kind === 'accent')).toBe(false)
-    const accent = res.layers.find((l) => l.kind === 'accent')
+    const accent = res.layers.find((l) => l.kind === 'accent' && l.role === 'dark')
     expect(accent.paintId).toBe('k')
     // Layers in painting order: washes first, the accent after them, and its step last.
     expect(res.layers[0]).toMatchObject({ kind: 'wash', paintId: 'b' })
-    expect(res.layers.findIndex((l) => l.kind === 'accent')).toBe(res.layers.length - 1)
+    const kinds = res.steps.map((s) => s.kind)
+    expect(kinds.lastIndexOf('wash')).toBeLessThan(kinds.indexOf('accent'))
     expect(res.steps[res.steps.length - 1]).toMatchObject({ kind: 'accent', paintId: 'k', coat: 1 })
+    expect(accent.coats[0].shapes).toBeLessThanOrEqual(24)
     // On the lines, not on the field.
     let onLine = 0, lines = 0, onField = 0, field = 0
     for (let y = 10; y < 110; y++) for (let x = 10; x < 110; x++) {
@@ -326,7 +328,7 @@ describe('what a plan says about itself', () => {
   const one = hexToRgb(glaze([blue, 0.3])), two = hexToRgb(glaze([blue, 0.6]))
   const inside = (x, y, x0, y0, size) => x >= x0 && x < x0 + size && y >= y0 && y < y0 + size
   const rgba = makeImage(80, 40, (x, y) => (inside(x, y, 10, 10, 20) ? two : inside(x, y, 5, 5, 30) || inside(x, y, 45, 5, 30) ? one : [255, 255, 255]))
-  const res = layerImage(rgba, 80, 40, [blue, red], { paintIds: ['b', 'r'], maxCoats: 2, simplify: 0, variety: 0 })
+  const res = layerImage(rgba, 80, 40, [blue, red], { paintIds: ['b', 'r'], maxCoats: 2, simplify: 0, accents: 0 })
 
   it('counts the separate shapes of every step', () => {
     expect(res.steps.map((s) => [s.paintId, s.coat, s.shapes])).toEqual([['b', 1, 2], ['b', 2, 1]])
@@ -360,10 +362,68 @@ describe('what a plan says about itself', () => {
     const ids = [0, 4, 8].map((simplify) => layerImage(picture, 96, 64, pool, { count: 3, simplify }).paintIds)
     expect(ids[1]).toEqual(ids[0])
     expect(ids[2]).toEqual(ids[0])
-    // And planning the proposal again with its paints gives the same layers.
+    // Every proposed paint has something to paint, and planning the proposal again with its
+    // paints uses the same paints.
     const first = layerImage(picture, 96, 64, pool, { count: 3, simplify: 4 })
-    const again = layerImage(picture, 96, 64, pool, { paintIds: first.paintIds, simplify: 4 })
-    expect(again.layers.map((l) => [l.paintId, l.kind, l.top, l.strength])).toEqual(first.layers.map((l) => [l.paintId, l.kind, l.top, l.strength]))
-    expect(again.comboMap).toEqual(first.comboMap)
+    expect(new Set(first.steps.map((s) => s.paintId)).size).toBe(first.paintIds.length)
+    const again = layerImage(picture, 96, 64, pool, { paintIds: first.paintIds, count: 3, simplify: 4 })
+    expect(again.paintIds.slice().sort()).toEqual(first.paintIds.slice().sort())
+  })
+})
+
+describe('what accents are for', () => {
+  // Mostly sky blue, a little pure yellow (a third of a percent) and as little very dark.
+  const sky = glaze([blue, 0.25]), sun = glaze([yellow, 0.9]), night = glaze([blue, 0.25], [black, 3.5])
+
+  it('gives the first accent to a small colour the washes miss, the second to the darks', () => {
+    const colours = colourSet([{ hex: sky, weight: 994 }, { hex: sun, weight: 3 }, { hex: night, weight: 3 }])
+    const fit = fitLayers(colours, [blue, black, yellow, red], { maxCoats: 2, accents: 2 })
+    const accents = fit.layers.filter((l) => l.kind === 'accent')
+    expect(accents.map((l) => [l.paintId, l.role]).sort()).toEqual([['k', 'dark'], ['y', 'colour']])
+    // The yellow comes out yellow: on bare paper, not over the blue.
+    const k = fit.layers.findIndex((l) => l.paintId === 'y')
+    expect(fit.coats[1][k]).toBe(1)
+    expect(deltaE(hexToOklab(fit.layers[k].hexes[1]), hexToOklab(sun))).toBeLessThan(8)
+  })
+
+  it('only adds to the plan when more accents are allowed', () => {
+    const colours = colourSet([{ hex: sky, weight: 994 }, { hex: sun, weight: 3 }, { hex: night, weight: 3 }])
+    const plans = [0, 1, 2, 3].map((accents) => fitLayers(colours, [blue, black, yellow, red], { maxCoats: 2, accents }).layers.filter((l) => l.top > 0))
+    const key = (l) => [l.kind, l.paintId, l.top, l.strength.toFixed(4)].join(' ')
+    expect(plans[0].every((l) => l.kind === 'wash')).toBe(true)
+    for (let n = 1; n < plans.length; n++) {
+      // the washes are the same, and the accents of the smaller plan are all still there
+      for (const layer of plans[n - 1]) expect(plans[n].map(key)).toContain(key(layer))
+      expect(plans[n].filter((l) => l.kind === 'accent').length).toBeLessThanOrEqual(n)
+    }
+  })
+
+  it('keeps a neutral wash off clean colour', () => {
+    // A saturated red, a little darker than the red paint gives in one go: grey would darken it
+    // numerically, but a painter keeps grey out of a clean red.
+    const colours = colourSet([{ hex: glaze([red, 1.5], [black, 0.12]), weight: 60 }, { hex: glaze([black, 0.5]), weight: 40 }])
+    const fit = fitLayers(colours, [red, black], { maxCoats: 2, accents: 0 })
+    const grey = fit.layers.findIndex((l) => l.paintId === 'k')
+    expect(fit.coats[0][grey]).toBe(0)
+    expect(fit.coats[1][grey]).toBeGreaterThan(0)
+    // The neutral wash is painted after the clean one.
+    expect(fit.layers.map((l) => l.paintId)).toEqual(['r', 'k'])
+  })
+
+  it('stays off print on white paper', () => {
+    const ink = hexToRgb(glaze([black, 3.5])), tint = hexToRgb(glaze([blue, 0.3]))
+    // Left: white with thin black strokes (a caption). Right: a blue field with dark strokes.
+    const rgba = makeImage(160, 80, (x, y) => {
+      const stroke = y > 20 && y < 60 && x % 9 < 2
+      return x < 80 ? (stroke ? ink : [255, 255, 255]) : stroke ? ink : tint
+    })
+    const res = layerImage(rgba, 160, 80, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 2, accents: 2 })
+    const accent = res.layers.find((l) => l.kind === 'accent')
+    let caption = 0, field = 0
+    for (let y = 0; y < 80; y++) for (let x = 0; x < 160; x++) if (accent.coatMap[y * 160 + x]) { if (x < 70) caption++; else if (x >= 90) field++ }
+    expect(caption).toBe(0)
+    expect(field).toBeGreaterThan(100)
+    // The paper of the caption stays white in the whole plan.
+    expect(res.combos[res.comboMap[40 * 160 + 4]].hex).toBe('#ffffff')
   })
 })

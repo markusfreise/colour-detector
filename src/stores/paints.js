@@ -98,9 +98,12 @@ export const usePaintsStore = defineStore('paints', {
     reset() {
       this.setEnabled(defaultIds())
     },
-    /** The base paints of layer mode. Choosing them by hand switches their Auto off. */
+    /**
+     * The base paints of layer mode. Choosing them by hand switches their Auto off and is limited
+     * to MAX_LAYER_PAINTS; a proposal may add a paint or two for its accents.
+     */
     setLayerPaints(ids, auto = false, box = this.activeBox) {
-      box.layerIds = [...ids].slice(0, MAX_LAYER_PAINTS)
+      box.layerIds = auto ? [...ids] : [...ids].slice(0, MAX_LAYER_PAINTS)
       box.layerAuto = auto
       this.persist()
     },

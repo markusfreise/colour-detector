@@ -91,6 +91,8 @@ const paintName = (id) => {
   const paint = paints.byId[id]
   return paint ? `${paintNumber(paint.number)} ${paint.name}` : id
 }
+// What an accent is there for.
+const ROLES = { colour: 'for a colour the washes miss', dark: 'for the darks' }
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 
 // One row per painted layer, in painting order: the washes light to dark, then the accents.
@@ -115,7 +117,9 @@ const rows = computed(() => {
         accent,
         name: paintName(layer.paintId),
         hex: layer.hexes[1],
-        meta: [wash, accent || coats.length < 2 ? null : `${coats.length} coats`, `${percent(share)}%`].filter(Boolean).join(' · '),
+        meta: [wash, accent || coats.length < 2 ? null : `${coats.length} coats`, `${percent(share)}%`, accent ? ROLES[layer.role] : null]
+          .filter(Boolean)
+          .join(' · '),
         title: `${solo ? 'Show all layers.' : 'Show only this layer.'}${gain >= 0.05 ? ` It brings the picture ${gain.toFixed(1)} closer to the photo.` : ''}`,
         shown: !!view[index],
         solo,

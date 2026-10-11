@@ -18,6 +18,7 @@ The iOS, iPadOS and macOS app is called **Tintmap** and lives in [`app/`](app/RE
 - **Washes:** "Colours" counts mixes. A mix is painted in up to five washes, from very watery to concentrated, so colours that differ only in strength do not use up a mix each. On the picture a wash carries the number of its mix and a letter for the water level (W very watery, L light, M medium, R rich, C concentrated), for example 6L and 6R. In the list every mix shows its base colour, a bar with the paints in the proportions of the recipe, and a bar with its washes. Selecting a mix or a wash blanks the rest of the picture, so only the areas of that mix remain.
 - **Saturation and contrast:** adjust the photo before it is analysed. Saturation starts at 200%, which brings out the colours a painter would exaggerate anyway.
 - **Variety:** decides which colours share a mix when there are more than you asked for. Low keeps the picture as a whole as close as possible; high lets small areas of another hue keep their own mix while similar large colours share one.
+- **Layer mode:** a second method next to mixing, for glazing. A few base paints from the paint box become layers, each painted with one prepared wash over the dry layer before, from light to dark; an area gets one to three coats of a wash, and greens, oranges and darks come from the layers adding up. Up to three accents put a strong wash on small areas last: first for a colour the washes miss, then for the darks. Tick layers on and off to see what each one does, click a layer to see it alone with its coats as numbers, walk through the painting order step by step, or click a spot to see which layers it gets. The base paints are proposed by the app or chosen in the paint box, apart from the paints selected for mixing. Printing gives the finished picture and one sheet per layer.
 - **Recipes:** for every colour, up to five ways to mix it from the paints in your box — which paints, in what ratio, how much water, and how close the mix gets.
 - **Paint boxes:** keep a box for every set of paints you own, and add paints of any brand to the library.
 - **Collection:** save pictures in the browser with their settings and colour changes; open, rename and delete them.
@@ -42,6 +43,10 @@ Each recipe shows a number and a rating, for example `0.8 • excellent`. The nu
 
 Watercolour is a transparent glaze on white paper, so each paint is modelled as a filter: its reference colour gives a per-channel absorbance `A = −ln(reflectance)`, and a mix of paints with amounts `aᵢ` reflects `exp(−d(S)/S · Σ aᵢ·Aᵢ)` with `S = Σ aᵢ` (Beer–Lambert). `d` is the depth a wash reaches with that much paint in it: 1 at amount 1, levelling off for a thick layer, because paint approaches its masstone and does not keep getting darker and more saturated. The limit holds for the mix as a whole, so three bright paints do not add up to black; it is 1.6 for a bright paint and up to 4 for greys, blacks and earths. Both numbers are estimates; the stock holds one colour per paint, not its masstone. Finding a recipe is a non-negative least-squares fit in absorbance space over all 1-, 2- and 3-paint combinations, followed by a perceptual refinement in OKLab. The total amount maps to the water level, from a very watery wash to concentrated.
 
+## How the layers work
+
+In layer mode every base paint is a filter of its own: a dried wash filters the light, and the next wash over it filters it again. So the absorbances of separate layers add up without the common limit that holds inside one wet mix, while the coats of one paint still share that paint's limit. The app picks the paints, the strength of each wash and the coats per area so that the picture comes as close as possible for the work it costs: a coat or a step that brings too little is left out, and a neutral paint is kept off clean colour. Each layer's areas are smoothed on their own, so every layer has calm shapes to paint. The paint-to-water guide for a wash assumes that the reference swatch is one part paint to four parts water; like the depth limits, that is an estimate until it is checked against real swatches.
+
 ## The paint stock
 
 The stock is hard-coded in `src/data/paints.js`: 53 Schmincke Horadam Aquarell paints (pans and tubes) and one Michael Harding tube. Each paint has a `hex` value, which is its colour at strength 1 — a mid-strength wash on white paper, not the masstone. Most values were sampled from the official Horadam colour chart; a few are estimates and are marked as such in the data.
@@ -65,7 +70,7 @@ The build uses a relative base path, so `dist/` works from any folder on any sta
 
 | Path | Contents |
 |---|---|
-| `src/lib/` | Pure logic, framework-free and tested: colour maths, mixing model, segmentation, mix planning, paint grouping |
+| `src/lib/` | Pure logic, framework-free and tested: colour maths, mixing model, segmentation, mix planning, layer mode (glazing), paint grouping |
 | `src/stores/` | Pinia stores: `paints` (stock and enabled set) and `analysis` (image, settings, areas, recipes) |
 | `src/components/` | Vue 3 components (`<script setup>`) |
 | `src/workers/` | Web Worker for the segmentation |

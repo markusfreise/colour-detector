@@ -174,7 +174,7 @@
       <span class="field__hint">
         {{
           analysis.layerMode
-            ? 'Accents: small strong touches painted last, for the darkest and the brightest spots'
+            ? 'Accents: small strong touches painted last, first for a colour the washes miss, then for the darks'
             : 'Variety: lower = closer overall, higher = small areas keep their own colour'
         }}
       </span>

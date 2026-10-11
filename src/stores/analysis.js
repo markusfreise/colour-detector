@@ -321,7 +321,8 @@ export const useAnalysisStore = defineStore('analysis', {
           width,
           height,
           paints: pool,
-          count: this.settings.layerCount,
+          // Auto: the number of wash layers (accent paints come on top). By hand: every chosen paint may be one.
+          count: box.layerAuto ? this.settings.layerCount : undefined,
           // A plain copy: the worker cannot be sent the reactive array of the store.
           paintIds: propose ? undefined : [...box.layerIds],
           maxCoats: this.settings.maxCoats,

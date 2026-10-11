@@ -108,7 +108,7 @@ describe('fitting, edge cases', () => {
 
   it('shows part of the coats of a layer and ignores missing entries of `enabled`', () => {
     // Three depths of one blue: a layer with three coats.
-    const fit = fitLayers(colourSet([{ hex: '#b9cde6' }, { hex: '#84a4d0' }, { hex: '#5f86be' }]), [blue], { maxCoats: 3, variety: 0 })
+    const fit = fitLayers(colourSet([{ hex: '#b9cde6' }, { hex: '#84a4d0' }, { hex: '#5f86be' }]), [blue], { maxCoats: 3, accents: 0 })
     expect(fit.layers[0].top).toBe(3)
     const combos = [{ coats: [3] }]
     const all = compositeColours(fit.layers, combos, [true])

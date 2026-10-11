@@ -18,13 +18,14 @@ describe('the copy that is sent', () => {
 })
 
 describe('requests', () => {
-  it('sends picture, paints and key to Anthropic and forces the plan as a tool call', () => {
+  it('sends picture, paints and key to Anthropic and asks for the plan as JSON', () => {
     const { url, init } = aiRequest({ provider: 'anthropic', model: 'claude-sonnet-5-5', key: 'k', image, paints, colours: 8, layers: 4 })
     expect(url).toBe('https://api.anthropic.com/v1/messages')
     expect(init.headers['x-api-key']).toBe('k')
     const body = JSON.parse(init.body)
     expect(body.model).toBe('claude-sonnet-5-5')
-    expect(body.tool_choice).toEqual({ type: 'tool', name: 'painting_plan' })
+    expect(body.output_config.format.type).toBe('json_schema')
+    expect(body.tool_choice).toBeUndefined()
     expect(body.messages[0].content[0]).toEqual({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: 'AAAA' } })
     expect(body.messages[0].content[1].text).toContain('y | Yellow | #fae409')
     expect(body.messages[0].content[1].text).toContain('at most 8 mixes and 4 layers')
@@ -52,8 +53,8 @@ describe('answers', () => {
     notes: 'Start with the sky.',
   }
 
-  it('reads an Anthropic tool call and drops what does not fit', () => {
-    const answer = { content: [{ type: 'tool_use', name: 'painting_plan', input: plan }], usage: { input_tokens: 1400, output_tokens: 500 } }
+  it('reads an Anthropic answer and drops what does not fit', () => {
+    const answer = { content: [{ type: 'thinking', thinking: '' }, { type: 'text', text: JSON.stringify(plan) }], usage: { input_tokens: 1400, output_tokens: 500 } }
     const read = readAiAnswer('anthropic', answer, paints)
     expect(read.plan.mixes).toEqual([{ hex: '#aa3322', name: 'roof' }, { hex: '#102030', name: 'shadow' }])
     expect(read.plan.paints).toEqual(['r', 'b'])
@@ -72,7 +73,8 @@ describe('answers', () => {
     expect(() => readAiAnswer('anthropic', { error: { message: 'invalid x-api-key' } }, paints)).toThrow('invalid x-api-key')
     expect(() => readAiAnswer('anthropic', { content: [{ type: 'text', text: 'hello' }] }, paints)).toThrow('no plan')
     expect(() => readAiAnswer('openai', { choices: [{ message: { content: 'not json' } }] }, paints)).toThrow('no plan')
-    expect(() => readAiAnswer('anthropic', { content: [{ type: 'tool_use', input: { mixes: [], paints: [], layers: [], notes: '' } }] }, paints)).toThrow('no usable plan')
+    expect(() => readAiAnswer('anthropic', { content: [{ type: 'text', text: JSON.stringify({ mixes: [], paints: [], layers: [], notes: '' }) }] }, paints)).toThrow('no usable plan')
+    expect(() => readAiAnswer('anthropic', { content: [], stop_reason: 'max_tokens' }, paints)).toThrow('cut off')
   })
 })
 

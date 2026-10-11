@@ -8,8 +8,9 @@
 // Longest side of the copy that is sent. Colour decisions need no detail, and a picture costs
 // ceil(width / 28) * ceil(height / 28) tokens.
 export const AI_IMAGE_SIDE = 560
-// Answers are short: a list of colours, two lists of ids and a few sentences.
-export const AI_MAX_OUTPUT = 1200
+// Answers are short: a list of colours, two lists of ids and a few sentences. The limit leaves
+// room for models that think before they answer; only what is used is paid for.
+export const AI_MAX_OUTPUT = 3000
 
 // Prices in US dollars per million tokens, as published by the providers in October 2026.
 // OpenAI models change often: the model is typed in, and no price is assumed for it.
@@ -132,8 +133,8 @@ export function aiRequest({ provider, model, key, image, paints, colours, layers
         model,
         max_tokens: AI_MAX_OUTPUT,
         system: SYSTEM,
-        tools: [{ name: 'painting_plan', description: 'Hand over the plan for the painting.', input_schema: SCHEMA }],
-        tool_choice: { type: 'tool', name: 'painting_plan' },
+        // The answer as JSON of this shape (a forced tool call is not accepted by every model).
+        output_config: { format: { type: 'json_schema', schema: SCHEMA } },
         messages: [
           {
             role: 'user',
@@ -165,10 +166,12 @@ export function readAiAnswer(provider, answer, paints, { colours = 32, layers = 
     try { raw = JSON.parse(message?.content ?? '') } catch { raw = null }
     usage = { input: answer?.usage?.prompt_tokens ?? 0, output: answer?.usage?.completion_tokens ?? 0 }
   } else {
-    raw = answer?.content?.find((block) => block.type === 'tool_use')?.input
+    const text = answer?.content?.find((block) => block.type === 'text')?.text
+    try { raw = JSON.parse(text ?? '') } catch { raw = null }
     const u = answer?.usage ?? {}
     usage = { input: (u.input_tokens ?? 0) + (u.cache_creation_input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0), output: u.output_tokens ?? 0 }
     if (!raw && answer?.stop_reason === 'refusal') throw new Error('The model declined to plan this picture.')
+    if (!raw && answer?.stop_reason === 'max_tokens') throw new Error('The answer was cut off. Please ask again.')
   }
   if (!raw || typeof raw !== 'object') throw new Error('The answer held no plan.')
 

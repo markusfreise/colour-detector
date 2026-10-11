@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Colour Detector and Tintmap – Manual</title>
+<link rel="stylesheet" href="manual.css">
+</head>
+<body>
+<main class="manual">
+
+<header class="cover">
+  <p class="cover__kicker">Manual · Colour Detector (web) and Tintmap (iPhone, iPad, Mac)</p>
+  <h1 class="cover__title">From a photo to a watercolour, one mix at a time</h1>
+  <p class="cover__lead">The app finds the main colours in a photo, tells you how to mix each one from the paints you own, and turns the photo into a map of flat, numbered areas. This manual walks through one picture from the first tap to the last brush stroke.</p>
+  <nav class="cover__nav" aria-label="Contents">
+    <a class="cover__link" href="#how-to">How to use</a>
+    <a class="cover__link" href="#layers">Layer mode</a>
+    <a class="cover__link" href="#more">More options</a>
+    <a class="cover__link" href="#reference">Reference</a>
+    <a class="cover__link" href="#storyboard">Storyboard and shot list</a>
+  </nav>
+  <div class="cover__media">
+    <figure class="shot">
+      <img class="shot__image" src="img/app-overview.webp" alt="The app with the sample photo as numbered colour areas, the settings and the colour list">
+      <figcaption class="shot__caption"><span class="shot__tag">App</span>The picture as numbered areas, the settings and the list of mixes.</figcaption>
+    </figure>
+    <figure class="shot">
+      <img class="shot__image" src="img/storyboard-01.webp" alt="Storyboard: painter at a desk by the window with tablet, paint box and paper">
+      <figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 01</span>Opening picture: the desk, the paints, the plan on the screen.</figcaption>
+    </figure>
+  </div>
+</header>
+
+<section class="manual__section" id="about">
+  <h2 class="manual__title">About the pictures in this manual</h2>
+  <p class="manual__lead">Pictures marked <span class="shot__tag">App</span> are real screens of the current version with the sample photo. Pictures marked <span class="shot__tag shot__tag--mock">Storyboard</span> are generated sketches that stand in for the photos and video still to be shot. They propose angle and content only; the numbers match the shot list at the end.</p>
+  <div class="key">
+    <div class="key__item"><p class="key__term">You need</p><p class="key__text">A photo, your watercolours, watercolour paper (300 g/m²) taped to a board, two or three brushes, a palette with wells, two jars of water, a pencil and a printer or a second screen.</p></div>
+    <div class="key__item"><p class="key__term">Two methods</p><p class="key__text">Mix: every colour is mixed on the palette and each area is painted once. Layer: a few thin washes are glazed over each other. The step-by-step below uses Mix.</p></div>
+    <div class="key__item"><p class="key__term">Private</p><p class="key__text">Everything is worked out on your device. The photo is not uploaded and there is no account. Only the optional AI help in the web app sends a small copy of the picture, and only after you agree.</p></div>
+  </div>
+</section>
+
+<section class="manual__section" id="how-to">
+  <h2 class="manual__title">How to use: step by step</h2>
+  <p class="manual__lead">Steps 1 to 7 happen in the app and take about ten minutes. Steps 8 to 14 happen at the desk.</p>
+
+  <p class="manual__part">Part 1 · Plan the picture in the app</p>
+
+  <article class="step" id="step-1">
+    <header class="step__head"><span class="step__number">1</span><h3 class="step__title">Choose a photo</h3></header>
+    <div class="step__text">
+      <p>Press <strong>Choose photo</strong> and pick a picture, or <strong>Take photo</strong> on a phone or tablet. In Tintmap the button is <strong>New Image</strong>. <strong>Sample</strong> steps through the built-in examples if you want to try the app first.</p>
+      <p>Photos with clear light and shadow and a few large shapes work best. The app starts analysing at once; set <strong>Show</strong> to <strong>Photo</strong> at any time to see the original again.</p>
+    </div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image" src="img/app-photo.webp" alt="The original photo in the app"><figcaption class="shot__caption"><span class="shot__tag">App</span>View "Photo": the original, with saturation raised to 200%.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/storyboard-02.webp" alt="Storyboard: hand holding a phone with a family snapshot"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 02</span>The photo on the phone, the paint box already in the background.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step" id="step-2">
+    <header class="step__head"><span class="step__number">2</span><h3 class="step__title">Tell the app which paints you own</h3></header>
+    <div class="step__text">
+      <p>Open <strong>Show paint box</strong> (Tintmap: <strong>Paint box</strong>). Every paint is a chip in its own colour with its number; P and T stand for pan and tube. The paints in the box at the top are the ones the recipes may use. Click a chip to move it in or out.</p>
+      <ul>
+        <li><strong>Auto</strong> lets the app pick the small set of paints that suits this picture. It is on for a new paint box and switches off when you select by hand.</li>
+        <li><strong>Your own paints</strong> adds paints of any brand with their own colour.</li>
+        <li><strong>New box</strong> keeps a separate selection, for example studio and travel.</li>
+      </ul>
+      <p>Press <strong>Update mixes</strong> after a change.</p>
+    </div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image" src="img/app-paintbox.webp" alt="The paint box with selected paints at the top and pans and tubes below"><figcaption class="shot__caption"><span class="shot__tag">App</span>Selected paints at the top, the rest under Pans and Tubes.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/storyboard-04.webp" alt="Storyboard: open watercolour pan box next to the tablet, a finger on one pan"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 04</span>The real box next to the one on screen: same paints, same numbers.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step" id="step-3">
+    <header class="step__head"><span class="step__number">3</span><h3 class="step__title">Decide how detailed the picture should be</h3></header>
+    <div class="step__text">
+      <p>Three sliders set the amount of work:</p>
+      <ul>
+        <li><strong>Colours</strong> (2 to 32) is the number of mixes on your palette. Start with 12 to 20.</li>
+        <li><strong>Simplify areas</strong> (0 to 10) merges small shapes into bigger, calmer ones. At 0 the map follows every speck of the photo; around 5 it becomes paintable.</li>
+        <li><strong>Max. paints</strong> limits a mix to one, two or three paints. Fewer paints give cleaner mixes.</li>
+      </ul>
+      <p><strong>Saturation</strong> and <strong>Contrast</strong> adjust the photo before it is analysed, and <strong>Variety</strong> decides whether small areas of another hue (lips, a red roof) keep a mix of their own.</p>
+    </div>
+    <div class="step__media step__media--three">
+      <figure class="shot"><img class="shot__image" src="img/app-map-detailed.webp" alt="Map with Simplify areas at 0: many small shapes"><figcaption class="shot__caption"><span class="shot__tag">App</span>Simplify areas 0: too many small shapes.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/app-map.webp" alt="Map with Simplify areas at 5: large calm shapes"><figcaption class="shot__caption"><span class="shot__tag">App</span>Simplify areas 5: the same 20 mixes in calm shapes.</figcaption></figure>
+      <figure class="shot"><img class="shot__image shot__image--tall" src="img/app-controls.webp" alt="The settings panel"><figcaption class="shot__caption"><span class="shot__tag">App</span>The settings.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step" id="step-4">
+    <header class="step__head"><span class="step__number">4</span><h3 class="step__title">Read the map</h3></header>
+    <div class="step__text">
+      <p>Every area carries a label such as <strong>3M</strong>. The number is the mix, the letter is how much water goes into it: <strong>W</strong> very watery, <strong>L</strong> light, <strong>M</strong> medium, <strong>R</strong> rich, <strong>C</strong> concentrated. So 3L and 3C are the same puddle of paint, once thinned and once strong. That is why 20 mixes give many more colours on the paper: 67 in this sample ("67 in 20 mixes" at the top of the list).</p>
+      <p>The list <strong>Colours</strong> shows one block per mix: its base colour, a bar with the paints in the proportions of the recipe, and a bar with its washes.</p>
+    </div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image shot__image--tall" src="img/app-colours.webp" alt="The colour list with recipe bars and wash bars"><figcaption class="shot__caption"><span class="shot__tag">App</span>One block per mix: paints as a bar, washes below.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/storyboard-03.webp" alt="Storyboard: over the shoulder onto the tablet with the picture as colour areas"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 03</span>Over the shoulder: the photo has become a map.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step" id="step-5">
+    <header class="step__head"><span class="step__number">5</span><h3 class="step__title">Look up a mix</h3></header>
+    <div class="step__text">
+      <p>Click an area in the picture or a mix in the list. The rest of the picture goes blank, so you see exactly where this mix belongs. The card shows the <strong>Target</strong> colour next to <strong>Your mix</strong> and up to five recipes.</p>
+      <p>A recipe reads like this: <strong>15.5 x P 230</strong> plus <strong>1 x P 662</strong> means 15.5 parts of pan 230 to 1 part of pan 662. <strong>Medium</strong> is the amount of water, and <strong>0.1 · excellent</strong> says how close the mix gets to the target. Click another recipe if you prefer its paints.</p>
+    </div>
+    <div class="step__media step__media--three">
+      <figure class="shot"><img class="shot__image" src="img/app-map-selected.webp" alt="The map with only the areas of the selected mix filled"><figcaption class="shot__caption"><span class="shot__tag">App</span>Only the areas of the selected mix stay filled.</figcaption></figure>
+      <figure class="shot"><img class="shot__image shot__image--tall" src="img/app-editor.webp" alt="The card of one colour with target, mix and five recipes"><figcaption class="shot__caption"><span class="shot__tag">App</span>Target, your mix and the recipes.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/storyboard-05.webp" alt="Storyboard: fingertip tapping an area on the tablet"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 05</span>Close on the tap that opens a recipe.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step" id="step-6">
+    <header class="step__head"><span class="step__number">6</span><h3 class="step__title">Change what you do not like</h3></header>
+    <div class="step__text">
+      <p>You are the painter, the photo is only a suggestion. With a colour selected:</p>
+      <ul>
+        <li><strong>Change colour</strong> picks a new target, warmer, cooler or entirely different. The recipes follow.</li>
+        <li><strong>Edit only the clicked area</strong> detaches the clicked area from the others that share its colour.</li>
+        <li><strong>Reset to photo</strong> returns to the colour of the photo.</li>
+      </ul>
+      <p>Press <strong>Save</strong> to keep the picture with its settings and changes in the collection (Tintmap: <strong>Library</strong>).</p>
+    </div>
+  </article>
+
+  <article class="step" id="step-7">
+    <header class="step__head"><span class="step__number">7</span><h3 class="step__title">Print the sheet</h3></header>
+    <div class="step__text">
+      <p><strong>Print / PDF</strong> gives the picture followed by every mix with its paints as bars. Print it for the desk, or choose "Save as PDF" in the print dialog and keep it on a tablet. The picture on the sheet carries the outlines and labels you need for transferring the drawing in step 9.</p>
+    </div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image shot__image--tall" src="img/app-print.webp" alt="The printed sheet: picture and legend of all mixes"><figcaption class="shot__caption"><span class="shot__tag">App</span>The printed sheet: picture and legend, grouped by mix.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/storyboard-06.webp" alt="Storyboard: hand pulling the printed sheet from a printer"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 06</span>The sheet comes out of the printer.</figcaption></figure>
+    </div>
+  </article>
+
+  <p class="manual__part">Part 2 · Paint it</p>
+
+  <article class="step" id="step-8">
+    <header class="step__head"><span class="step__number">8</span><h3 class="step__title">Lay out the desk</h3></header>
+    <div class="step__text">
+      <p>Tape the paper to a board on all four sides. Put the printed sheet where you can see it without reaching over wet paint, the paint box and palette on the side of your painting hand, and two jars of water behind them: one for rinsing, one that stays clean.</p>
+    </div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image" src="img/storyboard-08.webp" alt="Storyboard: top-down view of all materials laid out"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 08</span>Everything you need, from above.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step" id="step-9">
+    <header class="step__head"><span class="step__number">9</span><h3 class="step__title">Transfer the drawing</h3></header>
+    <div class="step__text">
+      <p>Copy the outlines onto the watercolour paper with a light pencil: trace them against a window or a light pad, or draw them by eye with the printed sheet beside you. Write the labels (3M, 6L) small inside the areas; a thin wash will still let you read them, so keep them faint.</p>
+      <p>You do not need every outline. Leave out what you would rather paint freely.</p>
+    </div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image" src="img/storyboard-07.webp" alt="Storyboard: hand tracing outlines onto taped watercolour paper"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 07</span>Pencil on the taped paper, the printed sheet at the side.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step" id="step-10">
+    <header class="step__head"><span class="step__number">10</span><h3 class="step__title">Mix the first colour and test it</h3></header>
+    <div class="step__text">
+      <p>Take the mix with the lightest washes first. Count the parts in brush loads: for 3 x 672 and 1 x 525, three loads of the first paint and one of the second into the same well. Then add water for the wash you need: a lot for W and L, little for R and C.</p>
+      <p>Paint a stroke on a scrap of the same paper, let it dry and hold it next to the chip on the sheet. Watercolour dries lighter than it looks wet. Too pale: more paint. Too strong: more water.</p>
+    </div>
+    <p class="step__tip">The recipes are estimates from one reference colour per paint. Trust the test strip more than the numbers.</p>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image" src="img/storyboard-09.webp" alt="Storyboard: brush mixing two paints on a porcelain palette"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 09</span>Two paints become one puddle.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/storyboard-10.webp" alt="Storyboard: test strip held next to the colour chips on the printed sheet"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 10</span>Test strip against the chip on the sheet.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step" id="step-11">
+    <header class="step__head"><span class="step__number">11</span><h3 class="step__title">Paint the light areas first</h3></header>
+    <div class="step__text">
+      <p>Fill every area of this mix and wash, then thin or strengthen the same puddle for its other letters. Select the mix in the app to see only its areas. Work from the lightest washes to the darkest, and from large areas to small ones.</p>
+      <p>Do not paint an area next to one that is still wet, unless you want the two to run into each other.</p>
+    </div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image" src="img/storyboard-11.webp" alt="Storyboard: flat brush laying the first pale wash over the pencil drawing"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 11</span>The first pale wash on white paper.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/storyboard-12.webp" alt="Storyboard: close view of the wet wash and the brush tip"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 12</span>Low and close: the wet shine of the wash.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step" id="step-12">
+    <header class="step__head"><span class="step__number">12</span><h3 class="step__title">Let it dry</h3></header>
+    <div class="step__text">
+      <p>Wait until the paper is flat and no longer cool to the back of your hand. Use the pause to mix the next colour and tick off the finished mixes on the sheet.</p>
+    </div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image" src="img/storyboard-13.webp" alt="Storyboard: painter leaning back with a cup while the painting dries"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 13</span>The pause. In the video: a time-lapse.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step" id="step-13">
+    <header class="step__head"><span class="step__number">13</span><h3 class="step__title">Work through the mixes down to the darks</h3></header>
+    <div class="step__text">
+      <p>Repeat steps 10 to 12 for every mix. The picture comes together with the middle tones; the darkest, most concentrated washes go on last with a small brush. They are the smallest areas and do the most for the likeness: eyes, mouths, the shadows under hair.</p>
+    </div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image" src="img/storyboard-14.webp" alt="Storyboard: painting half filled, the sheet with ticked mixes beside it"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 14</span>Halfway: mixes ticked off on the sheet.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/storyboard-15.webp" alt="Storyboard: fine brush placing small dark accents"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 15</span>The darks, last and small.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step" id="step-14">
+    <header class="step__head"><span class="step__number">14</span><h3 class="step__title">Compare, correct, take off the tape</h3></header>
+    <div class="step__text">
+      <p>Put the painting next to the screen with <strong>Show</strong> on <strong>Mixed paint</strong>. Where an area is too pale, glaze it once more with the same mix. When everything is dry, pull the tape off flat and away from the picture.</p>
+    </div>
+    <div class="step__media step__media--three">
+      <figure class="shot"><img class="shot__image" src="img/storyboard-16.webp" alt="Storyboard: the painting next to the tablet with the colour plan"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 16</span>Painting and plan side by side.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/storyboard-17.webp" alt="Storyboard: fingers peeling masking tape from the edge of the paper"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 17</span>The tape comes off, a clean edge appears.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/storyboard-18.webp" alt="Storyboard: two hands holding up the finished watercolour with the original snapshot clipped to it"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 18</span>Final picture: the watercolour and the snapshot it came from.</figcaption></figure>
+    </div>
+  </article>
+</section>
+
+<section class="manual__section" id="layers">
+  <h2 class="manual__title">Layer mode: glazing instead of mixing</h2>
+  <p class="manual__lead">Set <strong>Method</strong> to <strong>Layer</strong>. Instead of twenty mixes you prepare a few thin washes, one per base paint, and paint them over each other from light to dark. Greens, oranges and darks appear where the layers add up.</p>
+
+  <article class="step">
+    <header class="step__head"><span class="step__number">1</span><h3 class="step__title">Check the layers</h3></header>
+    <div class="step__text">
+      <p>The list shows each layer with its paint, how to prepare the wash (for example 1:40 with water, like tea) and how many coats it gets. <strong>Accents</strong> are small strong touches painted last. Tick layers on and off to see what each one does, or click a layer to see it alone; the numbers in the picture are then coats.</p>
+      <p><strong>Layers</strong>, <strong>Max. coats</strong> and <strong>Accents</strong> set the amount of work. The base paints are proposed by the app or chosen in the paint box.</p>
+    </div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image shot__image--tall" src="img/app-layers.webp" alt="The list of layers with wash strength and coats"><figcaption class="shot__caption"><span class="shot__tag">App</span>Four layers and one accent for the sample photo.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/app-layer-solo.webp" alt="One layer alone, with coats as numbers"><figcaption class="shot__caption"><span class="shot__tag">App</span>One layer alone: paint all numbered areas, then the 2s again when dry.</figcaption></figure>
+    </div>
+  </article>
+
+  <article class="step">
+    <header class="step__head"><span class="step__number">2</span><h3 class="step__title">Paint step by step</h3></header>
+    <div class="step__text">
+      <p>Press <strong>Paint step by step</strong>. Each step names the wash to mix, shows where to paint it and tells you to let it dry. Switch between <strong>Where to paint</strong>, <strong>This wash</strong> and <strong>So far</strong>; <strong>Next</strong> moves on. The chip shows what one stroke of the wash looks like on white paper: test yours against it on a scrap.</p>
+      <p><strong>Print / PDF</strong> gives the finished picture and one sheet per layer.</p>
+    </div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image" src="img/app-step-1.webp" alt="Step 1 of 9: the first wash and where to paint it"><figcaption class="shot__caption"><span class="shot__tag">App</span>Step 1 of 9: the first wash.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/app-step-4.webp" alt="Step 4 of 9 in the view So far"><figcaption class="shot__caption"><span class="shot__tag">App</span>Step 4 of 9, "So far": two layers have already made greens.</figcaption></figure>
+    </div>
+    <p class="step__tip">For photos and video, shots 11 to 15 of the storyboard serve both methods: in layer mode each wash covers large parts of the paper, which films well from above.</p>
+  </article>
+</section>
+
+<section class="manual__section" id="more">
+  <h2 class="manual__title">More options</h2>
+  <p class="manual__lead">Three things you can leave alone at first.</p>
+  <article class="step">
+    <header class="step__head"><span class="step__number">A</span><h3 class="step__title">Geometric areas</h3></header>
+    <div class="step__text"><p>Set <strong>Areas</strong> to <strong>Geometric</strong> and every area becomes a polygon with a few straight edges, laid over each other from large to small. It works in both methods and is quick to draw with a ruler. <strong>Simplify areas</strong> makes the edges longer and the shapes fewer.</p></div>
+    <div class="step__media">
+      <figure class="shot"><img class="shot__image" src="img/app-geometric.webp" alt="The sample photo as geometric areas"><figcaption class="shot__caption"><span class="shot__tag">App</span>The same picture with geometric areas.</figcaption></figure>
+      <figure class="shot"><img class="shot__image" src="img/app-map.webp" alt="The sample photo as organic areas"><figcaption class="shot__caption"><span class="shot__tag">App</span>Organic areas, for comparison.</figcaption></figure>
+    </div>
+  </article>
+  <article class="step">
+    <header class="step__head"><span class="step__number">B</span><h3 class="step__title">Views</h3></header>
+    <div class="step__text"><p><strong>Mixed paint</strong> shows what your paints can reach, <strong>Photo colour</strong> what the photo asks for, <strong>Photo</strong> the original. Tintmap adds <strong>Overlay</strong>: the areas at half strength over the photo. <strong>Outlines</strong> and <strong>Numbers</strong> can be switched off for a clean look at the colours.</p></div>
+  </article>
+  <article class="step">
+    <header class="step__head"><span class="step__number">C</span><h3 class="step__title">AI help (web app, optional)</h3></header>
+    <div class="step__text"><p>With your own API key, an AI model looks at a small copy of the picture and chooses the colours to mix and the paints for them; the app still works out the areas and recipes. It asks only when you press the button and shows what the call costs. Without a key nothing is sent anywhere.</p></div>
+  </article>
+</section>
+
+<section class="manual__section" id="reference">
+  <h2 class="manual__title">Reference</h2>
+  <p class="manual__lead">The letters and numbers at a glance.</p>
+  <div class="table__wrap">
+  <table class="table">
+    <thead><tr><th>Label</th><th>Meaning</th><th>At the desk</th></tr></thead>
+    <tbody>
+      <tr><td>6L, 6R</td><td>Mix 6 as a light wash and as a rich wash</td><td>One puddle, thinned for L, strengthened for R</td></tr>
+      <tr><td>W · L · M · R · C</td><td>Very watery · light · medium · rich · concentrated</td><td>From tinted water to paint that barely flows</td></tr>
+      <tr><td>3 x P 672</td><td>Three parts of paint 672 from the pan (T: tube, P/T: you own both)</td><td>Count brush loads</td></tr>
+      <tr><td>0.8 · excellent</td><td>Distance between target and mix. Below 2 excellent, below 5 good, below 10 fair, from 10 rough</td><td>From "fair" on, compare with the view Photo colour or allow another paint</td></tr>
+      <tr><td>1:40 with water, like tea</td><td>Layer mode: one part paint to forty parts water</td><td>Test one stroke against the chip of the step</td></tr>
+      <tr><td>A1, A2</td><td>Layer mode: accents</td><td>Painted last, on small areas</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="key key--after">
+    <div class="key__item"><p class="key__term">Tintmap: free and paid</p><p class="key__text">Free with one saved picture and one paint box. A single purchase lifts both limits. No subscription.</p></div>
+    <div class="key__item"><p class="key__term">Where the data is</p><p class="key__text">Web: in the browser on this device. Tintmap: on the device. Nothing is synchronised.</p></div>
+    <div class="key__item"><p class="key__term">If a colour looks wrong</p><p class="key__text">The stock holds one reference colour per paint. Your own swatch decides; change the target or pick another recipe.</p></div>
+  </div>
+</section>
+
+<section class="manual__section" id="storyboard">
+  <h2 class="manual__title">Storyboard and shot list</h2>
+  <p class="manual__lead">Eighteen proposed pictures for the shoot, in the order of the manual. "Photo" marks the stills the manual needs; everything is also a video shot. Replace <code>img/storyboard-NN.webp</code> with the real photo under the same name and the manual updates itself.</p>
+
+  <div class="board">
+    <article class="board__frame"><img class="board__image" src="img/storyboard-01.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">01 · Opening</span><span class="board__use">Video + Photo</span></div><p class="board__angle">Wide, from behind, eye level</p><p class="board__note">Desk at the window, tablet, paint box, blank paper. Slow push-in, 5 s. Title goes over this.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-02.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">02 · The photo</span><span class="board__use">Video + Photo · Step 1</span></div><p class="board__angle">Close, over the hand</p><p class="board__note">Phone with the snapshot, paint box out of focus behind. Cut to a screen recording of "Choose photo".</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-03.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">03 · The map appears</span><span class="board__use">Video + Photo · Step 4</span></div><p class="board__angle">Over the shoulder</p><p class="board__note">Tablet upright, the picture as numbered areas. In video: the moment the analysis finishes.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-04.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">04 · Paint box, real and on screen</span><span class="board__use">Video + Photo · Step 2</span></div><p class="board__angle">Top-down</p><p class="board__note">Open pan box beside the tablet showing the paint box. Finger points at a pan, then at its chip.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-05.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">05 · Tap for a recipe</span><span class="board__use">Video + Photo · Step 5</span></div><p class="board__angle">Close on the screen, slightly from the side</p><p class="board__note">Fingertip taps an area, the rest blanks. Use a screen recording for the recipe card so the text is sharp.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-06.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">06 · The sheet</span><span class="board__use">Video + Photo · Step 7</span></div><p class="board__angle">Medium, at printer height</p><p class="board__note">Hand takes the printed sheet. Alternative without a printer: the PDF on a second tablet.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-07.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">07 · Transfer</span><span class="board__use">Video + Photo · Step 9</span></div><p class="board__angle">Top-down</p><p class="board__note">Pencil on taped paper, sheet beside it. Time-lapse 6 s, then one real-time close of writing a label.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-08.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">08 · Materials</span><span class="board__use">Photo · Step 8</span></div><p class="board__angle">Top-down flat lay</p><p class="board__note">Paper on board, brushes, box, two jars, palette, sheet, cloth. Even soft light, no hard shadows.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-09.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">09 · Mixing</span><span class="board__use">Video + Photo · Step 10</span></div><p class="board__angle">Macro, 45 degrees</p><p class="board__note">Count the loads on camera: three of one paint, one of the other. Overlay the recipe line from the app.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-10.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">10 · Test strip</span><span class="board__use">Video + Photo · Step 10</span></div><p class="board__angle">Close, hand-held strip</p><p class="board__note">Dried swatch against the chip on the sheet. The honest moment of the film: show one that is off, then corrected.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-11.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">11 · First wash</span><span class="board__use">Video + Photo · Step 11</span></div><p class="board__angle">Top-down, locked off</p><p class="board__note">Main camera for all painting. Keep it fixed for the whole session so the stages can be cross-faded.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-12.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">12 · Wet paint</span><span class="board__use">Video · Step 11</span></div><p class="board__angle">Low side angle, macro</p><p class="board__note">Light from behind for the shine. Beauty shot, 3 to 4 s, slow motion if possible.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-13.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">13 · Drying</span><span class="board__use">Video · Step 12</span></div><p class="board__angle">Medium, from behind</p><p class="board__note">Pause with a cup. Carries the "let it dry" caption; time-lapse of the paper losing its shine.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-14.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">14 · Halfway</span><span class="board__use">Video + Photo · Step 13</span></div><p class="board__angle">Top-down, same position as 11</p><p class="board__note">Mid tones in, sheet with ticked mixes in frame. Take a still after every mix for a stage sequence.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-15.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">15 · The darks</span><span class="board__use">Video + Photo · Step 13</span></div><p class="board__angle">Macro on the brush tip</p><p class="board__note">Fine brush, concentrated wash, small areas. The picture snaps into place here.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-16.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">16 · Plan and painting</span><span class="board__use">Video + Photo · Step 14</span></div><p class="board__angle">Over the shoulder, high</p><p class="board__note">Painting beside the tablet on "Mixed paint". Dim the screen so both expose alike.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-17.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">17 · Tape</span><span class="board__use">Video · Step 14</span></div><p class="board__angle">Close, along the edge</p><p class="board__note">One continuous pull with sound. Short and satisfying, good for a social cut.</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-18.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">18 · Result</span><span class="board__use">Video + Photo</span></div><p class="board__angle">Point of view, both hands</p><p class="board__note">Finished watercolour held to the window, snapshot clipped to the corner. End card and cover picture.</p></div></article>
+  </div>
+
+  <p class="manual__part">Notes for the shoot</p>
+  <div class="key">
+    <div class="key__item"><p class="key__term">Screens</p><p class="key__text">Record the app as a screen recording and film the device only for context (02 to 05). Filmed screens flicker and the text is too small.</p></div>
+    <div class="key__item"><p class="key__term">One fixed top-down camera</p><p class="key__text">Shots 07, 08, 11 and 14 share one position. Mark the board on the desk with tape so it does not move between sessions.</p></div>
+    <div class="key__item"><p class="key__term">Light</p><p class="key__text">Window from the side opposite the painting hand, a white card as fill. No lamp mixed in, or the paint colours shift.</p></div>
+    <div class="key__item"><p class="key__term">Which picture</p><p class="key__text">The frames show a group portrait as a stand-in. Choose the motif first, analyse it, and print the sheet before the shoot so the labels in the film are the real ones.</p></div>
+    <div class="key__item"><p class="key__term">Length</p><p class="key__text">As drawn: about 90 seconds for a short film (5 s per frame), or 4 to 5 minutes as a tutorial with screen recordings for steps 1 to 7.</p></div>
+    <div class="key__item"><p class="key__term">Stills</p><p class="key__text">Landscape 16:9 for the manual. Shoot 01, 08 and 18 also upright for the App Store and social formats.</p></div>
+  </div>
+</section>
+
+<footer class="manual__footer">
+  <p>Colour Detector and Tintmap by Markus Freise. Questions: <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></p>
+</footer>
+
+</main>
+</body>
+</html>

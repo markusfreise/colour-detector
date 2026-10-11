@@ -18,7 +18,7 @@
     </table>
     <figure v-for="row in sheets.rows" :key="`sheet-${row.number}`" class="layersheet__layer">
       <figcaption class="layersheet__caption">
-        <strong>Layer {{ row.number }} of {{ sheets.rows.length }}: {{ row.name }}, {{ row.dilution }}</strong>
+        <strong>{{ typeof row.number === 'number' ? 'Layer' : 'Accent' }} {{ row.number }}: {{ row.name }}, {{ row.dilution }}</strong>
         <span>{{ row.instruction }}</span>
       </figcaption>
       <img class="layersheet__picture" :src="row.image" :alt="`Layer ${row.number}: ${row.name}`" />

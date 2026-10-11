@@ -67,7 +67,7 @@
           @change="analysis.analyse()"
         />
         <span class="field__hint">
-          {{ paints.activeBox.layerAuto ? 'More layers = more colours, more drying' : 'Chosen by hand. Auto in the paint box picks again.' }}
+          {{ paints.activeBox.layerAuto ? 'Washes; accents and second coats are extra steps' : 'Chosen by hand. Auto in the paint box picks again.' }}
         </span>
       </label>
 

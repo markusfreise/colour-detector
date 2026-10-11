@@ -123,12 +123,14 @@ export const useAnalysisStore = defineStore('analysis', {
       return state.layers.layers.map((_, k) => (k < step.layer ? true : k === step.layer ? step.coat : false))
     },
     /**
-     * The number a layer goes by in the interface: painted layers count 1, 2, 3 in painting order;
+     * The number a layer goes by in the interface: painted layers count 1, 2, 3 in painting order,
+     * accents A1, A2, A3 on their own, so that "Layers" in the settings matches what is numbered;
      * a paint that got no layer has none (null).
      */
     layerNumbers(state) {
-      let n = 0
-      return state.layers ? state.layers.layers.map((layer) => (layer.top > 0 ? ++n : null)) : []
+      let n = 0, a = 0
+      if (!state.layers) return []
+      return state.layers.layers.map((layer) => (layer.top <= 0 ? null : layer.kind === 'accent' ? `A${++a}` : ++n))
     },
     /** The one layer shown on its own, or null. */
     layerSolo() {

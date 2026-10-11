@@ -74,7 +74,8 @@ const percent = (share) => Math.round(share * 100) || '<1'
 const title = computed(() => {
   const number = analysis.layerNumbers[step.value.layer]
   const coats = layer.value.top > 1 ? `, coat ${step.value.coat} of ${layer.value.top}` : ''
-  return `${accent.value ? 'Accent' : 'Layer'} ${number}, ${name.value}${coats}`
+  const same = result.value.layers.filter((l) => l.top > 0 && (l.kind === 'accent') === accent.value).length
+  return `${accent.value ? 'Accent' : 'Layer'} ${String(number).replace('A', '')} of ${same}, ${name.value}${coats}`
 })
 // The first coat of a layer says how to prepare its wash; later coats use the same one.
 const mixText = computed(() => {

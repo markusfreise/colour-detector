@@ -8,7 +8,7 @@ const out = new URL('../Resources/Data/', import.meta.url)
 mkdirSync(out, { recursive: true })
 writeFileSync(new URL('paints.json', out), JSON.stringify(stockPaints))
 writeFileSync(new URL('horadam.json', out), JSON.stringify(horadamCatalogue))
-for (const file of ['sample-cwm-idwal.webp', 'sample-street-dusk.webp']) {
+for (const file of ['sample-family.webp', 'sample-cwm-idwal.webp', 'sample-street-dusk.webp']) {
   copyFileSync(new URL(`../../public/${file}`, import.meta.url), new URL(file, out))
 }
 console.log(`Exported ${stockPaints.length} paints and ${horadamCatalogue.length} chart colours.`)

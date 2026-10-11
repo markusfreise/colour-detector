@@ -36,6 +36,7 @@
 		BA3D8CC3E2689F9CC00E3892 /* Layers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7702DDF72F030A5B9C77A00 /* Layers.swift */; };
 		CA87926FFADE287E9B2E1616 /* Paint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656E2370C85BD5ADA5BB4322 /* Paint.swift */; };
 		CC707CF6B2003FFE76E179D9 /* ColorMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A03528745567BF3273C9355 /* ColorMath.swift */; };
+		CF63707F649854E31396AA67 /* sample-family.webp in Resources */ = {isa = PBXBuildFile; fileRef = 0185A851FA1EBC1B2407DA74 /* sample-family.webp */; };
 		EA87E60F8BB53B19E1AE76C8 /* CoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0AA53A5C4E23C7CBE285A4 /* CoreTests.swift */; };
 		EFB81655E9572068E8FB7BDC /* Mixing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28821C267403BAEDB114A978 /* Mixing.swift */; };
 		F6955A03B27D43D418E8420C /* Pictures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A9539EF41B0301AAE5F14D7 /* Pictures.swift */; };
@@ -53,6 +54,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0185A851FA1EBC1B2407DA74 /* sample-family.webp */ = {isa = PBXFileReference; path = "sample-family.webp"; sourceTree = "<group>"; };
 		0EDC1EF532557AE681F4A0AB /* LayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerTests.swift; sourceTree = "<group>"; };
 		1666D7EF3E8CFF24D1701111 /* PrintSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintSheet.swift; sourceTree = "<group>"; };
 		186C73725045D85988B60B3E /* PaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteView.swift; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 				6EB2501D0FB0E090305F162E /* horadam.json */,
 				8788D8484C64CC1D8903CEB9 /* paints.json */,
 				745CDAA0682AC9667D4969DA /* sample-cwm-idwal.webp */,
+				0185A851FA1EBC1B2407DA74 /* sample-family.webp */,
 				DECE182B7CF8FBE3D9124212 /* sample-street-dusk.webp */,
 			);
 			path = Data;
@@ -295,6 +298,7 @@
 				FC643AE81E06F4C389B206BF /* horadam.json in Resources */,
 				65463BE553374D6DF4E6A6C6 /* paints.json in Resources */,
 				5278FECC2D24007148C941EA /* sample-cwm-idwal.webp in Resources */,
+				CF63707F649854E31396AA67 /* sample-family.webp in Resources */,
 				700619962A469951C5BAAC93 /* sample-street-dusk.webp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

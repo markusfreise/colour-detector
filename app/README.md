@@ -43,10 +43,10 @@ Free: one saved picture, one paint box. The purchase lifts both limits (`Store.f
 
 ## Screenshots
 
-Debug builds accept launch arguments: `-screen paintbox|collection|editor|paywall` opens that screen, `-view mixed|target|original|overlay` sets what the picture shows, `-landscape` starts with the landscape sample, `-auto` switches the paint box to Auto, `-layer` switches to layer mode (`-step n` opens that step of the walk, `-stepview paint|wash|result` sets its picture, `-spot` selects the middle of the picture). On the Mac, `-snapshot` also writes every window as a PNG into the app's temporary folder, and `-pdf` the printed sheet as `sheet.pdf`.
+Debug builds accept launch arguments: `-screen paintbox|collection|editor|paywall` opens that screen, `-view mixed|target|original|overlay` sets what the picture shows, `-sample` steps to the next sample photo, `-auto` switches the paint box to Auto, `-layer` switches to layer mode (`-step n` opens that step of the walk, `-stepview paint|wash|result` sets its picture, `-spot` selects the middle of the picture). On the Mac, `-snapshot` also writes every window as a PNG into the app's temporary folder, and `-pdf` the printed sheet as `sheet.pdf`.
 
 ```bash
-xcrun simctl launch <device> de.markusfreise.tintmap -landscape -screen editor
+xcrun simctl launch <device> de.markusfreise.tintmap -screen editor
 xcrun simctl io <device> screenshot AppStore/screenshots/iphone-2-editor.png
 ```
 

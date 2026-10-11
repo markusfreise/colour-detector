@@ -69,10 +69,10 @@ struct RootView: View {
     #if DEBUG
     /// "-screen paintbox|collection|editor|paywall" opens that screen at launch, for screenshots;
     /// "-view mixed|target|original|overlay" sets what the picture shows;
-    /// "-landscape" starts with the landscape sample.
+    /// "-sample" steps to the next sample photo.
     private func openScreenForScreenshot() async {
-        if ProcessInfo.processInfo.arguments.contains("-landscape") { session.loadSample() }
         let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-sample") { session.loadSample() }
         // "-layer" switches to layer mode; "-step n" opens that step of the walk, "-stepview paint|wash|result" its picture.
         if arguments.contains("-layer") { session.setMode(.layer) }
         while session.busy || (session.layerMode ? session.layers == nil : session.entries.isEmpty) { try? await Task.sleep(for: .milliseconds(100)) }

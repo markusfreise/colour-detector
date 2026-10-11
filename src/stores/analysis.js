@@ -13,6 +13,7 @@ export const WORK_PIXELS = 800 * 600
 const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+')
 // Sample photos; the Sample button steps through them, the first one loads at start.
 const SAMPLES = [
+  { file: 'sample-family.webp', name: 'Family (sample)' },
   // Temporary: a press photo, to be replaced before anything is published.
   { file: 'sample-stage.webp', name: 'Stage (sample)' },
   { file: 'sample-portrait.webp', name: 'Portrait (sample)' },

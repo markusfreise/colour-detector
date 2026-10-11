@@ -40,7 +40,8 @@
               <span class="palette__meta">{{ row.meta }}</span>
             </span>
           </button>
-          <!-- With two or more coats: one segment per coat, in the colour that many coats give on white paper. -->
+          <!-- With two or more coats: one segment per coat, in the colour that many coats give on white paper,
+               as wide as the part of the layer's area that ends with that many coats. -->
           <div v-if="row.coats.length > 1" class="palette__bar palette__bar--washes layers__coats">
             <button
               v-for="coat in row.coats"
@@ -48,13 +49,13 @@
               class="palette__wash"
               :class="{ 'palette__wash--active': coat.step === analysis.layerStep }"
               type="button"
-              :style="{ background: coat.hex, color: coat.ink }"
-              :title="`Coat ${coat.coats}: ${percent(coat.share)}% of image. Click to see this step.`"
+              :style="{ background: coat.hex, color: coat.ink, flexGrow: Math.max(coat.only, 0.001) }"
+              :title="`${plural(coat.coats, 'coat')} on ${percent(coat.only)}% of the image. Click to see the step that paints coat ${coat.coats}.`"
               :aria-label="`Coat ${coat.coats} of layer ${row.number}: show this step`"
               :aria-pressed="coat.step === analysis.layerStep"
               @click="analysis.goToStep(coat.step)"
             >
-              {{ coat.coats }}
+              {{ plural(coat.coats, 'coat') }}
             </button>
           </div>
         </li>

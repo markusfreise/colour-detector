@@ -13,6 +13,8 @@ struct LayerRow: Identifiable {
         let coats: Int
         let hex: String
         let share: Double
+        /// Part of the picture that ends with exactly this many coats.
+        let only: Double
         /// The step that paints this coat.
         let step: Int?
 
@@ -57,7 +59,7 @@ extension Session {
                 role: !accent ? nil : layer.role == .dark ? "for the darks" : layer.role == .colour ? "for a colour the washes miss" : nil,
                 help: gain >= 0.05 ? "It brings the picture \(gain.formatted(.number.precision(.fractionLength(1)))) closer to the photo." : "",
                 coats: coats.map { coat in
-                    LayerRow.Coat(coats: coat.coats, hex: coat.hex, share: coat.share, step: plan.steps.firstIndex { $0.layer == index && $0.coat == coat.coats })
+                    LayerRow.Coat(coats: coat.coats, hex: coat.hex, share: coat.share, only: coat.only, step: plan.steps.firstIndex { $0.layer == index && $0.coat == coat.coats })
                 }
             )
         }
@@ -154,15 +156,22 @@ struct LayerListView: View {
                 .help("\(solo ? "Show all layers." : "Show only this layer.") \(row.help)")
             }
             if row.coats.count > 1 {
-                // One segment per coat, in the colour that many coats give on white paper.
+                // One segment per coat, in the colour that many coats give on white paper, as wide as
+                // the part of the layer's area that ends with that many coats.
+                GeometryReader { geometry in
+                let total = max(row.coats.reduce(0) { $0 + $1.only }, 0.0001)
+                let least = min(56, geometry.size.width / CGFloat(row.coats.count))
+                let free = geometry.size.width - least * CGFloat(row.coats.count)
                 HStack(spacing: 0) {
                     ForEach(row.coats) { coat in
                         Button {
                             session.goToStep(coat.step)
                         } label: {
-                            Text("\(coat.coats)")
+                            Text(plural(coat.coats, "coat"))
                                 .font(.system(size: 11, weight: .bold))
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .lineLimit(1)
+                                .frame(width: least + free * coat.only / total)
+                                .frame(maxHeight: .infinity)
                                 .background(Color(hex: coat.hex))
                                 .foregroundStyle(Color.ink(on: coat.hex))
                                 .overlay {
@@ -172,8 +181,9 @@ struct LayerListView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("Coat \(coat.coats) of layer \(row.number): show this step")
-                        .help("Coat \(coat.coats): \(percent(coat.share))% of image. Click to see this step.")
+                        .help("\(plural(coat.coats, "coat")) on \(percent(coat.only))% of the image. Click to see the step that paints coat \(coat.coats).")
                     }
+                }
                 }
                 .frame(height: 24)
                 .clipShape(RoundedRectangle(cornerRadius: 4))

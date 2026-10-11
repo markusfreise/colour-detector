@@ -17,6 +17,8 @@ export const WORK_PIXELS = 800 * 600
 const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+')
 // Sample photos; the Sample button steps through them, the first one loads at start.
 const SAMPLES = [
+  // Temporary: a published photo, to be replaced before anything is published.
+  { file: 'sample-meadow.webp', name: 'Meadow (sample)' },
   { file: 'sample-family.webp', name: 'Family (sample)' },
   // Temporary: a press photo, to be replaced before anything is published.
   { file: 'sample-stage.webp', name: 'Stage (sample)' },
@@ -115,7 +117,7 @@ export const useAnalysisStore = defineStore('analysis', {
     aiPlan: null, // { key, serial, plan, usage, cost, provider, model } of the last answer
     aiDetails: null, // { key, mask, hex, paintId, dilution, pixels, shapes } the final wash of details (raw)
     aiMatch: null, // { key, on, off } distance to the photo with and without the AI's choices, per method
-    sketch: null, // { key, lines, width, height } the pencil sketch: 0 paper, 1 light line, 2 firm line (raw)
+    sketch: null, // { key, paths, width, height } the pencil sketch as lines of points, see lib/sketch.js (raw)
     aiBusy: false,
     aiError: null,
     pictureStamp: 0, // counts the pictures opened
@@ -575,8 +577,9 @@ export const useAnalysisStore = defineStore('analysis', {
     },
 
     /**
-     * The pencil sketch, worked out when it is first shown: the edges of the photo as it is
-     * (a raised saturation would only add noise), firm inside the main subjects the AI named.
+     * The pencil sketch, worked out when it is first shown: the shapes of the photo as it is
+     * (a raised saturation would only add noise), outlined like a colouring book; lines inside
+     * the main subjects the AI named are firm.
      */
     async ensureSketch() {
       const source = this.pixels

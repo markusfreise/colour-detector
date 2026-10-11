@@ -29,6 +29,7 @@ import { ref, watch, onMounted } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
 import { drawLayerView, drawOutlines, labelFont, paintPixels } from './layerView.js'
+import { smoothCurve } from '../lib/sketch.js'
 
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
@@ -74,8 +75,8 @@ function drawDetails(el) {
   paintPixels(el.getContext('2d'), el, rgba, details.width, details.height)
 }
 
-// The pencil sketch to start from: the edges of the photo, firm inside the main subjects the AI
-// named, and the fine dark details.
+// The pencil sketch to start from, like a colouring book: the shapes of the photo with smooth
+// outlines, firm inside the main subjects the AI named, and the fine dark details.
 function drawSketch(el) {
   const source = analysis.pixels
   if (!source) return
@@ -89,15 +90,33 @@ function drawSketch(el) {
     analysis.ensureSketch()
     return
   }
-  const { width, height, lines } = sketch
-  const details = analysis.aiDetails?.key === analysis.aiKey && analysis.aiDetails.width === width ? analysis.aiDetails.mask : null
-  const rgba = new Uint8ClampedArray(width * height * 4)
-  for (let p = 0; p < lines.length; p++) {
-    const ink = details?.[p] ? 235 : lines[p] === 2 ? 215 : lines[p] === 1 ? 95 : 0
-    if (!ink) continue
-    rgba[p * 4] = 60; rgba[p * 4 + 1] = 58; rgba[p * 4 + 2] = 56; rgba[p * 4 + 3] = ink
+  // Every border as one smooth curve; firm lines for the main subjects, lighter ones elsewhere.
+  ctx.lineJoin = 'round'
+  ctx.lineCap = 'round'
+  for (const firm of [false, true]) {
+    ctx.beginPath()
+    for (const path of sketch.paths) {
+      if (path.firm !== firm) continue
+      ctx.moveTo(path.points[0] * SCALE, path.points[1] * SCALE)
+      for (const [ax, ay, bx, by, x, y] of smoothCurve(path.points, path.closed)) {
+        ctx.bezierCurveTo(ax * SCALE, ay * SCALE, bx * SCALE, by * SCALE, x * SCALE, y * SCALE)
+      }
+      if (path.closed) ctx.closePath()
+    }
+    ctx.strokeStyle = firm ? '#3c3a38' : 'rgba(60, 58, 56, 0.45)'
+    ctx.lineWidth = (firm ? 1.6 : 1.1) * SCALE
+    ctx.stroke()
   }
-  paintPixels(ctx, el, rgba, width, height, true)
+  // The fine dark details of an AI plan, filled in.
+  const details = analysis.aiDetails?.key === analysis.aiKey && analysis.aiDetails.width === sketch.width ? analysis.aiDetails : null
+  if (details) {
+    const rgba = new Uint8ClampedArray(details.mask.length * 4)
+    for (let p = 0; p < details.mask.length; p++) {
+      if (!details.mask[p]) continue
+      rgba[p * 4] = 60; rgba[p * 4 + 1] = 58; rgba[p * 4 + 2] = 56; rgba[p * 4 + 3] = 235
+    }
+    paintPixels(ctx, el, rgba, details.width, details.height, true)
+  }
   if (analysis.settings.guides) drawGuides(ctx, el.width, el.height)
 }
 

@@ -28,7 +28,7 @@ The iOS, iPadOS and macOS app is called **Tintmap** and lives in [`app/`](app/RE
 - **Limits:** restrict mixes to one, two or three paints.
 - **Recolour:** click an area, pick a different target colour, choose between the alternative recipes, or detach a single area from the others that share its colour.
 - **Print / PDF:** prints the picture followed by every colour with its chosen mix; pick "Save as PDF" in the print dialog for a PDF.
-- **Views:** mixed paint, photo colour, the original photo or a pencil sketch (the edges of the photo itself: where the colour changes sharply along a line; mist, soft gradients and texture give no lines; with guide lines in quarters and diagonals for transferring it to paper), with outlines and numbers on or off.
+- **Views:** mixed paint, photo colour, the original photo or a pencil sketch drawn like a colouring book (closed shapes with smooth, curved outlines; areas are joined wherever the border between them is no real edge in the photo, so mist and soft gradients give no lines; with guide lines in quarters and diagonals for transferring it to paper), with outlines and numbers on or off.
 
 ## Match quality
 
@@ -82,7 +82,7 @@ The build uses a relative base path, so `dist/` works from any folder on any sta
 
 | Path | Contents |
 |---|---|
-| `src/lib/` | Pure logic, framework-free and tested: colour maths, mixing model, segmentation, geometric areas, mix planning, layer mode (glazing), AI requests and answers, paint grouping |
+| `src/lib/` | Pure logic, framework-free and tested: colour maths, mixing model, segmentation, geometric areas, the sketch, mix planning, layer mode (glazing), AI requests and answers, paint grouping |
 | `src/stores/` | Pinia stores: `paints` (stock and enabled set), `analysis` (image, settings, areas, recipes) and `ai` (provider, key, consent) |
 | `src/components/` | Vue 3 components (`<script setup>`) |
 | `src/workers/` | Web Worker for the segmentation |

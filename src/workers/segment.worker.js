@@ -1,5 +1,5 @@
-import { segmentImage, toOklabPixels } from '../lib/segment.js'
-import { boxMask, edgeSketch } from '../lib/details.js'
+import { segmentImage } from '../lib/segment.js'
+import { colouringSketch } from '../lib/sketch.js'
 import { layerImage } from '../lib/layers.js'
 
 self.onmessage = (event) => {
@@ -14,11 +14,8 @@ self.onmessage = (event) => {
       return
     }
     if (kind === 'sketch') {
-      // The pencil sketch: the edges of the picture, firm inside the main subjects.
-      const { subjects } = event.data
-      const strong = subjects?.length ? boxMask(subjects, width, height, 0.05) : null
-      const lines = edgeSketch(toOklabPixels(rgba, width * height), width, height, strong)
-      self.postMessage({ jobId, result: { lines, width, height } }, [lines.buffer])
+      // The pencil sketch: closed shapes with smooth outlines, like a colouring book.
+      self.postMessage({ jobId, result: colouringSketch(rgba, width, height, { subjects: event.data.subjects }) })
       return
     }
     const { colours, simplify, geometric, anchors, focus } = event.data

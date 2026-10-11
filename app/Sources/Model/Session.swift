@@ -39,8 +39,6 @@ struct AnalysisSettings: Codable, Equatable {
     var view = ViewMode.mixed
     var outlines = true
     var numbers = true
-    /// Colour list: every wash of a mix, or only its base colour.
-    var washes = true
 
     init() {}
 
@@ -57,7 +55,6 @@ struct AnalysisSettings: Codable, Equatable {
         view = try values.decodeIfPresent(ViewMode.self, forKey: .view) ?? defaults.view
         outlines = try values.decodeIfPresent(Bool.self, forKey: .outlines) ?? defaults.outlines
         numbers = try values.decodeIfPresent(Bool.self, forKey: .numbers) ?? defaults.numbers
-        washes = try values.decodeIfPresent(Bool.self, forKey: .washes) ?? defaults.washes
     }
 }
 
@@ -80,6 +77,41 @@ struct PaletteEntry: Identifiable, Sendable {
     var label = ""
 
     var recipe: Recipe? { recipes.indices.contains(chosen) ? recipes[chosen] : nil }
+}
+
+/// A mix as the colour list and the printed sheet show it: its base colour, its paints and its washes.
+struct MixBlock: Identifiable {
+    struct Part: Identifiable {
+        let id: String
+        let paint: Paint
+        /// Part of the mix, 0...1: the width of the paint in the recipe bar.
+        let share: Double
+        let parts: String
+    }
+
+    struct Wash: Identifiable {
+        /// Entry index.
+        let id: Int
+        let label: String
+        let letter: String
+        let hex: String
+        let share: Double
+        let dilution: String
+    }
+
+    /// The family of its entries.
+    let id: String
+    let number: String
+    /// Entry index of the largest wash: the one the recipe is fitted to.
+    let base: Int
+    let hex: String
+    let names: String
+    let paints: [Part]
+    let dilution: String
+    let share: Double
+    let changed: Bool
+    /// Lightest first.
+    let washes: [Wash]
 }
 
 /// A colour change that is kept with a saved picture.
@@ -151,14 +183,6 @@ final class Session {
 
     /// Number of different mixes; the washes of a mix count once.
     var mixCount: Int { Set(entries.map(\.family)).count }
-
-    /// The colour of an entry's mix as its recipe gives it, before any water is added or taken away.
-    func baseHex(of entry: PaletteEntry) -> String {
-        let recipes = entry.overridden ? entry.recipes : mixRecipes[entry.group] ?? entry.recipes
-        return (recipes.indices.contains(entry.chosen) ? recipes[entry.chosen].hex : nil) ?? entry.recipe?.hex ?? entry.targetHex
-    }
-
-    // MARK: Loading
 
     /// Loads the next sample photo; `restart` goes back to the first one (used at start).
     func loadSample(restart: Bool = false) {
@@ -427,10 +451,56 @@ final class Session {
         order = next
     }
 
+    /// One block per mix, in the order of the labels.
+    var mixBlocks: [MixBlock] {
+        let paints = library.byID
+        func short(_ recipe: Recipe) -> String { recipe.dilution.replacingOccurrences(of: " (layer/glaze)", with: "") }
+        func parts(_ n: Double) -> String { n.formatted(.number.precision(.fractionLength(n == n.rounded() ? 0 : 1))) }
+        var families: [String] = []
+        var members: [String: [Int]] = [:]
+        for index in order {
+            let family = entries[index].family
+            if members[family] == nil { families.append(family) }
+            members[family, default: []].append(index)
+        }
+        return families.map { family in
+            let indices = members[family] ?? []
+            let base = indices.reduce(indices[0]) { entries[$1].share > entries[$0].share ? $1 : $0 }
+            let entry = entries[base]
+            // The mix as its recipe gives it, before any water is added or taken away.
+            let mixed = entry.overridden ? nil : mixRecipes[entry.group].flatMap { $0.indices.contains(entry.chosen) ? $0[entry.chosen] : nil }
+            let recipe = mixed ?? entry.recipe
+            let used: [MixBlock.Part] = (recipe?.paints ?? []).enumerated().compactMap { i, item in
+                paints[item.paintID].map { MixBlock.Part(id: item.paintID, paint: $0, share: item.share, parts: parts(recipe?.parts[i] ?? 1)) }
+            }
+            return MixBlock(
+                id: family,
+                number: String(entry.label.prefix { $0.isNumber }),
+                base: base,
+                hex: recipe?.hex ?? entry.targetHex,
+                names: recipe == nil ? "No paints selected" : used.isEmpty ? "Paper white" : used.map(\.paint.name).joined(separator: " + "),
+                paints: used,
+                dilution: entry.recipe.map { $0.paints.isEmpty ? "" : short($0) } ?? "",
+                share: indices.reduce(0) { $0 + entries[$1].share },
+                changed: indices.contains { entries[$0].overridden },
+                washes: indices.map { i in
+                    let wash = entries[i].recipe
+                    return MixBlock.Wash(id: i, label: entries[i].label, letter: entries[i].letter, hex: wash?.hex ?? entries[i].targetHex, share: entries[i].share, dilution: wash.map(short) ?? "")
+                }
+            )
+        }
+    }
+
+    /// With a colour selected only its mix stays in the picture: all its washes, the rest goes blank.
+    func isShown(_ entry: Int) -> Bool {
+        guard let selected, entries.indices.contains(entry) else { return true }
+        return entries[entry].family == selected.family
+    }
+
     // MARK: Selection and changes
 
     func select(region: Int?) {
-        if let region, regionEntry.indices.contains(region), region != selectedRegion {
+        if let region, regionEntry.indices.contains(region), region != selectedRegion, isShown(regionEntry[region]) {
             selectedRegion = region
             selectedEntry = regionEntry[region]
         } else {
@@ -555,7 +625,7 @@ final class Session {
             out = settings.view == .overlay ? originalPixels ?? blank : blank
             let colours: [(UInt8, UInt8, UInt8)] = entries.enumerated().map { index, entry in
                 var c = ColorMath.rgb(hex: displayHex(entry))
-                if let highlight, highlight != index { c = c * 0.35 + Vec3(255, 255, 255) * 0.65 }
+                if let highlight, entries.indices.contains(highlight), entries[highlight].family != entry.family { c = Vec3(255, 255, 255) }
                 return (UInt8(c.x.rounded()), UInt8(c.y.rounded()), UInt8(c.z.rounded()))
             }
             out.withUnsafeMutableBufferPointer { out in

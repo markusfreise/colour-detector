@@ -1,28 +1,12 @@
 import SwiftUI
 
-/// Every colour of the picture with the paints that mix it. The washes of a mix sit together:
-/// their swatches touch and only the first one names the paints.
+/// The mixes of the picture. Every mix shows its base colour, its recipe as a bar of paints in
+/// their proportions, and its washes. Selecting a mix or a wash blanks the rest of the picture.
 struct PaletteView: View {
     @Environment(Session.self) private var session
-    @Environment(Library.self) private var library
-
-    private struct Row: Identifiable {
-        let id: Int
-        let index: Int
-        let entry: PaletteEntry
-        var label: String
-        var share: Double
-        var washes = 1
-        var joinTop = false
-        var joinBottom = false
-        /// Only the base colour of the mix is shown.
-        var base: String?
-    }
 
     var body: some View {
-        @Bindable var session = session
-        let paints = library.byID
-        let rows = rows
+        let mixes = session.mixBlocks
         VStack(alignment: .leading, spacing: 8) {
             if !session.entries.isEmpty {
                 Text("\(session.entries.count) in \(session.mixCount) \(session.mixCount == 1 ? "mix" : "mixes")")
@@ -30,126 +14,130 @@ struct PaletteView: View {
                     .foregroundStyle(.secondary)
             }
             if session.mixCount < session.entries.count {
-                HStack(alignment: .firstTextBaseline, spacing: 12) {
-                    Toggle("Washes", isOn: $session.settings.washes).toggleStyle(CheckToggleStyle())
-                    if session.settings.washes {
-                        Text(Mixing.washLetters.map { "\($0.letter) \($0.label)" }.joined(separator: "   "))
-                            .font(Theme.small)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                Text(Mixing.washLetters.map { "\($0.letter) \($0.label)" }.joined(separator: "   "))
+                    .font(Theme.small)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(mixes) { mix in
+                    block(mix)
                 }
             }
-            VStack(alignment: .leading, spacing: 0) {
-                ForEach(rows) { row in
-                    Button {
-                        session.select(entry: session.selectedEntry == row.index ? nil : row.index)
-                    } label: {
-                        HStack(spacing: 10) {
-                            Text(row.label)
-                                .font(Theme.strong)
-                                .monospacedDigit()
-                                .foregroundStyle(.secondary)
-                                .frame(width: 38, alignment: .trailing)
-                            swatch(row)
-                            VStack(alignment: .leading, spacing: 1) {
-                                if !row.joinTop {
-                                    Text(summary(row.entry, paints)).font(Theme.body).lineLimit(1)
-                                }
-                                Text(meta(row)).font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
-                            }
-                            .padding(.vertical, 6)
-                            Spacer(minLength: 0)
+        }
+    }
+
+    private func block(_ mix: MixBlock) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Button {
+                toggle(mix.base)
+            } label: {
+                HStack(spacing: 10) {
+                    Text(mix.number)
+                        .font(Theme.strong)
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                        .frame(width: 30, alignment: .trailing)
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color(hex: mix.hex))
+                        .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(.primary.opacity(0.15)))
+                        .frame(width: 36, height: 34)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(mix.names).font(Theme.body).lineLimit(1)
+                        Text(meta(mix)).font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Mix \(mix.number), \(mix.names)")
+            if !mix.paints.isEmpty {
+                RecipeBar(parts: mix.paints).frame(height: 16).padding(.leading, 40)
+            }
+            if mix.washes.count > 1 {
+                washBar(mix).frame(height: 24).padding(.leading, 40)
+            }
+        }
+        .padding(.horizontal, 8)
+        .padding(.top, 5)
+        .padding(.bottom, 7)
+        .background(session.selected?.family == mix.id ? Color.accentColor.opacity(0.15) : .clear, in: RoundedRectangle(cornerRadius: 8))
+    }
+
+    /// The washes of a mix, lightest first; each one selects that wash.
+    private func washBar(_ mix: MixBlock) -> some View {
+        HStack(spacing: 0) {
+            ForEach(mix.washes) { wash in
+                Button {
+                    toggle(wash.id)
+                } label: {
+                    Text(wash.letter)
+                        .font(.system(size: 11, weight: .bold))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color(hex: wash.hex))
+                        .foregroundStyle(Color.ink(on: wash.hex))
+                        .overlay {
+                            if session.selectedEntry == wash.id { Rectangle().strokeBorder(Color.accentColor, lineWidth: 2) }
                         }
-                        .padding(.horizontal, 8)
-                        .padding(.top, row.joinTop ? 0 : 2)
-                        .padding(.bottom, row.joinBottom ? 0 : 2)
-                        .frame(minHeight: row.joinTop ? 30 : 46)
-                        .background(selected(row) ? Color.accentColor.opacity(0.15) : .clear, in: RoundedRectangle(cornerRadius: 8))
                         .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.top, row.joinTop ? 0 : 2)
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Wash \(wash.label), \(wash.dilution)")
+                .help("\(wash.label): \(wash.dilution), \(percent(wash.share))% of image")
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(.primary.opacity(0.15)))
     }
 
-    /// Mix by mix. Neighbours painted with the same mix are joined; with washes hidden a mix is one row.
-    private var rows: [Row] {
-        func mix(_ entry: PaletteEntry) -> String {
-            "\(entry.family):\(entry.recipe?.paints.map(\.paintID).joined(separator: "+") ?? "")"
-        }
-        var list = session.order.map { Row(id: session.entries[$0].id, index: $0, entry: session.entries[$0], label: session.entries[$0].label, share: session.entries[$0].share) }
-        if !session.settings.washes {
-            // Only the base colour of each mix: its largest wash, with the area of the whole mix.
-            var mixes: [Row] = []
-            for row in list {
-                if let m = mixes.firstIndex(where: { $0.entry.family == row.entry.family }) {
-                    let share = mixes[m].share + row.share
-                    let washes = mixes[m].washes + 1
-                    if row.entry.share > mixes[m].entry.share { mixes[m] = row }
-                    mixes[m].share = share
-                    mixes[m].washes = washes
-                } else {
-                    mixes.append(row)
-                }
-            }
-            return mixes.map { row in
-                var row = row
-                row.label = String(row.entry.label.prefix { $0.isNumber })
-                row.base = session.baseHex(of: row.entry)
-                return row
-            }
-        }
-        for n in list.indices {
-            list[n].joinTop = n > 0 && mix(list[n - 1].entry) == mix(list[n].entry)
-            list[n].joinBottom = n < list.count - 1 && mix(list[n + 1].entry) == mix(list[n].entry)
-        }
-        return list
+    private func toggle(_ index: Int) {
+        session.select(entry: session.selectedEntry == index ? nil : index)
     }
 
-    private func selected(_ row: Row) -> Bool {
-        session.selectedEntry == row.index || (row.base != nil && session.selected?.family == row.entry.family)
+    private func percent(_ share: Double) -> String {
+        let percent = Int((share * 100).rounded())
+        return percent == 0 ? "<1" : "\(percent)"
     }
 
-    /// Photo colour and mix side by side; the washes of a mix form one column.
-    private func swatch(_ row: Row) -> some View {
-        let shape = UnevenRoundedRectangle(
-            topLeadingRadius: row.joinTop ? 0 : 6, bottomLeadingRadius: row.joinBottom ? 0 : 6,
-            bottomTrailingRadius: row.joinBottom ? 0 : 6, topTrailingRadius: row.joinTop ? 0 : 6
-        )
-        return HStack(spacing: 0) {
-            if let base = row.base {
-                Color(hex: base)
-            } else {
-                Color(hex: row.entry.targetHex)
-                Color(hex: row.entry.recipe?.hex ?? row.entry.targetHex)
-            }
-        }
-        .frame(width: 48)
-        .frame(minHeight: row.joinTop || row.joinBottom ? 30 : 34, maxHeight: row.joinTop || row.joinBottom ? .infinity : 34)
-        .clipShape(shape)
-        .overlay(shape.strokeBorder(.primary.opacity(0.15)))
-    }
-
-    private func summary(_ entry: PaletteEntry, _ paints: [String: Paint]) -> String {
-        guard let recipe = entry.recipe else { return "No paints selected" }
-        if recipe.paints.isEmpty { return "Paper white" }
-        return recipe.paints.compactMap { paints[$0.paintID]?.name }.joined(separator: " + ")
-    }
-
-    private func meta(_ row: Row) -> String {
-        let percent = Int((row.share * 100).rounded())
+    private func meta(_ mix: MixBlock) -> String {
         var parts: [String] = []
-        if row.washes > 1 {
-            parts.append("\(row.washes) washes")
-        } else if let recipe = row.entry.recipe, !recipe.paints.isEmpty {
-            // The water level tells the washes of one mix apart.
-            parts.append(recipe.dilution.replacingOccurrences(of: " (layer/glaze)", with: ""))
+        if mix.washes.count > 1 {
+            parts.append("\(mix.washes.count) washes")
+        } else if !mix.dilution.isEmpty {
+            parts.append(mix.dilution)
         }
-        parts.append("\(percent == 0 ? "<1" : "\(percent)")% of image")
-        if row.entry.overridden { parts.append("changed") }
+        parts.append("\(percent(mix.share))% of image")
+        if mix.changed { parts.append("changed") }
         return parts.joined(separator: " · ")
+    }
+}
+
+/// A recipe as a bar: one segment per paint, as wide as its part of the mix.
+struct RecipeBar: View {
+    let parts: [MixBlock.Part]
+    var fontSize: CGFloat = 10
+
+    var body: some View {
+        GeometryReader { geometry in
+            let total = max(parts.reduce(0) { $0 + $1.share }, 0.0001)
+            HStack(spacing: 0) {
+                ForEach(parts) { part in
+                    Text(part.parts)
+                        .font(.system(size: fontSize, weight: .bold))
+                        .lineLimit(1)
+                        .frame(width: max(6, geometry.size.width * part.share / total), height: geometry.size.height)
+                        .background(Color(hex: part.paint.hex))
+                        .foregroundStyle(Color.ink(on: part.paint.hex))
+                        .clipped()
+                        .help("\(part.parts) x \(part.paint.displayNumber) \(part.paint.name)")
+                }
+            }
+            .frame(width: geometry.size.width, alignment: .leading)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(.primary.opacity(0.15)))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Recipe: " + parts.map { "\($0.parts) x \($0.paint.name)" }.joined(separator: ", "))
     }
 }

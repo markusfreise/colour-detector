@@ -6,7 +6,7 @@ import PDFKit
 import UIKit
 #endif
 
-/// The printable sheet: the picture, then every colour with its chosen mix, on A4 pages.
+/// The printable sheet: the picture, then every mix with its washes and its recipe, on A4 pages.
 @MainActor
 enum PrintSheet {
     private static let page = CGSize(width: 595, height: 842) // A4 in points
@@ -14,19 +14,9 @@ enum PrintSheet {
     private static let rowHeight: CGFloat = 44
     private static let pictureHeight: CGFloat = 400
 
-    struct Row {
-        let number: String
-        let recipe: Recipe?
-        let share: String
-    }
 
     static func pdf(session: Session, library: Library) -> Data {
-        let paints = library.byID
-        var rows = session.order.map { index -> Row in
-            let entry = session.entries[index]
-            let percent = Int((entry.share * 100).rounded())
-            return Row(number: entry.label, recipe: entry.recipe, share: percent == 0 ? "<1%" : "\(percent)%")
-        }
+        var rows = session.mixBlocks
         let picture = session.printImage()
         let labels = pictureLabels(session)
 
@@ -37,7 +27,7 @@ enum PrintSheet {
         let usable = page.height - 2 * margin
         var first = true
         repeat {
-            let room = first ? usable - pictureHeight - 60 : usable
+            let room = first ? usable - pictureHeight - 76 : usable
             let count = min(rows.count, max(1, Int(room / rowHeight)))
             let pageRows = Array(rows.prefix(count))
             rows.removeFirst(count)
@@ -47,7 +37,7 @@ enum PrintSheet {
                 segmentation: session.segmentation,
                 labels: labels,
                 rows: pageRows,
-                paints: paints
+                key: first && pageRows.contains { $0.washes.count > 1 }
             )
             let renderer = ImageRenderer(content: view.frame(width: page.width, height: page.height).environment(\.colorScheme, .light))
             renderer.render { _, draw in
@@ -81,8 +71,9 @@ enum PrintSheet {
         let picture: CGImage?
         let segmentation: Segmentation?
         let labels: [NumberedPicture.Label]
-        let rows: [Row]
-        let paints: [String: Paint]
+        let rows: [MixBlock]
+        /// The letters of the water levels, above the list.
+        let key: Bool
 
         var body: some View {
             VStack(alignment: .leading, spacing: 0) {
@@ -94,15 +85,47 @@ enum PrintSheet {
                         .frame(maxWidth: .infinity, maxHeight: PrintSheet.pictureHeight)
                         .frame(height: PrintSheet.pictureHeight + 30, alignment: .top)
                 }
-                ForEach(rows, id: \.number) { row in
+                if key {
+                    Text(Mixing.washLetters.map { "\($0.letter) \($0.label)" }.joined(separator: "   "))
+                        .font(.system(size: 9))
+                        .foregroundStyle(.secondary)
+                        .frame(height: 16, alignment: .top)
+                }
+                ForEach(rows) { row in
                     HStack(spacing: 8) {
-                        Text(row.number).font(.system(size: 12, weight: .bold)).frame(width: 32, alignment: .trailing)
-                        if let recipe = row.recipe {
-                            RecipeView(recipe: recipe, paints: paints, wide: true)
-                        } else {
-                            Spacer()
+                        Text(row.number).font(.system(size: 12, weight: .bold)).frame(width: 22, alignment: .trailing)
+                        // The washes of the mix side by side, lightest first, each in its own colour.
+                        HStack(spacing: 0) {
+                            ForEach(row.washes) { wash in
+                                VStack(spacing: 1) {
+                                    Text(wash.letter.isEmpty ? row.number : wash.letter).font(.system(size: 10, weight: .bold))
+                                    Text(PrintSheet.percent(wash.share)).font(.system(size: 7))
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .background(Color(hex: wash.hex))
+                                .foregroundStyle(Color.ink(on: wash.hex))
+                            }
                         }
-                        Text(row.share).font(.system(size: 10)).foregroundStyle(.secondary).frame(width: 30, alignment: .trailing)
+                        .frame(width: 150, height: 36)
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(.black.opacity(0.35), lineWidth: 1))
+                        if row.paints.isEmpty {
+                            Text("Leave the paper white").font(.system(size: 10)).italic().frame(maxWidth: .infinity, alignment: .leading)
+                        } else {
+                            VStack(spacing: 3) {
+                                HStack(spacing: 6) {
+                                    ForEach(0..<3, id: \.self) { slot in
+                                        if slot < row.paints.count {
+                                            paint(row.paints[slot])
+                                        } else {
+                                            Color.clear.frame(maxWidth: .infinity, maxHeight: 22)
+                                        }
+                                    }
+                                }
+                                RecipeBar(parts: row.paints, fontSize: 8).frame(height: 11)
+                            }
+                        }
+                        Text(PrintSheet.percent(row.share)).font(.system(size: 10)).foregroundStyle(.secondary).frame(width: 30, alignment: .trailing)
                     }
                     .frame(height: PrintSheet.rowHeight)
                 }
@@ -112,6 +135,27 @@ enum PrintSheet {
             .foregroundStyle(.black)
             .background(.white)
         }
+
+        private func paint(_ part: MixBlock.Part) -> some View {
+            HStack(spacing: 6) {
+                Text("\(Text(part.parts + " x").bold()) \(part.paint.formLabel)").fixedSize()
+                Spacer(minLength: 0)
+                Text("\(Text(part.paint.displayNumber).bold()) \(part.paint.name)").truncationMode(.tail)
+            }
+            .font(.system(size: 8.5))
+            .lineLimit(1)
+            .padding(.horizontal, 6)
+            .frame(maxWidth: .infinity, minHeight: 22, maxHeight: 22)
+            .background(Color(hex: part.paint.hex))
+            .foregroundStyle(Color.ink(on: part.paint.hex))
+            .clipShape(RoundedRectangle(cornerRadius: 5))
+            .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(.black.opacity(0.35), lineWidth: 1))
+        }
+    }
+
+    fileprivate static func percent(_ share: Double) -> String {
+        let percent = Int((share * 100).rounded())
+        return percent == 0 ? "<1%" : "\(percent)%"
     }
 
     /// Opens the system print dialog for the sheet.

@@ -9,7 +9,7 @@
 //
 // Pure functions on typed arrays so it runs in a Web Worker and in tests.
 
-import { srgbToLinear, linearToOklab, oklabToLinear, oklabToHex } from './color.js'
+import { srgbToLinear, linearToOklab, oklabToLinear, oklabToHex, hexToOklab } from './color.js'
 import { geometricAreas } from './geometric.js'
 
 export function mulberry32(seed) {
@@ -127,14 +127,17 @@ export function colourBins(lab, count) {
  * only in strength therefore share a mix instead of using up one each. Within a mix the
  * strengths are then split into washes.
  *
+ * With `anchors` (colours as OKLab triples) the mixes are given instead of found: every anchor is
+ * a mix, the colours are only assigned to them and `k` is not used.
+ *
  * @returns {{labels: Int32Array, clusters: Array<{group:number, level:number}>}}
  *   labels = cluster per pixel; clusters are ordered mix by mix, lightest wash first
  */
-export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPower = AREA_POWER, maxWashes = MAX_WASHES, lightnessWeight = LIGHTNESS_WEIGHT } = {}) {
+export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPower = AREA_POWER, maxWashes = MAX_WASHES, lightnessWeight = LIGHTNESS_WEIGHT, anchors = null } = {}) {
   const rand = mulberry32(seed)
   const { points, counts, binOf } = colourBins(lab, count)
   const n = counts.length
-  const kk = Math.max(1, Math.min(k, n))
+  const kk = anchors?.length ? anchors.length : Math.max(1, Math.min(k, n))
   const absorb = new Float64Array(n * 3)
   const weight = new Float64Array(n)
   for (let i = 0; i < n; i++) {
@@ -163,9 +166,16 @@ export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPo
   // with probability weight x squared distance to the nearest mix so far.
   let first = 0
   for (let i = 1; i < n; i++) if (counts[i] > counts[first]) first = i
-  setDir(0, absorb[first * 3], absorb[first * 3 + 1], absorb[first * 3 + 2])
+  if (anchors?.length) {
+    // Given mixes: the direction of each anchor's absorbance, kept as it is.
+    anchors.forEach((anchor, c) => {
+      const linear = oklabToLinear(anchor)
+      setDir(c, ...linear.map((v) => -Math.log(Math.min(1, Math.max(MIN_REFLECTANCE, v)))))
+    })
+    iterations = 1
+  } else setDir(0, absorb[first * 3], absorb[first * 3 + 1], absorb[first * 3 + 2])
   const d = new Float64Array(n).fill(Infinity)
-  for (let c = 1; c < kk; c++) {
+  for (let c = 1; c < kk && !anchors?.length; c++) {
     let sum = 0
     for (let i = 0; i < n; i++) {
       d[i] = Math.min(d[i], d2(i, c - 1))
@@ -196,7 +206,7 @@ export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPo
       const w = weight[i]
       sums[best * 3] += absorb[i * 3] * w; sums[best * 3 + 1] += absorb[i * 3 + 1] * w; sums[best * 3 + 2] += absorb[i * 3 + 2] * w
     }
-    if (!changed) break
+    if (!changed || anchors?.length) break
     for (let c = 0; c < kk; c++) {
       if (sums[c * 3] + sums[c * 3 + 1] + sums[c * 3 + 2] > 1e-9) setDir(c, sums[c * 3], sums[c * 3 + 1], sums[c * 3 + 2])
     }
@@ -384,13 +394,18 @@ export function labelAnchors(regionMap, width, height, regionCount) {
  * Full pipeline.
  * @param {Uint8ClampedArray} rgba image data at working resolution
  * @param {{colours:number, simplify:number, geometric:boolean}} options colours = number of mixes,
- *   simplify 0..10, geometric = areas as polygons with straight edges instead of their organic outline
+ *   simplify 0..10, geometric = areas as polygons with straight edges instead of their organic outline,
+ *   anchors = hex colours that are the mixes (then `colours` is not used)
  */
-export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, seed = 7, areaPower, maxWashes, lightnessWeight } = {}) {
+export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, seed = 7, areaPower, maxWashes, lightnessWeight } = {}) {
   const count = width * height
   const blurred = boxBlur(rgba, width, height, Math.round(simplify / 3))
   const lab = toOklabPixels(blurred, count)
-  const { labels: raw, clusters: found } = clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), { seed, areaPower, maxWashes, lightnessWeight })
+  const { labels: raw, clusters: found } = clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), {
+    seed, areaPower, maxWashes, lightnessWeight,
+    // Given colours (hex) as the mixes, instead of finding them.
+    anchors: given?.length ? given.map(hexToOklab) : null,
+  })
   const k = found.length
 
   const smoothed = majorityFilter(raw, width, height, k, Math.ceil(simplify / 2))

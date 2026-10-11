@@ -13,6 +13,7 @@
       </div>
       <aside class="app__sidebar">
         <ControlsPanel @show-collection="collectionDialog.open()" />
+        <AiPanel />
         <template v-if="analysis.layerMode">
           <LayerArea />
           <LayerList @show-paintbox="paintBox.open()" />
@@ -40,6 +41,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useAnalysisStore } from './stores/analysis.js'
 import PaintingCanvas from './components/PaintingCanvas.vue'
 import ControlsPanel from './components/ControlsPanel.vue'
+import AiPanel from './components/AiPanel.vue'
 import EntryEditor from './components/EntryEditor.vue'
 import PaletteList from './components/PaletteList.vue'
 import LayerList from './components/LayerList.vue'

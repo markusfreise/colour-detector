@@ -12,8 +12,8 @@ self.onmessage = (event) => {
       self.postMessage({ jobId, result }, buffers)
       return
     }
-    const { colours, simplify, geometric } = event.data
-    const result = segmentImage(rgba, width, height, { colours, simplify, geometric })
+    const { colours, simplify, geometric, anchors } = event.data
+    const result = segmentImage(rgba, width, height, { colours, simplify, geometric, anchors })
     self.postMessage({ jobId, result }, [result.regionMap.buffer])
   } catch (error) {
     self.postMessage({ jobId, error: String(error?.message || error) })

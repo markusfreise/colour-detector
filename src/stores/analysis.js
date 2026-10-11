@@ -5,6 +5,8 @@ import { adjustImage, hexToOklab, oklabToHex, rgbToHex, deltaE } from '../lib/co
 import { planMixes, mixesToRequest } from '../lib/mixes.js'
 import { usePaintsStore } from './paints.js'
 import { renderLayers } from '../lib/layers.js'
+import { useAiStore } from './ai.js'
+import { aiRequest, readAiAnswer, aiCost, aiImageSize } from '../lib/ai.js'
 
 // Working resolution: the picture is scaled down to about this many pixels, whatever its shape.
 export const WORK_PIXELS = 800 * 600
@@ -32,7 +34,24 @@ let pictureSerial = 0
 let layerProposal = null // "picture/box/count" the current proposal was made for
 // The settings the mix analysis (`segmentation`) was made with, see `mixCurrent`.
 let mixKey = null
-const mixKeyOf = ({ saturation, contrast, simplify, colours, geometric }) => [saturation, contrast, simplify, colours, !!geometric].join('/')
+const mixKeyOf = ({ saturation, contrast, simplify, colours, geometric }, plan = 0) => [saturation, contrast, simplify, colours, !!geometric, plan].join('/')
+
+// A small JPEG of the picture for the AI model: enough to judge colours, cheap to send, and
+// re-encoded from pixels, so it carries no metadata of the photo.
+function smallCopy({ rgba, width, height }) {
+  const full = document.createElement('canvas')
+  full.width = width
+  full.height = height
+  full.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(rgba), width, height), 0, 0)
+  const size = aiImageSize(width, height)
+  const small = document.createElement('canvas')
+  small.width = size.width
+  small.height = size.height
+  const ctx = small.getContext('2d')
+  ctx.imageSmoothingQuality = 'high'
+  ctx.drawImage(full, 0, 0, size.width, size.height)
+  return { mediaType: 'image/jpeg', base64: small.toDataURL('image/jpeg', 0.82).split(',')[1] }
+}
 
 function getWorker() {
   if (!worker) {
@@ -90,6 +109,10 @@ export const useAnalysisStore = defineStore('analysis', {
     layerStep: null, // index into layers.steps while the painting order is walked through
     layerStepView: 'paint', // the picture of a step: 'paint' (where to paint), 'wash' (this wash alone), 'result' (the paper so far)
     layerPoint: null, // { x, y } of the clicked spot, in working pixels
+    aiPlan: null, // { key, serial, plan, usage, cost, provider, model } of the last answer
+    aiBusy: false,
+    aiError: null,
+    pictureStamp: 0, // counts the pictures opened
     pendingEdits: null, // { key, edits } of a picture opened in layer mode, for its first mix analysis
     busy: false,
     error: null,
@@ -101,6 +124,7 @@ export const useAnalysisStore = defineStore('analysis', {
       maxCoats: 2, // layer mode: coats of one wash an area can get
       colours: 20,
       simplify: 0,
+      ai: false, // the colours to mix and the paints are chosen by an AI model (once asked for this picture)
       geometric: false, // areas as polygons with straight edges that overlap, instead of their organic outline
       maxPaints: 3,
       variety: 5, // 0 = the picture as accurate as possible, 10 = small areas of another hue keep their mix
@@ -114,6 +138,12 @@ export const useAnalysisStore = defineStore('analysis', {
   getters: {
     selected: (state) => (state.selectedEntry == null ? null : state.entries[state.selectedEntry]),
     layerMode: (state) => state.settings.mode === 'layer',
+    /** What an AI plan belongs to: the picture as it is analysed. */
+    aiKey: (state) => [state.pictureStamp, state.settings.saturation, state.settings.contrast].join('/'),
+    /** The AI's plan for this picture, when AI is switched on and has been asked. */
+    aiActive(state) {
+      return state.settings.ai && state.aiPlan?.key === this.aiKey ? state.aiPlan.plan : null
+    },
     /**
      * What the picture shows of each layer: true = all its coats, false = none, a number = that
      * many coats. While the painting order is walked through, it is the paper after that step.
@@ -159,6 +189,12 @@ export const useAnalysisStore = defineStore('analysis', {
         coats: combo.coats,
       }
     },
+    /** The paints the AI chose for mixing, or null without a plan. */
+    aiPaints() {
+      const byId = usePaintsStore().byId
+      const chosen = (this.aiActive?.paints ?? []).map((id) => byId[id]).filter(Boolean)
+      return chosen.length ? chosen : null
+    },
     /** Number of different mixes; the washes of a mix count once. */
     mixCount: (state) => new Set(state.entries.map((e) => e.family)).size,
     usedPaintIds: (state) => {
@@ -182,7 +218,7 @@ export const useAnalysisStore = defineStore('analysis', {
     /** Open a picture from the collection with its saved settings and colour changes. */
     async loadSaved(record) {
       // Pictures saved before layer mode existed are mix pictures.
-      Object.assign(this.settings, { mode: 'mix', geometric: false }, record.settings)
+      Object.assign(this.settings, { mode: 'mix', geometric: false }, record.settings, { ai: false })
       const url = URL.createObjectURL(record.blob)
       await this.loadFromSource(url, record.name)
       URL.revokeObjectURL(url)
@@ -204,7 +240,7 @@ export const useAnalysisStore = defineStore('analysis', {
     },
     /** Whether the mixes belong to the picture and the settings as they are now. */
     mixCurrent() {
-      return !!this.segmentation && mixKey === mixKeyOf(this.settings)
+      return !!this.segmentation && mixKey === mixKeyOf(this.settings, this.aiActive?.mixes.length ? this.aiPlan.serial : 0)
     },
     /** Colour changes worth saving. Detached areas are not kept: they depend on the exact area ids. */
     exportEdits() {
@@ -245,6 +281,7 @@ export const useAnalysisStore = defineStore('analysis', {
      */
     forgetPicture() {
       pictureSerial++
+      this.pictureStamp = pictureSerial
       mixKey = null
       this.pendingEdits = null
       if (this.layerMode) {
@@ -272,7 +309,10 @@ export const useAnalysisStore = defineStore('analysis', {
       const rgba = adjustImage(this.pixels.rgba, { saturation: saturation / 100, contrast: contrast / 100 })
       this.adjusted = rgba === this.pixels.rgba ? null : markRaw({ rgba, width, height })
       if (this.layerMode) return this.analyseLayers(rgba, width, height, token)
-      const key = mixKeyOf(this.settings)
+      // With an AI plan its colours are the mixes; the analysis only assigns the picture to them.
+      const plan = this.aiActive
+      const anchors = plan?.mixes.length ? plan.mixes.map((m) => m.hex) : undefined
+      const key = mixKeyOf(this.settings, anchors ? this.aiPlan.serial : 0)
       try {
         // "Colours" counts mixes. The analysis is asked for more, and planMixes joins them down to
         // the wanted number once the paints are known.
@@ -283,6 +323,7 @@ export const useAnalysisStore = defineStore('analysis', {
           colours: mixesToRequest(this.settings.colours),
           simplify: this.settings.simplify,
           geometric: this.settings.geometric,
+          anchors,
         })
         if (token !== analysisToken || this.layerMode) return // a newer analysis superseded this one
         mixKey = key
@@ -310,8 +351,10 @@ export const useAnalysisStore = defineStore('analysis', {
       const proposalKey = [pictureSerial, box.id, layerCount, maxCoats, layerAccents].join('/')
       // Propose only when there is nothing to keep: a new picture or box, another number of layers or
       // coats or accents (the best paints depend on those), or Auto pressed.
-      const propose = box.layerAuto && !(layerProposal === proposalKey && box.layerIds.length)
-      const pool = (propose ? paints.autoCandidates : paints.layerPaints).map(({ id, hex }) => ({ id, hex }))
+      // With an AI plan its paints are the layers, in its order; the paint box is left alone.
+      const chosen = (this.aiActive?.layers ?? []).filter((id) => paints.byId[id])
+      const propose = !chosen.length && box.layerAuto && !(layerProposal === proposalKey && box.layerIds.length)
+      const pool = (chosen.length ? chosen.map((id) => paints.byId[id]) : propose ? paints.autoCandidates : paints.layerPaints).map(({ id, hex }) => ({ id, hex }))
       this.layerStep = null
       this.layerPoint = null
       try {
@@ -328,9 +371,9 @@ export const useAnalysisStore = defineStore('analysis', {
           height,
           paints: pool,
           // Auto: the number of wash layers (accent paints come on top). By hand: every chosen paint may be one.
-          count: box.layerAuto ? this.settings.layerCount : undefined,
+          count: !chosen.length && box.layerAuto ? this.settings.layerCount : undefined,
           // A plain copy: the worker cannot be sent the reactive array of the store.
-          paintIds: propose ? undefined : [...box.layerIds],
+          paintIds: chosen.length ? chosen : propose ? undefined : [...box.layerIds],
           maxCoats: this.settings.maxCoats,
           simplify: this.settings.layerSimplify,
           geometric: this.settings.geometric,
@@ -432,10 +475,63 @@ export const useAnalysisStore = defineStore('analysis', {
       this.recomputeAllRecipes()
     },
 
+    /**
+     * Ask the AI model for a plan of this picture: the colours to mix, the paints, the layers.
+     * A small copy of the picture and the list of paints go straight from this browser to the
+     * provider, with the user's own key; nothing is sent without their consent.
+     */
+    async askAi() {
+      const ai = useAiStore()
+      const paints = usePaintsStore()
+      if (!this.pixels || this.aiBusy) return
+      if (!ai.ready) {
+        this.aiError = !ai.agreed ? 'Please agree to the picture being sent first.' : 'An API key is needed.'
+        return
+      }
+      const key = this.aiKey
+      const { provider, model } = ai
+      // The paints to choose from: the Auto pool, or what the paint box holds.
+      const pool = (paints.activeBox.auto ? paints.autoCandidates : paints.enabled).map(({ id, name, hex }) => ({ id, name, hex }))
+      this.aiBusy = true
+      this.aiError = null
+      try {
+        const source = this.adjusted ?? this.pixels
+        const request = aiRequest({
+          provider,
+          model,
+          key: ai.key,
+          image: smallCopy(source),
+          paints: pool,
+          colours: this.settings.colours,
+          layers: Math.min(6, this.settings.layerCount + 1),
+        })
+        const response = await fetch(request.url, request.init)
+        const answer = await response.json().catch(() => null)
+        if (!response.ok && !answer?.error) throw new Error(`The provider answered with status ${response.status}.`)
+        const { plan, usage } = readAiAnswer(provider, answer, pool, { colours: 32, layers: 6 })
+        if (key !== this.aiKey) return // another picture was opened meanwhile
+        this.aiPlan = { key, serial: (this.aiPlan?.serial ?? 0) + 1, plan, usage, cost: aiCost(provider, model, usage), provider, model }
+        this.settings.ai = true
+        this.analyse()
+      } catch (e) {
+        this.aiError = e instanceof TypeError ? 'Could not reach the provider. Check the connection and the key.' : e.message
+      } finally {
+        this.aiBusy = false
+      }
+    },
+
+    /** AI on or off; the plan of this picture is kept either way. */
+    setAi(on) {
+      if (this.settings.ai === on) return
+      this.settings.ai = on
+      if (this.aiPlan?.key === this.aiKey) this.analyse()
+    },
+
     /** While the paint box is on Auto, pick the paints that suit the colours of this picture. */
     autoPaints(force = false) {
       const paints = usePaintsStore()
       if (!this.segmentation || !(force || paints.activeBox.auto)) return
+      if (!force && this.aiPaints) return // the AI chose them
       // Every wash is a target: a wash its mix cannot reach needs paints for a mix of its own.
       const targets = this.segmentation.clusters.filter((c) => c.pixelCount).map((c) => ({ hex: c.hex, weight: c.pixelCount }))
       paints.setEnabled(proposePaints(targets, paints.autoCandidates, { maxPaints: this.settings.maxPaints }), true)
@@ -454,7 +550,8 @@ export const useAnalysisStore = defineStore('analysis', {
       if (this.layerMode) return this.analyse()
       const seg = this.segmentation
       if (!seg) return
-      const paints = usePaintsStore().enabled
+      // With an AI plan its paints are mixed with; the paint box is left alone.
+      const paints = this.aiPaints ?? usePaintsStore().enabled
       const byId = usePaintsStore().byId
       const total = seg.width * seg.height
       const old = this.entries
@@ -463,7 +560,8 @@ export const useAnalysisStore = defineStore('analysis', {
       const washOf = (recipe, hex) => (recipe.paints.length ? washRecipe(recipe, hex, byId) : recipe)
       const groups = planMixes(seg.clusters, paints, {
         maxPaints: this.settings.maxPaints,
-        wanted: this.settings.colours,
+        // The AI's colours are the mixes: none of them is joined with another.
+        wanted: this.aiActive?.mixes.length ? Math.max(this.settings.colours, this.aiActive.mixes.length) : this.settings.colours,
         variety: this.settings.variety,
       })
       const mixRecipes = {}

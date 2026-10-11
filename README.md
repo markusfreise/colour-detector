@@ -4,7 +4,7 @@ Finds the main colours in a photo, works out how to mix each one from your own w
 
 ![Colour Detector with the sample photo, the colour list and the recipes for one colour](docs/screenshot.png)
 
-Everything runs in the browser. There is no backend, no account and no upload: the photo never leaves your machine.
+Everything runs in the browser. There is no backend and no account, and the photo stays on your machine. The one exception is the optional AI help: when you switch it on, enter your own API key and agree, a reduced copy of the picture is sent to the AI provider you chose (see "AI help" below).
 
 Visit statistics (Google Analytics) are optional and off by default: without a measurement ID in `src/config.js` nothing is loaded and no banner appears. With an ID, a consent banner asks first, and the Analytics script is only requested after "Accept".
 
@@ -20,6 +20,7 @@ The iOS, iPadOS and macOS app is called **Tintmap** and lives in [`app/`](app/RE
 - **Variety:** decides which colours share a mix when there are more than you asked for. Low keeps the picture as a whole as close as possible; high lets small areas of another hue keep their own mix while similar large colours share one.
 - **Layer mode:** a second method next to mixing, for glazing. A few base paints from the paint box become layers, each painted with one prepared wash over the dry layer before, from light to dark; an area gets one to three coats of a wash, and greens, oranges and darks come from the layers adding up. Up to three accents put a strong wash on small areas last: first for a colour the washes miss, then for the darks. Tick layers on and off to see what each one does, click a layer to see it alone with its coats as numbers, walk through the painting order step by step, or click a spot to see which layers it gets. The base paints are proposed by the app or chosen in the paint box, apart from the paints selected for mixing. Printing gives the finished picture and one sheet per layer.
 - **Geometric areas:** an option for both methods. Instead of following the outlines in the photo, every area becomes a polygon with a few straight edges; the polygons are laid over each other from large to small, and in layer mode the shapes of the layers overlap each other. "Simplify areas" makes the edges longer and the shapes fewer.
+- **AI help (optional, your own key):** an AI model (Claude or OpenAI) looks at a small copy of the picture and chooses the colours to mix, the paints for them and the paints to glaze with, and adds a few sentences of advice. The app then works out the areas, the recipes and the layers from those choices as usual. It asks only when you press the button, shows what a call is expected to cost and what it did cost, and keeps the answer for the picture.
 - **Recipes:** for every colour, up to five ways to mix it from the paints in your box — which paints, in what ratio, how much water, and how close the mix gets.
 - **Paint boxes:** keep a box for every set of paints you own, and add paints of any brand to the library.
 - **Collection:** save pictures in the browser with their settings and colour changes; open, rename and delete them.
@@ -48,6 +49,16 @@ Watercolour is a transparent glaze on white paper, so each paint is modelled as 
 
 In layer mode every base paint is a filter of its own: a dried wash filters the light, and the next wash over it filters it again. So the absorbances of separate layers add up without the common limit that holds inside one wet mix, while the coats of one paint still share that paint's limit. The app picks the paints, the strength of each wash and the coats per area so that the picture comes as close as possible for the work it costs: a coat or a step that brings too little is left out, and a neutral paint is kept off clean colour. Each layer's areas are smoothed on their own, so every layer has calm shapes to paint. The paint-to-water guide for a wash assumes that the reference swatch is one part paint to four parts water; like the depth limits, that is an estimate until it is checked against real swatches.
 
+## AI help
+
+The AI does not draw the areas: a language model cannot do that reliably. It makes the decisions a painter makes by eye (what in the picture deserves a colour of its own, which paints suit it), and the app does the measuring.
+
+What is sent, and only when you press "Ask about this picture": a JPEG of the picture scaled down to 560 pixels on its longer side, rebuilt from pixels so that it carries no file data such as place, date or camera; the ids, names and colours of the paints to choose from; and your key. The request goes straight from your browser to the provider. There is no server of this app in between, and the app's author never sees the picture or the key. The provider processes the request under its own terms, on your account.
+
+The key is kept in the page's memory, and in the browser's storage only if you tick "Remember the key on this device". Consent is asked per provider and can be withdrawn with "Forget key and consent".
+
+Cost with Claude, at the prices of October 2026, for one picture (about 1,400 tokens in, 600 out): Haiku 5.5 about 0.05 US cents, Sonnet 5.5 about 0.9 cents, Opus 5.5 about 1.8 cents. For OpenAI the model is typed in and no price is assumed.
+
 ## The paint stock
 
 The stock is hard-coded in `src/data/paints.js`: 53 Schmincke Horadam Aquarell paints (pans and tubes) and one Michael Harding tube. Each paint has a `hex` value, which is its colour at strength 1 — a mid-strength wash on white paper, not the masstone. Most values were sampled from the official Horadam colour chart; a few are estimates and are marked as such in the data.
@@ -71,8 +82,8 @@ The build uses a relative base path, so `dist/` works from any folder on any sta
 
 | Path | Contents |
 |---|---|
-| `src/lib/` | Pure logic, framework-free and tested: colour maths, mixing model, segmentation, geometric areas, mix planning, layer mode (glazing), paint grouping |
-| `src/stores/` | Pinia stores: `paints` (stock and enabled set) and `analysis` (image, settings, areas, recipes) |
+| `src/lib/` | Pure logic, framework-free and tested: colour maths, mixing model, segmentation, geometric areas, mix planning, layer mode (glazing), AI requests and answers, paint grouping |
+| `src/stores/` | Pinia stores: `paints` (stock and enabled set), `analysis` (image, settings, areas, recipes) and `ai` (provider, key, consent) |
 | `src/components/` | Vue 3 components (`<script setup>`) |
 | `src/workers/` | Web Worker for the segmentation |
 | `src/css/` | Plain CSS, BEM, one file per block |

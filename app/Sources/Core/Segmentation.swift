@@ -410,8 +410,9 @@ enum Segmenter {
     }
 
     /// The full pipeline. `rgba` is the picture at working resolution; `colours` is the number of
-    /// mixes, `simplify` runs from 0 to 10.
-    static func segment(rgba: [UInt8], width: Int, height: Int, colours: Int = 12, simplify: Int = 4, seed: UInt32 = 7) -> Segmentation {
+    /// mixes, `simplify` runs from 0 to 10, `geometric` gives areas as polygons with straight edges
+    /// instead of their organic outline.
+    static func segment(rgba: [UInt8], width: Int, height: Int, colours: Int = 12, simplify: Int = 4, geometric: Bool = false, seed: UInt32 = 7) -> Segmentation {
         let count = width * height
         let s = Double(simplify)
         let blurred = boxBlur(rgba, width, height, radius: Int((s / 3).rounded()))
@@ -421,7 +422,8 @@ enum Segmenter {
 
         let smoothed = majorityFilter(raw, width, height, k: k, passes: Int((s / 2).rounded(.up)))
         let minRegion = Int((Double(count) * 0.00004 * pow(s + 1, 2.2)).rounded())
-        let labels = mergeSmallRegions(smoothed, width, height, minRegion: max(2, (simplify + 1) * (simplify + 1), minRegion))
+        let merged = mergeSmallRegions(smoothed, width, height, minRegion: max(2, (simplify + 1) * (simplify + 1), minRegion))
+        let labels = geometric ? Geometric.areas(merged, width, height, simplify: simplify) : merged
 
         // Cluster colours from the actual (unblurred) pixels they cover.
         var sums = [Double](repeating: 0, count: k * 3)

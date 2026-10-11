@@ -189,6 +189,25 @@
     </div>
 
     <div class="field">
+      <span class="field__label">Areas</span>
+      <div class="segmented segmented--fill">
+        <button
+          v-for="a in areas"
+          :key="a.label"
+          type="button"
+          class="segmented__option"
+          :class="{ 'segmented__option--active': analysis.settings.geometric === a.value }"
+          :aria-pressed="analysis.settings.geometric === a.value"
+          :title="a.title"
+          @click="setGeometric(a.value)"
+        >
+          {{ a.label }}
+        </button>
+      </div>
+      <span v-if="analysis.settings.geometric" class="field__hint">Geometric: shapes with straight edges, laid over each other from large to small.</span>
+    </div>
+
+    <div class="field">
       <div class="field__label">
         Show
         <span class="controls__toggles">
@@ -225,6 +244,15 @@ const collection = useCollectionStore()
 // "Take photo" opens the camera directly; that only exists on phones and tablets.
 const hasCamera = window.matchMedia?.('(pointer: coarse)').matches ?? false
 const paints = usePaintsStore()
+const areas = [
+  { value: false, label: 'Organic', title: 'Areas follow the outlines in the photo' },
+  { value: true, label: 'Geometric', title: 'Areas as polygons with a few straight edges that overlap' },
+]
+function setGeometric(value) {
+  if (analysis.settings.geometric === value) return
+  analysis.settings.geometric = value
+  analysis.analyse()
+}
 const methods = [
   { value: 'mix', label: 'Mix', title: 'Mix every colour on the palette and paint each area once' },
   { value: 'layer', label: 'Layer', title: 'Glaze a few paints over each other, light to dark' },

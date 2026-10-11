@@ -1351,7 +1351,7 @@ enum Layers {
     /// that is not needed keeps a layer without coats (`top` 0) at the end. Planning given paints
     /// starts afresh from those paints, so it can differ a little from the proposal that named them.
     /// An accent has at most 24 shapes and stays off print and glints on white.
-    static func layerImage(rgba: [UInt8], width: Int, height: Int, paints: [MixPaint], count: Int? = nil, paintIDs: [String]? = nil, maxCoats requested: Int = Layers.maxCoats, graded: Bool = Layers.graded, simplify: Int = 4, accents maxAccents: Int = Layers.accents) -> LayerPlan {
+    static func layerImage(rgba: [UInt8], width: Int, height: Int, paints: [MixPaint], count: Int? = nil, paintIDs: [String]? = nil, maxCoats requested: Int = Layers.maxCoats, graded: Bool = Layers.graded, simplify: Int = 4, accents maxAccents: Int = Layers.accents, geometric: Bool = false) -> LayerPlan {
         let pixels = width * height
         let maxCoats = max(1, requested)
         let simple = Double(simplify)
@@ -1469,7 +1469,9 @@ enum Layers {
                 let digit = (0..<bins).map { Int32((Int(best[$0]) / radix[k]) % levels) }
                 var raw = [Int32](repeating: 0, count: pixels)
                 for p in 0..<pixels { raw[p] = digit[Int(calm.binOf[p])] }
-                let smoothed = Segmenter.mergeSmallRegions(Segmenter.majorityFilter(raw, width, height, k: levels, passes: passes), width, height, minRegion: minRegion)
+                var smoothed = Segmenter.mergeSmallRegions(Segmenter.majorityFilter(raw, width, height, k: levels, passes: passes), width, height, minRegion: minRegion)
+                // Geometric: the areas of every layer as polygons; laid over each other they overlap.
+                if geometric { smoothed = Geometric.areas(smoothed, width, height, simplify: simplify) }
                 for p in 0..<pixels { code[p] += smoothed[p] * Int32(radix[k]) }
                 maps[k] = smoothed
             }
@@ -1505,7 +1507,12 @@ enum Layers {
                 }
                 // No majority filter here: it would eat the thin lines accents are there for. Specks go,
                 // and of the shapes that are left the ones that bring most stay: few enough for a brush.
-                var calmed = Segmenter.mergeSmallRegions(raw, width, height, minRegion: max(4, Int(roundHalfUp(Double(minRegion) * accentRegion))))
+                let specks = max(4, Int(roundHalfUp(Double(minRegion) * accentRegion)))
+                var calmed = Segmenter.mergeSmallRegions(raw, width, height, minRegion: specks)
+                // Accents are small: their edges are straightened with half the tolerance, and nothing is merged away for it.
+                if geometric {
+                    calmed = Segmenter.mergeSmallRegions(Geometric.straighten(calmed, width, height, tolerance: Geometric.edgeTolerance(width, height, simplify: simplify) / 2), width, height, minRegion: specks)
+                }
                 let (regionMap, regionCluster, _) = Segmenter.connectedComponents(calmed, width, height)
                 var worth = [Double](repeating: 0, count: regionCluster.count)
                 for p in 0..<pixels where calmed[p] != 0 && raw[p] != 0 { worth[Int(regionMap[p])] += Double(gains[p]) }

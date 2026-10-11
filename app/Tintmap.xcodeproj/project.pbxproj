@@ -37,6 +37,7 @@
 		CA87926FFADE287E9B2E1616 /* Paint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656E2370C85BD5ADA5BB4322 /* Paint.swift */; };
 		CC707CF6B2003FFE76E179D9 /* ColorMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A03528745567BF3273C9355 /* ColorMath.swift */; };
 		CF63707F649854E31396AA67 /* sample-family.webp in Resources */ = {isa = PBXBuildFile; fileRef = 0185A851FA1EBC1B2407DA74 /* sample-family.webp */; };
+		D30E4798C83618ADDEC218C2 /* Geometric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956D99FEBAA0CA4B9F1693C0 /* Geometric.swift */; };
 		EA87E60F8BB53B19E1AE76C8 /* CoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0AA53A5C4E23C7CBE285A4 /* CoreTests.swift */; };
 		EFB81655E9572068E8FB7BDC /* Mixing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28821C267403BAEDB114A978 /* Mixing.swift */; };
 		F6955A03B27D43D418E8420C /* Pictures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A9539EF41B0301AAE5F14D7 /* Pictures.swift */; };
@@ -78,6 +79,7 @@
 		8A03528745567BF3273C9355 /* ColorMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMath.swift; sourceTree = "<group>"; };
 		8B982E51466E8DDE54DFC9EF /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		8CF1A34E56B04C7CBF9B95E4 /* Tintmap.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Tintmap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		956D99FEBAA0CA4B9F1693C0 /* Geometric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometric.swift; sourceTree = "<group>"; };
 		9A7B495A2BAF310A1C108D64 /* ControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsView.swift; sourceTree = "<group>"; };
 		9E56FBEFDA78E2F8837CEE95 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A264532849ADB3D5E9D7EC43 /* PaintBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaintBoxView.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 			isa = PBXGroup;
 			children = (
 				8A03528745567BF3273C9355 /* ColorMath.swift */,
+				956D99FEBAA0CA4B9F1693C0 /* Geometric.swift */,
 				C7702DDF72F030A5B9C77A00 /* Layers.swift */,
 				892FC78A77A3BF681274698B /* Mixes.swift */,
 				28821C267403BAEDB114A978 /* Mixing.swift */,
@@ -326,6 +329,7 @@
 				65B833B17CD6F607CFCEDA28 /* ControlsView.swift in Sources */,
 				96DF6D338ADE25932DB3329A /* DebugSnapshot.swift in Sources */,
 				B9517969DE46139ED9BA0D34 /* EntryEditorView.swift in Sources */,
+				D30E4798C83618ADDEC218C2 /* Geometric.swift in Sources */,
 				AAD307AE23FB9DFDDCB6A40B /* LayerViews.swift in Sources */,
 				BA3D8CC3E2689F9CC00E3892 /* Layers.swift in Sources */,
 				A7AC78082094A5D6A8808500 /* Library.swift in Sources */,

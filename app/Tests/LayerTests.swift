@@ -600,4 +600,42 @@ final class LayerTests: XCTestCase {
         XCTAssertEqual(Set(plan.paintIDs).count, plan.paintIDs.count)
         consistent(plan)
     }
+
+    // MARK: Geometric areas (reference values from src/lib/geometric.js)
+
+    func testStraightensALabelMapAsTheWebLogicDoes() {
+        // A label map from a whole-number formula: blobs of five labels.
+        let w = 90, h = 70
+        var labels = [Int32](repeating: 0, count: w * h)
+        for y in 0..<h {
+            for x in 0..<w { labels[y * w + x] = Int32(((x * x + 3 * y * y) / 700 + (x + 2 * y) / 23) % 5) }
+        }
+        XCTAssertEqual([2, 3.5, 6].map { hash(Geometric.straighten(labels, w, h, tolerance: $0)) }, ["3813744525", "4280727336", "1708339919"])
+        XCTAssertEqual([0, 5].map { hash(Geometric.areas(labels, w, h, simplify: $0)) }, ["1148268832", "1599230887"])
+        // One label and one pixel stay as they are.
+        XCTAssertEqual(Geometric.straighten([Int32](repeating: 3, count: 12), 4, 3, tolerance: 2), [Int32](repeating: 3, count: 12))
+        XCTAssertEqual(Geometric.straighten([0], 1, 1, tolerance: 2), [0])
+    }
+
+    func testGeometricMixesMatchTheWebLogic() {
+        let expected: [(simplify: Int, map: String, regions: Int, pixels: String)] = [
+            (0, "2536265450", 112, "168 165 0 0 984 189 0 0 3434 3939 980 0 0 0 1492 1864 67 766 2318 103 1487 0 0 0 0 2670 94 0 0 0 98 193 0 0 0 295 1629 3086 2199 0 0 0 0 1780"),
+            (4, "1052538219", 60, "0 982 2080 4915 2527 0 1854 823 795 2832 0 850 3194 78 2749 0 495 0 0 0 1031 2461 759 0 214 203 1158"),
+        ]
+        for e in expected {
+            let result = Segmenter.segment(rgba: scene(200, 150), width: 200, height: 150, colours: 12, simplify: e.simplify, geometric: true)
+            XCTAssertEqual(hash(result.regionMap), e.map, "simplify \(e.simplify)")
+            XCTAssertEqual(result.regions.count, e.regions, "simplify \(e.simplify)")
+            XCTAssertEqual(result.clusters.map { String($0.pixelCount) }.joined(separator: " "), e.pixels, "simplify \(e.simplify)")
+        }
+    }
+
+    func testGeometricLayersMatchTheWebLogic() {
+        let plan = Layers.layerImage(rgba: scene(160, 120), width: 160, height: 120, paints: [yellow, blue, red, black], paintIDs: ["y", "b", "r", "k"], geometric: true)
+        XCTAssertEqual(hash(plan.comboMap), "2720942601")
+        XCTAssertEqual(plan.steps.count, 8)
+        XCTAssertEqual(plan.layers.map { hash($0.coatMap) }.joined(separator: " "), "2481784556 3519746823 209799118 3992623957 3837734117 1213797829")
+        XCTAssertEqual(plan.deltaE.mean, 4.609486767598869, accuracy: 1e-9)
+        consistent(plan)
+    }
 }

@@ -19,6 +19,7 @@ The iOS, iPadOS and macOS app is called **Tintmap** and lives in [`app/`](app/RE
 - **Saturation and contrast:** adjust the photo before it is analysed. Saturation starts at 200%, which brings out the colours a painter would exaggerate anyway.
 - **Variety:** decides which colours share a mix when there are more than you asked for. Low keeps the picture as a whole as close as possible; high lets small areas of another hue keep their own mix while similar large colours share one.
 - **Layer mode:** a second method next to mixing, for glazing. A few base paints from the paint box become layers, each painted with one prepared wash over the dry layer before, from light to dark; an area gets one to three coats of a wash, and greens, oranges and darks come from the layers adding up. Up to three accents put a strong wash on small areas last: first for a colour the washes miss, then for the darks. Tick layers on and off to see what each one does, click a layer to see it alone with its coats as numbers, walk through the painting order step by step, or click a spot to see which layers it gets. The base paints are proposed by the app or chosen in the paint box, apart from the paints selected for mixing. Printing gives the finished picture and one sheet per layer.
+- **Geometric areas:** an option for both methods. Instead of following the outlines in the photo, every area becomes a polygon with a few straight edges; the polygons are laid over each other from large to small, and in layer mode the shapes of the layers overlap each other. "Simplify areas" makes the edges longer and the shapes fewer.
 - **Recipes:** for every colour, up to five ways to mix it from the paints in your box — which paints, in what ratio, how much water, and how close the mix gets.
 - **Paint boxes:** keep a box for every set of paints you own, and add paints of any brand to the library.
 - **Collection:** save pictures in the browser with their settings and colour changes; open, rename and delete them.
@@ -70,7 +71,7 @@ The build uses a relative base path, so `dist/` works from any folder on any sta
 
 | Path | Contents |
 |---|---|
-| `src/lib/` | Pure logic, framework-free and tested: colour maths, mixing model, segmentation, mix planning, layer mode (glazing), paint grouping |
+| `src/lib/` | Pure logic, framework-free and tested: colour maths, mixing model, segmentation, geometric areas, mix planning, layer mode (glazing), paint grouping |
 | `src/stores/` | Pinia stores: `paints` (stock and enabled set) and `analysis` (image, settings, areas, recipes) |
 | `src/components/` | Vue 3 components (`<script setup>`) |
 | `src/workers/` | Web Worker for the segmentation |

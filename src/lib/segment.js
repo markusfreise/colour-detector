@@ -10,6 +10,7 @@
 // Pure functions on typed arrays so it runs in a Web Worker and in tests.
 
 import { srgbToLinear, linearToOklab, oklabToLinear, oklabToHex } from './color.js'
+import { geometricAreas } from './geometric.js'
 
 export function mulberry32(seed) {
   let a = seed >>> 0
@@ -382,9 +383,10 @@ export function labelAnchors(regionMap, width, height, regionCount) {
 /**
  * Full pipeline.
  * @param {Uint8ClampedArray} rgba image data at working resolution
- * @param {{colours:number, simplify:number}} options colours = number of mixes, simplify 0..10
+ * @param {{colours:number, simplify:number, geometric:boolean}} options colours = number of mixes,
+ *   simplify 0..10, geometric = areas as polygons with straight edges instead of their organic outline
  */
-export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, seed = 7, areaPower, maxWashes, lightnessWeight } = {}) {
+export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, seed = 7, areaPower, maxWashes, lightnessWeight } = {}) {
   const count = width * height
   const blurred = boxBlur(rgba, width, height, Math.round(simplify / 3))
   const lab = toOklabPixels(blurred, count)
@@ -393,7 +395,8 @@ export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, 
 
   const smoothed = majorityFilter(raw, width, height, k, Math.ceil(simplify / 2))
   const minRegion = Math.round(count * 0.00004 * Math.pow(simplify + 1, 2.2))
-  const labels = mergeSmallRegions(smoothed, width, height, Math.max(2, (simplify + 1) ** 2, minRegion))
+  const merged = mergeSmallRegions(smoothed, width, height, Math.max(2, (simplify + 1) ** 2, minRegion))
+  const labels = geometric ? geometricAreas(merged, width, height, simplify) : merged
 
   // Cluster colours from the actual (unblurred) pixels they cover.
   const sums = new Float64Array(k * 3)

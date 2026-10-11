@@ -40,6 +40,7 @@
 import { hexToRgb, rgbToLinear, srgbToLinear, linearToSrgb, rgbToHex } from './color.js'
 import { absorbanceFromHex, depthLimit, depth, describeDilution } from './mixing.js'
 import { boxBlur, toOklabPixels, colourBins, majorityFilter, connectedComponents, mergeSmallRegions, labelAnchors } from './segment.js'
+import { geometricAreas, straighten, edgeTolerance } from './geometric.js'
 
 /** Coats per wash layer when nothing else is asked for. */
 export const MAX_COATS = 3
@@ -1007,7 +1008,7 @@ function clutterMask(rgba, lab, width, height) {
  *   deltaE = distance between the picture as it is (not blurred) and all layers together; rough =
  *   part of the picture the layers miss by 10 or more.
  */
-export function layerImage(rgba, width, height, paints, { count, paintIds, maxCoats = MAX_COATS, graded = GRADED, simplify = 4, accents: maxAccents = ACCENTS } = {}) {
+export function layerImage(rgba, width, height, paints, { count, paintIds, maxCoats = MAX_COATS, graded = GRADED, simplify = 4, accents: maxAccents = ACCENTS, geometric = false } = {}) {
   const pixels = width * height
   maxCoats = Math.max(1, maxCoats)
   const blur = Math.round(simplify / 3)
@@ -1108,6 +1109,8 @@ export function layerImage(rgba, width, height, paints, { count, paintIds, maxCo
     const raw = new Int32Array(pixels)
     for (let p = 0; p < pixels; p++) raw[p] = digit[calm.binOf[p]]
     maps[k] = mergeSmallRegions(majorityFilter(raw, width, height, levels, passes), width, height, minRegion)
+    // Geometric: the areas of every layer as polygons; laid over each other they overlap.
+    if (geometric) maps[k] = geometricAreas(maps[k], width, height, simplify)
     for (let p = 0; p < pixels; p++) code[p] += maps[k][p] * radix[k]
   }
   if (washes.length > 1) revise(washes)
@@ -1141,7 +1144,10 @@ export function layerImage(rgba, width, height, paints, { count, paintIds, maxCo
     }
     // No majority filter here: it would eat the thin lines accents are there for. Specks go,
     // and of the shapes that are left the ones that bring most stay: few enough for a brush.
-    const calmed = mergeSmallRegions(raw, width, height, Math.max(4, Math.round(minRegion * ACCENT_REGION)))
+    const specks = Math.max(4, Math.round(minRegion * ACCENT_REGION))
+    let calmed = mergeSmallRegions(raw, width, height, specks)
+    // Accents are small: their edges are straightened with half the tolerance, and nothing is merged away for it.
+    if (geometric) calmed = mergeSmallRegions(straighten(calmed, width, height, edgeTolerance(width, height, simplify) / 2), width, height, specks)
     const { regionMap, regionCluster } = connectedComponents(calmed, width, height)
     const worth = new Float64Array(regionCluster.length)
     for (let p = 0; p < pixels; p++) if (calmed[p] && raw[p]) worth[regionMap[p]] += gains[p]

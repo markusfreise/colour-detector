@@ -47,6 +47,8 @@ struct AnalysisSettings: Codable, Equatable {
     /// Number of mixes; each is painted in one or more washes.
     var colours = 20
     var simplify = 0
+    /// Areas as polygons with straight edges that overlap, instead of their organic outline.
+    var geometric = false
     var maxPaints = 3
     /// 0 = the picture as accurate as possible, 10 = small areas of another hue keep their mix.
     var variety = 5
@@ -70,6 +72,7 @@ struct AnalysisSettings: Codable, Equatable {
         maxCoats = try values.decodeIfPresent(Int.self, forKey: .maxCoats) ?? defaults.maxCoats
         colours = try values.decodeIfPresent(Int.self, forKey: .colours) ?? defaults.colours
         simplify = try values.decodeIfPresent(Int.self, forKey: .simplify) ?? defaults.simplify
+        geometric = try values.decodeIfPresent(Bool.self, forKey: .geometric) ?? defaults.geometric
         maxPaints = try values.decodeIfPresent(Int.self, forKey: .maxPaints) ?? defaults.maxPaints
         variety = try values.decodeIfPresent(Int.self, forKey: .variety) ?? defaults.variety
         saturation = try values.decodeIfPresent(Int.self, forKey: .saturation) ?? 100
@@ -242,6 +245,10 @@ final class Session {
             guard settings != oldValue else { return }
             if settings.saturation != oldValue.saturation || settings.contrast != oldValue.contrast { originalPixels = nil }
             if settings.mode != oldValue.mode { return } // `setMode` takes care of the rest
+            if settings.geometric != oldValue.geometric {
+                analyse()
+                return
+            }
             if layerMode {
                 if settings.maxCoats != oldValue.maxCoats { analyse() } else { render() }
             } else if settings.maxPaints != oldValue.maxPaints || settings.variety != oldValue.variety {
@@ -324,13 +331,14 @@ final class Session {
         // to the wanted number once the paints are known.
         let colours = Mixes.toRequest(wanted: settings.colours)
         let simplify = settings.simplify
+        let geometric = settings.geometric
         let saturation = Double(settings.saturation) / 100
         let contrast = Double(settings.contrast) / 100
         busy = true
         Task {
             let result = await Task.detached(priority: .userInitiated) {
                 let adjusted = ColorMath.adjust(rgba: pixels.rgba, saturation: saturation, contrast: contrast)
-                return Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify)
+                return Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify, geometric: geometric)
             }.value
             guard run == analysisRun else { return } // a newer analysis superseded this one
             mixKey = key
@@ -350,7 +358,7 @@ final class Session {
     var layerMode: Bool { settings.mode == .layer }
 
     private var mixKeyNow: String {
-        "\(pictureSerial)/\(settings.colours)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)"
+        "\(pictureSerial)/\(settings.colours)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)/\(settings.geometric)"
     }
 
     /// Glazes of the base paints. On Auto the app proposes the paints from the paint box's Auto
@@ -385,7 +393,7 @@ final class Session {
                     rgba: adjusted, width: pixels.width, height: pixels.height, paints: pool,
                     // Auto: the number of wash layers (accent paints come on top). By hand: every chosen paint may be one.
                     count: box.layerAuto ? s.layerCount : nil,
-                    paintIDs: paintIDs, maxCoats: s.maxCoats, simplify: s.layerSimplify, accents: s.layerAccents
+                    paintIDs: paintIDs, maxCoats: s.maxCoats, simplify: s.layerSimplify, accents: s.layerAccents, geometric: s.geometric
                 )
                 return (plan, adjusted)
             }.value

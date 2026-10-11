@@ -73,6 +73,8 @@ struct RootView: View {
     private func openScreenForScreenshot() async {
         let arguments = ProcessInfo.processInfo.arguments
         if arguments.contains("-sample") { session.loadSample() }
+        // "-geometric" switches to areas with straight edges.
+        if arguments.contains("-geometric") { session.settings.geometric = true }
         // "-layer" switches to layer mode; "-step n" opens that step of the walk, "-stepview paint|wash|result" its picture.
         if arguments.contains("-layer") { session.setMode(.layer) }
         while session.busy || (session.layerMode ? session.layers == nil : session.entries.isEmpty) { try? await Task.sleep(for: .milliseconds(100)) }

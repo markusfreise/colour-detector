@@ -32,7 +32,7 @@ let pictureSerial = 0
 let layerProposal = null // "picture/box/count" the current proposal was made for
 // The settings the mix analysis (`segmentation`) was made with, see `mixCurrent`.
 let mixKey = null
-const mixKeyOf = ({ saturation, contrast, simplify, colours }) => [saturation, contrast, simplify, colours].join('/')
+const mixKeyOf = ({ saturation, contrast, simplify, colours, geometric }) => [saturation, contrast, simplify, colours, !!geometric].join('/')
 
 function getWorker() {
   if (!worker) {
@@ -101,6 +101,7 @@ export const useAnalysisStore = defineStore('analysis', {
       maxCoats: 2, // layer mode: coats of one wash an area can get
       colours: 20,
       simplify: 0,
+      geometric: false, // areas as polygons with straight edges that overlap, instead of their organic outline
       maxPaints: 3,
       variety: 5, // 0 = the picture as accurate as possible, 10 = small areas of another hue keep their mix
       saturation: 200, // percent, applied to the photo before the analysis
@@ -181,7 +182,7 @@ export const useAnalysisStore = defineStore('analysis', {
     /** Open a picture from the collection with its saved settings and colour changes. */
     async loadSaved(record) {
       // Pictures saved before layer mode existed are mix pictures.
-      Object.assign(this.settings, { mode: 'mix' }, record.settings)
+      Object.assign(this.settings, { mode: 'mix', geometric: false }, record.settings)
       const url = URL.createObjectURL(record.blob)
       await this.loadFromSource(url, record.name)
       URL.revokeObjectURL(url)
@@ -281,6 +282,7 @@ export const useAnalysisStore = defineStore('analysis', {
           height,
           colours: mixesToRequest(this.settings.colours),
           simplify: this.settings.simplify,
+          geometric: this.settings.geometric,
         })
         if (token !== analysisToken || this.layerMode) return // a newer analysis superseded this one
         mixKey = key
@@ -331,6 +333,7 @@ export const useAnalysisStore = defineStore('analysis', {
           paintIds: propose ? undefined : [...box.layerIds],
           maxCoats: this.settings.maxCoats,
           simplify: this.settings.layerSimplify,
+          geometric: this.settings.geometric,
           accents: this.settings.layerAccents,
         })
         if (token !== analysisToken || !this.layerMode) return // superseded

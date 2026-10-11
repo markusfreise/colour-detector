@@ -115,6 +115,17 @@ struct ControlsView: View {
                 }
             }
 
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Areas").font(Theme.strong)
+                SegmentedButtons(options: [(false, "Organic"), (true, "Geometric")], selection: $session.settings.geometric)
+                if session.settings.geometric {
+                    Text("Geometric: shapes with straight edges, laid over each other from large to small.")
+                        .font(Theme.small)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 16) {
                     Text("Show").font(Theme.strong)

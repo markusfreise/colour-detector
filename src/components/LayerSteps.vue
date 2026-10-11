@@ -11,6 +11,20 @@
           <strong>Step {{ analysis.layerStep + 1 }} of {{ result.steps.length }}:</strong>
           {{ title }}
         </p>
+        <div class="segmented steps__view">
+          <button
+            v-for="v in views"
+            :key="v.value"
+            type="button"
+            class="segmented__option"
+            :class="{ 'segmented__option--active': analysis.layerStepView === v.value }"
+            :aria-pressed="analysis.layerStepView === v.value"
+            :title="v.title"
+            @click="analysis.layerStepView = v.value"
+          >
+            {{ v.label }}
+          </button>
+        </div>
         <button class="button button--ghost steps__close" type="button" @click="analysis.goToStep(null)">Close</button>
       </div>
       <div class="steps__body">
@@ -39,6 +53,13 @@ import { chipStyle } from '../lib/color.js'
 // More separate shapes than this in one step is tedious to paint.
 const MANY_SHAPES = 30
 
+const views = [
+  { value: 'paint', label: 'Where to paint', title: 'The paper after this step; what is painted now in full colour, the rest faded' },
+  { value: 'wash', label: 'This wash', title: 'Only the areas painted now, filled with one stroke of this wash' },
+  { value: 'result', label: 'So far', title: 'The paper with all layers up to and including this step' },
+]
+const AREAS = { paint: 'the areas in full colour', wash: 'the filled areas', result: 'the areas of this step' }
+
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 
@@ -62,8 +83,8 @@ const mixText = computed(() => {
 })
 const paintText = computed(() =>
   accent.value
-    ? `${step.value.shapes} small ${step.value.shapes === 1 ? 'shape' : 'shapes'} in full colour.`
-    : `the areas in full colour, ${percent(step.value.share)}% of the picture.`,
+    ? `${step.value.shapes} small ${step.value.shapes === 1 ? 'shape' : 'shapes'}${analysis.layerStepView === 'paint' ? ' in full colour' : ''}.`
+    : `${AREAS[analysis.layerStepView]}, ${percent(step.value.share)}% of the picture.`,
 )
 
 // Left and right arrow keys step while the walk is active.

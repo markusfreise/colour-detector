@@ -1,5 +1,19 @@
 <template>
-  <div class="painting">
+  <div class="painting" :class="{ 'painting--fit': fit }">
+    <button
+      class="painting__zoom"
+      type="button"
+      :aria-pressed="!fit"
+      :title="fit ? 'Show the picture in full size' : 'Fit the picture to the window'"
+      :aria-label="fit ? 'Show the picture in full size' : 'Fit the picture to the window'"
+      @click="fit = !fit"
+    >
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <circle cx="8.5" cy="8.5" r="5.5" />
+        <path d="M12.7 12.7 17 17M6.2 8.5h4.6" />
+        <path v-if="fit" d="M8.5 6.2v4.6" />
+      </svg>
+    </button>
     <canvas
       ref="canvas"
       class="painting__canvas"
@@ -21,6 +35,8 @@ const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
 
 const analysis = useAnalysisStore()
 const canvas = ref(null)
+// The picture fits the height of the window unless the magnifier asks for its full size.
+const fit = ref(true)
 
 // Whether an entry is drawn: everything, or only the mix of the selected colour.
 function shown(entryIndex) {
@@ -106,6 +122,7 @@ function drawLayers(el) {
   const ctx = drawLayerView(el, result, {
     show: analysis.layerView,
     step: analysis.layerStep == null ? null : result.steps[analysis.layerStep],
+    stepView: analysis.layerStepView,
     outlines,
     numbers,
     scale: SCALE,
@@ -146,6 +163,7 @@ watch(
   () => [
     analysis.renderVersion,
     analysis.selectedEntry,
+    analysis.layerStepView,
     analysis.settings.mode,
     analysis.settings.view,
     analysis.settings.outlines,

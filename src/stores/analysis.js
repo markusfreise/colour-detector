@@ -87,6 +87,7 @@ export const useAnalysisStore = defineStore('analysis', {
     layers: null, // result of layerImage (raw); null until analysed or without base paints
     layerShown: [], // per layer: shown in the picture
     layerStep: null, // index into layers.steps while the painting order is walked through
+    layerStepView: 'paint', // the picture of a step: 'paint' (where to paint), 'wash' (this wash alone), 'result' (the paper so far)
     layerPoint: null, // { x, y } of the clicked spot, in working pixels
     pendingEdits: null, // { key, edits } of a picture opened in layer mode, for its first mix analysis
     busy: false,

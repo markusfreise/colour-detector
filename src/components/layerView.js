@@ -1,7 +1,7 @@
 // Drawing of layer mode, shared by the picture on screen and the printed sheets.
 
 import { renderLayers } from '../lib/layers.js'
-import { contrastText } from '../lib/color.js'
+import { contrastText, hexToRgb } from '../lib/color.js'
 
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
 
@@ -40,11 +40,13 @@ export function labelFont(ctx, scale) {
  * @param {object} options
  *   show: per layer true / false / number of coats (see `compositeColours`);
  *   step: a step of result.steps: what that step paints in full colour and outlined, the rest faded;
+ *   stepView: 'paint' as above, 'wash' only the areas of the step filled with one stroke of its wash,
+ *     'result' the paper after the step as it is;
  *   outlines: lines between areas that differ within the shown layers;
  *   numbers: with exactly one layer shown, its coats per area;
  *   backdrop: draws something else than the layers (the photo) before lines and numbers.
  */
-export function drawLayerView(el, result, { show, step = null, outlines = true, numbers = true, scale = 2, backdrop = null }) {
+export function drawLayerView(el, result, { show, step = null, stepView = 'paint', outlines = true, numbers = true, scale = 2, backdrop = null }) {
   const { width, height, layers } = result
   el.width = width * scale
   el.height = height * scale
@@ -53,7 +55,18 @@ export function drawLayerView(el, result, { show, step = null, outlines = true, 
     backdrop(ctx, el)
   } else {
     const rgba = renderLayers(result, show)
-    if (step) {
+    if (step && stepView === 'wash') {
+      // Only what the brush puts down now: one stroke of this wash on blank paper.
+      const map = layers[step.layer].coatMap
+      const [r, g, b] = hexToRgb(layers[step.layer].hexes[1])
+      for (let p = 0; p < map.length; p++) {
+        const o = p * 4
+        const on = map[p] >= step.coat
+        rgba[o] = on ? r : 255
+        rgba[o + 1] = on ? g : 255
+        rgba[o + 2] = on ? b : 255
+      }
+    } else if (step && stepView === 'paint') {
       // Where the brush goes in this step stays in full colour; the rest of the paper fades back.
       const map = layers[step.layer].coatMap
       for (let p = 0; p < map.length; p++) {
@@ -68,7 +81,7 @@ export function drawLayerView(el, result, { show, step = null, outlines = true, 
   }
 
   const light = !!backdrop
-  if (step) {
+  if (step && stepView !== 'result') {
     // The areas this step paints: where the layer gets this coat.
     const map = layers[step.layer].coatMap
     drawOutlines(ctx, width, height, scale, (p, q) => map[p] >= step.coat !== map[q] >= step.coat, light ? 'rgba(255,255,255,0.9)' : 'rgba(40,36,30,0.8)')

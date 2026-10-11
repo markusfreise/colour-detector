@@ -1,4 +1,7 @@
 .painting { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; }
 .painting__canvas { display: block; width: 100%; height: auto; cursor: crosshair; border-radius: 4px; transition: opacity 0.2s; }
+.painting--fit .painting__canvas { width: auto; max-width: 100%; max-height: calc(100vh - 22px); margin: 0 auto; }
+.painting__zoom { position: absolute; top: 16px; left: 16px; z-index: 1; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: inherit; cursor: pointer; }
+.painting__zoom:hover { background: var(--line); }
 .painting__canvas--busy { opacity: 0.5; }
-.painting__status { position: absolute; top: 20px; left: 20px; background: var(--surface); padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+.painting__status { position: absolute; top: 20px; left: 58px; background: var(--surface); padding: 4px 10px; border-radius: 6px; font-weight: 600; }

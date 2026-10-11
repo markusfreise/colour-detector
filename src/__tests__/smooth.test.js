@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { segmentImage, connectedComponents, toOklabPixels, mulberry32 } from '../lib/segment.js'
-import { compactPatches, patchColours, findAreas, findDetails, mergeAreas, roundOutlines } from '../lib/smooth.js'
+import { compactPatches, patchColours, findAreas, findDetails, mergeAreas, roundOutlines, outlineShifts, upscaleAreas } from '../lib/smooth.js'
 
 function makeImage(width, height, fn) {
   const rgba = new Uint8ClampedArray(width * height * 4)
@@ -300,5 +300,148 @@ describe('smooth', () => {
     // Outside the box nothing changes.
     const label = (seg, p) => seg.regions[seg.regionMap[p]].cluster
     for (let x = 0; x < w; x += 7) expect(label(highFine, 5 * w + x)).toBe(label(high, 5 * w + x))
+  })
+  it('does not let a detail grow when the outlines are rounded', () => {
+    const w = 40, h = 40
+    // A detail of 3 x 3 pixels on the border between two halves: without it the border is straight.
+    const { labels } = drawn(w, h, 0.3, [[1, 0.9, 20, 0, 40, 40], [2, 0.1, 18, 18, 21, 21]])
+    const fixed = Uint8Array.from(labels, (l) => (l === 2 ? 1 : 0))
+    const out = roundOutlines(labels, w, h, 3, { radius: 3, passes: 2, fixed })
+    expect(Array.from(out).filter((l) => l === 2).length).toBe(9)
+    for (let p = 0; p < w * h; p++) if (fixed[p]) expect(out[p]).toBe(2)
+  })
+
+  it('takes a speckle for texture, not for details', () => {
+    const w = 60, h = 40
+    // One dark square on plain ground, and a field of dark and light squares side by side.
+    const shapes = [[1, 0.1, 6, 6, 10, 10]]
+    for (let j = 0; j < 6; j++) for (let i = 0; i < 6; i++) shapes.push([2 + ((i + j) % 2), (i + j) % 2 ? 0.1 : 0.9, 30 + i * 4, 8 + j * 4, 34 + i * 4, 12 + j * 4])
+    const { labels, lab } = drawn(w, h, 0.9, shapes)
+    const extent = new Int32Array(w * h)
+    const details = findDetails(labels, lab, w, h, { minSize: 6, maxSize: 40, extent })
+    expect(details[8 * w + 8]).toBeGreaterThan(0)
+    expect(extent[8 * w + 8]).toBe(16)
+    // In the middle of the field every square has squares that could be details on all sides.
+    expect(details[21 * w + 43]).toBe(0)
+    expect(details[21 * w + 47]).toBe(0)
+  })
+
+  it('lets a detail go at a higher step when it is small, however strong its colour', () => {
+    const w = 60, h = 40
+    const { labels, lab } = drawn(w, h, 0.9, [[1, 0.1, 10, 10, 13, 13], [1, 0.1, 40, 10, 46, 16]])
+    const extent = new Int32Array(w * h)
+    const details = findDetails(labels, lab, w, h, { minSize: 6, maxSize: 40, extent })
+    const at = (detailSize) => sizes(mergeAreas(labels, lab, w, h, [{ minSize: 200, detailLimit: 0.04, detailSize }], { details, extent }), w, h).sort((a, b) => a - b)
+    expect(at(6)).toEqual([9, 36, w * h - 45])
+    expect(at(20)).toEqual([36, w * h - 36])
+    expect(at(40)).toEqual([w * h])
+  })
+
+  it('decides every join on sizes that still hold: two small areas that are large enough together stay', () => {
+    const w = 40, h = 20
+    // Two areas of 30 pixels side by side on a large ground; each is nearest in colour to the other.
+    const { labels, lab } = drawn(w, h, 0.9, [[1, 0.3, 10, 5, 15, 11], [2, 0.35, 15, 5, 20, 11]])
+    const out = sizes(mergeAreas(labels, lab, w, h, [{ minSize: 40 }]), w, h).sort((a, b) => a - b)
+    expect(out).toEqual([60, w * h - 60])
+  })
+
+  it('calms black and white speckle as Simplify rises', () => {
+    const w = 160, h = 120
+    const rand = mulberry32(4)
+    const rgba = makeImage(w, h, () => { const v = rand() < 0.5 ? 0 : 255; return [v, v, v] })
+    const areas = [0, 4, 10].map((simplify) => segmentImage(rgba, w, h, { colours: 6, simplify }).regions.length)
+    // Every grain passed as a detail before, at every step: about 900 areas at each.
+    expect(areas[0]).toBeLessThan(400)
+    expect(areas[1]).toBeLessThan(areas[0] / 2)
+    expect(areas[2]).toBeLessThan(areas[0] / 4)
+  })
+
+  describe('smooth drawing', () => {
+    // A map of two labels, 1 where `inside` says so.
+    const shape = (w, h, inside) => Int32Array.from({ length: w * h }, (_, p) => (inside(p % w, Math.floor(p / w)) ? 1 : 0))
+    // The longest level piece of outline in the columns `from` to `to` of a map, in pixels.
+    const longestStep = (l, w, h, from = 1, to = w - 1) => {
+      let most = 0
+      for (let y = 0; y < h - 1; y++) {
+        let run = 0
+        for (let x = from; x < to; x++) {
+          // A level side that goes on from the one before, with no upright side between them.
+          const level = l[y * w + x] !== l[(y + 1) * w + x]
+          const straight = level && l[y * w + x - 1] === l[y * w + x] && l[(y + 1) * w + x - 1] === l[(y + 1) * w + x]
+          run = level ? (straight ? run + 1 : 1) : 0
+          if (run > most) most = run
+        }
+      }
+      return most
+    }
+
+    it('draws a staircase as the slanted line it stands for', () => {
+      const w = 80, h = 40
+      // A line that falls one pixel in eight: steps of 8 pixels, 16 when enlarged pixel by pixel.
+      const labels = shape(w, h, (x, y) => y >= 10 + Math.floor(x / 8))
+      const big = upscaleAreas(labels, w, h, 2)
+      expect(big.length).toBe(w * 2 * h * 2)
+      // Twice as many steps of half the height: 8 enlarged pixels each, away from the ends.
+      expect(longestStep(big, w * 2, h * 2, 24, w * 2 - 24)).toBeLessThanOrEqual(9)
+      // As many pixels on each side as before, give or take a few at the ends.
+      const ones = Array.from(big).filter((l) => l === 1).length
+      expect(Math.abs(ones - 4 * Array.from(labels).filter((l) => l === 1).length)).toBeLessThan(24)
+    })
+
+    it('gives every enlarged pixel the label of its pixel or of a pixel beside that', () => {
+      const w = 50, h = 40
+      const rand = mulberry32(8)
+      // Blobs of five labels with ragged outlines.
+      const labels = Int32Array.from({ length: w * h }, (_, p) => Math.floor((Math.sin((p % w) / 5) + Math.cos(Math.floor(p / w) / 4) + 2 + rand() * 0.6) * 1.2) % 5)
+      const big = upscaleAreas(labels, w, h, 2)
+      for (let y = 0; y < h * 2; y++) {
+        for (let x = 0; x < w * 2; x++) {
+          const sx = x >> 1, sy = y >> 1, l = big[y * w * 2 + x]
+          const near = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]].some(([dx, dy]) => sx + dx >= 0 && sx + dx < w && sy + dy >= 0 && sy + dy < h && labels[(sy + dy) * w + sx + dx] === l)
+          expect(near).toBe(true)
+        }
+      }
+      // Every pixel is still there with at least one of its four.
+      for (let p = 0; p < w * h; p++) {
+        const o = Math.floor(p / w) * 2 * w * 2 + (p % w) * 2
+        expect([big[o], big[o + 1], big[o + w * 2], big[o + w * 2 + 1]]).toContain(labels[p])
+      }
+      expect(Array.from(upscaleAreas(labels, w, h, 2))).toEqual(Array.from(big))
+    })
+
+    it('keeps boxes, thin lines and dots exactly, and the corners of a large box', () => {
+      const w = 60, h = 40
+      const labels = shape(w, h, (x, y) => (x >= 5 && x < 25 && y >= 5 && y < 20) || (y === 30 && x >= 5 && x < 40) || (x === 50 && y >= 5 && y < 30) || (x === 45 && y === 35) || (x >= 30 && x < 32 && y >= 5 && y < 7))
+      const big = upscaleAreas(labels, w, h, 2)
+      for (let y = 0; y < h * 2; y++) for (let x = 0; x < w * 2; x++) expect(big[y * w * 2 + x]).toBe(labels[(y >> 1) * w + (x >> 1)])
+      const { dx, dy } = outlineShifts(labels, w, h)
+      expect(dx.every((v) => v === 0) && dy.every((v) => v === 0)).toBe(true)
+    })
+
+    it('moves no outline by more than half a pixel and no point where three areas meet', () => {
+      const w = 40, h = 40
+      const labels = Int32Array.from({ length: w * h }, (_, p) => { const x = p % w, y = Math.floor(p / w); return y < 12 + Math.floor(x / 3) ? (x < 20 + Math.floor(y / 4) ? 0 : 1) : 2 })
+      const { dx, dy } = outlineShifts(labels, w, h)
+      let moved = 0
+      for (let c = 0; c < dx.length; c++) {
+        expect(Math.abs(dx[c])).toBeLessThanOrEqual(0.5)
+        expect(Math.abs(dy[c])).toBeLessThanOrEqual(0.5)
+        if (dx[c] || dy[c]) moved++
+        const x = c % (w + 1), y = Math.floor(c / (w + 1))
+        if (x === 0 || y === 0 || x === w || y === h) continue
+        const around = new Set([labels[(y - 1) * w + x - 1], labels[(y - 1) * w + x], labels[y * w + x - 1], labels[y * w + x]])
+        if (around.size > 2) expect(dx[c] === 0 && dy[c] === 0).toBe(true)
+      }
+      expect(moved).toBeGreaterThan(20)
+    })
+
+    it('enlarges by any whole number, and by one not at all', () => {
+      const w = 30, h = 20
+      const labels = shape(w, h, (x, y) => y >= 4 + Math.floor(x / 3))
+      expect(Array.from(upscaleAreas(labels, w, h, 1))).toEqual(Array.from(labels))
+      const big = upscaleAreas(labels, w, h, 3)
+      expect(big.length).toBe(w * 3 * h * 3)
+      expect(longestStep(big, w * 3, h * 3)).toBeLessThan(9)
+    })
   })
 })

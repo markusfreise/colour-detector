@@ -28,11 +28,13 @@
 import { ref, watch, onMounted } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
-import { drawLayerView, drawOutlines, labelFont, paintPixels } from './layerView.js'
+import { drawLayerView, labelFont, paintPixels } from './layerView.js'
 import { smoothCurve } from '../lib/sketch.js'
+import { upscaleAreas } from '../lib/smooth.js'
 
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
+const BLANK = [255, 255, 255] // paper
 
 const analysis = useAnalysisStore()
 const canvas = ref(null)
@@ -135,36 +137,98 @@ function drawGuides(ctx, w, h) {
   ctx.restore()
 }
 
+// The areas of mix mode at the size of the canvas: the palette entry of every canvas pixel, with
+// the outlines of the areas as smooth lines instead of enlarged pixel steps. Colours, outlines
+// and clicks all read this one map, so they agree. It is kept until the areas or their entries
+// change (every such change raises renderVersion); selecting a colour draws from the kept map.
+let canvasAreas = null
+function areasAtCanvasSize() {
+  const seg = analysis.segmentation
+  const regionEntry = analysis.regionEntry
+  if (!seg || !regionEntry) return null
+  const kept = canvasAreas
+  if (kept && kept.seg === seg && kept.regionEntry === regionEntry && kept.version === analysis.renderVersion) return kept.entryOf
+  const { width, height, regionMap } = seg
+  const entries = new Int32Array(regionMap.length)
+  for (let p = 0; p < entries.length; p++) entries[p] = regionEntry[regionMap[p]]
+  const entryOf = upscaleAreas(entries, width, height, SCALE)
+  canvasAreas = { seg, regionEntry, version: analysis.renderVersion, entryOf }
+  return entryOf
+}
+
+// The area under a canvas pixel: the one drawn there. Where a smooth outline has moved over the
+// pixel, that is the area on the other side of the outline, next to the working pixel below it.
+function regionAtCanvasPixel(cx, cy) {
+  const seg = analysis.segmentation
+  const entryOf = areasAtCanvasSize()
+  const { width, height, regionMap } = seg
+  const x = Math.floor(cx / SCALE), y = Math.floor(cy / SCALE)
+  const region = regionMap[y * width + x]
+  const entry = entryOf[cy * width * SCALE + cx]
+  if (analysis.regionEntry[region] === entry) return region
+  // The nearer side first, as the outline came from there.
+  const sideX = cx - x * SCALE < SCALE / 2 ? -1 : 1, sideY = cy - y * SCALE < SCALE / 2 ? -1 : 1
+  for (const [dx, dy] of [[sideX, 0], [0, sideY], [-sideX, 0], [0, -sideY]]) {
+    const xx = x + dx, yy = y + dy
+    if (xx < 0 || yy < 0 || xx >= width || yy >= height) continue
+    const other = regionMap[yy * width + xx]
+    if (analysis.regionEntry[other] === entry) return other
+  }
+  return region
+}
+
 // Mix mode: flat numbered areas, one colour per wash of a mix.
 function drawMixes(el) {
   const seg = analysis.segmentation
-  if (!seg || !analysis.regionEntry) return
-  const { width, height, regionMap, regions } = seg
-  el.width = width * SCALE
-  el.height = height * SCALE
+  const entryOf = areasAtCanvasSize()
+  if (!entryOf) return
+  const { width, height, regions } = seg
+  const w = width * SCALE, h = height * SCALE
+  el.width = w
+  el.height = h
   const ctx = el.getContext('2d')
   const { view, outlines, numbers } = analysis.settings
+  const original = view === 'original'
+  // An outline runs through the canvas pixels that have another area to their right or below.
+  const onOutline = (p, x, y) => (x < w - 1 && entryOf[p] !== entryOf[p + 1]) || (y < h - 1 && entryOf[p] !== entryOf[p + w])
 
-  if (view === 'original') {
+  if (original) {
     drawPhoto(ctx, el)
-  } else {
-    const colours = analysis.entries.map((e) => hexToRgb(analysis.displayHex(e)))
-    const img = new Uint8ClampedArray(width * height * 4)
-    for (let p = 0; p < regionMap.length; p++) {
-      const entry = analysis.regionEntry[regionMap[p]]
-      // With a colour selected, only its mix stays: all its washes, the rest of the picture goes blank.
-      const [r, g, b] = shown(entry) ? colours[entry] : [255, 255, 255]
-      img[p * 4] = r
-      img[p * 4 + 1] = g
-      img[p * 4 + 2] = b
-      img[p * 4 + 3] = 255
+    if (outlines) {
+      // Light lines over the photo.
+      const lines = new Uint8ClampedArray(w * h * 4)
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const p = y * w + x
+          if (!onOutline(p, x, y)) continue
+          lines[p * 4] = lines[p * 4 + 1] = lines[p * 4 + 2] = 255
+          lines[p * 4 + 3] = 191
+        }
+      }
+      paintPixels(ctx, el, lines, w, h)
     }
-    paintPixels(ctx, el, img, width, height)
-  }
-
-  if (outlines) {
-    const entryAt = (p) => analysis.regionEntry[regionMap[p]]
-    drawOutlines(ctx, width, height, SCALE, (p, q) => entryAt(p) !== entryAt(q), view === 'original' ? 'rgba(255,255,255,0.75)' : 'rgba(40,36,30,0.55)')
+  } else {
+    // With a colour selected, only its mix stays: all its washes, the rest of the picture goes blank.
+    const colours = analysis.entries.map((e, index) => (shown(index) ? hexToRgb(analysis.displayHex(e)) : BLANK))
+    const img = new Uint8ClampedArray(w * h * 4)
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const p = y * w + x
+        const colour = colours[entryOf[p]] ?? BLANK
+        if (outlines && onOutline(p, x, y)) {
+          // The line colour rgba(40, 36, 30, 0.55) over the area.
+          img[p * 4] = colour[0] * 0.45 + 22
+          img[p * 4 + 1] = colour[1] * 0.45 + 19.8
+          img[p * 4 + 2] = colour[2] * 0.45 + 16.5
+        } else {
+          img[p * 4] = colour[0]
+          img[p * 4 + 1] = colour[1]
+          img[p * 4 + 2] = colour[2]
+        }
+        img[p * 4 + 3] = 255
+      }
+    }
+    ctx.putImageData(new ImageData(img, w, h), 0, 0)
   }
 
   if (numbers) {
@@ -223,15 +287,18 @@ function onClick(event) {
   const size = analysis.layerMode ? analysis.layers : analysis.segmentation
   if (!size) return
   const rect = canvas.value.getBoundingClientRect()
-  const x = Math.floor(((event.clientX - rect.left) / rect.width) * size.width)
-  const y = Math.floor(((event.clientY - rect.top) / rect.height) * size.height)
+  // The canvas pixel under the pointer, and the working pixel it belongs to.
+  const cx = Math.floor(((event.clientX - rect.left) / rect.width) * size.width * SCALE)
+  const cy = Math.floor(((event.clientY - rect.top) / rect.height) * size.height * SCALE)
+  const x = Math.floor(cx / SCALE), y = Math.floor(cy / SCALE)
   if (x < 0 || y < 0 || x >= size.width || y >= size.height) return
   if (analysis.settings.view === 'sketch') return // nothing to pick in the sketch
   if (analysis.layerMode) {
     analysis.selectPoint({ x, y })
     return
   }
-  const region = size.regionMap[y * size.width + x]
+  if (!analysis.regionEntry) return
+  const region = regionAtCanvasPixel(cx, cy)
   // A click on the blanked part of the picture brings everything back.
   if (analysis.selectedRegion === region || !shown(analysis.regionEntry[region])) analysis.select(null)
   else analysis.select(region)

@@ -95,7 +95,9 @@ const REFERENCE_PIXELS = 480000
 // The smallest area that is no detail, in pixels at Simplify 0; it grows with (Simplify + 1) ^ MIN_AREA_POWER.
 const MIN_AREA = 72
 const MIN_AREA_POWER = 1.3
-// Nothing smaller than this many pixels is ever an area of its own, whatever the size of the picture.
+// Nothing smaller than this many pixels is ever an area of its own, whatever the size of the
+// picture; but for the inside of a detail that stays (the hole of a letter), which is part of it
+// and can be as small as three pixels (DETAIL_HOLE in smooth.js).
 const SMALLEST_AREA = 6
 // Two areas join while that costs less than this at Simplify 0 (see `mergeAreas` for the cost),
 // and MERGE_GROWTH times more with every step of Simplify.
@@ -108,6 +110,10 @@ const TIDY_LIMIT = 0.25
 // so a face still has eyes when its cheeks are one area.
 const DETAIL_LIMIT = 0.04
 const DETAIL_GROWTH = 1.1
+// A detail, with the others of its group (the letters of a line), has at least SMALLEST_AREA
+// pixels at Simplify 0 and DETAIL_SIZE_STEP times that more with every step: what is left of a
+// speckle goes as Simplify rises, however strong its colour.
+const DETAIL_SIZE_STEP = 0.3
 // Rounding of the outlines: the window around a pixel at Simplify 0, and what a step of Simplify adds.
 const OUTLINE_RADIUS = 3
 const OUTLINE_RADIUS_STEP = 0.3
@@ -445,25 +451,30 @@ export function calmAreas(raw, lab, width, height, k, simplify, where = null) {
   const radiusAt = (level) => Math.max(1, Math.round((OUTLINE_RADIUS + level * OUTLINE_RADIUS_STEP) * Math.sqrt(count / REFERENCE_PIXELS)))
 
   // One stage per step of Simplify below the one asked for, then that one (see `mergeAreas`).
-  const stageAt = (level) => ({ minSize: minSizeAt(level), limit: mergeLimitAt(level), detailLimit: detailLimitAt(level) })
+  const detailSizeAt = (level) => Math.round(SMALLEST_AREA * (1 + DETAIL_SIZE_STEP * level))
+  const stageAt = (level) => ({ minSize: minSizeAt(level), limit: mergeLimitAt(level), detailLimit: detailLimitAt(level), detailSize: detailSizeAt(level), smallest: SMALLEST_AREA })
   const stages = []
   for (let level = 0; level < simplify; level++) stages.push(stageAt(level))
   const last = stageAt(simplify)
   stages.push(last)
-  const inside = { minSize: minSizeAt(0), limit: mergeLimitAt(0) * FOCUS_LIMIT, detailLimit: detailLimitAt(0) * FOCUS_LIMIT }
+  const inside = { minSize: minSizeAt(0), limit: mergeLimitAt(0) * FOCUS_LIMIT, detailLimit: detailLimitAt(0) * FOCUS_LIMIT, detailSize: detailSizeAt(0), smallest: SMALLEST_AREA }
 
   const tidy = mergeAreas(raw, lab, width, height, [{ minSize: SMALLEST_AREA, limit: MERGE_LIMIT * TIDY_LIMIT }])
-  const details = findDetails(tidy, lab, width, height, { minSize: SMALLEST_AREA, maxSize: last.minSize })
-  const merged = mergeAreas(tidy, lab, width, height, stages, { details, where, inside })
+  const extent = new Int32Array(count)
+  const details = findDetails(tidy, lab, width, height, { minSize: SMALLEST_AREA, maxSize: last.minSize, extent })
+  const merged = mergeAreas(tidy, lab, width, height, stages, { details, extent, where, inside })
   // The details that are left: no outline of theirs is rounded.
   const fixed = new Uint8Array(count)
-  for (let p = 0; p < count; p++) fixed[p] = details[p] > 0 && details[p] >= (where && where[p] ? inside : last).detailLimit ? 1 : 0
+  for (let p = 0; p < count; p++) {
+    const rule = where && where[p] ? inside : last
+    fixed[p] = details[p] > 0 && details[p] >= rule.detailLimit && extent[p] >= rule.detailSize ? 1 : 0
+  }
   const rounded = roundOutlines(merged, width, height, k, { radius: radiusAt(simplify), passes: OUTLINE_PASSES, fixed })
   if (where && simplify > 0) {
     const fine = roundOutlines(merged, width, height, k, { radius: radiusAt(0), passes: OUTLINE_PASSES, fixed, only: where })
     for (let p = 0; p < count; p++) if (where[p]) rounded[p] = fine[p]
   }
-  return mergeAreas(rounded, lab, width, height, [last], { details, where, inside })
+  return mergeAreas(rounded, lab, width, height, [last], { details, extent, where, inside })
 }
 
 /**

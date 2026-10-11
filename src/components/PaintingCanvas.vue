@@ -29,8 +29,9 @@ function shown(entryIndex) {
 }
 
 // The photo as the analysis sees it: with saturation and contrast applied when they are changed.
-function drawPhoto(ctx, el, width, height) {
-  if (analysis.adjusted) paintPixels(ctx, el, analysis.adjusted.rgba, width, height, true)
+function drawPhoto(ctx, el) {
+  // The photo's own size: while a new picture is analysed, the areas on screen are still those of the one before.
+  if (analysis.adjusted) paintPixels(ctx, el, analysis.adjusted.rgba, analysis.adjusted.width, analysis.adjusted.height, true)
   else ctx.drawImage(analysis.image, 0, 0, el.width, el.height)
 }
 
@@ -52,7 +53,7 @@ function drawMixes(el) {
   const { view, outlines, numbers } = analysis.settings
 
   if (view === 'original') {
-    drawPhoto(ctx, el, width, height)
+    drawPhoto(ctx, el)
   } else {
     const colours = analysis.entries.map((e) => hexToRgb(analysis.displayHex(e)))
     const img = new Uint8ClampedArray(width * height * 4)
@@ -108,7 +109,7 @@ function drawLayers(el) {
     outlines,
     numbers,
     scale: SCALE,
-    backdrop: view === 'original' ? (context, canvasEl) => drawPhoto(context, canvasEl, result.width, result.height) : null,
+    backdrop: view === 'original' ? drawPhoto : null,
   })
 
   const point = analysis.layerPoint

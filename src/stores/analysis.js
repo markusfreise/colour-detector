@@ -23,6 +23,11 @@ let nextSample = 0
 
 let worker = null
 let jobCounter = 0
+// Every analysis takes a number; only the latest one may write its result or end `busy`.
+let analysisToken = 0
+// The settings the mix analysis (`segmentation`) was made with, see `mixCurrent`.
+let mixKey = null
+const mixKeyOf = ({ saturation, contrast, simplify, colours }) => [saturation, contrast, simplify, colours].join('/')
 
 function getWorker() {
   if (!worker) {
@@ -76,6 +81,7 @@ export const useAnalysisStore = defineStore('analysis', {
     layerShown: [], // per layer: shown in the picture
     layerStep: null, // index into layers.steps while the painting order is walked through
     layerPoint: null, // { x, y } of the clicked spot, in working pixels
+    pendingEdits: null, // { key, edits } of a picture opened in layer mode, for its first mix analysis
     busy: false,
     error: null,
     settings: {
@@ -117,8 +123,11 @@ export const useAnalysisStore = defineStore('analysis', {
       const result = state.layers
       const point = state.layerPoint
       if (!result || !point || !state.pixels) return null
-      const p = point.y * result.width + point.x
       const source = state.adjusted ?? state.pixels
+      // The layers of another picture (a new one is being planned) say nothing about this one.
+      if (source.width !== result.width || source.height !== result.height) return null
+      if (!(point.x >= 0 && point.y >= 0 && point.x < result.width && point.y < result.height)) return null
+      const p = point.y * result.width + point.x
       const combo = result.combos[result.comboMap[p]]
       const photo = rgbToHex([source.rgba[p * 4], source.rgba[p * 4 + 1], source.rgba[p * 4 + 2]])
       return {
@@ -150,13 +159,20 @@ export const useAnalysisStore = defineStore('analysis', {
     },
     /** Open a picture from the collection with its saved settings and colour changes. */
     async loadSaved(record) {
-      Object.assign(this.settings, record.settings)
+      // Pictures saved before layer mode existed are mix pictures.
+      Object.assign(this.settings, { mode: 'mix' }, record.settings)
       const url = URL.createObjectURL(record.blob)
       await this.loadFromSource(url, record.name)
       URL.revokeObjectURL(url)
       if (this.error) return
       this.savedId = record.id
-      for (const edit of record.edits ?? []) {
+      // The colour changes belong to the mixes. In layer mode they wait for the first mix analysis.
+      if (this.layerMode) this.pendingEdits = { key: mixKeyOf(this.settings), edits: record.edits ?? [] }
+      else this.applyEdits(record.edits)
+    },
+    /** Saved colour changes onto the colours of a fresh mix analysis. */
+    applyEdits(edits) {
+      for (const edit of edits ?? []) {
         const entry = this.entries[edit.index]
         if (!entry) continue
         if (edit.targetHex) this.setTarget(edit.index, edit.targetHex)
@@ -164,8 +180,14 @@ export const useAnalysisStore = defineStore('analysis', {
       }
       this.renderVersion++
     },
+    /** Whether the mixes belong to the picture and the settings as they are now. */
+    mixCurrent() {
+      return !!this.segmentation && mixKey === mixKeyOf(this.settings)
+    },
     /** Colour changes worth saving. Detached areas are not kept: they depend on the exact area ids. */
     exportEdits() {
+      // In layer mode the mixes can be those of other settings: then the saved changes are kept as they were.
+      if (!this.mixCurrent()) return this.pendingEdits?.edits ?? []
       return this.entries
         .slice(0, this.baseEntries)
         .map((e, index) => ({ index, targetHex: e.overridden ? e.targetHex : null, chosen: e.chosen }))
@@ -188,37 +210,68 @@ export const useAnalysisStore = defineStore('analysis', {
         this.image = markRaw(img)
         this.pixels = markRaw({ rgba: data, width, height })
         this.imageName = name
+        this.forgetPicture()
         await this.analyse()
       } catch (e) {
         this.error = `Could not load image: ${e.message}`
       }
     },
 
+    /**
+     * A new picture. What the other mode worked out belongs to the picture before and is dropped;
+     * the current mode keeps its result on screen until the new one is there.
+     */
+    forgetPicture() {
+      mixKey = null
+      this.pendingEdits = null
+      if (this.layerMode) {
+        this.segmentation = null
+        this.entries = []
+        this.order = []
+        this.baseEntries = 0
+        this.regionEntry = null
+        this.mixRecipes = {}
+        this.selectedEntry = null
+        this.selectedRegion = null
+      } else {
+        this.layers = null
+        this.layerShown = []
+      }
+    },
+
     async analyse() {
       if (!this.pixels) return
+      const token = ++analysisToken
       this.busy = true
       this.error = null
       const { width, height } = this.pixels
       const { saturation, contrast } = this.settings
       const rgba = adjustImage(this.pixels.rgba, { saturation: saturation / 100, contrast: contrast / 100 })
       this.adjusted = rgba === this.pixels.rgba ? null : markRaw({ rgba, width, height })
-      if (this.layerMode) return this.analyseLayers(rgba, width, height)
+      if (this.layerMode) return this.analyseLayers(rgba, width, height, token)
+      const key = mixKeyOf(this.settings)
       try {
         // "Colours" counts mixes. The analysis is asked for more, and planMixes joins them down to
         // the wanted number once the paints are known.
-        const { jobId, result } = await runSegmentation({
+        const { result } = await runSegmentation({
           rgba: rgba.slice(),
           width,
           height,
           colours: mixesToRequest(this.settings.colours),
           simplify: this.settings.simplify,
         })
-        if (jobId !== jobCounter) return // a newer analysis superseded this one
+        if (token !== analysisToken || this.layerMode) return // a newer analysis superseded this one
+        mixKey = key
         this.applySegmentation(result)
+        // Colour changes of a picture that was opened in layer mode.
+        const pending = this.pendingEdits
+        this.pendingEdits = null
+        if (pending?.key === key) this.applyEdits(pending.edits)
       } catch (e) {
-        this.error = `Analysis failed: ${e.message}`
+        if (token === analysisToken) this.error = `Analysis failed: ${e.message}`
       } finally {
-        this.busy = false
+        // A superseded analysis leaves `busy` to the one that is still running.
+        if (token === analysisToken) this.busy = false
       }
     },
 
@@ -226,7 +279,7 @@ export const useAnalysisStore = defineStore('analysis', {
      * Layer mode: glazes of the base paints. On Auto the app proposes the paints from the paint
      * box's Auto pool, otherwise the ones chosen in the paint box are fitted.
      */
-    async analyseLayers(rgba, width, height) {
+    async analyseLayers(rgba, width, height, token = ++analysisToken) {
       const paints = usePaintsStore()
       const box = paints.activeBox
       const pool = (box.layerAuto ? paints.autoCandidates : paints.layerPaints).map(({ id, hex }) => ({ id, hex }))
@@ -235,28 +288,35 @@ export const useAnalysisStore = defineStore('analysis', {
       try {
         if (!pool.length) {
           this.layers = null
+          this.layerShown = []
+          this.renderVersion++
           return
         }
-        const { jobId, result } = await runSegmentation({
+        const { result } = await runSegmentation({
           kind: 'layers',
           rgba: rgba.slice(),
           width,
           height,
           paints: pool,
           count: this.settings.layerCount,
-          paintIds: box.layerAuto ? undefined : box.layerIds,
+          // A plain copy: the worker cannot be sent the reactive array of the store.
+          paintIds: box.layerAuto ? undefined : [...box.layerIds],
           maxCoats: this.settings.maxCoats,
           simplify: this.settings.simplify,
         })
-        if (jobId !== jobCounter || !this.layerMode) return // superseded
-        if (box.layerAuto) paints.setLayerPaints(result.paintIds, true)
+        if (token !== analysisToken || !this.layerMode) return // superseded
+        // The proposal goes to the box it was made for, also when another box was opened meanwhile.
+        if (box.layerAuto) paints.setLayerPaints(result.paintIds, true, box)
         this.layers = markRaw(result)
         this.layerShown = result.layers.map(() => true)
+        // A walk or a spot picked on the old layers while these were planned.
+        this.layerStep = null
+        this.layerPoint = null
         this.renderVersion++
       } catch (e) {
-        this.error = `Analysis failed: ${e.message}`
+        if (token === analysisToken) this.error = `Analysis failed: ${e.message}`
       } finally {
-        this.busy = false
+        if (token === analysisToken) this.busy = false
       }
     },
 
@@ -272,11 +332,21 @@ export const useAnalysisStore = defineStore('analysis', {
       this.select(null)
       this.layerStep = null
       this.layerPoint = null
+      if (mode === 'mix' && this.mixCurrent()) {
+        // The mixes are still those of this picture: they come back with every colour change
+        // made by hand, only the paint box may have changed. A running layer job is dropped.
+        analysisToken++
+        this.busy = false
+        this.error = null
+        this.recomputeAllRecipes()
+        return
+      }
       this.analyse()
     },
 
     /** Tick or untick a layer. The last one stays: a picture with nothing on it helps nobody. */
     showLayer(index, on) {
+      if (!this.layers) return
       this.layerStep = null
       const next = this.layerView.map((v) => !!v)
       next[index] = on
@@ -287,6 +357,7 @@ export const useAnalysisStore = defineStore('analysis', {
 
     /** One layer on its own; again on the same layer, or with null, all of them. */
     soloLayer(index) {
+      if (!this.layers) return
       const solo = this.layerStep == null && this.layerSolo === index
       this.layerStep = null
       this.layerShown = this.layers.layers.map((_, k) => index == null || solo || k === index)
@@ -296,7 +367,8 @@ export const useAnalysisStore = defineStore('analysis', {
     /** Walk through the painting order: step = index into layers.steps, null ends the walk. */
     goToStep(step) {
       if (!this.layers) return
-      this.layerStep = step == null ? null : Math.min(this.layers.steps.length - 1, Math.max(0, step))
+      // Without a single coat (a white picture) there is nothing to walk through.
+      this.layerStep = step == null || !this.layers.steps.length ? null : Math.min(this.layers.steps.length - 1, Math.max(0, step))
       if (this.layerStep == null) this.layerShown = this.layers.layers.map(() => true)
       this.renderVersion++
     },

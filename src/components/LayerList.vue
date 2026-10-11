@@ -31,10 +31,15 @@
         :class="{ 'layers__item--active': row.solo, 'layers__item--current': row.current }"
       >
         <label class="checkbox layers__tick" :title="`Show layer ${row.number} in the picture`">
-          <input type="checkbox" :checked="row.shown" @change="analysis.showLayer(row.index, $event.target.checked)" />
+          <input
+            type="checkbox"
+            :checked="row.shown"
+            :aria-label="`Show layer ${row.number}, ${row.name}`"
+            @change="onTick(row, $event)"
+          />
           <span class="layers__number">{{ row.number }}</span>
         </label>
-        <button class="layers__row" type="button" :title="row.solo ? 'Show all layers' : 'Show only this layer'" @click="analysis.soloLayer(row.index)">
+        <button class="layers__row" type="button" :aria-pressed="row.solo" :title="row.solo ? 'Show all layers' : 'Show only this layer'" @click="analysis.soloLayer(row.index)">
           <span class="swatch" :style="{ background: row.hex }" title="One coat on white paper"></span>
           <span class="palette__summary layers__summary">
             <span class="palette__paints">{{ row.name }}</span>
@@ -51,6 +56,8 @@
             type="button"
             :style="{ background: coat.hex, color: coat.ink }"
             :title="`Coat ${coat.coats}: ${percent(coat.share)}% of image. Click to see this step.`"
+            :aria-label="`Coat ${coat.coats} of layer ${row.number}: show this step`"
+            :aria-pressed="coat.step === analysis.layerStep"
             @click="analysis.goToStep(coat.step)"
           >
             {{ coat.coats }}
@@ -73,7 +80,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, nextTick } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { contrastText } from '../lib/color.js'
@@ -123,8 +130,18 @@ function auto() {
 }
 
 // The print stylesheet lays out the sheets; the browser's dialog offers "Save as PDF".
-function print() {
-  if (isNative) sendNative('print')
-  else window.print()
+async function print() {
+  if (isNative) return sendNative('print')
+  // The sheets are built on `beforeprint`, but the page only renders them a tick later, which is
+  // too late for a print started from this click. So they are built and rendered first.
+  window.dispatchEvent(new Event('beforeprint'))
+  await nextTick()
+  window.print()
+}
+
+// The last shown layer cannot be unticked: put the tick back where the store refused.
+function onTick(row, event) {
+  analysis.showLayer(row.index, event.target.checked)
+  event.target.checked = !!analysis.layerView[row.index]
 }
 </script>

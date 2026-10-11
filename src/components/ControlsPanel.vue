@@ -32,6 +32,7 @@
           type="button"
           class="segmented__option"
           :class="{ 'segmented__option--active': analysis.settings.mode === m.value }"
+          :aria-pressed="analysis.settings.mode === m.value"
           :title="m.title"
           @click="analysis.setMode(m.value)"
         >
@@ -107,6 +108,7 @@
             type="button"
             class="segmented__option"
             :class="{ 'segmented__option--active': analysis.settings.maxCoats === n }"
+            :aria-pressed="analysis.settings.maxCoats === n"
             title="How many times the same wash may go over one area"
             @click="setMaxCoats(n)"
           >

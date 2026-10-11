@@ -30,7 +30,8 @@ import { usePaintsStore } from '../stores/paints.js'
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 
-const result = computed(() => (analysis.layerMode ? analysis.layers : null))
+// Without a single coat (a white picture) there is nothing to walk through.
+const result = computed(() => (analysis.layerMode && analysis.layers?.steps.length ? analysis.layers : null))
 const step = computed(() => (result.value && analysis.layerStep != null ? result.value.steps[analysis.layerStep] : null))
 const last = computed(() => analysis.layerStep === result.value.steps.length - 1)
 const name = computed(() => paints.byId[step.value.paintId]?.name ?? step.value.paintId)

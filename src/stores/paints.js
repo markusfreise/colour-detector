@@ -99,9 +99,9 @@ export const usePaintsStore = defineStore('paints', {
       this.setEnabled(defaultIds())
     },
     /** The base paints of layer mode. Choosing them by hand switches their Auto off. */
-    setLayerPaints(ids, auto = false) {
-      this.activeBox.layerIds = [...ids].slice(0, MAX_LAYER_PAINTS)
-      this.activeBox.layerAuto = auto
+    setLayerPaints(ids, auto = false, box = this.activeBox) {
+      box.layerIds = [...ids].slice(0, MAX_LAYER_PAINTS)
+      box.layerAuto = auto
       this.persist()
     },
     toggleLayerPaint(id, on) {

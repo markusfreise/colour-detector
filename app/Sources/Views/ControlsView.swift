@@ -1,8 +1,9 @@
 import SwiftUI
 
-/// How many colours, how calm the areas, how many paints per mix, and what the picture shows.
+/// The method (mixes or layers), how many colours or layers, how calm the areas, and what the picture shows.
 struct ControlsView: View {
     @Environment(Session.self) private var session
+    @Environment(Library.self) private var library
     @Environment(\.horizontalSizeClass) private var sizeClass
     // The sliders move freely; the analysis only runs when the finger lifts.
     @State private var colours = 20.0
@@ -10,6 +11,9 @@ struct ControlsView: View {
     @State private var saturation = 200.0
     @State private var contrast = 100.0
     @State private var variety = 5.0
+    @State private var layers = 5.0
+    @State private var layerSimplify = 4.0
+    @State private var accents = 3.0
 
     var body: some View {
         @Bindable var session = session
@@ -25,19 +29,53 @@ struct ControlsView: View {
                 }
             }
 
+            let layerMode = session.settings.mode == .layer
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Method").font(Theme.strong)
+                SegmentedButtons(
+                    options: AnalysisMode.allCases.map { ($0, $0.title) },
+                    selection: Binding(get: { session.settings.mode }, set: { session.setMode($0) })
+                )
+                if layerMode {
+                    Text("Layer: a few thin washes, each painted over the dry one before.")
+                        .font(Theme.small)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
             Grid(alignment: .topLeading, horizontalSpacing: 14, verticalSpacing: 0) {
                 GridRow {
-                    slider("Colours", value: $colours, range: 2...32, hint: "More colours = more detail") {
-                        session.settings.colours = Int(colours.rounded())
+                    if layerMode {
+                        let auto = library.activeBox.layerAuto
+                        slider(
+                            "Layers", value: $layers, range: 2...Double(Library.maxLayerPaints),
+                            hint: auto ? "Washes; accents and second coats are extra steps" : "Chosen by hand. Auto in the paint box picks again."
+                        ) {
+                            session.settings.layerCount = Int(layers.rounded())
+                        }
+                        .disabled(!auto)
+                        slider("Simplify areas", value: $layerSimplify, range: 0...10, hint: "Higher = bigger, calmer shapes") {
+                            session.settings.layerSimplify = Int(layerSimplify.rounded())
+                        }
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Max. coats").font(Theme.strong).lineLimit(1).minimumScaleFactor(0.7)
+                            SegmentedButtons(options: (1...3).map { ($0, "\($0)") }, selection: $session.settings.maxCoats)
+                        }
+                        .frame(minWidth: 92)
+                    } else {
+                        slider("Colours", value: $colours, range: 2...32, hint: "More colours = more detail") {
+                            session.settings.colours = Int(colours.rounded())
+                        }
+                        slider("Simplify areas", value: $simplify, range: 0...10, hint: "Higher = bigger, calmer shapes") {
+                            session.settings.simplify = Int(simplify.rounded())
+                        }
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Max. paints").font(Theme.strong).lineLimit(1).minimumScaleFactor(0.7)
+                            SegmentedButtons(options: (1...3).map { ($0, "\($0)") }, selection: $session.settings.maxPaints)
+                        }
+                        .frame(minWidth: 92)
                     }
-                    slider("Simplify areas", value: $simplify, range: 0...10, hint: "Higher = bigger, calmer shapes") {
-                        session.settings.simplify = Int(simplify.rounded())
-                    }
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Max. paints").font(Theme.strong).lineLimit(1).minimumScaleFactor(0.7)
-                        SegmentedButtons(options: (1...3).map { ($0, "\($0)") }, selection: $session.settings.maxPaints)
-                    }
-                    .frame(minWidth: 92)
                 }
                 GridRow {
                     slider("Saturation", value: $saturation, range: 0...200, unit: "%") {
@@ -46,14 +84,22 @@ struct ControlsView: View {
                     slider("Contrast", value: $contrast, range: 50...200, unit: "%") {
                         session.settings.contrast = Int((contrast / 5).rounded()) * 5
                     }
-                    slider("Variety", value: $variety, range: 0...10) {
-                        session.settings.variety = Int(variety.rounded())
+                    if layerMode {
+                        slider("Accents", value: $accents, range: 0...3) {
+                            session.settings.layerAccents = Int(accents.rounded())
+                        }
+                    } else {
+                        slider("Variety", value: $variety, range: 0...10) {
+                            session.settings.variety = Int(variety.rounded())
+                        }
                     }
                 }
                 .padding(.top, 12)
             }
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text("Variety: lower = closer overall, higher = small areas keep their own colour")
+                Text(layerMode
+                    ? "Accents: small strong touches painted last, first for a colour the washes miss, then for the darks"
+                    : "Variety: lower = closer overall, higher = small areas keep their own colour")
                     .font(Theme.small)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -77,7 +123,11 @@ struct ControlsView: View {
                     Toggle("Numbers", isOn: $session.settings.numbers)
                 }
                 .toggleStyle(CheckToggleStyle())
-                SegmentedButtons(options: ViewMode.allCases.map { ($0, sizeClass == .compact ? $0.shortTitle : $0.title) }, selection: $session.settings.view)
+                if layerMode {
+                    SegmentedButtons(options: [(ViewMode.mixed, "Layered paint"), (ViewMode.original, "Photo")], selection: $session.settings.view)
+                } else {
+                    SegmentedButtons(options: ViewMode.allCases.map { ($0, sizeClass == .compact ? $0.shortTitle : $0.title) }, selection: $session.settings.view)
+                }
             }
         }
         .onAppear(perform: sync)
@@ -108,7 +158,10 @@ struct ControlsView: View {
     }
 
     private var analysed: [Int] {
-        [session.settings.colours, session.settings.simplify, session.settings.saturation, session.settings.contrast]
+        let s = session.settings
+        return s.mode == .layer
+            ? [s.layerCount, s.layerSimplify, s.layerAccents, s.saturation, s.contrast]
+            : [s.colours, s.simplify, s.saturation, s.contrast]
     }
 
     private func sync() {
@@ -117,5 +170,9 @@ struct ControlsView: View {
         saturation = Double(session.settings.saturation)
         contrast = Double(session.settings.contrast)
         variety = Double(session.settings.variety)
+        // By hand the number of layers is the number of chosen base paints.
+        layers = library.activeBox.layerAuto ? Double(session.settings.layerCount) : Double(max(2, library.activeBox.layerIDs.count))
+        layerSimplify = Double(session.settings.layerSimplify)
+        accents = Double(session.settings.layerAccents)
     }
 }

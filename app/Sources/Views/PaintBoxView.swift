@@ -27,14 +27,20 @@ struct PaintBoxView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     boxBar
+                    if layerMode {
+                        Text("Layer mode paints with a few base paints, one layer each (\(selected.count) of \(Library.maxLayerPaints)). They are kept apart from the paints selected for mixing.\(full ? " \(Library.maxLayerPaints) layers at most: remove one before adding another." : "")")
+                            .font(Theme.small)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                     group(title: nil, highlighted: true) {
-                        if library.selected.isEmpty {
-                            Text("No paints selected. Tap a paint below to add it.").foregroundStyle(.secondary)
+                        if selected.isEmpty {
+                            Text(layerMode ? "No base paints chosen. Tap a paint below to add it, or press Auto." : "No paints selected. Tap a paint below to add it.").foregroundStyle(.secondary)
                         } else {
-                            grid(library.selected, selected: true)
+                            grid(selected, selected: true)
                         }
                     }
-                    ForEach(library.available) { available in
+                    ForEach(available) { available in
                         group(title: available.form.title) { grid(available.paints, selected: false) }
                     }
                     ownPaints
@@ -42,7 +48,7 @@ struct PaintBoxView: View {
                 .padding()
             }
             .background(Theme.page)
-            .navigationTitle("Paint Box")
+            .navigationTitle(layerMode ? "Paint Box: Base Paints" : "Paint Box")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -76,6 +82,17 @@ struct PaintBoxView: View {
         #endif
     }
 
+    /// In layer mode the screen edits the base paints of the box instead of its selection for mixing.
+    private var layerMode: Bool { session.settings.mode == .layer }
+    private var autoOn: Bool { layerMode ? library.activeBox.layerAuto : library.activeBox.auto }
+    private var selected: [Paint] { layerMode ? library.layerPaints.sortedForBox() : library.selected }
+    private var available: [PaintGroup] {
+        guard layerMode else { return library.available }
+        let base = Set(library.activeBox.layerIDs)
+        return library.all.filter { !base.contains($0.id) }.groupedByForm()
+    }
+    private var full: Bool { layerMode && library.activeBox.layerIDs.count >= Library.maxLayerPaints }
+
     // MARK: Boxes
 
     /// The boxes as buttons with what can be done to them, then what can be done to the selection.
@@ -102,16 +119,20 @@ struct PaintBoxView: View {
             }
             HStack(spacing: 6) {
                 Button("Auto", systemImage: "wand.and.stars", action: auto)
-                    .buttonStyle(OutlineButtonStyle(prominent: library.activeBox.auto))
+                    .buttonStyle(OutlineButtonStyle(prominent: autoOn))
                     .fixedSize()
-                    .disabled(session.entries.isEmpty)
-                    .help("Let the app select the paints that suit each picture")
-                    .accessibilityAddTraits(library.activeBox.auto ? .isSelected : [])
-                Button("Revert") { library.revert() }
-                    .help("Back to the default selection")
-                Button("Clear") { library.clear() }
+                    .disabled(session.image == nil)
+                    .help(layerMode ? "Let the app choose the base paints for this picture" : "Let the app select the paints that suit each picture")
+                    .accessibilityAddTraits(autoOn ? .isSelected : [])
+                if !layerMode {
+                    Button("Revert") { library.revert() }
+                        .help("Back to the default selection")
+                }
+                Button("Clear") {
+                    if layerMode { library.setLayerPaints([]) } else { library.clear() }
+                }
                 Spacer(minLength: 8)
-                Text("\(library.selected.count) selected").font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
+                Text("\(selected.count) selected").font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
             }
             .buttonStyle(.outline)
         }
@@ -128,6 +149,11 @@ struct PaintBoxView: View {
 
     /// Lets the app pick the paints for each picture, from the default selection and the user's own paints.
     private func auto() {
+        if layerMode {
+            // The proposal needs the picture, so it is made while the layers are planned again.
+            session.proposeLayers()
+            return
+        }
         library.switchToAuto()
         session.recomputeAllRecipes()
     }
@@ -148,15 +174,18 @@ struct PaintBoxView: View {
     }
 
     private func grid(_ paints: [Paint], selected: Bool) -> some View {
-        let used = session.usedPaintIDs
+        let used = layerMode ? [] : session.usedPaintIDs
         return LazyVGrid(columns: columns, spacing: 6) {
             ForEach(paints) { paint in
                 Button {
-                    library.toggle(paint.id)
+                    if layerMode { library.toggleLayerPaint(paint.id) } else { library.toggle(paint.id) }
                 } label: {
                     PaintChip(paint: paint, showForm: selected, used: selected && used.contains(paint.id))
                 }
                 .buttonStyle(.plain)
+                // A full set of base paints takes no more; the note above says why.
+                .disabled(!selected && full)
+                .opacity(!selected && full ? 0.45 : 1)
                 .accessibilityHint(selected ? "Removes the paint from the box" : "Adds the paint to the box")
             }
         }

@@ -14,9 +14,27 @@ struct PaintBox: Codable, Identifiable, Hashable {
     /// Nil in boxes saved before Auto existed.
     fileprivate var autoFlag: Bool?
 
+    /// Layer mode: the base paints, one layer each, kept apart from the selection for mixing.
+    var layerIDs: [String] {
+        get { savedLayerIDs ?? [] }
+        set { savedLayerIDs = newValue }
+    }
+
+    /// Layer mode: the app proposes the base paints for each picture.
+    var layerAuto: Bool {
+        get { layerAutoFlag ?? true }
+        set { layerAutoFlag = newValue }
+    }
+
+    /// Nil in boxes saved before layer mode existed.
+    fileprivate var savedLayerIDs: [String]?
+    fileprivate var layerAutoFlag: Bool?
+
     private enum CodingKeys: String, CodingKey {
         case id, name, paintIDs
         case autoFlag = "auto"
+        case savedLayerIDs = "layerIDs"
+        case layerAutoFlag = "layerAuto"
     }
 
     init(id: String, name: String, paintIDs: [String], auto: Bool = false) {
@@ -31,6 +49,9 @@ struct PaintBox: Codable, Identifiable, Hashable {
 @MainActor
 @Observable
 final class Library {
+    /// Layer mode takes at most this many base paints by hand: every one is a layer to paint and to let dry.
+    static let maxLayerPaints = 6
+
     private struct Saved: Codable {
         var custom: [Paint]
         var boxes: [PaintBox]
@@ -112,6 +133,28 @@ final class Library {
 
     func clear() { setEnabled([]) }
 
+    // MARK: Base paints of layer mode
+
+    var layerPaints: [Paint] {
+        let byID = byID
+        return activeBox.layerIDs.compactMap { byID[$0] }
+    }
+
+    /// Choosing the base paints by hand switches their Auto off and is limited to `maxLayerPaints`;
+    /// a proposal may add a paint or two for its accents.
+    func setLayerPaints(_ ids: [String], auto: Bool = false, box: String? = nil) {
+        guard let index = boxes.firstIndex(where: { $0.id == box ?? activeID }) else { return }
+        boxes[index].layerIDs = auto ? ids : Array(ids.prefix(Self.maxLayerPaints))
+        boxes[index].layerAuto = auto
+        changed()
+    }
+
+    func toggleLayerPaint(_ id: String) {
+        var ids = activeBox.layerIDs
+        if let index = ids.firstIndex(of: id) { ids.remove(at: index) } else { ids.append(id) }
+        setLayerPaints(ids)
+    }
+
     /// Back to the default selection.
     func revert() { setEnabled(defaultIDs) }
 
@@ -161,7 +204,10 @@ final class Library {
 
     func deletePaint(_ id: String) {
         custom.removeAll { $0.id == id }
-        for index in boxes.indices { boxes[index].paintIDs.removeAll { $0 == id } }
+        for index in boxes.indices {
+            boxes[index].paintIDs.removeAll { $0 == id }
+            boxes[index].layerIDs.removeAll { $0 == id }
+        }
         changed()
     }
 

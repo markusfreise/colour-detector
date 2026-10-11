@@ -14,6 +14,7 @@
 		461E2BE5740FDB0B553B8B73 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE0247E9C5E76434A1C38F2 /* Session.swift */; };
 		52512884CA5ADE64FB762589 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4915A96F23A0DBED72F67AF /* Assets.xcassets */; };
 		5278FECC2D24007148C941EA /* sample-cwm-idwal.webp in Resources */ = {isa = PBXBuildFile; fileRef = 745CDAA0682AC9667D4969DA /* sample-cwm-idwal.webp */; };
+		640604855636CB6E8D44FAEE /* LayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EDC1EF532557AE681F4A0AB /* LayerTests.swift */; };
 		65463BE553374D6DF4E6A6C6 /* paints.json in Resources */ = {isa = PBXBuildFile; fileRef = 8788D8484C64CC1D8903CEB9 /* paints.json */; };
 		65B833B17CD6F607CFCEDA28 /* ControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B495A2BAF310A1C108D64 /* ControlsView.swift */; };
 		66A7743790C685F5429FF454 /* Chips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87296F931B6A9A109A7B4034 /* Chips.swift */; };
@@ -24,6 +25,7 @@
 		96DF6D338ADE25932DB3329A /* DebugSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A5D9BC8A8EA0B9C9F184F5 /* DebugSnapshot.swift */; };
 		997D41B2496A58B0A8CDF28F /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8CE5B7620FD4EFC085F78 /* RootView.swift */; };
 		A7AC78082094A5D6A8808500 /* Library.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD60AE475F8C41975C7F37 /* Library.swift */; };
+		AAD307AE23FB9DFDDCB6A40B /* LayerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1FE3F00F616DF002146FF8 /* LayerViews.swift */; };
 		AAE462A709F6B286047733E1 /* Segmentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653FEFFB5A095F61C7DC40F5 /* Segmentation.swift */; };
 		ACC5BFA8E2BF402F9E14E1EC /* Mixes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892FC78A77A3BF681274698B /* Mixes.swift */; };
 		B086A91592E4CF1DF042B6AB /* PaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186C73725045D85988B60B3E /* PaletteView.swift */; };
@@ -31,6 +33,7 @@
 		B26C44827A16C1E7E91D002D /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674D17C69881C182E1153124 /* PaywallView.swift */; };
 		B6DE07D77F9EB643B68AEA6E /* CameraPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493928F89F41DF8D403B1E4D /* CameraPicker.swift */; };
 		B9517969DE46139ED9BA0D34 /* EntryEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE5B4ACA60799BDDCFF4738E /* EntryEditorView.swift */; };
+		BA3D8CC3E2689F9CC00E3892 /* Layers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7702DDF72F030A5B9C77A00 /* Layers.swift */; };
 		CA87926FFADE287E9B2E1616 /* Paint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656E2370C85BD5ADA5BB4322 /* Paint.swift */; };
 		CC707CF6B2003FFE76E179D9 /* ColorMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A03528745567BF3273C9355 /* ColorMath.swift */; };
 		EA87E60F8BB53B19E1AE76C8 /* CoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0AA53A5C4E23C7CBE285A4 /* CoreTests.swift */; };
@@ -50,6 +53,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0EDC1EF532557AE681F4A0AB /* LayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerTests.swift; sourceTree = "<group>"; };
 		1666D7EF3E8CFF24D1701111 /* PrintSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintSheet.swift; sourceTree = "<group>"; };
 		186C73725045D85988B60B3E /* PaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteView.swift; sourceTree = "<group>"; };
 		18FAFE6C95A7F6FEC107EE34 /* PaintingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaintingView.swift; sourceTree = "<group>"; };
@@ -58,6 +62,7 @@
 		456DE57C0B14DB6899F88B6D /* TintmapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TintmapApp.swift; sourceTree = "<group>"; };
 		46A5D9BC8A8EA0B9C9F184F5 /* DebugSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSnapshot.swift; sourceTree = "<group>"; };
 		493928F89F41DF8D403B1E4D /* CameraPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPicker.swift; sourceTree = "<group>"; };
+		4D1FE3F00F616DF002146FF8 /* LayerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerViews.swift; sourceTree = "<group>"; };
 		5A9539EF41B0301AAE5F14D7 /* Pictures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pictures.swift; sourceTree = "<group>"; };
 		653FEFFB5A095F61C7DC40F5 /* Segmentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segmentation.swift; sourceTree = "<group>"; };
 		656E2370C85BD5ADA5BB4322 /* Paint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paint.swift; sourceTree = "<group>"; };
@@ -79,6 +84,7 @@
 		AB0AA53A5C4E23C7CBE285A4 /* CoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreTests.swift; sourceTree = "<group>"; };
 		B109472B40B4521D32321613 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		BBE0247E9C5E76434A1C38F2 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
+		C7702DDF72F030A5B9C77A00 /* Layers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layers.swift; sourceTree = "<group>"; };
 		D4915A96F23A0DBED72F67AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DECE182B7CF8FBE3D9124212 /* sample-street-dusk.webp */ = {isa = PBXFileReference; path = "sample-street-dusk.webp"; sourceTree = "<group>"; };
 		E2B54A2444BDD57E1E57A8DA /* Tintmap-macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Tintmap-macOS.entitlements"; sourceTree = "<group>"; };
@@ -91,6 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				AB0AA53A5C4E23C7CBE285A4 /* CoreTests.swift */,
+				0EDC1EF532557AE681F4A0AB /* LayerTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -139,6 +146,7 @@
 				6A801B29219055FE67D69845 /* CollectionView.swift */,
 				9A7B495A2BAF310A1C108D64 /* ControlsView.swift */,
 				FE5B4ACA60799BDDCFF4738E /* EntryEditorView.swift */,
+				4D1FE3F00F616DF002146FF8 /* LayerViews.swift */,
 				A264532849ADB3D5E9D7EC43 /* PaintBoxView.swift */,
 				18FAFE6C95A7F6FEC107EE34 /* PaintingView.swift */,
 				186C73725045D85988B60B3E /* PaletteView.swift */,
@@ -153,6 +161,7 @@
 			isa = PBXGroup;
 			children = (
 				8A03528745567BF3273C9355 /* ColorMath.swift */,
+				C7702DDF72F030A5B9C77A00 /* Layers.swift */,
 				892FC78A77A3BF681274698B /* Mixes.swift */,
 				28821C267403BAEDB114A978 /* Mixing.swift */,
 				653FEFFB5A095F61C7DC40F5 /* Segmentation.swift */,
@@ -298,6 +307,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA87E60F8BB53B19E1AE76C8 /* CoreTests.swift in Sources */,
+				640604855636CB6E8D44FAEE /* LayerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,6 +322,8 @@
 				65B833B17CD6F607CFCEDA28 /* ControlsView.swift in Sources */,
 				96DF6D338ADE25932DB3329A /* DebugSnapshot.swift in Sources */,
 				B9517969DE46139ED9BA0D34 /* EntryEditorView.swift in Sources */,
+				AAD307AE23FB9DFDDCB6A40B /* LayerViews.swift in Sources */,
+				BA3D8CC3E2689F9CC00E3892 /* Layers.swift in Sources */,
 				A7AC78082094A5D6A8808500 /* Library.swift in Sources */,
 				ACC5BFA8E2BF402F9E14E1EC /* Mixes.swift in Sources */,
 				EFB81655E9572068E8FB7BDC /* Mixing.swift in Sources */,

@@ -16,6 +16,7 @@ enum PrintSheet {
 
 
     static func pdf(session: Session, library: Library) -> Data {
+        if session.layerMode { return layerPDF(session: session, library: library) }
         var rows = session.mixBlocks
         let picture = session.printImage()
         let labels = pictureLabels(session)
@@ -51,6 +52,121 @@ enum PrintSheet {
         return data as Data
     }
 
+    /// Layer mode: the finished picture with the list of layers, then one sheet per layer.
+    private static func layerPDF(session: Session, library: Library) -> Data {
+        guard let plan = session.layers else { return Data() }
+        let rows = session.layerRows(paints: library.byID)
+        let data = NSMutableData()
+        var box = CGRect(origin: .zero, size: page)
+        guard let consumer = CGDataConsumer(data: data), let context = CGContext(consumer: consumer, mediaBox: &box, nil) else { return Data() }
+        func add(_ view: some View) {
+            let renderer = ImageRenderer(content: view.frame(width: page.width, height: page.height).environment(\.colorScheme, .light))
+            renderer.render { _, draw in
+                context.beginPDFPage(nil)
+                draw(context)
+                context.endPDFPage()
+            }
+        }
+        add(LayerOverviewPage(
+            title: "\(session.imageName) – layers",
+            picture: session.layerPicture(show: plan.layers.map(\.top)),
+            width: plan.width,
+            rows: rows
+        ))
+        for row in rows {
+            let layer = plan.layers[row.id]
+            let used = row.coats.count
+            // "Coat 2 on the 2s and 3s."
+            let more = (2...max(2, used)).filter { $0 <= used }.map { coat in
+                "Coat \(coat) on the \((coat...used).map { "\($0)s" }.joined(separator: " and "))."
+            }
+            add(LayerPage(
+                title: "\(row.accent ? "Accent" : "Layer") \(row.number): \(row.name)\(row.accent ? " (accent)" : ""), \(layer.guide)",
+                instruction: row.accent
+                    ? "A strong wash on the numbered shapes, painted last, when everything else is dry."
+                    : (["Coat 1 on every numbered area."] + more + ["Let each coat dry."]).joined(separator: " "),
+                hex: row.hex,
+                picture: session.layerPicture(show: plan.layers.indices.map { $0 == row.id ? layer.top : 0 }),
+                width: plan.width,
+                labels: layer.regions.compactMap { region in
+                    region.coats > 0
+                        ? NumberedPicture.Label(text: "\(region.coats)", x: Double(region.anchorX) + 0.5, y: Double(region.anchorY) + 0.5, room: Double(region.anchorDist), color: Color.ink(on: layer.hexes[region.coats]))
+                        : nil
+                }
+            ))
+        }
+        context.closePDF()
+        return data as Data
+    }
+
+    private struct LayerOverviewPage: View {
+        let title: String
+        let picture: CGImage?
+        let width: Int
+        let rows: [LayerRow]
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title).font(.system(size: 15, weight: .semibold)).frame(height: 30, alignment: .top)
+                if let picture {
+                    NumberedPicture(image: picture, width: width, labels: [])
+                        .frame(maxWidth: .infinity, maxHeight: PrintSheet.pictureHeight)
+                        .frame(height: PrintSheet.pictureHeight + 24, alignment: .top)
+                }
+                Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 7) {
+                    GridRow {
+                        Text("Layer"); Text(""); Text("Paint"); Text("Wash"); Text("Coats"); Text("Of image")
+                    }
+                    .font(.system(size: 9, weight: .bold))
+                    ForEach(rows) { row in
+                        GridRow {
+                            Text(row.number).font(.system(size: 11, weight: .bold))
+                            RoundedRectangle(cornerRadius: 4).fill(Color(hex: row.hex)).frame(width: 26, height: 18)
+                                .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(.black.opacity(0.35), lineWidth: 1))
+                            Text("\(row.name)\(row.accent ? " (accent)" : "")")
+                            Text(row.wash)
+                            Text("\(max(1, row.coats.count))")
+                            Text(PrintSheet.percent(row.share))
+                        }
+                        .font(.system(size: 10))
+                    }
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(PrintSheet.margin)
+            .foregroundStyle(.black)
+            .background(.white)
+        }
+    }
+
+    private struct LayerPage: View {
+        let title: String
+        let instruction: String
+        let hex: String
+        let picture: CGImage?
+        let width: Int
+        let labels: [NumberedPicture.Label]
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    RoundedRectangle(cornerRadius: 4).fill(Color(hex: hex)).frame(width: 30, height: 20)
+                        .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(.black.opacity(0.35), lineWidth: 1))
+                    Text(title).font(.system(size: 13, weight: .semibold))
+                }
+                Text(instruction).font(.system(size: 10))
+                if let picture {
+                    NumberedPicture(image: picture, width: width, labels: labels, fontSize: 7)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(PrintSheet.margin)
+            .foregroundStyle(.black)
+            .background(.white)
+        }
+    }
+
     private static func pictureLabels(_ session: Session) -> [NumberedPicture.Label] {
         guard session.settings.numbers, let segmentation = session.segmentation else { return [] }
         return segmentation.regions.compactMap { region in
@@ -81,7 +197,7 @@ enum PrintSheet {
                     Text(title).font(.system(size: 15, weight: .semibold)).frame(height: 30, alignment: .top)
                 }
                 if let picture, let segmentation {
-                    NumberedPicture(image: picture, segmentation: segmentation, labels: labels, fontSize: 7)
+                    NumberedPicture(image: picture, width: segmentation.width, labels: labels, fontSize: 7)
                         .frame(maxWidth: .infinity, maxHeight: PrintSheet.pictureHeight)
                         .frame(height: PrintSheet.pictureHeight + 30, alignment: .top)
                 }

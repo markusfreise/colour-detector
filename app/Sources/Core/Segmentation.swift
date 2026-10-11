@@ -91,7 +91,8 @@ enum Segmenter {
     }
 
     static func oklabPixels(_ rgba: [UInt8], count: Int) -> [Float] {
-        let lut = (0..<256).map { ColorMath.srgbToLinear(Double($0)) }
+        // The table is kept in single precision, as the web app keeps it.
+        let lut = (0..<256).map { Double(Float(ColorMath.srgbToLinear(Double($0)))) }
         var lab = [Float](repeating: 0, count: count * 3)
         for p in 0..<count {
             let c = ColorMath.oklab(linear: Vec3(lut[Int(rgba[p * 4])], lut[Int(rgba[p * 4 + 1])], lut[Int(rgba[p * 4 + 2])]))

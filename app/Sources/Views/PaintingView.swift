@@ -1,15 +1,41 @@
 import SwiftUI
 
-/// The picture as numbered colour areas. Tap an area to select its colour.
+/// The picture as numbered colour areas, or in layer mode as the paper with its layers.
+/// Tap an area to select its colour, or in layer mode a spot to see its layers.
 struct PaintingView: View {
     @Environment(Session.self) private var session
 
     var body: some View {
         ZStack {
-            if let image = session.rendered, let segmentation = session.segmentation {
+            if session.layerMode, let image = session.rendered, let plan = session.layers {
+                NumberedPicture(image: image, width: plan.width, labels: session.settings.numbers ? coatLabels(plan) : [])
+                    .overlay {
+                        GeometryReader { geometry in
+                            Color.clear
+                                .contentShape(Rectangle())
+                                .onTapGesture { location in
+                                    session.selectPoint((Int(location.x / geometry.size.width * Double(plan.width)), Int(location.y / geometry.size.height * Double(plan.height))))
+                                }
+                            if let point = session.layerPoint {
+                                // The spot whose layers are listed next to the picture.
+                                Circle()
+                                    .strokeBorder(.white, lineWidth: 3)
+                                    .overlay(Circle().strokeBorder(Color(hex: "#1d1b18"), lineWidth: 1.5))
+                                    .frame(width: 20, height: 20)
+                                    .position(
+                                        x: (Double(point.x) + 0.5) / Double(plan.width) * geometry.size.width,
+                                        y: (Double(point.y) + 0.5) / Double(plan.height) * geometry.size.height
+                                    )
+                                    .allowsHitTesting(false)
+                            }
+                        }
+                    }
+                    .opacity(session.busy ? 0.5 : 1)
+                    .accessibilityLabel("Picture as layers of paint")
+            } else if !session.layerMode, let image = session.rendered, let segmentation = session.segmentation {
                 NumberedPicture(
                     image: image,
-                    segmentation: segmentation,
+                    width: segmentation.width,
                     labels: session.settings.numbers ? labels(segmentation) : []
                 )
                 .overlay {
@@ -23,11 +49,11 @@ struct PaintingView: View {
                 .accessibilityLabel("Picture as numbered colour areas")
             } else {
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(.quaternary)
+                    .fill(session.layerMode && !session.busy ? AnyShapeStyle(.white) : AnyShapeStyle(.quaternary))
                     .aspectRatio(4 / 3, contentMode: .fit)
             }
             if session.busy {
-                ProgressView("Analysing")
+                ProgressView(session.layerMode ? "Planning layers" : "Analysing")
                     .padding(12)
                     .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
             }
@@ -35,6 +61,23 @@ struct PaintingView: View {
         .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
         .shadow(color: .black.opacity(0.1), radius: 10, y: 3)
         .animation(.easeOut(duration: 0.2), value: session.busy)
+    }
+
+    /// One layer on its own: the number of coats in every area that gets any.
+    private func coatLabels(_ plan: LayerPlan) -> [NumberedPicture.Label] {
+        guard let solo = session.layerSolo else { return [] }
+        let layer = plan.layers[solo]
+        let onPhoto = session.settings.view == .original
+        return layer.regions.compactMap { region in
+            guard region.coats > 0 else { return nil }
+            return NumberedPicture.Label(
+                text: "\(region.coats)",
+                x: Double(region.anchorX) + 0.5,
+                y: Double(region.anchorY) + 0.5,
+                room: Double(region.anchorDist),
+                color: onPhoto ? .white : Color.ink(on: layer.hexes[region.coats])
+            )
+        }
     }
 
     private func labels(_ segmentation: Segmentation) -> [NumberedPicture.Label] {
@@ -74,7 +117,8 @@ struct NumberedPicture: View {
     }
 
     let image: CGImage
-    let segmentation: Segmentation
+    /// Width of the picture in working pixels.
+    let width: Int
     let labels: [Label]
     var fontSize: CGFloat = 14
 
@@ -84,7 +128,7 @@ struct NumberedPicture: View {
             .aspectRatio(contentMode: .fit)
             .overlay {
                 Canvas { context, size in
-                    let scale = size.width / Double(segmentation.width)
+                    let scale = size.width / Double(width)
                     for label in labels where label.room * scale >= fontSize * 0.7 {
                         let text = Text(label.text).font(.system(size: fontSize, weight: .bold)).foregroundStyle(label.color)
                         context.draw(text, at: CGPoint(x: label.x * scale, y: label.y * scale))

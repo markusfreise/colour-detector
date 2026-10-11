@@ -72,8 +72,17 @@ struct RootView: View {
     /// "-landscape" starts with the landscape sample.
     private func openScreenForScreenshot() async {
         if ProcessInfo.processInfo.arguments.contains("-landscape") { session.loadSample() }
-        while session.busy || session.entries.isEmpty { try? await Task.sleep(for: .milliseconds(100)) }
         let arguments = ProcessInfo.processInfo.arguments
+        // "-layer" switches to layer mode; "-step n" opens that step of the walk, "-stepview paint|wash|result" its picture.
+        if arguments.contains("-layer") { session.setMode(.layer) }
+        while session.busy || (session.layerMode ? session.layers == nil : session.entries.isEmpty) { try? await Task.sleep(for: .milliseconds(100)) }
+        if let step = arguments.firstIndex(of: "-step").flatMap({ arguments.dropFirst($0 + 1).first }).flatMap({ Int($0) }) {
+            session.goToStep(step)
+        }
+        if let view = arguments.firstIndex(of: "-stepview").flatMap({ arguments.dropFirst($0 + 1).first }).flatMap(StepView.init(rawValue:)) {
+            session.layerStepView = view
+        }
+        if arguments.contains("-spot"), let plan = session.layers { session.selectPoint((plan.width / 2, plan.height / 2)) }
         if let mode = arguments.firstIndex(of: "-view").flatMap({ arguments.dropFirst($0 + 1).first }).flatMap(ViewMode.init(rawValue:)) {
             session.settings.view = mode
         }
@@ -81,11 +90,17 @@ struct RootView: View {
         switch screen {
         case "paintbox": showingPaintBox = true
         case "collection": showingCollection = true
-        case "editor": session.select(entry: 2)
+        case "editor": if !session.layerMode { session.select(entry: 2) }
         case "paywall": showingPaywall = true
         default: break
         }
         #if os(macOS)
+        // "-pdf" writes the printed sheet into the temporary folder.
+        if arguments.contains("-pdf") {
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("sheet.pdf")
+            try? PrintSheet.pdf(session: session, library: library).write(to: url)
+            print("pdf", url.path)
+        }
         if ProcessInfo.processInfo.arguments.contains("-snapshot") {
             try? await Task.sleep(for: .seconds(2))
             DebugSnapshot.writeAll()
@@ -100,15 +115,21 @@ struct RootView: View {
     private var compact: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                if session.layerMode { LayerStepsView() }
                 PaintingView()
-                Text("Tap an area to see its recipe and change its colour.").font(Theme.small).foregroundStyle(.secondary)
+                Text(hint(tap: "Tap")).font(Theme.small).foregroundStyle(.secondary)
                 Card { ControlsView() }
-                coloursCard
+                if session.layerMode {
+                    spotCard
+                    layersCard
+                } else {
+                    coloursCard
+                }
             }
             .padding()
         }
         .background(Theme.page)
-        .sheet(isPresented: Binding(get: { session.selectedEntry != nil }, set: { if !$0 { session.select(entry: nil) } })) {
+        .sheet(isPresented: Binding(get: { !session.layerMode && session.selectedEntry != nil }, set: { if !$0 { session.select(entry: nil) } })) {
             NavigationStack {
                 ScrollView {
                     EntryEditorView(index: session.selectedEntry ?? 0, stacked: true).padding()
@@ -130,8 +151,9 @@ struct RootView: View {
     private var regular: some View {
         HStack(alignment: .top, spacing: 0) {
             VStack(alignment: .leading, spacing: 10) {
+                if session.layerMode { LayerStepsView() }
                 PaintingView()
-                Text("Click an area to see its recipe and change its colour.").font(Theme.small).foregroundStyle(.secondary)
+                Text(hint(tap: "Click")).font(Theme.small).foregroundStyle(.secondary)
                 Spacer(minLength: 0)
             }
             .padding(20)
@@ -139,14 +161,19 @@ struct RootView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Card { ControlsView() }
-                    if let index = session.selectedEntry {
-                        Card("Colour \(session.selected?.label ?? "")", accent: true) {
-                            Button("Close") { session.select(entry: nil) }.buttonStyle(.outline)
-                        } content: {
-                            EntryEditorView(index: index)
+                    if session.layerMode {
+                        spotCard
+                        layersCard
+                    } else {
+                        if let index = session.selectedEntry {
+                            Card("Colour \(session.selected?.label ?? "")", accent: true) {
+                                Button("Close") { session.select(entry: nil) }.buttonStyle(.outline)
+                            } content: {
+                                EntryEditorView(index: index)
+                            }
                         }
+                        coloursCard
                     }
-                    coloursCard
                 }
                 .padding([.vertical, .trailing], 20)
                 .padding(.leading, 4)
@@ -154,6 +181,47 @@ struct RootView: View {
             .frame(width: Theme.sidebarWidth)
         }
         .background(Theme.page)
+    }
+
+    private func hint(tap: String) -> String {
+        session.layerMode
+            ? "\(tap) a layer to see it alone, or a spot in the picture to see which layers it gets."
+            : "\(tap) an area to see its recipe and change its colour."
+    }
+
+    /// Layer mode: what the clicked spot gets.
+    @ViewBuilder private var spotCard: some View {
+        if let spot = session.layerSpot {
+            Card("This spot", accent: true) {
+                Button("Close") { session.selectPoint(nil) }.buttonStyle(.outline)
+            } content: {
+                LayerSpotView(spot: spot)
+            }
+        }
+    }
+
+    /// Layer mode: the layers of the plan; printing and the paint box belong to them.
+    private var layersCard: some View {
+        Card("Layers") {
+            HStack(spacing: 6) {
+                Button("All") { session.soloLayer(nil) }
+                    .disabled(session.layers == nil || (session.layerStep == nil && !session.layerView.contains(0)))
+                Button("Print") { PrintSheet.print(session: session, library: library) }
+                    .disabled(session.layers == nil)
+                ShareLink(
+                    item: SheetPDF(name: session.imageName) { PrintSheet.pdf(session: session, library: library) },
+                    preview: SharePreview("\(session.imageName) – layers")
+                ) {
+                    Text("PDF")
+                }
+                .disabled(session.layers == nil)
+                Button("Paint box") { showingPaintBox = true }
+                    .buttonStyle(.outlineProminent)
+            }
+            .buttonStyle(.outline)
+        } content: {
+            LayerListView { showingPaintBox = true }
+        }
     }
 
     /// The colours with their mixes; printing and the paint box belong to them.
@@ -224,7 +292,11 @@ struct RootView: View {
 
     /// The mixes follow the paint box once it is closed.
     private func paintBoxClosed() {
-        if library.revision != boxRevision { session.recomputeAllRecipes() }
+        if session.layerMode {
+            session.layerPaintsChanged()
+        } else if library.revision != boxRevision {
+            session.recomputeAllRecipes()
+        }
     }
 
     private func save() {

@@ -26,7 +26,24 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+/// How the picture is painted: every colour mixed on the palette, or thin washes over each other.
+enum AnalysisMode: String, Codable, CaseIterable, Identifiable {
+    case mix, layer
+
+    var id: String { rawValue }
+    var title: String { self == .mix ? "Mix" : "Layer" }
+}
+
 struct AnalysisSettings: Codable, Equatable {
+    var mode = AnalysisMode.mix
+    /// Layer mode: wash layers the app proposes (accents come on top).
+    var layerCount = 5
+    /// Layer mode: smoothing of each layer's areas.
+    var layerSimplify = 4
+    /// Layer mode: small strong touches painted last, 0...3.
+    var layerAccents = 3
+    /// Layer mode: coats of one wash an area can get.
+    var maxCoats = 2
     /// Number of mixes; each is painted in one or more washes.
     var colours = 20
     var simplify = 0
@@ -46,6 +63,11 @@ struct AnalysisSettings: Codable, Equatable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let defaults = AnalysisSettings()
+        mode = try values.decodeIfPresent(AnalysisMode.self, forKey: .mode) ?? defaults.mode
+        layerCount = try values.decodeIfPresent(Int.self, forKey: .layerCount) ?? defaults.layerCount
+        layerSimplify = try values.decodeIfPresent(Int.self, forKey: .layerSimplify) ?? defaults.layerSimplify
+        layerAccents = try values.decodeIfPresent(Int.self, forKey: .layerAccents) ?? defaults.layerAccents
+        maxCoats = try values.decodeIfPresent(Int.self, forKey: .maxCoats) ?? defaults.maxCoats
         colours = try values.decodeIfPresent(Int.self, forKey: .colours) ?? defaults.colours
         simplify = try values.decodeIfPresent(Int.self, forKey: .simplify) ?? defaults.simplify
         maxPaints = try values.decodeIfPresent(Int.self, forKey: .maxPaints) ?? defaults.maxPaints
@@ -114,6 +136,34 @@ struct MixBlock: Identifiable {
     let washes: [Wash]
 }
 
+/// What the picture shows of a step of the painting order.
+enum StepView: String, CaseIterable, Identifiable {
+    /// The paper after the step; what is painted now in full colour, the rest faded.
+    case paint
+    /// Only the areas painted now, filled with one stroke of the wash.
+    case wash
+    /// The paper with all layers up to and including the step.
+    case result
+
+    var id: String { rawValue }
+    var title: String {
+        switch self {
+        case .paint: "Where to paint"
+        case .wash: "This wash"
+        case .result: "So far"
+        }
+    }
+}
+
+/// What a clicked spot gets in layer mode.
+struct LayerSpot {
+    let photo: String
+    let layered: String
+    let deltaE: Double
+    /// Coats per layer.
+    let coats: [Int]
+}
+
 /// A colour change that is kept with a saved picture.
 struct EntryEdit: Codable {
     var index: Int
@@ -163,11 +213,41 @@ final class Session {
     private(set) var busy = false
     var error: String?
 
+    // Layer mode (glazing): the picture as coats of a few base paints.
+    /// The plan; nil until analysed or without base paints.
+    private(set) var layers: LayerPlan?
+    /// Per layer: shown in the picture.
+    private(set) var layerShown: [Bool] = []
+    /// Index into the steps of the plan while the painting order is walked through.
+    private(set) var layerStep: Int?
+    var layerStepView = StepView.paint {
+        didSet { if layerStepView != oldValue { render() } }
+    }
+    /// The clicked spot, in working pixels.
+    private(set) var layerPoint: (x: Int, y: Int)?
+    /// What the base paints were proposed for; they are kept as long as that holds.
+    @ObservationIgnored private var layerProposal: String?
+    /// Counts the pictures opened, to tell results for an earlier one apart.
+    @ObservationIgnored private var pictureSerial = 0
+    /// What the mixes were analysed from.
+    @ObservationIgnored private var mixKey: String?
+    /// Colour changes of a picture that was opened in layer mode, for its first mix analysis.
+    @ObservationIgnored private var pendingEdits: (serial: Int, edits: [EntryEdit])?
+    /// The photo at working size with saturation and contrast applied, as the layers were planned from.
+    @ObservationIgnored private var layerSource: [UInt8]?
+
     var settings = AnalysisSettings() {
         didSet {
             guard settings != oldValue else { return }
             if settings.saturation != oldValue.saturation || settings.contrast != oldValue.contrast { originalPixels = nil }
-            if settings.maxPaints != oldValue.maxPaints || settings.variety != oldValue.variety { recomputeAllRecipes() } else { render() }
+            if settings.mode != oldValue.mode { return } // `setMode` takes care of the rest
+            if layerMode {
+                if settings.maxCoats != oldValue.maxCoats { analyse() } else { render() }
+            } else if settings.maxPaints != oldValue.maxPaints || settings.variety != oldValue.variety {
+                recomputeAllRecipes()
+            } else {
+                render()
+            }
         }
     }
 
@@ -215,6 +295,8 @@ final class Session {
         originalPixels = nil
         imageName = name
         savedID = nil
+        pictureSerial += 1
+        pendingEdits = nil
         if let settings { self.settings = settings }
         analyse(edits: edits)
         return true
@@ -225,8 +307,18 @@ final class Session {
     /// Finds the colour areas again, e.g. after the number of colours changed.
     func analyse(edits: [EntryEdit] = []) {
         guard let pixels else { return }
+        if layerMode {
+            if !edits.isEmpty { pendingEdits = (pictureSerial, edits) }
+            analyseLayers()
+            return
+        }
+        // Colour changes of a picture that was opened in layer mode.
+        var edits = edits
+        if edits.isEmpty, let pending = pendingEdits, pending.serial == pictureSerial { edits = pending.edits }
+        pendingEdits = nil
         analysisRun += 1
         let run = analysisRun
+        let key = mixKeyNow
         // "Colours" counts mixes. The analysis is asked for more, and the planning joins them down
         // to the wanted number once the paints are known.
         let colours = Mixes.toRequest(wanted: settings.colours)
@@ -240,6 +332,7 @@ final class Session {
                 return Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify)
             }.value
             guard run == analysisRun else { return } // a newer analysis superseded this one
+            mixKey = key
             segmentation = result
             entries = []
             order = []
@@ -249,6 +342,276 @@ final class Session {
             selectedRegion = nil
             recomputeAllRecipes(edits: edits)
         }
+    }
+
+    // MARK: Layer mode
+
+    var layerMode: Bool { settings.mode == .layer }
+
+    private var mixKeyNow: String {
+        "\(pictureSerial)/\(settings.colours)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)"
+    }
+
+    /// Glazes of the base paints. On Auto the app proposes the paints from the paint box's Auto
+    /// pool, otherwise the ones chosen in the paint box are fitted.
+    private func analyseLayers() {
+        guard let pixels else { return }
+        analysisRun += 1
+        let run = analysisRun
+        let box = library.activeBox
+        let s = settings
+        let serial = pictureSerial
+        let proposalKey = "\(serial)/\(box.id)/\(s.layerCount)/\(s.maxCoats)/\(s.layerAccents)"
+        // Propose only when there is nothing to keep: a new picture or box, another number of layers,
+        // coats or accents (the best paints depend on those), or Auto pressed.
+        let propose = box.layerAuto && !(layerProposal == proposalKey && !box.layerIDs.isEmpty)
+        let pool = (propose ? library.autoCandidates : library.layerPaints).map(\.mixPaint)
+        let paintIDs = propose ? nil : box.layerIDs
+        layerStep = nil
+        layerPoint = nil
+        guard !pool.isEmpty else {
+            layers = nil
+            layerShown = []
+            busy = false
+            render()
+            return
+        }
+        busy = true
+        Task {
+            let (plan, source) = await Task.detached(priority: .userInitiated) {
+                let adjusted = ColorMath.adjust(rgba: pixels.rgba, saturation: Double(s.saturation) / 100, contrast: Double(s.contrast) / 100)
+                let plan = Layers.layerImage(
+                    rgba: adjusted, width: pixels.width, height: pixels.height, paints: pool,
+                    // Auto: the number of wash layers (accent paints come on top). By hand: every chosen paint may be one.
+                    count: box.layerAuto ? s.layerCount : nil,
+                    paintIDs: paintIDs, maxCoats: s.maxCoats, simplify: s.layerSimplify, accents: s.layerAccents
+                )
+                return (plan, adjusted)
+            }.value
+            guard run == analysisRun, layerMode else { return } // superseded
+            // The proposal goes to the box it was made for, also when another box was opened meanwhile.
+            if propose {
+                library.setLayerPaints(plan.paintIDs, auto: true, box: box.id)
+                layerProposal = proposalKey
+            }
+            layers = plan
+            layerSource = source
+            layerShown = plan.layers.map { _ in true }
+            layerStep = nil
+            layerPoint = nil
+            busy = false
+            render()
+        }
+    }
+
+    /// Lets the app choose the base paints for this picture (again).
+    func proposeLayers() {
+        layerProposal = nil
+        library.setLayerPaints(library.activeBox.layerIDs, auto: true)
+        if layerMode { analyse() }
+    }
+
+    /// The paint box was closed: the layers follow its base paints.
+    func layerPaintsChanged() {
+        guard layerMode, !busy else { return }
+        if (layers?.paintIDs ?? []) != library.activeBox.layerIDs || library.activeBox.layerAuto && layerProposal == nil { analyse() }
+    }
+
+    func setMode(_ mode: AnalysisMode) {
+        guard mode != settings.mode else { return }
+        settings.mode = mode
+        if mode == .layer, settings.view == .target || settings.view == .overlay { settings.view = .mixed }
+        selectedEntry = nil
+        selectedRegion = nil
+        layerStep = nil
+        layerPoint = nil
+        if mode == .mix, segmentation != nil, mixKey == mixKeyNow {
+            // The mixes are still those of this picture: they come back with every colour change
+            // made by hand, only the paint box may have changed. A running layer job is dropped.
+            analysisRun += 1
+            busy = false
+            error = nil
+            recomputeAllRecipes()
+            return
+        }
+        analyse()
+    }
+
+    /// How many coats of each layer the picture shows: all of the ticked ones, or, while the
+    /// painting order is walked through, the paper after that step.
+    var layerView: [Int] {
+        guard let layers else { return [] }
+        if let step = currentStep {
+            return layers.layers.indices.map { $0 < step.layer ? layers.layers[$0].top : $0 == step.layer ? step.coat : 0 }
+        }
+        return layers.layers.indices.map { layerShown.indices.contains($0) && !layerShown[$0] ? 0 : layers.layers[$0].top }
+    }
+
+    var currentStep: LayerStep? {
+        guard let layers, let layerStep, layers.steps.indices.contains(layerStep) else { return nil }
+        return layers.steps[layerStep]
+    }
+
+    /// The number a layer goes by: painted layers count 1, 2, 3 in painting order, accents A1, A2,
+    /// A3 on their own, so that "Layers" in the settings matches what is numbered; a paint that got
+    /// no layer has none.
+    var layerNumbers: [String?] {
+        guard let layers else { return [] }
+        var n = 0, a = 0
+        return layers.layers.map { layer in
+            guard layer.top > 0 else { return nil }
+            if layer.kind == .accent {
+                a += 1
+                return "A\(a)"
+            }
+            n += 1
+            return "\(n)"
+        }
+    }
+
+    /// The one layer shown on its own.
+    var layerSolo: Int? {
+        guard layerStep == nil else { return nil }
+        let shown = layerView.indices.filter { layerView[$0] > 0 }
+        return shown.count == 1 ? shown[0] : nil
+    }
+
+    /// Tick or untick a layer. The last one stays: a picture with nothing on it helps nobody.
+    func showLayer(_ index: Int, _ on: Bool) {
+        guard layers != nil else { return }
+        var next = layerView.map { $0 > 0 }
+        guard next.indices.contains(index) else { return }
+        next[index] = on
+        guard next.contains(true) else { return }
+        layerStep = nil
+        layerShown = next
+        render()
+    }
+
+    /// One layer on its own; again on the same layer, or with nil, all of them.
+    func soloLayer(_ index: Int?) {
+        guard let layers else { return }
+        let solo = layerStep == nil && layerSolo == index
+        layerStep = nil
+        layerShown = layers.layers.indices.map { index == nil || solo || $0 == index }
+        render()
+    }
+
+    /// Walk through the painting order; nil ends the walk.
+    func goToStep(_ step: Int?) {
+        guard let layers else { return }
+        if let step, !layers.steps.isEmpty {
+            layerStep = min(layers.steps.count - 1, max(0, step))
+        } else {
+            layerStep = nil
+            layerShown = layers.layers.map { _ in true }
+        }
+        render()
+    }
+
+    func selectPoint(_ point: (x: Int, y: Int)?) {
+        layerPoint = point
+    }
+
+    /// What the clicked spot gets: photo colour, layered colour and the coats of every layer.
+    var layerSpot: LayerSpot? {
+        guard let layers, let point = layerPoint, let source = layerSource, source.count == layers.width * layers.height * 4,
+              point.x >= 0, point.y >= 0, point.x < layers.width, point.y < layers.height else { return nil }
+        let p = point.y * layers.width + point.x
+        let combo = layers.combos[Int(layers.comboMap[p])]
+        let photo = ColorMath.hex(rgb: Vec3(Double(source[p * 4]), Double(source[p * 4 + 1]), Double(source[p * 4 + 2])))
+        return LayerSpot(photo: photo, layered: combo.hex, deltaE: ColorMath.deltaE(ColorMath.oklab(hex: photo), ColorMath.oklab(hex: combo.hex)), coats: combo.coats)
+    }
+
+    /// The paper with some of the layers on it, at render size.
+    /// - Parameters:
+    ///   - show: coats shown per layer.
+    ///   - step: what that step paints stays in full colour and is outlined (see `StepView`).
+    ///   - onPhoto: the photo instead of the layers, under lines.
+    func layerPicture(show: [Int], step: LayerStep? = nil, stepView: StepView = .paint, outlines: Bool = true, onPhoto: Bool = false) -> CGImage? {
+        guard let plan = layers else { return nil }
+        let scale = Self.renderScale
+        let w = plan.width, h = plan.height
+        let outW = w * scale, outH = h * scale
+        var out: [UInt8]
+        if onPhoto {
+            if originalPixels == nil, let image {
+                originalPixels = Pictures.pixels(of: image, width: outW, height: outH).map {
+                    ColorMath.adjust(rgba: $0, saturation: Double(settings.saturation) / 100, contrast: Double(settings.contrast) / 100)
+                }
+            }
+            out = originalPixels ?? [UInt8](repeating: 255, count: outW * outH * 4)
+            if out.count != outW * outH * 4 { out = [UInt8](repeating: 255, count: outW * outH * 4) }
+        } else {
+            var rgba = Layers.renderLayers(plan, coats: show)
+            if let step {
+                let map = plan.layers[step.layer].coatMap
+                if stepView == .wash {
+                    // Only what the brush puts down now: one stroke of this wash on blank paper.
+                    let c = ColorMath.rgb(hex: plan.layers[step.layer].hexes[1])
+                    let wash = (UInt8(c.x.rounded()), UInt8(c.y.rounded()), UInt8(c.z.rounded()))
+                    for p in 0..<(w * h) {
+                        let on = Int(map[p]) >= step.coat
+                        rgba[p * 4] = on ? wash.0 : 255
+                        rgba[p * 4 + 1] = on ? wash.1 : 255
+                        rgba[p * 4 + 2] = on ? wash.2 : 255
+                    }
+                } else if stepView == .paint {
+                    // Where the brush goes in this step stays in full colour; the rest of the paper fades back.
+                    for p in 0..<(w * h) where Int(map[p]) < step.coat {
+                        for c in 0..<3 { rgba[p * 4 + c] = UInt8(Double(rgba[p * 4 + c]) * 0.3 + 178.5) }
+                    }
+                }
+            }
+            out = [UInt8](repeating: 255, count: outW * outH * 4)
+            out.withUnsafeMutableBufferPointer { out in
+                for y in 0..<h {
+                    for x in 0..<w {
+                        let s = (y * w + x) * 4
+                        for dy in 0..<scale {
+                            for dx in 0..<scale {
+                                let o = ((y * scale + dy) * outW + x * scale + dx) * 4
+                                out[o] = rgba[s]; out[o + 1] = rgba[s + 1]; out[o + 2] = rgba[s + 2]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Lines: around what the step paints, or between areas that differ within the shown layers.
+        let stepMap = step != nil && stepView != .result ? plan.layers[step!.layer].coatMap : nil
+        let maps = stepMap == nil && outlines ? plan.layers.indices.filter { show.indices.contains($0) && show[$0] > 0 }.map { plan.layers[$0].coatMap } : []
+        if stepMap != nil || !maps.isEmpty {
+            let coat = step?.coat ?? 0
+            let alpha = stepMap != nil ? (onPhoto ? 0.9 : 0.8) : (onPhoto ? 0.75 : 0.55)
+            let line: (Double, Double, Double) = onPhoto ? (255, 255, 255) : (40, 36, 30)
+            func differs(_ p: Int, _ q: Int) -> Bool {
+                if let stepMap { return (Int(stepMap[p]) >= coat) != (Int(stepMap[q]) >= coat) }
+                for map in maps where map[p] != map[q] { return true }
+                return false
+            }
+            out.withUnsafeMutableBufferPointer { out in
+                func blend(_ x: Int, _ y: Int) {
+                    let o = (y * outW + x) * 4
+                    out[o] = UInt8(Double(out[o]) * (1 - alpha) + line.0 * alpha)
+                    out[o + 1] = UInt8(Double(out[o + 1]) * (1 - alpha) + line.1 * alpha)
+                    out[o + 2] = UInt8(Double(out[o + 2]) * (1 - alpha) + line.2 * alpha)
+                }
+                for y in 0..<h {
+                    for x in 0..<w {
+                        let p = y * w + x
+                        if x < w - 1, differs(p, p + 1) {
+                            for dy in 0..<scale { blend((x + 1) * scale - 1, y * scale + dy) }
+                        }
+                        if y < h - 1, differs(p, p + w) {
+                            for dx in 0..<scale { blend(x * scale + dx, (y + 1) * scale - 1) }
+                        }
+                    }
+                }
+            }
+        }
+        return Pictures.image(rgba: out, width: outW, height: outH)
     }
 
     /// What `buildPalette` hands back.
@@ -575,7 +938,9 @@ final class Session {
 
     /// Colour changes worth saving. Detached areas are not kept: they depend on the exact area ids.
     func exportEdits() -> [EntryEdit] {
-        entries.prefix(baseEntries).enumerated().compactMap { index, entry in
+        // Saved in layer mode before the mixes were ever built: the changes it was opened with.
+        if entries.isEmpty, let pending = pendingEdits, pending.serial == pictureSerial { return pending.edits }
+        return entries.prefix(baseEntries).enumerated().compactMap { index, entry in
             entry.overridden || entry.chosen != 0
                 ? EntryEdit(index: index, targetHex: entry.overridden ? entry.targetHex : nil, chosen: entry.chosen)
                 : nil
@@ -591,6 +956,10 @@ final class Session {
 
     /// Draws the areas (or the photo) with their outlines. Numbers are drawn by the view, at reading size.
     func render(selection: Bool = true) {
+        if layerMode {
+            rendered = layerPicture(show: layerView, step: currentStep, stepView: layerStepView, outlines: settings.outlines, onPhoto: settings.view == .original)
+            return
+        }
         rendered = makeImage(highlight: selection ? selectedEntry : nil)
     }
 

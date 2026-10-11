@@ -9,7 +9,7 @@ struct Paint: Codable, Identifiable, Hashable, Sendable {
     var nameDe: String = ""
     /// Colour at strength 1: a mid-strength wash on white paper, not the masstone.
     var hex: String
-    /// "whole pan", "half pan", "tube 15 ml", or just "pan" / "tube".
+    /// "whole pan", "half pan", "tube 15 ml", or just "pan" / "tube" / "travelbox".
     var forms: [String]
     var source: String = "chart"
     /// Part of the default selection of a new paint box.
@@ -18,6 +18,9 @@ struct Paint: Codable, Identifiable, Hashable, Sendable {
     /// Added by the user.
     var custom: Bool?
 
+    /// The brand the stock is built on: its paints are grouped by form, every other brand gets a group of its own.
+    static let houseVendor = "Schmincke"
+
     var isCustom: Bool { custom ?? false }
     var mixPaint: MixPaint { MixPaint(id: id, hex: hex) }
 
@@ -25,9 +28,16 @@ struct Paint: Codable, Identifiable, Hashable, Sendable {
         forms.contains { $0.contains(form.rawValue) }
     }
 
-    /// Short form label: "P" for pan, "T" for tube, "P/T" when owned as both.
+    /// Keys of the groups the paint is listed in: its forms for Schmincke, the travel box, or its brand.
+    var groupKeys: [String] {
+        if comes(as: .travelbox) { return [PaintForm.travelbox.rawValue] }
+        if vendor != Paint.houseVendor { return ["vendor:\(vendor.isEmpty ? "Other" : vendor)"] }
+        return PaintForm.own.filter(comes(as:)).map(\.rawValue)
+    }
+
+    /// Short form label: "P" for pan, "T" for tube, "S" for the travel box, "P/T" when owned as both.
     var formLabel: String {
-        PaintForm.allCases.filter(comes(as:)).map { String($0.title.prefix(1)) }.joined(separator: "/")
+        PaintForm.allCases.filter(comes(as:)).map(\.label).joined(separator: "/")
     }
 
     /// Vendor number with at least three digits, e.g. "45" -> "045"; prefixed numbers ("W311") stay as they are.
@@ -39,18 +49,40 @@ struct Paint: Codable, Identifiable, Hashable, Sendable {
 }
 
 enum PaintForm: String, CaseIterable, Identifiable, Sendable {
-    case pan, tube
+    case pan, tube, travelbox
+
+    /// The forms a paint added by hand can have.
+    static let own: [PaintForm] = [.pan, .tube]
 
     var id: String { rawValue }
-    var title: String { self == .pan ? "Pans" : "Tubes" }
-    var singular: String { self == .pan ? "Pan" : "Tube" }
+    var title: String {
+        switch self {
+        case .pan: "\(Paint.houseVendor) Pans"
+        case .tube: "\(Paint.houseVendor) Tubes"
+        case .travelbox: "Travelbox"
+        }
+    }
+    var singular: String {
+        switch self {
+        case .pan: "Pan"
+        case .tube: "Tube"
+        case .travelbox: "Travelbox"
+        }
+    }
+    var label: String {
+        switch self {
+        case .pan: "P"
+        case .tube: "T"
+        case .travelbox: "S"
+        }
+    }
 }
 
 struct PaintGroup: Identifiable {
-    let form: PaintForm
+    let id: String
+    let title: String
+    /// The paints listed: the group's paints without the ones left out by the caller.
     let paints: [Paint]
-
-    var id: String { form.rawValue }
 }
 
 extension Array where Element == Paint {
@@ -65,11 +97,21 @@ extension Array where Element == Paint {
             .map(\.paint)
     }
 
-    /// Grouped by form (pans, then tubes). A paint owned as both pan and tube appears in both groups.
-    func groupedByForm() -> [PaintGroup] {
-        PaintForm.allCases
-            .map { form in PaintGroup(form: form, paints: filter { $0.comes(as: form) }.sortedForBox()) }
-            .filter { !$0.paints.isEmpty }
+    /// Schmincke pans, Schmincke tubes, the travel box, then one group per other brand.
+    /// The travel box keeps the places in the box ("A1" to "C6"). A paint owned as both pan and tube
+    /// appears in both groups.
+    /// `shown` leaves paints out of the lists without dropping their group (the paint box hides selected paints).
+    func groupedByForm(shown: (Paint) -> Bool = { _ in true }) -> [PaintGroup] {
+        let keyed = map { (paint: $0, keys: $0.groupKeys) }
+        let vendors = Set(keyed.flatMap(\.keys).filter { $0.hasPrefix("vendor:") }).sorted { $0.localizedCompare($1) == .orderedAscending }
+        let groups = PaintForm.allCases.map { (key: $0.rawValue, title: $0.title) } + vendors.map { (key: $0, title: String($0.dropFirst("vendor:".count))) }
+        return groups.compactMap { group in
+            let own = keyed.filter { $0.keys.contains(group.key) }.map(\.paint)
+            guard !own.isEmpty else { return nil }
+            let listed = own.filter(shown)
+            let byPlace = listed.sorted { $0.number.compare($1.number, options: .numeric) == .orderedAscending }
+            return PaintGroup(id: group.key, title: group.title, paints: group.key == PaintForm.travelbox.rawValue ? byPlace : listed.sortedForBox())
+        }
     }
 }
 

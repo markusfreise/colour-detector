@@ -90,6 +90,24 @@ struct RecipeView: View {
     }
 
     var body: some View {
+        if wide || bar.count < 2 {
+            tiles
+        } else {
+            VStack(spacing: 6) {
+                tiles
+                RecipeBar(parts: bar, numbered: true).frame(height: 18)
+            }
+        }
+    }
+
+    /// The ratio as a bar: one segment per paint, as wide as its part of the mix.
+    private var bar: [MixBlock.Part] {
+        recipe.paints.enumerated().compactMap { i, item in
+            paints[item.paintID].map { MixBlock.Part(id: item.paintID, paint: $0, share: item.share, parts: String(parts(recipe.parts[i]).dropLast(2))) }
+        }
+    }
+
+    private var tiles: some View {
         HStack(alignment: .top, spacing: 6) {
             Chip(hex: recipe.hex, minHeight: wide ? rowHeight : rowHeight * CGFloat(slots / columns) + 6 * CGFloat(slots / columns - 1)) {
                 VStack(alignment: .leading, spacing: 1) {

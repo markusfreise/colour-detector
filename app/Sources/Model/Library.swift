@@ -26,15 +26,24 @@ struct PaintBox: Codable, Identifiable, Hashable {
         set { layerAutoFlag = newValue }
     }
 
+    /// Keys of the paint groups Auto does not choose from. The travel box is a set of its own.
+    var autoOff: [String] {
+        get { savedAutoOff ?? ["travelbox"] }
+        set { savedAutoOff = newValue }
+    }
+
     /// Nil in boxes saved before layer mode existed.
     fileprivate var savedLayerIDs: [String]?
     fileprivate var layerAutoFlag: Bool?
+    /// Nil in boxes saved before the groups could be ticked for Auto.
+    fileprivate var savedAutoOff: [String]?
 
     private enum CodingKeys: String, CodingKey {
         case id, name, paintIDs
         case autoFlag = "auto"
         case savedLayerIDs = "layerIDs"
         case layerAutoFlag = "layerAuto"
+        case savedAutoOff = "autoOff"
     }
 
     init(id: String, name: String, paintIDs: [String], auto: Bool = false) {
@@ -104,7 +113,7 @@ final class Library {
     var selected: [Paint] { enabled.sortedForBox() }
     var available: [PaintGroup] {
         let ids = enabledIDs
-        return all.filter { !ids.contains($0.id) }.groupedByForm()
+        return all.groupedByForm { !ids.contains($0.id) }
     }
 
     // MARK: Selection
@@ -128,8 +137,23 @@ final class Library {
         changed()
     }
 
-    /// Paints Auto may choose from: the default selection and the user's own paints.
-    var autoCandidates: [Paint] { all.filter { $0.enabled || $0.isCustom } }
+    /// Paints Auto may choose from: the groups ticked for Auto in the paint box. A Schmincke stock paint
+    /// outside the default selection is held back (its colour is not checked yet).
+    var autoCandidates: [Paint] {
+        let off = Set(activeBox.autoOff)
+        return all.filter { paint in
+            let held = !paint.enabled && !paint.isCustom && paint.vendor == Paint.houseVendor
+            return !held && paint.groupKeys.contains { !off.contains($0) }
+        }
+    }
+
+    /// Whether Auto may choose from the paints of a group (`key` as in the paint box groups).
+    func setAutoGroup(_ key: String, on: Bool) {
+        var off = Set(activeBox.autoOff)
+        if on { off.remove(key) } else { off.insert(key) }
+        boxes[activeIndex].autoOff = off.sorted()
+        changed()
+    }
 
     func clear() { setEnabled([]) }
 

@@ -41,7 +41,13 @@ struct PaintBoxView: View {
                         }
                     }
                     ForEach(available) { available in
-                        group(title: available.form.title) { grid(available.paints, selected: false) }
+                        group(title: available.title, autoKey: available.id) {
+                            if available.paints.isEmpty {
+                                Text("All of these are selected.").foregroundStyle(.secondary)
+                            } else {
+                                grid(available.paints, selected: false)
+                            }
+                        }
                     }
                     ownPaints
                 }
@@ -89,7 +95,7 @@ struct PaintBoxView: View {
     private var available: [PaintGroup] {
         guard layerMode else { return library.available }
         let base = Set(library.activeBox.layerIDs)
-        return library.all.filter { !base.contains($0.id) }.groupedByForm()
+        return library.all.groupedByForm { !base.contains($0.id) }
     }
     private var full: Bool { layerMode && library.activeBox.layerIDs.count >= Library.maxLayerPaints }
 
@@ -147,7 +153,13 @@ struct PaintBoxView: View {
         namingBox = .new
     }
 
-    /// Lets the app pick the paints for each picture, from the default selection and the user's own paints.
+    /// A group joins or leaves the paints Auto chooses from; with Auto on, the choice is made again.
+    private func setAutoGroup(_ key: String, on: Bool) {
+        library.setAutoGroup(key, on: on)
+        if autoOn, session.image != nil { auto() }
+    }
+
+    /// Lets the app pick the paints for each picture, from the groups ticked for Auto.
     private func auto() {
         if layerMode {
             // The proposal needs the picture, so it is made while the layers are planned again.
@@ -160,9 +172,23 @@ struct PaintBoxView: View {
 
     // MARK: Paints
 
-    private func group(title: String?, highlighted: Bool = false, @ViewBuilder content: () -> some View) -> some View {
+    /// `autoKey`: the group can be ticked as a source for Auto.
+    private func group(title: String?, highlighted: Bool = false, autoKey: String? = nil, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            if let title { Text(title).font(Theme.title) }
+            if let title {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(title).font(Theme.title)
+                    Spacer(minLength: 8)
+                    if let autoKey {
+                        Toggle("Use for Auto", isOn: Binding(get: { !library.activeBox.autoOff.contains(autoKey) }, set: { setAutoGroup(autoKey, on: $0) }))
+                            #if os(macOS)
+                            .toggleStyle(.checkbox)
+                            #endif
+                            .fixedSize()
+                            .help("Let Auto choose from \(title)")
+                    }
+                }
+            }
             content()
         }
         .padding(12)
@@ -234,7 +260,7 @@ struct PaintEditorView: View {
                         .onChange(of: paint.number) { lookUp() }
                     TextField("Name", text: $paint.name)
                     Picker("Form", selection: Binding(get: { paint.comes(as: .tube) ? PaintForm.tube : .pan }, set: { paint.forms = [$0.rawValue] })) {
-                        ForEach(PaintForm.allCases) { Text($0.singular).tag($0) }
+                        ForEach(PaintForm.own) { Text($0.singular).tag($0) }
                     }
                     ColorPicker("Colour", selection: Binding(get: { .from(hex: paint.hex) }, set: { paint.hex = $0.hex }), supportsOpacity: false)
                 } footer: {

@@ -105,7 +105,7 @@ function drawSketch(el) {
 // diagonals and the diamond between the middles of its sides.
 function drawGuides(ctx, w, h) {
   ctx.save()
-  ctx.strokeStyle = 'rgba(90, 190, 240, 0.75)'
+  ctx.strokeStyle = 'rgba(90, 190, 240, 0.5)'
   ctx.lineWidth = Math.max(2, Math.round(w / 500))
   ctx.beginPath()
   const line = (x0, y0, x1, y1) => { ctx.moveTo(x0 * w, y0 * h); ctx.lineTo(x1 * w, y1 * h) }

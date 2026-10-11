@@ -43,7 +43,7 @@ struct PaletteView: View {
                         .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(.primary.opacity(0.15)))
                         .frame(width: 36, height: 34)
                     VStack(alignment: .leading, spacing: 1) {
-                        Text(mix.names).font(Theme.body).lineLimit(1)
+                        paintsLine(mix).font(Theme.small).fixedSize(horizontal: false, vertical: true)
                         Text(meta(mix)).font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
                     }
                     Spacer(minLength: 0)
@@ -63,6 +63,14 @@ struct PaletteView: View {
         .padding(.top, 5)
         .padding(.bottom, 7)
         .background(session.selected?.family == mix.id ? Color.accentColor.opacity(0.15) : .clear, in: RoundedRectangle(cornerRadius: 8))
+    }
+
+    /// The paints by number and name, as small as the line below; wraps so that no number is cut off.
+    private func paintsLine(_ mix: MixBlock) -> Text {
+        guard !mix.paints.isEmpty else { return Text(mix.names) }
+        return mix.paints.enumerated().reduce(Text("")) { line, item in
+            line + Text(item.offset > 0 ? " + " : "") + Text(item.element.paint.displayNumber).bold() + Text(" " + item.element.paint.name)
+        }
     }
 
     /// The washes of a mix, lightest first; each one selects that wash.
@@ -117,13 +125,15 @@ struct PaletteView: View {
 struct RecipeBar: View {
     let parts: [MixBlock.Part]
     var fontSize: CGFloat = 10
+    /// Each segment also names its paint: "2.5 x C5".
+    var numbered = false
 
     var body: some View {
         GeometryReader { geometry in
             let total = max(parts.reduce(0) { $0 + $1.share }, 0.0001)
             HStack(spacing: 0) {
                 ForEach(parts) { part in
-                    Text(part.parts)
+                    Text(numbered ? "\(part.parts) x \(part.paint.displayNumber)" : part.parts)
                         .font(.system(size: fontSize, weight: .bold))
                         .lineLimit(1)
                         .frame(width: max(6, geometry.size.width * part.share / total), height: geometry.size.height)

@@ -149,6 +149,8 @@ struct RootView: View {
         }
     }
 
+    private static let editorID = "colour-editor"
+
     /// iPad and Mac: the picture on the left, settings, editor and colours as cards in a column on the right.
     private var regular: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -160,25 +162,33 @@ struct RootView: View {
             }
             .padding(20)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Card { ControlsView() }
-                    if session.layerMode {
-                        spotCard
-                        layersCard
-                    } else {
-                        if let index = session.selectedEntry {
-                            Card("Colour \(session.selected?.label ?? "")", accent: true) {
-                                Button("Close") { session.select(entry: nil) }.buttonStyle(.outline)
-                            } content: {
-                                EntryEditorView(index: index)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Card { ControlsView() }
+                        if session.layerMode {
+                            spotCard
+                            layersCard
+                        } else {
+                            if let index = session.selectedEntry {
+                                Card("Colour \(session.selected?.label ?? "")", accent: true) {
+                                    Button("Close") { session.select(entry: nil) }.buttonStyle(.outline)
+                                } content: {
+                                    EntryEditorView(index: index)
+                                }
+                                .id(Self.editorID)
                             }
+                            coloursCard
                         }
-                        coloursCard
                     }
+                    .padding([.vertical, .trailing], 20)
+                    .padding(.leading, 4)
                 }
-                .padding([.vertical, .trailing], 20)
-                .padding(.leading, 4)
+                // An area clicked in the picture brings its colour into view; the card may be scrolled away.
+                .onChange(of: session.selectedRegion) { _, region in
+                    guard region != nil else { return }
+                    withAnimation { proxy.scrollTo(Self.editorID, anchor: .top) }
+                }
             }
             .frame(width: Theme.sidebarWidth)
         }

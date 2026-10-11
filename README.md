@@ -20,7 +20,7 @@ The iOS, iPadOS and macOS app is called **Tintmap** and lives in [`app/`](app/RE
 - **Variety:** decides which colours share a mix when there are more than you asked for. Low keeps the picture as a whole as close as possible; high lets small areas of another hue keep their own mix while similar large colours share one.
 - **Layer mode:** a second method next to mixing, for glazing. A few base paints from the paint box become layers, each painted with one prepared wash over the dry layer before, from light to dark; an area gets one to three coats of a wash, and greens, oranges and darks come from the layers adding up. Up to three accents put a strong wash on small areas last: first for a colour the washes miss, then for the darks. Tick layers on and off to see what each one does, click a layer to see it alone with its coats as numbers, walk through the painting order step by step, or click a spot to see which layers it gets. The base paints are proposed by the app or chosen in the paint box, apart from the paints selected for mixing. Printing gives the finished picture and one sheet per layer.
 - **Geometric areas:** an option for both methods. Instead of following the outlines in the photo, every area becomes a polygon with a few straight edges; the polygons are laid over each other from large to small, and in layer mode the shapes of the layers overlap each other. "Simplify areas" makes the edges longer and the shapes fewer.
-- **AI help (optional, your own key):** an AI model (Claude or OpenAI) looks at a small copy of the picture and chooses the colours to mix, the paints for them and the paints to glaze with, and adds a few sentences of advice. The app then works out the areas, the recipes and the layers from those choices as usual. It asks only when you press the button, shows what a call is expected to cost and what it did cost, and keeps the answer for the picture.
+- **AI help (optional, your own key):** an AI model (Claude or OpenAI) looks at a small copy of the picture and says what matters in it: the colours to mix, the paints for them and the paints to glaze with, the small details that carry the picture (eyes, a mouth, a highlight) and the main subjects, plus a few sentences of advice. The app then works out the areas, the recipes and the layers from those choices as usual. Where the details are, the areas stay fine however much the rest is simplified; the fine dark shapes there become a final wash, painted last with a fine brush; and the Sketch view shows the outlines of the main shapes to start from, firm for the main subjects. The panel also shows how close the picture is to the photo with and without the AI's choices. It asks only when you press the button, shows what a call is expected to cost and what it did cost, and keeps the answer for the picture.
 - **Recipes:** for every colour, up to five ways to mix it from the paints in your box — which paints, in what ratio, how much water, and how close the mix gets.
 - **Paint boxes:** keep a box for every set of paints you own, and add paints of any brand to the library.
 - **Collection:** save pictures in the browser with their settings and colour changes; open, rename and delete them.
@@ -28,7 +28,7 @@ The iOS, iPadOS and macOS app is called **Tintmap** and lives in [`app/`](app/RE
 - **Limits:** restrict mixes to one, two or three paints.
 - **Recolour:** click an area, pick a different target colour, choose between the alternative recipes, or detach a single area from the others that share its colour.
 - **Print / PDF:** prints the picture followed by every colour with its chosen mix; pick "Save as PDF" in the print dialog for a PDF.
-- **Views:** mixed paint, photo colour or the original photo, with outlines and numbers on or off.
+- **Views:** mixed paint, photo colour, the original photo or a pencil sketch of the main shapes, with outlines and numbers on or off.
 
 ## Match quality
 
@@ -57,7 +57,7 @@ What is sent, and only when you press "Ask about this picture": a JPEG of the pi
 
 The key is kept in the page's memory, and in the browser's storage only if you tick "Remember the key on this device". Consent is asked per provider and can be withdrawn with "Forget key and consent".
 
-Cost with Claude, at the prices of October 2026, for one picture (about 1,400 tokens in, 600 out): Haiku 5.5 about 0.05 US cents, Sonnet 5.5 about 0.9 cents, Opus 5.5 about 1.8 cents. For OpenAI the model is typed in and no price is assumed.
+Cost with Claude, at the prices of October 2026, for one picture (about 1,800 tokens in, 900 out; a model that thinks first uses more): Haiku 5.5 about 0.06 US cents, Sonnet 5.5 about 1.3 cents, Opus 5.5 about 2.5 cents. For OpenAI the model is typed in and no price is assumed.
 
 ## The paint stock
 

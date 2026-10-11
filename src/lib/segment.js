@@ -11,6 +11,7 @@
 
 import { srgbToLinear, linearToOklab, oklabToLinear, oklabToHex, hexToOklab } from './color.js'
 import { geometricAreas } from './geometric.js'
+import { boxMask } from './details.js'
 
 export function mulberry32(seed) {
   let a = seed >>> 0
@@ -395,9 +396,10 @@ export function labelAnchors(regionMap, width, height, regionCount) {
  * @param {Uint8ClampedArray} rgba image data at working resolution
  * @param {{colours:number, simplify:number, geometric:boolean}} options colours = number of mixes,
  *   simplify 0..10, geometric = areas as polygons with straight edges instead of their organic outline,
- *   anchors = hex colours that are the mixes (then `colours` is not used)
+ *   anchors = hex colours that are the mixes (then `colours` is not used),
+ *   focus = boxes [left, top, right, bottom] (0..1) in which the areas are not simplified
  */
-export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, seed = 7, areaPower, maxWashes, lightnessWeight } = {}) {
+export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, focus = null, seed = 7, areaPower, maxWashes, lightnessWeight } = {}) {
   const count = width * height
   const blurred = boxBlur(rgba, width, height, Math.round(simplify / 3))
   const lab = toOklabPixels(blurred, count)
@@ -411,7 +413,14 @@ export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, 
   const smoothed = majorityFilter(raw, width, height, k, Math.ceil(simplify / 2))
   const minRegion = Math.round(count * 0.00004 * Math.pow(simplify + 1, 2.2))
   const merged = mergeSmallRegions(smoothed, width, height, Math.max(2, (simplify + 1) ** 2, minRegion))
-  const labels = geometric ? geometricAreas(merged, width, height, simplify) : merged
+  let labels = geometric ? geometricAreas(merged, width, height, simplify) : merged
+  if (focus?.length && (simplify > 0 || geometric)) {
+    // Where the details are, the areas stay as fine as the picture has them; only specks go.
+    const where = boxMask(focus, width, height)
+    const fine = Int32Array.from(labels)
+    for (let p = 0; p < count; p++) if (where[p]) fine[p] = raw[p]
+    labels = mergeSmallRegions(fine, width, height, 3)
+  }
 
   // Cluster colours from the actual (unblurred) pixels they cover.
   const sums = new Float64Array(k * 3)

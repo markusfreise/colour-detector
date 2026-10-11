@@ -18,8 +18,8 @@
       </div>
     </header>
     <p class="field__hint">
-      An AI model looks at the picture and chooses the colours to mix, the paints and the layers. The app still works out
-      the areas and the recipes from that.
+      An AI model looks at the picture and says what matters in it: the colours to mix, the paints, the small details to
+      keep and to paint last, and the main shapes for the sketch. The app works out the areas and the recipes from that.
     </p>
 
     <template v-if="analysis.settings.ai">
@@ -94,6 +94,21 @@
             {{ mix.name }}
           </li>
         </ul>
+        <template v-if="current.plan.details.length">
+          <h3 class="editor__subtitle">Details to keep</h3>
+          <p class="ai__details">{{ current.plan.details.map((d) => d.name).join(', ') }}</p>
+          <label v-if="wash" class="checkbox ai__check">
+            <input v-model="analysis.settings.details" type="checkbox" />
+            <span>
+              Show the final wash:
+              <span class="swatch swatch--small ai__wash" :style="{ background: wash.hex }"></span>
+              {{ wash.paint }}, {{ wash.dilution }}, with a fine brush on {{ wash.shapes }} small {{ wash.shapes === 1 ? 'shape' : 'shapes' }}
+            </span>
+          </label>
+          <p v-else class="field__hint">No fine dark shapes found there for a final wash.</p>
+        </template>
+        <p class="field__hint">The Sketch view shows the outlines to start from<template v-if="current.plan.subjects.length">, firm for {{ current.plan.subjects.map((s) => s.name).join(', ') }}</template>.</p>
+        <p v-if="matchText" class="field__hint">{{ matchText }}</p>
         <p class="field__hint">
           {{ current.usage.input.toLocaleString('en') }} tokens in, {{ current.usage.output.toLocaleString('en') }} out<template v-if="current.cost != null">
             · {{ cents(current.cost) }}</template>
@@ -125,6 +140,21 @@ const choices = [
 
 // The answer that belongs to the picture as it is now.
 const current = computed(() => (analysis.aiPlan?.key === analysis.aiKey ? analysis.aiPlan : null))
+// The final wash of details, as the store found it in the picture.
+const wash = computed(() => {
+  const details = analysis.aiDetails?.key === analysis.aiKey ? analysis.aiDetails : null
+  if (!details) return null
+  return { hex: details.hex, shapes: details.shapes, dilution: details.dilution.replace(/ \(.*\)$/, '') || 'strong', paint: paints.byId[details.paintId]?.name ?? details.paintId }
+})
+// How close the picture is to the photo with and without the AI's choices, once both were seen.
+const matchText = computed(() => {
+  const match = analysis.aiMatch?.key === analysis.aiKey ? analysis.aiMatch : null
+  const on = match?.[`${analysis.settings.mode}-on`], off = match?.[`${analysis.settings.mode}-off`]
+  if (on == null) return ''
+  return off == null
+    ? `Distance to the photo with AI: ${on.toFixed(1)}. Switch AI off once to compare.`
+    : `Distance to the photo: ${on.toFixed(1)} with AI, ${off.toFixed(1)} without (lower is closer).`
+})
 const size = computed(() => aiImageSize(analysis.pixels?.width ?? 800, analysis.pixels?.height ?? 600))
 const cents = (dollars) => `${(dollars * 100).toFixed(dollars < 0.001 ? 2 : 1)} US cents`
 const estimateText = computed(() => {

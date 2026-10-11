@@ -263,11 +263,13 @@ const views = computed(() =>
     ? [
         { value: 'mixed', label: 'Layered paint' },
         { value: 'original', label: 'Photo' },
+        { value: 'sketch', label: 'Sketch' },
       ]
     : [
         { value: 'mixed', label: 'Mixed paint' },
         { value: 'target', label: 'Photo colour' },
         { value: 'original', label: 'Photo' },
+        { value: 'sketch', label: 'Sketch' },
       ],
 )
 // Layer mode keeps its own smoothing: its areas are painted several times over.

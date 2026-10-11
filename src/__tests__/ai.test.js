@@ -7,7 +7,7 @@ const paints = [
   { id: 'b', name: 'Blue', hex: '#2b61ab' },
   { id: 'r', name: 'Red', hex: '#e6331d' },
 ]
-const image = { base64: 'AAAA', mediaType: 'image/jpeg' }
+const image = { base64: 'AAAA', mediaType: 'image/jpeg', width: 560, height: 420 }
 
 describe('the copy that is sent', () => {
   it('is scaled down to the longer side and never up', () => {
@@ -29,6 +29,7 @@ describe('requests', () => {
     expect(body.messages[0].content[0]).toEqual({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: 'AAAA' } })
     expect(body.messages[0].content[1].text).toContain('y | Yellow | #fae409')
     expect(body.messages[0].content[1].text).toContain('at most 8 mixes and 4 layers')
+    expect(body.messages[0].content[1].text).toContain('560 x 420 pixels')
   })
 
   it('sends the same to OpenAI in its own shape', () => {
@@ -51,15 +52,22 @@ describe('answers', () => {
     paints: ['r', 'r', 'unknown', 'b'],
     layers: ['y', 'b', 'nope'],
     notes: 'Start with the sky.',
+    details: [{ name: 'eye', box: [280, 105, 140, 210], hex: '#221100' }, { name: 'broken', box: [1, 2, 3], hex: '#000000' }, { name: 'outside', box: [500, 400, 900, 900], hex: 'none' }],
+    subjects: [{ name: 'face', box: [0, 0, 560, 420] }, { name: 'flat', box: [10, 10, 10, 40] }],
+    detail_paint: 'b',
   }
 
   it('reads an Anthropic answer and drops what does not fit', () => {
     const answer = { content: [{ type: 'thinking', thinking: '' }, { type: 'text', text: JSON.stringify(plan) }], usage: { input_tokens: 1400, output_tokens: 500 } }
-    const read = readAiAnswer('anthropic', answer, paints)
+    const read = readAiAnswer('anthropic', answer, paints, { size: { width: 560, height: 420 } })
     expect(read.plan.mixes).toEqual([{ hex: '#aa3322', name: 'roof' }, { hex: '#102030', name: 'shadow' }])
     expect(read.plan.paints).toEqual(['r', 'b'])
     expect(read.plan.layers).toEqual(['y', 'b'])
     expect(read.usage).toEqual({ input: 1400, output: 500 })
+    // Boxes become parts of the picture, in order, clipped; broken ones are dropped.
+    expect(read.plan.details).toEqual([{ name: 'eye', box: [0.25, 0.25, 0.5, 0.5], hex: '#221100' }, { name: 'outside', box: [500 / 560, 400 / 420, 1, 1], hex: null }])
+    expect(read.plan.subjects).toEqual([{ name: 'face', box: [0, 0, 1, 1] }])
+    expect(read.plan.detailPaint).toBe('b')
   })
 
   it('reads an OpenAI answer', () => {

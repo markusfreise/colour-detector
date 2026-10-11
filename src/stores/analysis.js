@@ -7,6 +7,8 @@ import { usePaintsStore } from './paints.js'
 import { renderLayers } from '../lib/layers.js'
 import { useAiStore } from './ai.js'
 import { aiRequest, readAiAnswer, aiCost, aiImageSize } from '../lib/ai.js'
+import { boxMask, detailWash } from '../lib/details.js'
+import { toOklabPixels } from '../lib/segment.js'
 
 // Working resolution: the picture is scaled down to about this many pixels, whatever its shape.
 export const WORK_PIXELS = 800 * 600
@@ -34,6 +36,7 @@ let pictureSerial = 0
 let layerProposal = null // "picture/box/count" the current proposal was made for
 // The settings the mix analysis (`segmentation`) was made with, see `mixCurrent`.
 let mixKey = null
+let sketchRunning = null // the picture a sketch is being worked out for
 const mixKeyOf = ({ saturation, contrast, simplify, colours, geometric }, plan = 0) => [saturation, contrast, simplify, colours, !!geometric, plan].join('/')
 
 // A small JPEG of the picture for the AI model: enough to judge colours, cheap to send, and
@@ -50,7 +53,7 @@ function smallCopy({ rgba, width, height }) {
   const ctx = small.getContext('2d')
   ctx.imageSmoothingQuality = 'high'
   ctx.drawImage(full, 0, 0, size.width, size.height)
-  return { mediaType: 'image/jpeg', base64: small.toDataURL('image/jpeg', 0.82).split(',')[1] }
+  return { mediaType: 'image/jpeg', base64: small.toDataURL('image/jpeg', 0.82).split(',')[1], width: size.width, height: size.height }
 }
 
 function getWorker() {
@@ -110,6 +113,9 @@ export const useAnalysisStore = defineStore('analysis', {
     layerStepView: 'paint', // the picture of a step: 'paint' (where to paint), 'wash' (this wash alone), 'result' (the paper so far)
     layerPoint: null, // { x, y } of the clicked spot, in working pixels
     aiPlan: null, // { key, serial, plan, usage, cost, provider, model } of the last answer
+    aiDetails: null, // { key, mask, hex, paintId, dilution, pixels, shapes } the final wash of details (raw)
+    aiMatch: null, // { key, on, off } distance to the photo with and without the AI's choices, per method
+    sketch: null, // { key, regionMap, width, height } the main shapes for the pencil sketch (raw)
     aiBusy: false,
     aiError: null,
     pictureStamp: 0, // counts the pictures opened
@@ -124,6 +130,7 @@ export const useAnalysisStore = defineStore('analysis', {
       maxCoats: 2, // layer mode: coats of one wash an area can get
       colours: 20,
       simplify: 0,
+      details: true, // with an AI plan: show the final wash of fine dark details
       ai: false, // the colours to mix and the paints are chosen by an AI model (once asked for this picture)
       geometric: false, // areas as polygons with straight edges that overlap, instead of their organic outline
       maxPaints: 3,
@@ -308,10 +315,13 @@ export const useAnalysisStore = defineStore('analysis', {
       const { saturation, contrast } = this.settings
       const rgba = adjustImage(this.pixels.rgba, { saturation: saturation / 100, contrast: contrast / 100 })
       this.adjusted = rgba === this.pixels.rgba ? null : markRaw({ rgba, width, height })
+      if (this.aiDetails?.key !== this.aiKey) this.findDetails()
       if (this.layerMode) return this.analyseLayers(rgba, width, height, token)
       // With an AI plan its colours are the mixes; the analysis only assigns the picture to them.
       const plan = this.aiActive
-      const anchors = plan?.mixes.length ? plan.mixes.map((m) => m.hex) : undefined
+      // The colours of the details are mixes too, so that a small thing keeps its colour.
+      const anchors = plan?.mixes.length ? [...new Set([...plan.mixes, ...plan.details.filter((d) => d.hex)].map((m) => m.hex))] : undefined
+      const focus = plan?.details.length ? plan.details.map((d) => [...d.box]) : undefined
       const key = mixKeyOf(this.settings, anchors ? this.aiPlan.serial : 0)
       try {
         // "Colours" counts mixes. The analysis is asked for more, and planMixes joins them down to
@@ -324,6 +334,7 @@ export const useAnalysisStore = defineStore('analysis', {
           simplify: this.settings.simplify,
           geometric: this.settings.geometric,
           anchors,
+          focus,
         })
         if (token !== analysisToken || this.layerMode) return // a newer analysis superseded this one
         mixKey = key
@@ -332,6 +343,7 @@ export const useAnalysisStore = defineStore('analysis', {
         const pending = this.pendingEdits
         this.pendingEdits = null
         if (pending?.key === key) this.applyEdits(pending.edits)
+        this.noteMatch()
       } catch (e) {
         if (token === analysisToken) this.error = `Analysis failed: ${e.message}`
       } finally {
@@ -391,6 +403,7 @@ export const useAnalysisStore = defineStore('analysis', {
         this.layerStep = null
         this.layerPoint = null
         this.renderVersion++
+        this.noteMatch()
       } catch (e) {
         if (token === analysisToken) this.error = `Analysis failed: ${e.message}`
       } finally {
@@ -496,11 +509,13 @@ export const useAnalysisStore = defineStore('analysis', {
       this.aiError = null
       try {
         const source = this.adjusted ?? this.pixels
+        const image = smallCopy(source)
+        const size = { width: image.width, height: image.height }
         const request = aiRequest({
           provider,
           model,
           key: ai.key,
-          image: smallCopy(source),
+          image,
           paints: pool,
           colours: this.settings.colours,
           layers: Math.min(6, this.settings.layerCount + 1),
@@ -508,16 +523,93 @@ export const useAnalysisStore = defineStore('analysis', {
         const response = await fetch(request.url, request.init)
         const answer = await response.json().catch(() => null)
         if (!response.ok && !answer?.error) throw new Error(`The provider answered with status ${response.status}.`)
-        const { plan, usage } = readAiAnswer(provider, answer, pool, { colours: 32, layers: 6 })
+        const { plan, usage } = readAiAnswer(provider, answer, pool, { colours: 32, layers: 6, size })
         if (key !== this.aiKey) return // another picture was opened meanwhile
         this.aiPlan = { key, serial: (this.aiPlan?.serial ?? 0) + 1, plan, usage, cost: aiCost(provider, model, usage), provider, model }
         this.settings.ai = true
+        this.aiMatch = this.aiMatch?.key === key ? this.aiMatch : null
+        this.findDetails()
         this.analyse()
       } catch (e) {
         this.aiError = e instanceof TypeError ? 'Could not reach the provider. Check the connection and the key.' : e.message
       } finally {
         this.aiBusy = false
       }
+    },
+
+    /**
+     * The final wash: the fine dark shapes inside the boxes the AI named, taken from the picture
+     * itself, in the colour its dark paint gives there.
+     */
+    findDetails() {
+      const plan = this.aiPlan?.key === this.aiKey ? this.aiPlan.plan : null
+      const source = this.adjusted ?? this.pixels
+      this.aiDetails = null
+      if (!plan?.details.length || !source) return
+      const { width, height } = source
+      const lab = toOklabPixels(source.rgba, width * height)
+      const wash = detailWash(lab, width, height, boxMask(plan.details.map((d) => d.box), width, height))
+      if (!wash.pixels) return
+      const paints = usePaintsStore()
+      const candidates = paints.activeBox.auto ? paints.autoCandidates : paints.enabled
+      // The paint the AI named, or the darkest one at hand.
+      const paint = paints.byId[plan.detailPaint] ?? candidates.reduce((x, y) => (hexToOklab(y.hex)[0] < hexToOklab(x.hex)[0] ? y : x), candidates[0])
+      if (!paint) return
+      const recipe = findRecipes(oklabToHex(wash.lab), [paint], { maxPaints: 1, limit: 1 })[0]
+      this.aiDetails = markRaw({
+        key: this.aiKey,
+        mask: wash.mask,
+        width,
+        height,
+        hex: recipe?.hex ?? paint.hex,
+        dilution: recipe?.dilution ?? '',
+        paintId: paint.id,
+        pixels: wash.pixels,
+        shapes: wash.shapes,
+      })
+    },
+
+    /** The main shapes of the picture, for the pencil sketch; worked out when the sketch is first shown. */
+    async ensureSketch() {
+      const source = this.adjusted ?? this.pixels
+      const key = this.aiKey
+      if (!source || this.sketch?.key === key || sketchRunning === key) return
+      sketchRunning = key
+      try {
+        const { result } = await runSegmentation({ kind: 'sketch', rgba: source.rgba.slice(), width: source.width, height: source.height })
+        if (key !== this.aiKey) return
+        this.sketch = markRaw({ key, ...result })
+        this.renderVersion++
+      } catch (e) {
+        this.error = `Sketch failed: ${e.message}`
+      } finally {
+        if (sketchRunning === key) sketchRunning = null
+      }
+    },
+
+    /** Notes how close the picture is to the photo now, with or without the AI's choices. */
+    noteMatch() {
+      const key = this.aiKey
+      let value = null
+      if (this.layerMode) value = this.layers?.deltaE.mean ?? null
+      else if (this.segmentation && this.regionEntry && this.entries.length) {
+        const source = this.adjusted ?? this.pixels
+        const { regionMap, width, height } = this.segmentation
+        if (source?.width === width && source.height === height) {
+          const lab = toOklabPixels(source.rgba, width * height)
+          const colours = this.entries.map((e) => hexToOklab(e.recipes[e.chosen]?.hex ?? e.targetHex))
+          let sum = 0
+          for (let p = 0; p < regionMap.length; p++) {
+            const c = colours[this.regionEntry[regionMap[p]]]
+            const dL = c[0] - lab[p * 3], da = c[1] - lab[p * 3 + 1], db = c[2] - lab[p * 3 + 2]
+            sum += Math.sqrt(dL * dL + da * da + db * db)
+          }
+          value = (sum / regionMap.length) * 100
+        }
+      }
+      if (value == null) return
+      const slot = `${this.settings.mode}-${this.aiActive ? 'on' : 'off'}`
+      this.aiMatch = { ...(this.aiMatch?.key === key ? this.aiMatch : { key }), [slot]: value }
     },
 
     /** AI on or off; the plan of this picture is kept either way. */

@@ -8,4 +8,6 @@
 .ai__notes { margin-top: 12px; }
 .ai__mixes { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0; font-size: 13px; }
 .ai__mix { display: flex; align-items: center; gap: 5px; }
+.ai__details { font-size: 13px; }
+.ai__wash { vertical-align: -3px; }
 .ai__forget { margin-top: 10px; }

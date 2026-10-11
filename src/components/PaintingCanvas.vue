@@ -29,6 +29,7 @@ import { ref, watch, onMounted } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
 import { drawLayerView, drawOutlines, labelFont, paintPixels } from './layerView.js'
+import { boxMask, sketchLines } from '../lib/details.js'
 
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
@@ -54,8 +55,53 @@ function drawPhoto(ctx, el) {
 function draw() {
   const el = canvas.value
   if (!el) return
+  if (analysis.settings.view === 'sketch') return drawSketch(el)
   if (analysis.layerMode) drawLayers(el)
   else drawMixes(el)
+  drawDetails(el)
+}
+
+// The final wash of fine dark details from the AI's plan, over the mixes or the layers.
+function drawDetails(el) {
+  const details = analysis.aiActive && analysis.settings.details ? analysis.aiDetails : null
+  if (!details || details.key !== analysis.aiKey || analysis.settings.view === 'original') return
+  if (details.width * SCALE !== el.width || details.height * SCALE !== el.height) return
+  const [r, g, b] = hexToRgb(details.hex)
+  const rgba = new Uint8ClampedArray(details.mask.length * 4)
+  for (let p = 0; p < details.mask.length; p++) {
+    if (!details.mask[p]) continue
+    rgba[p * 4] = r; rgba[p * 4 + 1] = g; rgba[p * 4 + 2] = b; rgba[p * 4 + 3] = 255
+  }
+  paintPixels(el.getContext('2d'), el, rgba, details.width, details.height)
+}
+
+// The pencil sketch to start from: the outlines of the main shapes, firm inside the main subjects
+// the AI named, and the fine dark details.
+function drawSketch(el) {
+  const source = analysis.adjusted ?? analysis.pixels
+  if (!source) return
+  el.width = source.width * SCALE
+  el.height = source.height * SCALE
+  const ctx = el.getContext('2d')
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, el.width, el.height)
+  const sketch = analysis.sketch?.key === analysis.aiKey ? analysis.sketch : null
+  if (!sketch) {
+    analysis.ensureSketch()
+    return
+  }
+  const { width, height } = sketch
+  const plan = analysis.aiPlan?.key === analysis.aiKey ? analysis.aiPlan.plan : null
+  const strong = plan?.subjects.length ? boxMask(plan.subjects.map((s) => s.box), width, height, 0.05) : null
+  const lines = sketchLines(sketch.regionMap, width, height, strong)
+  const details = analysis.aiDetails?.key === analysis.aiKey ? analysis.aiDetails.mask : null
+  const rgba = new Uint8ClampedArray(width * height * 4)
+  for (let p = 0; p < lines.length; p++) {
+    const ink = details?.[p] ? 235 : lines[p] === 2 ? 190 : lines[p] === 1 ? 70 : 0
+    if (!ink) continue
+    rgba[p * 4] = 60; rgba[p * 4 + 1] = 58; rgba[p * 4 + 2] = 56; rgba[p * 4 + 3] = ink
+  }
+  paintPixels(ctx, el, rgba, width, height, true)
 }
 
 // Mix mode: flat numbered areas, one colour per wash of a mix.
@@ -149,6 +195,7 @@ function onClick(event) {
   const x = Math.floor(((event.clientX - rect.left) / rect.width) * size.width)
   const y = Math.floor(((event.clientY - rect.top) / rect.height) * size.height)
   if (x < 0 || y < 0 || x >= size.width || y >= size.height) return
+  if (analysis.settings.view === 'sketch') return // nothing to pick in the sketch
   if (analysis.layerMode) {
     analysis.selectPoint({ x, y })
     return
@@ -166,6 +213,8 @@ watch(
     analysis.layerStepView,
     analysis.settings.mode,
     analysis.settings.view,
+    analysis.settings.details,
+    analysis.aiDetails,
     analysis.settings.outlines,
     analysis.settings.numbers,
   ],

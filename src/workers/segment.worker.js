@@ -12,8 +12,14 @@ self.onmessage = (event) => {
       self.postMessage({ jobId, result }, buffers)
       return
     }
-    const { colours, simplify, geometric, anchors } = event.data
-    const result = segmentImage(rgba, width, height, { colours, simplify, geometric, anchors })
+    if (kind === 'sketch') {
+      // The main shapes of the picture, for the pencil sketch: few colours, calm areas.
+      const { regionMap } = segmentImage(rgba, width, height, { colours: 10, simplify: 6 })
+      self.postMessage({ jobId, result: { regionMap, width, height } }, [regionMap.buffer])
+      return
+    }
+    const { colours, simplify, geometric, anchors, focus } = event.data
+    const result = segmentImage(rgba, width, height, { colours, simplify, geometric, anchors, focus })
     self.postMessage({ jobId, result }, [result.regionMap.buffer])
   } catch (error) {
     self.postMessage({ jobId, error: String(error?.message || error) })

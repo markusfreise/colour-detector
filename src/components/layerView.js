@@ -39,7 +39,7 @@ export function labelFont(ctx, scale) {
  * @param {object} result  from `layerImage`
  * @param {object} options
  *   show: per layer true / false / number of coats (see `compositeColours`);
- *   step: a step of result.steps: outline only what that step paints;
+ *   step: a step of result.steps: what that step paints in full colour and outlined, the rest faded;
  *   outlines: lines between areas that differ within the shown layers;
  *   numbers: with exactly one layer shown, its coats per area;
  *   backdrop: draws something else than the layers (the photo) before lines and numbers.
@@ -49,8 +49,23 @@ export function drawLayerView(el, result, { show, step = null, outlines = true, 
   el.width = width * scale
   el.height = height * scale
   const ctx = el.getContext('2d')
-  if (backdrop) backdrop(ctx, el)
-  else paintPixels(ctx, el, renderLayers(result, show), width, height)
+  if (backdrop) {
+    backdrop(ctx, el)
+  } else {
+    const rgba = renderLayers(result, show)
+    if (step) {
+      // Where the brush goes in this step stays in full colour; the rest of the paper fades back.
+      const map = layers[step.layer].coatMap
+      for (let p = 0; p < map.length; p++) {
+        if (map[p] >= step.coat) continue
+        const o = p * 4
+        rgba[o] = rgba[o] * 0.3 + 178.5
+        rgba[o + 1] = rgba[o + 1] * 0.3 + 178.5
+        rgba[o + 2] = rgba[o + 2] * 0.3 + 178.5
+      }
+    }
+    paintPixels(ctx, el, rgba, width, height)
+  }
 
   const light = !!backdrop
   if (step) {

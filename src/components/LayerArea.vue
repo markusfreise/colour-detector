@@ -21,11 +21,20 @@
     <h3 class="editor__subtitle">Layers on this spot</h3>
     <p v-if="!painted" class="editor__empty">Leave the paper white.</p>
     <ol class="layers__spot">
-      <li v-for="row in rows" :key="row.number" class="layers__spot-row" :class="{ 'layers__spot-row--none': !row.coats }">
-        <span class="layers__number">{{ row.number }}</span>
-        <span class="swatch swatch--small" :style="{ background: row.hex }"></span>
-        <span class="layers__spot-name">{{ row.name }}</span>
-        <span class="layers__spot-coats">{{ row.coats ? `${row.coats} ${row.coats === 1 ? 'coat' : 'coats'}` : 'none' }}</span>
+      <li v-for="row in rows" :key="row.number">
+        <button
+          class="layers__spot-row"
+          :class="{ 'layers__spot-row--none': !row.coats }"
+          type="button"
+          :disabled="row.step < 0"
+          :title="row.step < 0 ? 'This layer leaves the spot unpainted' : 'Show the step that paints this'"
+          @click="analysis.goToStep(row.step)"
+        >
+          <span class="layers__number">{{ row.number }}</span>
+          <span class="swatch swatch--small" :style="{ background: row.hex }"></span>
+          <span class="layers__spot-name">{{ row.name }}</span>
+          <span class="layers__spot-coats">{{ row.coats ? `${row.coats} ${row.coats === 1 ? 'coat' : 'coats'}` : 'none' }}</span>
+        </button>
       </li>
     </ol>
   </section>
@@ -50,6 +59,8 @@ const rows = computed(() =>
     name: paints.byId[layer.paintId]?.name ?? layer.paintId,
     coats: spot.value.coats[k],
     hex: layer.hexes[spot.value.coats[k] || 1],
+    // The last step that touches this spot in this layer.
+    step: spot.value.coats[k] ? analysis.layers.steps.findIndex((s) => s.layer === k && s.coat === spot.value.coats[k]) : -1,
   })),
 )
 </script>

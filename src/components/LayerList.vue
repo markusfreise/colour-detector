@@ -67,10 +67,21 @@
     </ol>
 
     <template v-if="result">
+      <p v-if="analysis.layerSolo != null && analysis.settings.numbers" class="layers__note">
+        The numbers are coats: 1 = one pass, 2 = two passes. The first pass goes over every numbered area, the second
+        only over the 2s and higher.
+      </p>
       <p class="layers__note">Ticks only change what the picture shows. Change the paints in the paint box.</p>
-      <p v-if="result.deltaE.rough > 0.1" class="layers__note layers__note--warn">
-        {{ percent(result.deltaE.rough) }}% of the picture is out of reach of these paints. Compare with Photo, or try
-        another paint or one more layer.
+      <p class="layers__note">
+        Distance to the photo: {{ result.deltaE.mean.toFixed(1) }} on average ({{ matchQuality(result.deltaE.mean) }}).
+        <template v-if="result.deltaE.rough >= 0.02">
+          {{ percent(result.deltaE.rough) }}% of the picture stays clearly off: too light, too dark or too dull with
+          these paints and washes. Compare with Photo.
+        </template>
+      </p>
+      <p class="layers__note">
+        The colours are estimates from one swatch per paint. Opaque or granulating paints glaze less cleanly than shown;
+        test the washes on a scrap first.
       </p>
       <p v-if="result.steps.length > 12" class="layers__note layers__note--warn">
         {{ result.steps.length }} coats is a long session. Fewer layers or coats shorten it.
@@ -84,6 +95,7 @@ import { computed, nextTick } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { contrastText } from '../lib/color.js'
+import { matchQuality } from '../lib/mixing.js'
 import { paintNumber } from '../lib/paintbox.js'
 import { isNative, sendNative } from '../lib/native.js'
 
@@ -125,8 +137,7 @@ const rows = computed(() => {
 
 // Hand the choice of the base paints back to the app.
 function auto() {
-  paints.setLayerPaints(paints.activeBox.layerIds, true)
-  analysis.analyse()
+  analysis.proposeLayers()
 }
 
 // The print stylesheet lays out the sheets; the browser's dialog offers "Save as PDF".

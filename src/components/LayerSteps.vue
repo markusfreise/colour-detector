@@ -14,10 +14,18 @@
         <button class="button button--ghost" type="button" :disabled="last" @click="analysis.goToStep(analysis.layerStep + 1)">Next</button>
         <button class="button button--ghost" type="button" @click="analysis.goToStep(null)">Done</button>
       </div>
-      <p class="steps__hint">
-        {{ washText }} Paint the outlined areas ({{ percent(step.share) }}% of the picture).
-        {{ last ? 'Last step.' : 'Let it dry completely before the next step.' }}
-      </p>
+      <div class="steps__body">
+        <span class="chip steps__target" :style="chipStyle(step.hex)" title="One stroke of this wash on white paper">
+          <span class="chip__text">{{ step.coat === 1 ? 'One stroke on white paper' : `${step.coat} coats on white paper` }}</span>
+        </span>
+        <p class="steps__hint">
+          {{ washText }} Paint the areas in full colour ({{ percent(step.share) }}% of the picture).
+          {{ last ? 'Last step.' : 'Let it dry completely before the next step.' }}
+          <span v-if="step.shapes > MANY_SHAPES" class="steps__warn">
+            {{ step.shapes }} separate shapes in this step. A higher "Simplify areas" gives fewer and bigger ones.
+          </span>
+        </p>
+      </div>
     </template>
   </div>
 </template>
@@ -26,6 +34,10 @@
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
+import { chipStyle } from '../lib/color.js'
+
+// More separate shapes than this in one step is tedious to paint.
+const MANY_SHAPES = 30
 
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
@@ -33,13 +45,16 @@ const paints = usePaintsStore()
 // Without a single coat (a white picture) there is nothing to walk through.
 const result = computed(() => (analysis.layerMode && analysis.layers?.steps.length ? analysis.layers : null))
 const step = computed(() => (result.value && analysis.layerStep != null ? result.value.steps[analysis.layerStep] : null))
+const layer = computed(() => result.value.layers[step.value.layer])
 const last = computed(() => analysis.layerStep === result.value.steps.length - 1)
 const name = computed(() => paints.byId[step.value.paintId]?.name ?? step.value.paintId)
 const percent = (share) => Math.round(share * 100) || '<1'
 // The first coat of a layer says how to prepare its wash; later coats use the same one.
 const washText = computed(() => {
   const dilution = step.value.dilution.replace(/ \(.*\)$/, '')
-  return step.value.coat === 1 ? `Prepare ${name.value} as a ${dilution.replace(/ wash$/, '')} wash.` : 'The same wash again.'
+  if (step.value.coat > 1) return 'The same wash again, over the dry coat.'
+  const guide = layer.value.guide ? ` (${layer.value.guide})` : ''
+  return `Prepare ${name.value} as a ${dilution.replace(/ wash$/, '')} wash${guide}: one stroke on white paper should look like the swatch.`
 })
 
 // Left and right arrow keys step while the walk is active.

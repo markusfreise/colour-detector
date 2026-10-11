@@ -72,9 +72,9 @@
       </label>
 
       <label class="field">
-        <span class="field__label">Simplify areas <output class="field__value">{{ analysis.settings.simplify }}</output></span>
+        <span class="field__label">Simplify areas <output class="field__value">{{ analysis.settings[simplifyKey] }}</output></span>
         <input
-          v-model.number="analysis.settings.simplify"
+          v-model.number="analysis.settings[simplifyKey]"
           class="field__range"
           type="range"
           min="0"
@@ -147,10 +147,10 @@
         />
       </label>
 
-      <label v-if="!analysis.layerMode" class="field">
-        <span class="field__label">Variety <output class="field__value">{{ analysis.settings.variety }}</output></span>
+      <label class="field">
+        <span class="field__label">Variety <output class="field__value">{{ analysis.settings[varietyKey] }}</output></span>
         <input
-          v-model.number="analysis.settings.variety"
+          v-model.number="analysis.settings[varietyKey]"
           class="field__range"
           type="range"
           min="0"
@@ -160,7 +160,7 @@
       </label>
     </div>
     <div class="controls__hints">
-      <span v-if="!analysis.layerMode" class="field__hint">Variety: lower = closer overall, higher = small areas keep their own colour</span>
+      <span class="field__hint">Variety: lower = closer overall, higher = small areas keep their own colour</span>
       <button
         v-if="analysis.settings.saturation !== 100 || analysis.settings.contrast !== 100"
         class="button button--ghost controls__reset"
@@ -225,6 +225,9 @@ const views = computed(() =>
         { value: 'original', label: 'Photo' },
       ],
 )
+// Layer mode keeps its own smoothing and variety: its areas are painted several times over.
+const simplifyKey = computed(() => (analysis.layerMode ? 'layerSimplify' : 'simplify'))
+const varietyKey = computed(() => (analysis.layerMode ? 'layerVariety' : 'variety'))
 // On Auto the slider says how many paints to propose; by hand it shows how many were chosen.
 const layerCount = computed(() => (paints.activeBox.layerAuto ? analysis.settings.layerCount : paints.activeBox.layerIds.length))
 

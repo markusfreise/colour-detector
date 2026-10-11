@@ -12,7 +12,9 @@
 .layers__empty { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; color: var(--ink-soft); }
 .layers__empty-actions { display: flex; gap: 6px; }
 .layers__spot { display: flex; flex-direction: column; gap: 4px; }
-.layers__spot-row { display: grid; grid-template-columns: 18px 16px minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+.layers__spot-row { display: grid; grid-template-columns: 18px 16px minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; padding: 2px 4px; border: 0; border-radius: 6px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.layers__spot-row:hover:not(:disabled) { background: var(--paper); }
+.layers__spot-row:disabled { cursor: default; }
 .layers__spot-row--none { color: var(--ink-soft); }
 .layers__spot-row--none .swatch { opacity: 0.25; }
 .layers__spot-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

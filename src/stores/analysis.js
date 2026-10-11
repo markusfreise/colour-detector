@@ -25,6 +25,10 @@ let worker = null
 let jobCounter = 0
 // Every analysis takes a number; only the latest one may write its result or end `busy`.
 let analysisToken = 0
+// Layer mode on Auto: the base paints are proposed once per picture and then kept, so that moving
+// an unrelated slider does not swap the paints under the painter's hands.
+let pictureSerial = 0
+let layerProposal = null // "picture/box/count" the current proposal was made for
 // The settings the mix analysis (`segmentation`) was made with, see `mixCurrent`.
 let mixKey = null
 const mixKeyOf = ({ saturation, contrast, simplify, colours }) => [saturation, contrast, simplify, colours].join('/')
@@ -87,6 +91,8 @@ export const useAnalysisStore = defineStore('analysis', {
     settings: {
       mode: 'mix', // mix = colours mixed on the palette; layer = glazes of a few base paints
       layerCount: 5, // layer mode: base paints the app proposes
+      layerSimplify: 4, // layer mode: its own "Simplify areas"; every layer has to be painted by hand
+      layerVariety: 5, // layer mode: 0 = the picture as a whole, 10 = small colourful parts count for more
       maxCoats: 2, // layer mode: coats of one wash an area can get
       colours: 20,
       simplify: 0,
@@ -222,6 +228,7 @@ export const useAnalysisStore = defineStore('analysis', {
      * the current mode keeps its result on screen until the new one is there.
      */
     forgetPicture() {
+      pictureSerial++
       mixKey = null
       this.pendingEdits = null
       if (this.layerMode) {
@@ -282,7 +289,10 @@ export const useAnalysisStore = defineStore('analysis', {
     async analyseLayers(rgba, width, height, token = ++analysisToken) {
       const paints = usePaintsStore()
       const box = paints.activeBox
-      const pool = (box.layerAuto ? paints.autoCandidates : paints.layerPaints).map(({ id, hex }) => ({ id, hex }))
+      const proposalKey = `${pictureSerial}/${box.id}/${this.settings.layerCount}`
+      // Propose only when there is nothing to keep: a new picture, another box or number of layers, or Auto pressed.
+      const propose = box.layerAuto && !(layerProposal === proposalKey && box.layerIds.length)
+      const pool = (propose ? paints.autoCandidates : paints.layerPaints).map(({ id, hex }) => ({ id, hex }))
       this.layerStep = null
       this.layerPoint = null
       try {
@@ -300,13 +310,17 @@ export const useAnalysisStore = defineStore('analysis', {
           paints: pool,
           count: this.settings.layerCount,
           // A plain copy: the worker cannot be sent the reactive array of the store.
-          paintIds: box.layerAuto ? undefined : [...box.layerIds],
+          paintIds: propose ? undefined : [...box.layerIds],
           maxCoats: this.settings.maxCoats,
-          simplify: this.settings.simplify,
+          simplify: this.settings.layerSimplify,
+          variety: this.settings.layerVariety,
         })
         if (token !== analysisToken || !this.layerMode) return // superseded
         // The proposal goes to the box it was made for, also when another box was opened meanwhile.
-        if (box.layerAuto) paints.setLayerPaints(result.paintIds, true, box)
+        if (propose) {
+          paints.setLayerPaints(result.paintIds, true, box)
+          layerProposal = proposalKey
+        }
         this.layers = markRaw(result)
         this.layerShown = result.layers.map(() => true)
         // A walk or a spot picked on the old layers while these were planned.
@@ -318,6 +332,14 @@ export const useAnalysisStore = defineStore('analysis', {
       } finally {
         if (token === analysisToken) this.busy = false
       }
+    },
+
+    /** Layer mode: let the app choose the base paints for this picture (again). */
+    proposeLayers() {
+      layerProposal = null
+      const paints = usePaintsStore()
+      paints.setLayerPaints(paints.activeBox.layerIds, true)
+      if (this.layerMode) this.analyse()
     },
 
     /** Layer mode: the picture as RGBA at working resolution, for the current view. */

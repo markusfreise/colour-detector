@@ -194,9 +194,9 @@ function toggle(id, on) {
 // Let the app pick the paints for the current picture, from the default selection and the user's own paints.
 function auto() {
   if (layerMode.value) {
-    // The proposal needs the picture, so it is made when the layers are planned again.
-    paints.setLayerPaints(paints.activeBox.layerIds, true)
-    apply()
+    // The proposal needs the picture, so it is made while the layers are planned again.
+    analysis.proposeLayers()
+    dirty.value = false
     return
   }
   analysis.autoPaints(true)

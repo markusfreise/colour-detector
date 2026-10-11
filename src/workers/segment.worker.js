@@ -6,8 +6,8 @@ self.onmessage = (event) => {
   try {
     if (kind === 'layers') {
       // Layer mode: the picture as glazes of a few base paints.
-      const { paints, count, paintIds, maxCoats, simplify } = event.data
-      const result = layerImage(rgba, width, height, paints, { count, paintIds, maxCoats, simplify })
+      const { paints, count, paintIds, maxCoats, simplify, variety } = event.data
+      const result = layerImage(rgba, width, height, paints, { count, paintIds, maxCoats, simplify, variety })
       const buffers = [result.comboMap.buffer, ...result.layers.flatMap((l) => [l.coatMap.buffer, l.regionMap.buffer])]
       self.postMessage({ jobId, result }, buffers)
       return

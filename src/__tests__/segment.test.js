@@ -35,7 +35,9 @@ describe('segment', () => {
     const seg = segmentImage(picture, 100, 100, { colours: 3, simplify: 0 })
     const reds = seg.clusters.filter((c) => c.pixelCount && hexToOklab(c.hex)[1] > 0.05)
     expect(reds).toHaveLength(1)
-    expect(reds[0].pixelCount).toBe(100)
+    // The patch is 100 pixels; its corners are rounded off like every outline.
+    expect(reds[0].pixelCount).toBeGreaterThanOrEqual(92)
+    expect(reds[0].pixelCount).toBeLessThanOrEqual(100)
   })
   it('paints one hue in several washes instead of several mixes', () => {
     // The same blue from pale to deep, next to a flat red.

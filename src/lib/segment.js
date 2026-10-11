@@ -1,17 +1,20 @@
 // Image segmentation into flat colour areas ("paint-by-numbers" style).
 //
-// 1. Optional box blur to suppress texture noise.
-// 2. Clustering into mixes (absorbance directions) and their washes -> one label per pixel.
-// 3. Majority filter passes to smooth ragged edges.
-// 4. Connected components; regions smaller than `minRegion` pixels are merged
-//    into the neighbour they share the longest border with.
-// 5. A label anchor per region (the pixel furthest from its border).
+// 1. Optional box blur (from Simplify 2 on).
+// 2. Noise goes: the picture is cut into small patches along its edges and every pixel takes the
+//    colour of its patch (smooth.js).
+// 3. Clustering into mixes (absorbance directions) and their washes -> one label per pixel.
+// 4. The outlines of the areas are rounded (smooth.js).
+// 5. Connected components; areas too small for a brush join a neighbour, unless they stand out
+//    (an eye, a mouth).
+// 6. A label anchor per region (the pixel furthest from its border).
 //
 // Pure functions on typed arrays so it runs in a Web Worker and in tests.
 
 import { srgbToLinear, linearToOklab, oklabToLinear, oklabToHex, hexToOklab } from './color.js'
 import { geometricAreas } from './geometric.js'
 import { boxMask } from './details.js'
+import { compactPatches, patchColours, softColours, labelColours, smoothOutlines, mergeSmallAreas } from './smooth.js'
 
 export function mulberry32(seed) {
   let a = seed >>> 0
@@ -82,6 +85,23 @@ export const MAX_WASHES = 5
 // One more wash for every factor of about 1.7 between the weakest and the strongest part of a mix.
 const WASH_STEP = 0.55
 const MIN_REFLECTANCE = 0.0005
+
+// Side of the patches the picture is cut into before its colours are found, in pixels at Simplify 0.
+const PATCH_STEP = 5
+// Patches closer in colour than about this (OKLab) are evened out with each other.
+const PATCH_BLEND = 0.035
+// Rounding of the outlines at Simplify 0: the window around a pixel, and how much its own colour
+// counts against what is around it (see `smoothOutlines`).
+const OUTLINE_RADIUS = 3
+const OUTLINE_FIDELITY = 40
+// The smallest area at Simplify 0, as a part of the picture (about 72 pixels of 480,000).
+const MIN_AREA = 0.00015
+// A smaller area stays when its colour is this far (OKLab) from everything around it.
+const KEEP_CONTRAST = 0.15
+// ... and it is at least this part of the smallest area at Simplify 0 (growing with Simplify).
+const KEEP_SIZE = 0.25
+// The smallest area inside a focus box, in pixels.
+const FOCUS_MIN_AREA = 6
 
 const BIN_L = 50 // histogram steps per unit of L
 const BIN_AB = 100 // histogram steps per unit of a and b
@@ -402,7 +422,10 @@ export function labelAnchors(regionMap, width, height, regionCount) {
 export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, focus = null, seed = 7, areaPower, maxWashes, lightnessWeight } = {}) {
   const count = width * height
   const blurred = boxBlur(rgba, width, height, Math.round(simplify / 3))
-  const lab = toOklabPixels(blurred, count)
+  // Noise goes before the colours are found: every pixel takes the colour of its patch.
+  const noisy = toOklabPixels(blurred, count)
+  const patches = compactPatches(noisy, width, height, PATCH_STEP + simplify * 0.5)
+  const lab = patchColours(noisy, width, height, patches, { blend: PATCH_BLEND * (1 + simplify * 0.15) })
   const { labels: raw, clusters: found } = clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), {
     seed, areaPower, maxWashes, lightnessWeight,
     // Given colours (hex) as the mixes, instead of finding them.
@@ -410,16 +433,23 @@ export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, 
   })
   const k = found.length
 
-  const smoothed = majorityFilter(raw, width, height, k, Math.ceil(simplify / 2))
-  const minRegion = Math.round(count * 0.00004 * Math.pow(simplify + 1, 2.2))
-  const merged = mergeSmallRegions(smoothed, width, height, Math.max(2, (simplify + 1) ** 2, minRegion))
+  const tones = labelColours(raw, lab, k)
+  const soft = softColours(lab, width, height, 1 + Math.floor(simplify / 4))
+  const smoothed = smoothOutlines(raw, soft, tones, width, height, k, {
+    radius: OUTLINE_RADIUS,
+    passes: simplify < 3 ? 1 : 2,
+    fidelity: OUTLINE_FIDELITY / (1 + simplify * 0.15),
+  })
+  const minRegion = Math.max(2, Math.round(count * MIN_AREA * Math.pow(simplify + 1, 1.3)))
+  const merged = mergeSmallAreas(smoothed, lab, width, height, minRegion, { keepSize: count * MIN_AREA * KEEP_SIZE * (1 + simplify), keepContrast: KEEP_CONTRAST })
   let labels = geometric ? geometricAreas(merged, width, height, simplify) : merged
-  if (focus?.length && (simplify > 0 || geometric)) {
-    // Where the details are, the areas stay as fine as the picture has them; only specks go.
+  if (focus?.length) {
+    // Where the details are, the areas stay fine: outlines are only tidied and only specks go.
     const where = boxMask(focus, width, height)
+    const tidy = smoothOutlines(raw, lab, tones, width, height, k, { radius: 1, passes: 1, fidelity: OUTLINE_FIDELITY * 2 })
     const fine = Int32Array.from(labels)
-    for (let p = 0; p < count; p++) if (where[p]) fine[p] = raw[p]
-    labels = mergeSmallRegions(fine, width, height, 3)
+    for (let p = 0; p < count; p++) if (where[p]) fine[p] = tidy[p]
+    labels = mergeSmallAreas(fine, lab, width, height, FOCUS_MIN_AREA)
   }
 
   // Cluster colours from the actual (unblurred) pixels they cover.

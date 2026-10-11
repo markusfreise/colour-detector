@@ -56,12 +56,15 @@ function runSegmentation(payload) {
   })
 }
 
-async function loadImage(src) {
-  const img = new Image()
-  img.decoding = 'async'
-  img.src = src
-  await img.decode()
-  return img
+// Waits for `load` rather than `decode()`: decoding is put off while the tab is in the background,
+// which would leave a picture opened there "Analysing" until the tab is looked at.
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = () => reject(new Error('the file is not a picture this browser can read'))
+    img.src = src
+  })
 }
 
 export const useAnalysisStore = defineStore('analysis', {
@@ -289,8 +292,10 @@ export const useAnalysisStore = defineStore('analysis', {
     async analyseLayers(rgba, width, height, token = ++analysisToken) {
       const paints = usePaintsStore()
       const box = paints.activeBox
-      const proposalKey = `${pictureSerial}/${box.id}/${this.settings.layerCount}`
-      // Propose only when there is nothing to keep: a new picture, another box or number of layers, or Auto pressed.
+      const { layerCount, maxCoats, layerVariety } = this.settings
+      const proposalKey = [pictureSerial, box.id, layerCount, maxCoats, layerVariety].join('/')
+      // Propose only when there is nothing to keep: a new picture or box, another number of layers or
+      // coats, another variety (the best paints depend on those), or Auto pressed.
       const propose = box.layerAuto && !(layerProposal === proposalKey && box.layerIds.length)
       const pool = (propose ? paints.autoCandidates : paints.layerPaints).map(({ id, hex }) => ({ id, hex }))
       this.layerStep = null

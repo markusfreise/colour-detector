@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { colourSet, pictureColours, proposeLayerPaints, fitLayers, layerImage, compositeColours, renderLayers, coatDepth } from '../lib/layers.js'
+import { colourSet, pictureColours, proposeLayerPaints, fitLayers, layerImage, compositeColours, renderLayers, coatDepth, washGuide } from '../lib/layers.js'
 import { absorbanceFromHex, depthLimit, depth, mixHex } from '../lib/mixing.js'
 import { hexToRgb, hexToOklab, rgbToHex, linearToRgb, deltaE } from '../lib/color.js'
 import { mulberry32 } from '../lib/segment.js'
@@ -79,19 +79,24 @@ describe('fitting layers to colours', () => {
   })
 
   it('does not let coats of a bright paint drift past its masstone', () => {
-    const [layer] = fitLayers(colourSet([{ hex: yellow.hex }]), [yellow], { maxCoats: 4 }).layers
+    const colours = colourSet([1, 2, 3, 4].map((c) => ({ hex: glaze([yellow, c * 0.2]) })))
+    const [layer] = fitLayers(colours, [yellow], { maxCoats: 4, variety: 0 }).layers
     const limit = depthLimit(absorbanceFromHex(yellow.hex))
+    expect(layer.top).toBeGreaterThan(1)
     expect(layer.depths[4]).toBeLessThanOrEqual(limit)
     expect(coatDepth(40, 1, limit)).toBeLessThanOrEqual(limit)
-    // depths grow with the coats
-    for (let c = 1; c <= 4; c++) expect(layer.depths[c]).toBeGreaterThan(layer.depths[c - 1])
+    // depths grow with the coats the layer has, and stay there
+    for (let c = 1; c <= 4; c++) {
+      if (c <= layer.top) expect(layer.depths[c]).toBeGreaterThan(layer.depths[c - 1])
+      else expect(layer.depths[c]).toBe(layer.depths[layer.top])
+    }
   })
 
   it('grades the coats only when asked to', () => {
     // A very light and a deep blue: one wash painted up to three times cannot do both well.
     const colours = colourSet([{ hex: glaze([blue, 0.08]) }, { hex: glaze([blue, 0.4]) }, { hex: glaze([blue, 2]) }])
-    const even = fitLayers(colours, [blue])
-    const graded = fitLayers(colours, [blue], { graded: true })
+    const even = fitLayers(colours, [blue], { variety: 0 })
+    const graded = fitLayers(colours, [blue], { graded: true, variety: 0 })
     expect(even.layers[0].ratio).toBe(1)
     expect(new Set(even.layers[0].washes.map((w) => w.strength)).size).toBe(1)
     expect(graded.layers[0].ratio).toBeGreaterThan(1.5)
@@ -176,7 +181,7 @@ describe('layers of a picture', () => {
     expect(a.combos).toEqual(b.combos)
     expect(a.steps).toEqual(b.steps)
     // The same paints, proposed from the colours of the picture alone.
-    expect(proposeLayerPaints(pictureColours(rgba, 64, 48, { simplify: 2 }), [yellow, blue, red, black], { count: 3 })).toEqual(a.paintIds)
+    expect(proposeLayerPaints(pictureColours(rgba, 64, 48), [yellow, blue, red, black], { count: 3 })).toEqual(a.paintIds)
   })
 
   it('shows any subset of the layers', () => {
@@ -201,5 +206,164 @@ describe('layers of a picture', () => {
     expect([firstTwo[p * 4], firstTwo[p * 4 + 1], firstTwo[p * 4 + 2]]).toEqual([pair[c * 3], pair[c * 3 + 1], pair[c * 3 + 2]])
     // The combination index of a pixel is the coats of its layers.
     res.layers.forEach((layer, k) => expect(res.combos[c].coats[k]).toBe(layer.coatMap[p]))
+  })
+})
+
+describe('the price of work', () => {
+  it('prefers one strong wash to several weak coats', () => {
+    const fit = fitLayers(colourSet([{ hex: glaze([blue, 0.8]) }]), [blue], { maxCoats: 3 })
+    const [layer] = fit.layers
+    expect(layer.top).toBe(1)
+    expect(layer.strength).toBeCloseTo(0.8, 1)
+    expect(fit.coats).toEqual([[1]])
+    expect(fit.deltaE[0]).toBeLessThan(1)
+  })
+
+  it('does not use a paint that buys nothing, and proposes fewer paints than asked for', () => {
+    const colours = colourSet([{ hex: glaze([blue, 0.3]) }, { hex: glaze([blue, 0.6]) }])
+    const fit = fitLayers(colours, [red, blue])
+    // The paint that is not needed stays in the list, last and without coats.
+    expect(fit.layers.map((l) => [l.paintId, l.top > 0])).toEqual([['b', true], ['r', false]])
+    expect(fit.layers[1].hexes).toEqual(['#ffffff', '#ffffff', '#ffffff', '#ffffff'])
+    expect(fit.coats.every((c) => c[1] === 0)).toBe(true)
+    expect(proposeLayerPaints(colours, [red, black, blue, yellow], { count: 3 })).toEqual(['b'])
+  })
+
+  it('leaves out a tint nobody would see', () => {
+    // Paper with the faintest breath of blue: not worth a wash and its drying time.
+    const fit = fitLayers(colourSet([{ hex: glaze([blue, 0.004]) }]), [blue])
+    expect(fit.layers[0].top).toBe(0)
+    expect(fit.coats).toEqual([[0]])
+  })
+
+  it('says how to prepare a wash', () => {
+    expect(washGuide(1)).toEqual({ water: 4, consistency: 'milk', guide: '1 part paint to 4 parts water, like milk' })
+    expect(washGuide(0.2).water).toBe(20)
+    expect(washGuide(0.2).consistency).toBe('tea')
+    expect(washGuide(0.075).water).toBe(50)
+    expect(washGuide(4).consistency).toBe('butter')
+    expect(washGuide(0).guide).toBe('clear water')
+    // more paint, less water
+    const waters = [0.05, 0.1, 0.3, 0.7, 1.5, 3].map((s) => washGuide(s).water)
+    for (let i = 1; i < waters.length; i++) expect(waters[i]).toBeLessThan(waters[i - 1])
+    const [layer] = fitLayers(colourSet([{ hex: glaze([blue, 0.8]) }]), [blue]).layers
+    expect(layer.guide).toBe(washGuide(layer.strength).guide)
+    expect(layer.washes[0].guide).toBe(layer.guide)
+  })
+})
+
+describe('accents', () => {
+  // A pale blue picture with a little very dark: too small for a wash layer of its own.
+  const colours = colourSet([
+    { hex: glaze([blue, 0.15]), weight: 600 },
+    { hex: glaze([blue, 0.3]), weight: 397 },
+    { hex: glaze([blue, 0.3], [black, 3.5]), weight: 3 },
+  ])
+
+  it('gives the small dark part a strong wash of its own, painted last', () => {
+    const fit = fitLayers(colours, [black, blue], { maxCoats: 2, variety: 8 })
+    expect(fit.layers.map((l) => [l.paintId, l.kind])).toEqual([['b', 'wash'], ['k', 'accent']])
+    const [wash, accent] = fit.layers
+    expect(accent.top).toBe(1)
+    expect(accent.strength).toBeGreaterThan(1)
+    expect(accent.strength).toBeGreaterThan(wash.strength * 3)
+    expect(fit.coats[2][1]).toBe(1)
+    expect(fit.coats[0][1]).toBe(0)
+    expect(fit.coats[1][1]).toBe(0)
+    expect(fit.deltaE[2]).toBeLessThan(8)
+  })
+
+  it('plans only washes at variety 0', () => {
+    const fit = fitLayers(colours, [black, blue], { maxCoats: 2, variety: 0 })
+    expect(fit.layers.every((l) => l.kind === 'wash')).toBe(true)
+    expect(fit.deltaE[2]).toBeGreaterThan(20)
+  })
+
+  it('lets an accent of a wash paint only add what is left up to the limit of the paint', () => {
+    const deep = colourSet([
+      { hex: glaze([blue, 0.15]), weight: 600 },
+      { hex: glaze([blue, 0.3]), weight: 397 },
+      { hex: glaze([blue, 3.5]), weight: 3 },
+    ])
+    const fit = fitLayers(deep, [blue], { maxCoats: 2, variety: 8 })
+    expect(fit.layers.map((l) => l.kind)).toEqual(['wash', 'accent'])
+    const [wash, accent] = fit.layers
+    const limit = depthLimit(absorbanceFromHex(blue.hex))
+    expect(wash.depths[wash.top] + accent.depths[1]).toBeLessThanOrEqual(limit + 1e-9)
+    expect(fit.coats[2]).toEqual([wash.top, 1])
+  })
+
+  it('keeps thin dark lines that the blur of the washes wipes out', () => {
+    const pale = hexToRgb(glaze([blue, 0.2])), dark = hexToRgb(glaze([blue, 0.2], [black, 3.5]))
+    // 3 px lines, 40 px apart: a few percent of the picture.
+    const rgba = makeImage(120, 120, (x, y) => ((x + 2 * y) % 80 < 3 ? dark : pale))
+    const plain = layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, variety: 0 })
+    const res = layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, variety: 8 })
+    expect(plain.layers.some((l) => l.kind === 'accent')).toBe(false)
+    const accent = res.layers.find((l) => l.kind === 'accent')
+    expect(accent.paintId).toBe('k')
+    // Layers in painting order: washes first, the accent after them, and its step last.
+    expect(res.layers[0]).toMatchObject({ kind: 'wash', paintId: 'b' })
+    expect(res.layers.findIndex((l) => l.kind === 'accent')).toBe(res.layers.length - 1)
+    expect(res.steps[res.steps.length - 1]).toMatchObject({ kind: 'accent', paintId: 'k', coat: 1 })
+    // On the lines, not on the field.
+    let onLine = 0, lines = 0, onField = 0, field = 0
+    for (let y = 10; y < 110; y++) for (let x = 10; x < 110; x++) {
+      const line = (x + 2 * y) % 80 === 1
+      const away = (x + 2 * y) % 80 > 12 && (x + 2 * y) % 80 < 70
+      if (line) { lines++; onLine += accent.coatMap[y * 120 + x] }
+      if (away) { field++; onField += accent.coatMap[y * 120 + x] }
+    }
+    expect(onLine / lines).toBeGreaterThan(0.8)
+    expect(onField / field).toBeLessThan(0.01)
+    expect(res.deltaE.mean).toBeLessThan(plain.deltaE.mean)
+    expect(accent.buys.areaWithout - accent.buys.areaWith).toBeGreaterThan(10)
+  })
+})
+
+describe('what a plan says about itself', () => {
+  // Two blue squares on white; one of them is deeper in its middle.
+  const one = hexToRgb(glaze([blue, 0.3])), two = hexToRgb(glaze([blue, 0.6]))
+  const inside = (x, y, x0, y0, size) => x >= x0 && x < x0 + size && y >= y0 && y < y0 + size
+  const rgba = makeImage(80, 40, (x, y) => (inside(x, y, 10, 10, 20) ? two : inside(x, y, 5, 5, 30) || inside(x, y, 45, 5, 30) ? one : [255, 255, 255]))
+  const res = layerImage(rgba, 80, 40, [blue, red], { paintIds: ['b', 'r'], maxCoats: 2, simplify: 0, variety: 0 })
+
+  it('counts the separate shapes of every step', () => {
+    expect(res.steps.map((s) => [s.paintId, s.coat, s.shapes])).toEqual([['b', 1, 2], ['b', 2, 1]])
+    expect(res.layers[0].coats.map((c) => c.shapes)).toEqual([2, 1])
+    for (const step of res.steps) {
+      expect(step.guide).toBe(res.layers[step.layer].guide)
+      expect(step.water).toBeGreaterThan(0)
+    }
+  })
+
+  it('adds up the work', () => {
+    expect(res.work.steps).toBe(res.steps.length)
+    expect(res.work.area).toBeCloseTo(res.steps.reduce((sum, s) => sum + s.share, 0), 10)
+    expect(res.work.area).toBeCloseTo((1800 + 400) / 3200, 10)
+  })
+
+  it('says what every layer buys', () => {
+    const [used, unused] = res.layers
+    expect(used.buys.with).toBeCloseTo(res.deltaE.mean, 6)
+    expect(used.buys.without).toBeGreaterThan(used.buys.with + 3)
+    expect(used.buys.areaWithout).toBeGreaterThan(used.buys.areaWith + 5)
+    expect(unused.top).toBe(0)
+    expect(unused.buys.without).toBeCloseTo(unused.buys.with, 6)
+    expect(res.steps.every((s) => s.paintId === 'b')).toBe(true)
+  })
+
+  it('proposes the same paints whatever the size of the areas', () => {
+    const rand = mulberry32(11)
+    const picture = makeImage(96, 64, (x, y) => (x < 48 ? [235 - y + rand() * 12, 190 + rand() * 12, 60 + x] : [70 + rand() * 12, 110 + y, 190 - x + rand() * 12]))
+    const pool = [yellow, blue, red, black]
+    const ids = [0, 4, 8].map((simplify) => layerImage(picture, 96, 64, pool, { count: 3, simplify }).paintIds)
+    expect(ids[1]).toEqual(ids[0])
+    expect(ids[2]).toEqual(ids[0])
+    // And planning the proposal again with its paints gives the same layers.
+    const first = layerImage(picture, 96, 64, pool, { count: 3, simplify: 4 })
+    const again = layerImage(picture, 96, 64, pool, { paintIds: first.paintIds, simplify: 4 })
+    expect(again.layers.map((l) => [l.paintId, l.kind, l.top, l.strength])).toEqual(first.layers.map((l) => [l.paintId, l.kind, l.top, l.strength]))
+    expect(again.comboMap).toEqual(first.comboMap)
   })
 })

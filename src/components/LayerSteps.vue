@@ -9,7 +9,7 @@
         <p class="steps__text">
           <strong>Step {{ analysis.layerStep + 1 }} of {{ result.steps.length }}</strong>
           <span class="swatch swatch--small steps__swatch" :style="{ background: step.hex }"></span>
-          Layer {{ step.layer + 1 }} of {{ result.layers.length }}, {{ name }}, coat {{ step.coat }}
+          {{ accent ? 'Accent' : `Layer ${step.layer + 1}` }}, {{ name }}{{ accent ? '' : `, coat ${step.coat}` }}
         </p>
         <button class="button button--ghost" type="button" :disabled="last" @click="analysis.goToStep(analysis.layerStep + 1)">Next</button>
         <button class="button button--ghost" type="button" @click="analysis.goToStep(null)">Done</button>
@@ -21,7 +21,8 @@
         <p class="steps__hint">
           {{ washText }} Paint the areas in full colour ({{ percent(step.share) }}% of the picture).
           {{ last ? 'Last step.' : 'Let it dry completely before the next step.' }}
-          <span v-if="step.shapes > MANY_SHAPES" class="steps__warn">
+          <span v-if="accent" class="steps__note">{{ step.shapes }} small shapes: the darkest or brightest touches, set last.</span>
+          <span v-else-if="step.shapes > MANY_SHAPES" class="steps__warn">
             {{ step.shapes }} separate shapes in this step. A higher "Simplify areas" gives fewer and bigger ones.
           </span>
         </p>
@@ -46,15 +47,16 @@ const paints = usePaintsStore()
 const result = computed(() => (analysis.layerMode && analysis.layers?.steps.length ? analysis.layers : null))
 const step = computed(() => (result.value && analysis.layerStep != null ? result.value.steps[analysis.layerStep] : null))
 const layer = computed(() => result.value.layers[step.value.layer])
+const accent = computed(() => step.value.kind === 'accent')
 const last = computed(() => analysis.layerStep === result.value.steps.length - 1)
 const name = computed(() => paints.byId[step.value.paintId]?.name ?? step.value.paintId)
 const percent = (share) => Math.round(share * 100) || '<1'
 // The first coat of a layer says how to prepare its wash; later coats use the same one.
 const washText = computed(() => {
-  const dilution = step.value.dilution.replace(/ \(.*\)$/, '')
   if (step.value.coat > 1) return 'The same wash again, over the dry coat.'
-  const guide = layer.value.guide ? ` (${layer.value.guide})` : ''
-  return `Prepare ${name.value} as a ${dilution.replace(/ wash$/, '')} wash${guide}: one stroke on white paper should look like the swatch.`
+  // The guide (paint to water) says more than a word like "watery"; without one, fall back to the word.
+  const how = layer.value.guide ?? `a ${step.value.dilution.replace(/ \(.*\)$/, '')}`
+  return `Prepare ${name.value}${accent.value ? ' as a strong wash' : ''}: ${how}. One stroke on white paper should look like the swatch.`
 })
 
 // Left and right arrow keys step while the walk is active.

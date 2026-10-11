@@ -12,3 +12,4 @@
 .steps__body .steps__hint { margin-top: 0; }
 .steps__target { flex: none; width: 150px; min-height: 44px; }
 .steps__warn { display: block; color: var(--rough); }
+.steps__note { display: block; }

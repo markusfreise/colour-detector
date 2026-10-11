@@ -4,8 +4,8 @@
       <h2 class="panel__title">
         Layers
         <span v-if="result" class="palette__count">
-          {{ result.layers.length }} {{ result.layers.length === 1 ? 'layer' : 'layers' }},
-          {{ result.steps.length }} {{ result.steps.length === 1 ? 'coat' : 'coats' }}
+          {{ used }} {{ used === 1 ? 'layer' : 'layers' }}, {{ result.steps.length }}
+          {{ result.steps.length === 1 ? 'step' : 'steps' }}
         </span>
       </h2>
       <div class="palette__actions">
@@ -26,11 +26,12 @@
     <ol v-if="result" class="layers__list">
       <li
         v-for="row in rows"
-        :key="row.paintId"
+        :key="row.index"
         class="layers__item"
-        :class="{ 'layers__item--active': row.solo, 'layers__item--current': row.current }"
+        :class="{ 'layers__item--active': row.solo, 'layers__item--current': row.current, 'layers__item--unused': !row.used }"
       >
-        <label class="checkbox layers__tick" :title="`Show layer ${row.number} in the picture`">
+        <span v-if="!row.used" class="layers__tick"></span>
+        <label v-else class="checkbox layers__tick" :title="`Show layer ${row.number} in the picture`">
           <input
             type="checkbox"
             :checked="row.shown"
@@ -39,15 +40,26 @@
           />
           <span class="layers__number">{{ row.number }}</span>
         </label>
-        <button class="layers__row" type="button" :aria-pressed="row.solo" :title="row.solo ? 'Show all layers' : 'Show only this layer'" @click="analysis.soloLayer(row.index)">
+        <button
+          class="layers__row"
+          type="button"
+          :disabled="!row.used"
+          :aria-pressed="row.solo"
+          :title="!row.used ? 'This paint adds too little to be worth a layer' : row.solo ? 'Show all layers' : 'Show only this layer'"
+          @click="analysis.soloLayer(row.index)"
+        >
           <span class="swatch" :style="{ background: row.hex }" title="One coat on white paper"></span>
           <span class="palette__summary layers__summary">
-            <span class="palette__paints">{{ row.name }}</span>
-            <span class="palette__meta">{{ row.dilution }} · {{ row.coatsText }} · {{ percent(row.share) }}% of image</span>
+            <span class="palette__paints">
+              {{ row.name }}
+              <span v-if="row.accent" class="layers__kind">accent</span>
+            </span>
+            <span v-if="row.used" class="palette__meta">{{ row.guide }}</span>
+            <span class="palette__meta">{{ row.meta }}</span>
           </span>
         </button>
         <!-- One segment per coat, in the colour that many coats give on white paper. -->
-        <div class="palette__bar palette__bar--washes layers__coats">
+        <div v-if="row.used" class="palette__bar palette__bar--washes layers__coats">
           <button
             v-for="coat in row.coats"
             :key="coat.coats"
@@ -104,6 +116,8 @@ const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 
 const result = computed(() => analysis.layers)
+// Paints that got a layer; a proposed or chosen paint that does not pay is listed but not painted.
+const used = computed(() => result.value.layers.filter((l) => l.top > 0).length)
 const percent = (share) => Math.round(share * 100) || '<1'
 const allShown = computed(() => analysis.layerStep == null && analysis.layerView.every(Boolean))
 
@@ -114,15 +128,24 @@ const rows = computed(() => {
   return result.value.layers.map((layer, index) => {
     const paint = paints.byId[layer.paintId]
     const used = layer.coats.filter((c) => c.share > 0)
+    const accent = layer.kind === 'accent'
+    const share = layer.coats[0]?.share ?? 0
+    // What the picture gains from this layer: the mean distance to the photo without it and with it.
+    const gain = layer.buys ? layer.buys.without - layer.buys.with : 0
+    const coatsText = accent ? 'a strong wash on small areas, painted last' : used.length === 1 ? '1 coat' : `up to ${used.length} coats`
     return {
       index,
       number: index + 1,
       paintId: layer.paintId,
       name: paint ? `${paintNumber(paint.number)} ${paint.name}` : layer.paintId,
       hex: layer.hexes[1],
-      dilution: layer.dilution.replace(/ \(.*\)$/, ''),
-      coatsText: used.length ? `up to ${used.length} ${used.length === 1 ? 'coat' : 'coats'}` : 'not needed',
-      share: layer.coats[0]?.share ?? 0,
+      used: used.length > 0,
+      accent,
+      guide: layer.guide ?? layer.dilution.replace(/ \(.*\)$/, ''),
+      meta: used.length
+        ? `${coatsText} · ${percent(share)}% of image${gain >= 0.05 ? ` · brings the picture ${gain.toFixed(1)} closer` : ''}`
+        : 'Not needed for this picture: it would add too little.',
+      share,
       shown: !!view[index],
       solo: analysis.layerSolo === index,
       current: step?.layer === index,

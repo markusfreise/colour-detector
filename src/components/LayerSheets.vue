@@ -52,18 +52,21 @@ function build() {
   const percent = (share) => Math.round(share * 100) || '<1'
   sheets.value = {
     finished: picture({ show: result.layers.map(() => true), outlines: true, numbers: false }),
-    rows: result.layers.map((layer, k) => {
+    rows: result.layers.map((layer, k) => ({ layer, k })).filter(({ layer }) => layer.top > 0).map(({ layer, k }) => {
       const paint = paints.byId[layer.paintId]
+      const accent = layer.kind === 'accent'
       const used = layer.coats.filter((c) => c.share > 0).length
       const more = Array.from({ length: Math.max(0, used - 1) }, (_, i) => `Coat ${i + 2} on the ${Array.from({ length: used - i - 1 }, (__, j) => `${i + 2 + j}s`).join(' and ')}.`)
       return {
         number: k + 1,
-        name: paint ? `${paintNumber(paint.number)} ${paint.name}` : layer.paintId,
+        name: `${paint ? `${paintNumber(paint.number)} ${paint.name}` : layer.paintId}${accent ? ' (accent)' : ''}`,
         hex: layer.hexes[1],
-        dilution: layer.dilution.replace(/ \(.*\)$/, ''),
+        dilution: layer.guide ?? layer.dilution.replace(/ \(.*\)$/, ''),
         coats: used,
         share: percent(layer.coats[0]?.share ?? 0),
-        instruction: ['Coat 1 on every numbered area.', ...more, 'Let each coat dry.'].join(' '),
+        instruction: accent
+          ? 'A strong wash on the numbered shapes, painted last, when everything else is dry.'
+          : ['Coat 1 on every numbered area.', ...more, 'Let each coat dry.'].join(' '),
         image: picture({ show: result.layers.map((_, j) => j === k), outlines: true, numbers: true }),
       }
     }),

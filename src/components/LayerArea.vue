@@ -21,7 +21,7 @@
     <h3 class="editor__subtitle">Layers on this spot</h3>
     <p v-if="!painted" class="editor__empty">Leave the paper white.</p>
     <ol class="layers__spot">
-      <li v-for="row in rows" :key="row.number">
+      <li v-for="row in rows.filter((r) => r.used)" :key="row.number">
         <button
           class="layers__spot-row"
           :class="{ 'layers__spot-row--none': !row.coats }"
@@ -56,7 +56,8 @@ const painted = computed(() => spot.value.coats.some(Boolean))
 const rows = computed(() =>
   analysis.layers.layers.map((layer, k) => ({
     number: k + 1,
-    name: paints.byId[layer.paintId]?.name ?? layer.paintId,
+    used: layer.top > 0,
+    name: `${paints.byId[layer.paintId]?.name ?? layer.paintId}${layer.kind === 'accent' ? ' (accent)' : ''}`,
     coats: spot.value.coats[k],
     hex: layer.hexes[spot.value.coats[k] || 1],
     // The last step that touches this spot in this layer.

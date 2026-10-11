@@ -20,3 +20,7 @@
 .layers__spot-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .layers__spot-coats { font-variant-numeric: tabular-nums; font-weight: 600; }
 .layers__spot-row--none .layers__spot-coats { font-weight: 400; }
+.layers__item--unused { color: var(--ink-soft); }
+.layers__item--unused .swatch { opacity: 0.4; }
+.layers__item--unused .layers__row { cursor: default; }
+.layers__kind { margin-left: 4px; padding: 0 6px; border: 1px solid var(--line); border-radius: 999px; font-size: 11px; color: var(--ink-soft); }

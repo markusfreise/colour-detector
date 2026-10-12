@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { markRaw } from 'vue'
-import { findRecipes, proposePaints, washRecipe, washLetter } from '../lib/mixing.js'
+import { findRecipes, proposePaints, washRecipe, washLetter, valueReach } from '../lib/mixing.js'
 import { adjustImage, hexToOklab, oklabToHex, rgbToHex, deltaE } from '../lib/color.js'
 import { planMixes, mixesToRequest } from '../lib/mixes.js'
 import { usePaintsStore } from './paints.js'
@@ -762,7 +762,23 @@ export const useAnalysisStore = defineStore('analysis', {
 
       const values = this.valueMode
       const washOf = (recipe, hex) => (recipe.paints.length ? washRecipe(recipe, hex, byId, { values }) : recipe)
-      const groups = planMixes(seg.clusters, paints, {
+      // Value mode with paints that do not get as dark as the picture (a yellow alone): the values
+      // of the picture are spread over what the paints reach, from blank paper for the lightest to
+      // the darkest paint for the darkest, so that the picture keeps all its steps instead of
+      // ending in one flat dark. Paints that reach the darks leave the values alone.
+      let clusters = seg.clusters
+      if (values && paints.length) {
+        const used = seg.clusters.filter((c) => c.pixelCount).map((c) => hexToOklab(c.hex)[0])
+        const light = Math.max(...used), dark = Math.min(...used)
+        const reach = valueReach(paints, { maxPaints: this.settings.maxPaints })
+        if (reach > dark && light > dark) {
+          clusters = seg.clusters.map((c) => {
+            const L = hexToOklab(c.hex)[0]
+            return { ...c, hex: oklabToHex([1 - ((light - L) * (1 - reach)) / (light - dark), 0, 0]) }
+          })
+        }
+      }
+      const groups = planMixes(clusters, paints, {
         maxPaints: this.settings.maxPaints,
         // The AI's colours are the mixes: none of them is joined with another.
         wanted: this.aiActive?.mixes.length ? Math.max(this.settings.colours, this.aiActive.mixes.length) : this.settings.colours,
@@ -780,7 +796,7 @@ export const useAnalysisStore = defineStore('analysis', {
           for (const item of items) {
             item.hex = oklabToHex(item.lab)
             // A value study is painted in finer steps of water.
-            item.letter = recipes.length ? washLetter(washOf(recipes[0], item.hex).strength, values) : ''
+            item.letter = recipes.length ? washLetter(washOf(recipes[0], item.hex).fullness, values) : ''
             const same = levels.get(item.letter)
             if (same) {
               const n = same.pixels + item.pixels

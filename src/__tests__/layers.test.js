@@ -7,7 +7,8 @@ import { mulberry32 } from '../lib/segment.js'
 const yellow = { id: 'y', hex: '#fae409' }
 const blue = { id: 'b', hex: '#2b61ab' }
 const red = { id: 'r', hex: '#e6331d' }
-const black = { id: 'k', hex: '#706c63' }
+// A black as its swatch shows it: no wash of a paint is darker than that.
+const black = { id: 'k', hex: '#1b1811' }
 
 // Dried washes over each other on white paper: [paint, amount of paint] per layer.
 function glaze(...washes) {
@@ -72,10 +73,10 @@ describe('fitting layers to colours', () => {
   })
 
   it('reaches a dark with separate layers that one wet mix of bright paints cannot reach', () => {
-    const dark = glaze([red, 3], [blue, 3], [yellow, 3])
+    const dark = glaze([red, 1], [blue, 1], [yellow, 1])
     const fit = fitLayers(colourSet([{ hex: dark }]), [red, blue, yellow])
     expect(fit.deltaE[0]).toBeLessThan(3)
-    expect(deltaE(hexToOklab(mixHex([red, blue, yellow], [4, 4, 4])), hexToOklab(dark))).toBeGreaterThan(10)
+    expect(deltaE(hexToOklab(mixHex([red, blue, yellow], [1, 1, 1])), hexToOklab(dark))).toBeGreaterThan(10)
   })
 
   it('does not let coats of a bright paint drift past its masstone', () => {
@@ -237,14 +238,15 @@ describe('the price of work', () => {
   })
 
   it('says how to prepare a wash', () => {
-    expect(washGuide(1)).toEqual({ water: 4, consistency: 'milk', guide: '1 part paint to 4 parts water, like milk' })
-    expect(washGuide(0.2).water).toBe(20)
-    expect(washGuide(0.2).consistency).toBe('tea')
-    expect(washGuide(0.075).water).toBe(50)
-    expect(washGuide(4).consistency).toBe('butter')
+    // Strength 1 is the paint as its swatch shows it: hardly thinned.
+    expect(washGuide(1)).toEqual({ water: 1, consistency: 'butter', guide: '1 part paint to 1 part water, like butter' })
+    expect(washGuide(0.2).water).toBe(5)
+    expect(washGuide(0.2).consistency).toBe('milk')
+    expect(washGuide(0.05).water).toBe(20)
+    expect(washGuide(0.05).consistency).toBe('tea')
     expect(washGuide(0).guide).toBe('clear water')
     // more paint, less water
-    const waters = [0.05, 0.1, 0.3, 0.7, 1.5, 3].map((s) => washGuide(s).water)
+    const waters = [0.05, 0.1, 0.3, 0.6, 1].map((s) => washGuide(s).water)
     for (let i = 1; i < waters.length; i++) expect(waters[i]).toBeLessThan(waters[i - 1])
     const [layer] = fitLayers(colourSet([{ hex: glaze([blue, 0.8]) }]), [blue]).layers
     expect(layer.guide).toBe(washGuide(layer.strength).guide)
@@ -257,7 +259,7 @@ describe('accents', () => {
   const colours = colourSet([
     { hex: glaze([blue, 0.15]), weight: 600 },
     { hex: glaze([blue, 0.3]), weight: 397 },
-    { hex: glaze([blue, 0.3], [black, 3.5]), weight: 3 },
+    { hex: glaze([blue, 0.3], [black, 1]), weight: 3 },
   ])
 
   it('gives the small dark part a strong wash of its own, painted last', () => {
@@ -265,7 +267,9 @@ describe('accents', () => {
     expect(fit.layers.map((l) => [l.paintId, l.kind])).toEqual([['b', 'wash'], ['k', 'accent']])
     const [wash, accent] = fit.layers
     expect(accent.top).toBe(1)
-    expect(accent.strength).toBeGreaterThan(1)
+    // As strong as a paint goes: about its swatch.
+    expect(accent.strength).toBeGreaterThan(0.8)
+    expect(accent.strength).toBeLessThanOrEqual(1)
     expect(accent.strength).toBeGreaterThan(wash.strength * 3)
     expect(fit.coats[2][1]).toBe(1)
     expect(fit.coats[0][1]).toBe(0)
@@ -294,7 +298,7 @@ describe('accents', () => {
   })
 
   it('keeps thin dark lines that the blur of the washes wipes out', () => {
-    const pale = hexToRgb(glaze([blue, 0.2])), dark = hexToRgb(glaze([blue, 0.2], [black, 3.5]))
+    const pale = hexToRgb(glaze([blue, 0.2])), dark = hexToRgb(glaze([blue, 0.2], [black, 1]))
     // 3 px lines, 40 px apart: a few percent of the picture.
     const rgba = makeImage(120, 120, (x, y) => ((x + 2 * y) % 80 < 3 ? dark : pale))
     const plain = layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, accents: 0 })
@@ -373,7 +377,7 @@ describe('what a plan says about itself', () => {
 
 describe('what accents are for', () => {
   // Mostly sky blue, a little pure yellow (a third of a percent) and as little very dark.
-  const sky = glaze([blue, 0.25]), sun = glaze([yellow, 0.9]), night = glaze([blue, 0.25], [black, 3.5])
+  const sky = glaze([blue, 0.25]), sun = glaze([yellow, 0.9]), night = glaze([blue, 0.25], [black, 1])
 
   it('gives the first accent to a small colour the washes miss, the second to the darks', () => {
     const colours = colourSet([{ hex: sky, weight: 994 }, { hex: sun, weight: 3 }, { hex: night, weight: 3 }])
@@ -399,9 +403,9 @@ describe('what accents are for', () => {
   })
 
   it('keeps a neutral wash off clean colour', () => {
-    // A saturated red, a little darker than the red paint gives in one go: grey would darken it
-    // numerically, but a painter keeps grey out of a clean red.
-    const colours = colourSet([{ hex: glaze([red, 1.5], [black, 0.12]), weight: 60 }, { hex: glaze([black, 0.5]), weight: 40 }])
+    // A saturated red, a little darker than the red paint gives: black would darken it
+    // numerically, but a painter keeps black out of a clean red.
+    const colours = colourSet([{ hex: glaze([red, 1], [black, 0.05]), weight: 60 }, { hex: glaze([black, 0.2]), weight: 40 }])
     const fit = fitLayers(colours, [red, black], { maxCoats: 2, accents: 0 })
     const grey = fit.layers.findIndex((l) => l.paintId === 'k')
     expect(fit.coats[0][grey]).toBe(0)
@@ -411,7 +415,7 @@ describe('what accents are for', () => {
   })
 
   it('stays off print on white paper', () => {
-    const ink = hexToRgb(glaze([black, 3.5])), tint = hexToRgb(glaze([blue, 0.3]))
+    const ink = hexToRgb(glaze([black, 1])), tint = hexToRgb(glaze([blue, 0.3]))
     // Left: white with thin black strokes (a caption). Right: a blue field with dark strokes.
     const rgba = makeImage(160, 80, (x, y) => {
       const stroke = y > 20 && y < 60 && x % 9 < 2
@@ -434,7 +438,7 @@ describe('the accent for the darks', () => {
   const colours = (paint) => colourSet([
     { hex: glaze([paint, 0.5]), weight: 600 },
     { hex: glaze([paint, 1]), weight: 397 },
-    { hex: glaze([paint, 1], [black, 3.5]), weight: 3 },
+    { hex: glaze([paint, 1], [black, 1]), weight: 3 },
   ])
 
   it('is dark: one coat of it on white paper is a dark colour', () => {
@@ -459,7 +463,7 @@ describe('the accent for the darks', () => {
   })
 
   it('goes on the dark parts of a picture only', () => {
-    const light = hexToRgb(glaze([pale, 1])), mid = hexToRgb(glaze([blue, 0.5])), deep = hexToRgb(glaze([blue, 0.5], [black, 3.5]))
+    const light = hexToRgb(glaze([pale, 1])), mid = hexToRgb(glaze([blue, 0.5])), deep = hexToRgb(glaze([blue, 0.5], [black, 1]))
     // A light field, a mid-blue band, and dark strokes in both.
     const rgba = makeImage(120, 120, (x, y) => ((x + 2 * y) % 80 < 3 ? deep : y < 80 ? light : mid))
     const res = layerImage(rgba, 120, 120, [pale, blue, black], { paintIds: ['p', 'b', 'k'], maxCoats: 2, simplify: 2, accents: 2 })

@@ -15,9 +15,9 @@
 // - The colour of an area is white paper filtered by every layer:
 //   reflectance = exp(-sum over layers of depth * A of the paint).
 //   Different paints add up without a common limit, which is what a wet mix cannot do. The coats of
-//   ONE paint share that paint's limit, depth = depth(coats * strength, limit): three coats of
-//   yellow come closer to the yellow's masstone, they do not turn into an orange. An accent of a
-//   paint that is also a wash adds what is left up to that limit.
+//   ONE paint add up to the paint as its swatch shows it and no further (MAX_AMOUNT): three
+//   coats of a light yellow wash come closer to the yellow, they never get darker than it. An
+//   accent of a paint that is also a wash adds what is left up to that.
 // - Work has a price. Every coat must make the colour it is painted on visibly better, every step
 //   (one wash over the dried picture) must make the picture better, and an accent must make its
 //   small part much better. What does not pay is left out: a layer can end up with one coat, and
@@ -38,9 +38,13 @@
 // Pure functions on typed arrays so it runs in a Web Worker and in tests.
 
 import { hexToRgb, rgbToLinear, srgbToLinear, linearToSrgb, rgbToHex } from './color.js'
-import { absorbanceFromHex, depthLimit, depth, describeDilution } from './mixing.js'
+import { absorbanceFromHex, depthLimit, depth as depthOf, describeDilution, MAX_AMOUNT } from './mixing.js'
 import { boxBlur, toOklabPixels, colourBins, majorityFilter, connectedComponents, mergeSmallRegions, labelAnchors } from './segment.js'
 import { geometricAreas, straighten, edgeTolerance } from './geometric.js'
+
+// Depth of a paint on the paper. However many coats, a paint never gets deeper than its swatch
+// (MAX_AMOUNT): further coats of the same paint add nothing, only another paint over it does.
+const depth = (amount, limit) => depthOf(Math.min(MAX_AMOUNT, amount), limit)
 
 /** Coats per wash layer when nothing else is asked for. */
 export const MAX_COATS = 3
@@ -53,16 +57,17 @@ export const MAX_LAYERS = 7
  * consistency) that are taken to give strength 1, the paint's swatch. An assumption, not a
  * measurement: swatch a few washes and adjust it.
  */
-export const REFERENCE_WATER = 4
+export const REFERENCE_WATER = 1
 // Combinations of coats of all layers that are still looked at one by one.
 const MAX_COMBINATIONS = 40000
 // Whether the coats of a layer may differ in strength when nothing else is asked for.
 const GRADED = false
 // Wash strengths tried when the paints are chosen; the strengths are tuned freely afterwards.
-const STRENGTHS = [0.06, 0.1, 0.16, 0.25, 0.4, 0.6, 0.9, 1.4, 2.2, 3.4]
-const ACCENT_STRENGTHS = [0.25, 0.4, 0.6, 0.9, 1.4, 2.2, 3.4]
+const STRENGTHS = [0.06, 0.1, 0.16, 0.25, 0.4, 0.6, 0.8, 1]
+const ACCENT_STRENGTHS = [0.25, 0.4, 0.6, 0.8, 1]
 const MIN_STRENGTH = 0.05
-const MAX_STRENGTH = 4
+// No wash is stronger than the paint as its swatch shows it.
+const MAX_STRENGTH = MAX_AMOUNT
 // Graded coats: every coat this many times stronger than the one before (1 = the same wash again).
 const RATIOS = [1, 1.7, 3]
 const MAX_RATIO = 4

@@ -26,7 +26,7 @@
       >
         <button class="palette__mix" type="button" @click="toggle(mix.base)">
           <span class="palette__number">{{ mix.number }}</span>
-          <span class="swatch palette__base" :style="{ background: mix.hex }" :title="`Base colour of the mix: ${mix.hex}`"></span>
+          <span class="swatch palette__base" :style="{ background: mix.hex }" :title="mix.hexTitle"></span>
           <span class="palette__summary">
             <span class="palette__paints">
               <template v-for="(paint, i) in mix.paints" :key="paint.id">
@@ -130,7 +130,10 @@ const mixes = computed(() => {
       family,
       number: parseInt(base.entry.label),
       base: base.index,
-      hex: recipe?.hex ?? base.entry.targetHex,
+      // One paint in several washes: the paint as it is, since no single wash is "the" colour.
+      // Otherwise the mix as its recipe gives it.
+      hex: used.length === 1 && members.length > 1 ? used[0].hex : (recipe?.hex ?? base.entry.targetHex),
+      hexTitle: used.length === 1 && members.length > 1 ? `Colour of the paint: ${used[0].hex}` : `Base colour of the mix: ${recipe?.hex ?? base.entry.targetHex}`,
       // Shown in place of the paints when there are none.
       names: recipe ? 'Paper white' : '–',
       recipeText: used.map((p) => p.title).join(', '),

@@ -4,12 +4,12 @@
 // (Beer–Lambert). Each paint's swatch colour gives a per-channel absorbance
 // A = -ln(reflectance). A mix of paints with amounts a_i reflects
 // exp(-d(S)/S · Σ a_i·A_i) with S = Σ a_i. An amount of 1 means "as strong as the
-// reference swatch"; smaller amounts mean more water, larger amounts mean a richer, darker layer.
+// reference swatch"; smaller amounts mean more water. No paint counts for more than 1 (MAX_AMOUNT):
+// a paint is never darker than its swatch.
 //
 // d(S) is the depth a wash reaches with the total amount S of paint in it. It is 1 at
-// amount 1 and levels off at MAX_DEPTH: paint laid on thickly approaches its masstone and
-// does not keep getting darker and more saturated. Without that limit a thick yellow-orange
-// would turn into a deep red-orange, which no amount of that paint gives on paper.
+// amount 1 and levels off at MAX_DEPTH, which matters for a mix of several paints (S above 1):
+// their depths do not simply add up.
 // The limit holds for the mix as a whole, not for each paint: a brush only carries so much
 // pigment, so three bright paints together do not add up to black. Watery mixes still add
 // up paint by paint.
@@ -23,7 +23,13 @@
 import { hexToRgb, rgbToLinear, linearToRgb, rgbToHex, linearToOklab, deltaE } from './color.js'
 
 const MIN_REFLECTANCE = 0.0005
-const MAX_AMOUNT = 4
+// The most of one paint in a mix or on the paper: the paint as its swatch shows it. Water only
+// makes a paint lighter, so nothing is ever darker than the swatch of a paint unless a second
+// paint is mixed in or laid over it (decided 2026-10-12; until then four times as much was
+// allowed, on the way to an estimated masstone).
+export const MAX_AMOUNT = 1
+// Where the water levels of a wash begin, as fullness: paper, W, L, M, R, C, and the swatch itself.
+const WASH_LIMITS = [0.02, 0.1, 0.25, 0.5, 0.8, 1]
 // Depth of the masstone relative to the reference swatch, for a bright paint and for a neutral
 // one. Estimates: the stock data holds one colour per paint, not its masstone.
 export const MAX_DEPTH = 1.6
@@ -50,9 +56,9 @@ export function depth(amount, limit = MAX_DEPTH) {
   return limit * (1 - Math.pow(1 - 1 / limit, amount))
 }
 
-// Total amount needed for a depth; depths that cannot be reached give the largest amount.
-function amountForDepth(d, limit) {
-  return d >= depth(MAX_AMOUNT, limit) ? MAX_AMOUNT : Math.log(1 - d / limit) / Math.log(1 - 1 / limit)
+// Total amount needed for a depth; depths that cannot be reached give `most`, the largest amount.
+function amountForDepth(d, limit, most = MAX_AMOUNT) {
+  return d >= depth(most, limit) ? most : Math.log(1 - d / limit) / Math.log(1 - 1 / limit)
 }
 // Each extra paint in a recipe must buy at least this much ΔE to be preferred.
 const EXTRA_PAINT_PENALTY = 1.2
@@ -65,14 +71,16 @@ export function mixAbsorbances(absorbances, amounts) {
   const total = [0, 0, 0]
   let sum = 0
   let limit = 0
+  // No paint counts for more than its swatch (MAX_AMOUNT), whatever amount is asked for.
+  const used = amounts.map((v) => Math.min(MAX_AMOUNT, v))
   absorbances.forEach((A, i) => {
-    sum += amounts[i]
-    limit += amounts[i] * depthLimit(A)
+    sum += used[i]
+    limit += used[i] * depthLimit(A)
   })
   // Every paint contributes by its share of the depth the whole mix reaches.
   const scale = sum > 0 ? depth(sum, limit / sum) / sum : 0
   absorbances.forEach((A, i) => {
-    const d = amounts[i] * scale
+    const d = used[i] * scale
     total[0] += A[0] * d
     total[1] += A[1] * d
     total[2] += A[2] * d
@@ -137,6 +145,34 @@ export const VALUE_WATER_PENALTY = 2
 const VALUE_PAIR_PARTS = [[1, 1], [2, 1], [1, 2]]
 const VALUE_TRIPLES_UP_TO = 12
 
+// The mixes of value mode: every paint, every two and three of them in their proportions. Each
+// with its amounts and its lightness (OKLab) at a strength of e^logT times that of one paint,
+// and `most`, the logT at which its largest amount is as much as a recipe takes.
+function* valueMixes(paints, maxPaints) {
+  const pool = paints.map((paint) => ({ paint, A: absorbanceFromHex(paint.hex) }))
+  const mix = (candidate, parts) => {
+    const whole = parts.reduce((sum, v) => sum + v, 0)
+    const base = parts.map((v) => v / whole)
+    const amountsAt = (logT) => base.map((v) => v * Math.exp(logT))
+    const lightness = (logT) => linearToOklab(mixAbsorbances(candidate.map((c) => c.A), amountsAt(logT)))[0]
+    return { candidate, amountsAt, lightness, most: Math.log(MAX_AMOUNT / Math.max(...base)) }
+  }
+  for (const c of pool) yield mix([c], [1])
+  if (maxPaints >= 2) for (const pair of combinations(pool, 2)) for (const parts of VALUE_PAIR_PARTS) yield mix(pair, parts)
+  if (maxPaints >= 3 && pool.length <= VALUE_TRIPLES_UP_TO) for (const triple of combinations(pool, 3)) yield mix(triple, [1, 1, 1])
+}
+
+/**
+ * Value mode: the darkest the paints reach, alone or mixed, as lightness in OKLab (1 = paper,
+ * which is also the answer without paints). A yellow alone stays light; the values of a picture
+ * that go deeper have to be brought into what the paints reach before they are matched.
+ */
+export function valueReach(paints, { maxPaints = 3 } = {}) {
+  let darkest = 1
+  for (const { lightness, most } of valueMixes(paints, maxPaints)) darkest = Math.min(darkest, lightness(most))
+  return darkest
+}
+
 /**
  * Value mode: the picture is grey, and the paints and their mixes stand for its values, whatever
  * their hue. Every paint, every two (and three) of them in a few plain proportions is a mix with
@@ -148,14 +184,9 @@ const VALUE_TRIPLES_UP_TO = 12
 function valueRecipes(targetLab, paints, { maxPaints, limit }) {
   const paper = Math.abs(1 - targetLab[0]) * 100
   const results = [{ items: [], deltaE: paper, score: paper }]
-  const pool = paints.map((paint) => ({ paint, A: absorbanceFromHex(paint.hex) }))
-  const consider = (candidate, parts) => {
-    const whole = parts.reduce((sum, v) => sum + v, 0)
-    const base = parts.map((v) => v / whole) // the mix at the strength of one paint
-    const amountsAt = (logT) => base.map((v) => v * Math.exp(logT))
-    const lightness = (logT) => linearToOklab(mixAbsorbances(candidate.map((c) => c.A), amountsAt(logT)))[0]
+  for (const { candidate, amountsAt, lightness, most } of valueMixes(paints, maxPaints)) {
     // More paint is darker: the water with the lightness of the target, or the end that comes closest.
-    let lo = Math.log(0.02), hi = Math.log(MAX_AMOUNT / Math.max(...base))
+    let lo = Math.log(0.02), hi = most
     if (lightness(lo) <= targetLab[0]) hi = lo
     else if (lightness(hi) >= targetLab[0]) lo = hi
     else {
@@ -174,9 +205,6 @@ function valueRecipes(targetLab, paints, { maxPaints, limit }) {
       score: err + VALUE_WATER_PENALTY * Math.abs(logT) + EXTRA_PAINT_PENALTY * (candidate.length - 1),
     })
   }
-  for (const c of pool) consider([c], [1])
-  if (maxPaints >= 2) for (const pair of combinations(pool, 2)) for (const parts of VALUE_PAIR_PARTS) consider(pair, parts)
-  if (maxPaints >= 3 && pool.length <= VALUE_TRIPLES_UP_TO) for (const triple of combinations(pool, 3)) consider(triple, [1, 1, 1])
   // The best proportion of every set of paints.
   const seen = new Set()
   return results
@@ -243,8 +271,11 @@ export function findRecipes(targetHex, paints, { maxPaints = 3, limit = 5, value
       // find the total amount for that depth and share it out in the same proportions.
       const reach = a.reduce((s, v) => s + v, 0)
       const limit = candidate.reduce((s, c, i) => s + a[i] * depthLimit(c.A), 0) / reach
-      const sum = amountForDepth(reach, limit)
-      const amounts = a.map((v) => (v * sum) / reach)
+      const sum = amountForDepth(reach, limit, candidate.length * MAX_AMOUNT)
+      let amounts = a.map((v) => (v * sum) / reach)
+      // With the proportions kept, no paint above its swatch.
+      const most = Math.max(...amounts)
+      if (most > MAX_AMOUNT) amounts = amounts.map((v) => (v * MAX_AMOUNT) / most)
       results.push({ candidate, amounts, deltaE: evaluate(candidate, amounts, targetLab) })
     }
 
@@ -355,6 +386,8 @@ export function washRecipe(recipe, targetHex, paintsById, { values = false } = {
 
 function toRecipe({ items, deltaE: err }) {
   const strength = items.reduce((s, it) => s + it.amount, 0)
+  // How little water: the largest amount of a paint, 1 = that paint as its swatch shows it.
+  const fullness = items.reduce((most, it) => Math.max(most, it.amount), 0)
   const linear = mixAbsorbances(items.map((it) => absorbanceFromHex(it.paint.hex)), items.map((it) => it.amount))
   return {
     paints: items
@@ -362,7 +395,8 @@ function toRecipe({ items, deltaE: err }) {
       .sort((a, b) => b.amount - a.amount),
     parts: toParts(items.map((it) => it.amount).sort((a, b) => b - a)),
     strength,
-    dilution: describeDilution(strength),
+    fullness,
+    dilution: describeDilution(fullness),
     hex: rgbToHex(linearToRgb(linear)),
     deltaE: err,
   }
@@ -377,13 +411,14 @@ export function toParts(amounts) {
   return raw.map((r) => Math.min(20, Math.round(r * 2) / 2))
 }
 
-export function describeDilution(strength) {
-  if (strength <= 0.02) return 'paper only'
-  if (strength < 0.35) return 'very watery wash'
-  if (strength < 0.8) return 'light wash'
-  if (strength < 1.5) return 'medium'
-  if (strength < 2.5) return 'rich'
-  return 'very concentrated (layer/glaze)'
+/** The water of a wash in words. `fullness` = its paint with least water, 1 = as the swatch shows it. */
+export function describeDilution(fullness) {
+  if (fullness <= WASH_LIMITS[0]) return 'paper only'
+  if (fullness < WASH_LIMITS[1]) return 'very watery wash'
+  if (fullness < WASH_LIMITS[2]) return 'light wash'
+  if (fullness < WASH_LIMITS[3]) return 'medium'
+  if (fullness < WASH_LIMITS[4]) return 'rich'
+  return 'concentrated (hardly any water)'
 }
 
 // Letter for the water level of a wash, used in the labels on the picture (6L = mix 6 as a light wash).
@@ -395,12 +430,11 @@ export const WASH_LETTERS = [
   { letter: 'C', label: 'concentrated' },
 ]
 
-const WASH_LIMITS = [0.02, 0.35, 0.8, 1.5, 2.5, 4]
 // A value study needs more steps of water than five: with `fine` every level is split in this many.
 const WASH_FINE = 5
 
 /**
- * @param {number} strength
+ * @param {number} strength  the fullness of a recipe (its paint with least water, at most 1)
  * @param {boolean} [fine]  the level and its step within it, W1 to C5 (value mode)
  */
 export function washLetter(strength, fine = false) {

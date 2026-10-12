@@ -61,7 +61,7 @@ Cost with Claude, at the prices of October 2026, for one picture (about 1,800 to
 
 ## The paint stock
 
-The stock is hard-coded in `src/data/paints.js`: 53 Schmincke Horadam Aquarell paints (pans and tubes) and one Michael Harding tube. Each paint has a `hex` value, which is its colour at strength 1 — a mid-strength wash on white paper, not the masstone. Most values were sampled from the official Horadam colour chart; a few are estimates and are marked as such in the data.
+The stock is hard-coded in `src/data/paints.js`: 53 Schmincke Horadam Aquarell paints (pans and tubes) and one Michael Harding tube. Each paint has a `hex` value, which is its colour at strength 1 on white paper. No paint is used stronger than that: water only makes a paint lighter, and a darker colour needs a second paint. Most values were sampled from the official Horadam colour chart; a few are estimates and are marked as such in the data.
 
 Further paints of any brand can be added in the paint box ("Your own paints"); they are stored in the browser.
 

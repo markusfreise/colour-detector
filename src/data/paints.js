@@ -1,5 +1,7 @@
 // Hard-coded watercolour stock (source: Notion "My Watercolour Stock", 2026-10-10).
-// hex = reference colour at strength 1 (a mid-strength wash on white paper).
+// hex = reference colour at strength 1 on white paper. No paint is used stronger than that
+// (MAX_AMOUNT in lib/mixing.js), so this is also the darkest the paint gets. The values come from
+// the Horadam chart, which shows a mid-strength wash: a dark paint is lighter here than at full strength.
 // source 'chart'    → sampled from the official Schmincke Horadam colour chart
 // source 'estimate' → not on the chart; estimated from pigment information, verify by swatching
 // source 'swatch'   → sampled from a photo of the paint as a wash on white paper (travel box, 2026-10-11).

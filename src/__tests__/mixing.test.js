@@ -37,12 +37,25 @@ describe('washes', () => {
     const [best] = findRecipes('#150d08', [rose, orange, turquoise])
     expect(best.deltaE).toBeGreaterThan(10)
   })
-  it('lets a neutral paint go much deeper than a bright one', () => {
-    const [black] = hexToOklab(mixHex([{ id: 'k', hex: '#706c63' }], [4]))
-    expect(black).toBeLessThan(0.22)
+  it('never makes a paint darker than its swatch, however much of it', () => {
+    for (const hex of ['#706c63', '#fae409', '#2b61ab']) {
+      expect(mixHex([{ id: 'p', hex }], [4])).toBe(mixHex([{ id: 'p', hex }], [1]))
+      expect(deltaE(hexToOklab(mixHex([{ id: 'p', hex }], [1])), hexToOklab(hex))).toBeLessThan(0.5)
+    }
+    // A second paint in the mix does make it darker.
+    const one = hexToOklab(mixHex([{ id: 'b', hex: '#2b61ab' }], [1]))[0]
+    const two = hexToOklab(mixHex([{ id: 'b', hex: '#2b61ab' }, { id: 'r', hex: '#e6331d' }], [1, 1]))[0]
+    expect(two).toBeLessThan(one)
+  })
+  it('finds no recipe that uses more of a paint than its swatch', () => {
+    for (const recipe of findRecipes('#101010', [{ id: 'k', hex: '#706c63' }, { id: 'b', hex: '#2b61ab' }, { id: 'r', hex: '#e6331d' }], { maxPaints: 3, limit: 5 })) {
+      for (const p of recipe.paints) expect(p.amount).toBeLessThanOrEqual(1.0001)
+    }
   })
   it('names the water level with a letter', () => {
-    expect([0.2, 0.5, 1, 2, 3].map(washLetter).join('')).toBe('WLMRC')
+    // By fullness: 1 is the paint as its swatch shows it.
+    expect([0.05, 0.2, 0.4, 0.7, 1].map(washLetter).join('')).toBe('WLMRC')
+    expect([0.05, 1].map((s) => washLetter(s, true))).toEqual(['W3', 'C5'])
   })
 })
 

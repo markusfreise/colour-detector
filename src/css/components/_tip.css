@@ -1,6 +1,0 @@
-/* The recipe of the colour under the pointer, next to the pointer. */
-.tip { position: fixed; z-index: 20; width: min(30rem, 90vw); padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22); pointer-events: none; }
-.tip__header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.tip__share { margin-left: auto; color: var(--ink-soft); font-size: 1.2rem; }
-.tip__paper { font-style: italic; }
-@media print { .tip { display: none; } }

@@ -1,7 +1,0 @@
-.input { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; background: var(--surface); color: var(--ink); font: inherit; }
-.input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.input--colour { height: 34px; padding: 2px; cursor: pointer; }
-/* iOS zooms the page when a focused field has text smaller than 16px. */
-@media (pointer: coarse) {
-  .input { font-size: 16px; }
-}

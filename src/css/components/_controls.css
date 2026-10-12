@@ -7,5 +7,8 @@
 .controls__settings .field { min-width: 0; }
 .controls__toggles { display: flex; gap: 12px; font-weight: 400; }
 .controls__error { margin-top: 10px; color: var(--rough); }
-.controls__hints { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; margin-top: 6px; }
-.controls__reset { padding: 2px 8px; font-size: 1.2rem; }
+.controls__pair { display: grid; grid-template-columns: 3fr 2fr; gap: 12px; align-items: start; }
+.controls__pair .field { min-width: 0; }
+.controls__hint { display: block; margin-top: 6px; }
+.controls__reset-slot { align-self: end; }
+.controls__reset { justify-content: center; }

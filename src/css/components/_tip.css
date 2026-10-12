@@ -1,13 +1,6 @@
 /* The recipe of the colour under the pointer, next to the pointer. */
-.tip { position: fixed; z-index: 20; max-width: min(32rem, 80vw); padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22); pointer-events: none; font-size: 1.2rem; line-height: 1.35; }
-.tip__header { display: flex; align-items: center; gap: 8px; }
-.tip__title { display: flex; flex-direction: column; }
-.tip__dilution { color: var(--ink-soft); }
-.tip__dilution::first-letter { text-transform: uppercase; }
-.tip__paints { display: flex; flex-direction: column; gap: 3px; margin-top: 8px; }
-.tip__paint { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-.tip__parts { min-width: 2.6em; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
-.tip__paper { margin-top: 6px; font-style: italic; }
-.tip__bar { display: flex; height: 8px; margin-top: 8px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.14); }
-.tip__part { flex: 1 1 0; min-width: 4px; }
+.tip { position: fixed; z-index: 20; width: min(30rem, 90vw); padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22); pointer-events: none; }
+.tip__header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.tip__share { margin-left: auto; color: var(--ink-soft); font-size: 1.2rem; }
+.tip__paper { font-style: italic; }
 @media print { .tip { display: none; } }

@@ -12,3 +12,10 @@
 .recipe--wide { grid-template-columns: 130px minmax(0, 1fr); }
 .recipe--wide .recipe__result { min-height: 36px; }
 .recipe--wide .recipe__paints { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.recipe--full { grid-template-columns: 1fr; }
+.recipe--full .recipe__result { min-height: 0; }
+.recipe--full .recipe__paints { grid-template-columns: 1fr; }
+.recipe--full .chip { font-size: 1.2rem; }
+.recipe--full .chip__text { overflow: visible; white-space: normal; }
+.recipe--full .recipe__paint { justify-content: flex-start; }
+.recipe--full .recipe__part-text { font-size: 1.1rem; }

@@ -1,10 +1,12 @@
 <template>
-  <section v-if="entry" ref="panel" class="panel editor">
-    <header class="editor__header">
+  <section v-if="entry" ref="panel" class="panel editor" :class="{ 'editor--dragging': dragging }" :style="style">
+    <!-- The header is the handle: on a wide window the panel floats over the page and is dragged by it. -->
+    <header class="editor__header" @pointerdown="startDrag">
       <h2 class="panel__title">Colour {{ entry.label }}</h2>
       <button class="button button--ghost" type="button" @click="analysis.selectEntry(null)">Close</button>
     </header>
 
+    <div class="editor__body">
     <div class="editor__compare">
       <div class="editor__swatch">
         <span class="chip editor__chip" :style="chipStyle(entry.targetHex)">
@@ -54,28 +56,30 @@
       </li>
     </ul>
     <p v-if="!entry.recipes.length" class="editor__empty">No paints selected in the paint box.</p>
+    </div>
   </section>
 </template>
 
 <script setup>
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, watch } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { chipStyle } from '../lib/color.js'
 import RecipeLine from './RecipeLine.vue'
+import { useFloating } from './floating.js'
 
 const analysis = useAnalysisStore()
 const index = computed(() => analysis.selectedEntry)
 const entry = computed(() => analysis.selected)
 const recipe = computed(() => entry.value?.recipes[entry.value.chosen])
 
-// An area clicked in the picture brings its colour into view; the panel may be below the fold.
-const panel = ref(null)
+const { panel, style, dragging, startDrag, floats } = useFloating('editor')
+// An area clicked in the picture brings its colour into view; in one column the panel may be below the fold.
 watch(
   () => analysis.selectedRegion,
   async (region) => {
     if (region == null) return
     await nextTick()
-    panel.value?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' })
+    if (!floats()) panel.value?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' })
   },
 )
 const sharedAreas = computed(() => {

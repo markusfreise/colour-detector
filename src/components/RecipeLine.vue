@@ -1,5 +1,5 @@
 <template>
-  <div class="recipe" :class="{ 'recipe--wide': wide }">
+  <div class="recipe" :class="{ 'recipe--wide': wide, 'recipe--full': full }">
     <div class="chip recipe__result" :style="chipStyle(recipe.hex)" :title="`Mixed: ${recipe.hex} · ${recipe.dilution}`">
       <span class="chip__strong chip__text recipe__dilution">{{ recipe.dilution }}</span>
       <span class="chip__text">{{ recipe.deltaE.toFixed(1) }} • {{ matchQuality(recipe.deltaE) }}</span>
@@ -25,7 +25,7 @@
     </ul>
     <p v-else class="recipe__paper">Leave the paper white</p>
     <!-- The ratio as a bar: one segment per paint, as wide as its part of the mix. -->
-    <div v-if="!wide && recipe.paints.length > 1" class="recipe__bar" role="img" :aria-label="`Ratio: ${ratioText}`">
+    <div v-if="!wide && recipe.paints.length > (full ? 0 : 1)" class="recipe__bar" role="img" :aria-label="`Ratio: ${ratioText}`">
       <span
         v-for="(item, i) in recipe.paints"
         :key="item.paintId"
@@ -50,11 +50,13 @@ const props = defineProps({
   recipe: { type: Object, required: true },
   // Wide layout for the printed sheet: one row of ingredients, no empty slots.
   wide: { type: Boolean, default: false },
+  // For the recipe at the pointer: nothing cut short, one paint per line, the ratio bar also for a single paint.
+  full: { type: Boolean, default: false },
 })
 
 const paints = usePaintsStore()
 // The ingredient grid always shows complete rows of four slots.
-const emptySlots = computed(() => (props.wide ? 0 : (4 - (props.recipe.paints.length % 4)) % 4))
+const emptySlots = computed(() => (props.wide || props.full ? 0 : (4 - (props.recipe.paints.length % 4)) % 4))
 
 const ratioText = computed(() =>
   props.recipe.paints.map((item, i) => `${formatParts(props.recipe.parts[i])} ${paintNumber(paints.byId[item.paintId].number)}`).join(', '),

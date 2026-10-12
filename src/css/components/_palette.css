@@ -20,10 +20,3 @@
 .palette__wash { flex: 1 1 0; min-width: 0; padding: 0; border: 0; border-radius: 0; font: inherit; font-size: 1.1rem; font-weight: 700; line-height: 1; cursor: pointer; }
 .palette__wash + .palette__wash { box-shadow: -1px 0 0 rgba(0, 0, 0, 0.14); }
 .palette__wash--active { outline: 2px solid var(--accent); outline-offset: -2px; }
-/* On a wide window the colours float over the page: dragged by the header, scrolling inside. */
-@media (min-width: 1101px) {
-  .palette { position: fixed; right: var(--gap); bottom: var(--gap); z-index: 5; display: flex; flex-direction: column; width: min(36rem, calc(100vw - 16px)); max-height: min(70vh, calc(100vh - 16px)); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); }
-  .palette__header { cursor: grab; user-select: none; touch-action: none; }
-  .palette--dragging .palette__header { cursor: grabbing; }
-  .palette__body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
-}

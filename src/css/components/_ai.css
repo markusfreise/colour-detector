@@ -1,7 +1,8 @@
 /* The AI option: provider, key, consent and the answer. */
+/* It is the last part of the settings, under a line. */
+.ai { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
 .ai__header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .ai__header .panel__title { flex: 1; margin-bottom: 0; }
-.ai.panel--collapsed .ai__header { margin-bottom: 0; }
 .ai__badge { margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--ink-soft); font-size: 1.1rem; font-weight: 600; }
 .ai__check { display: flex; align-items: flex-start; gap: 6px; margin-top: 10px; font-size: 1.3rem; }
 .ai__check input { flex: none; margin-top: 3px; }

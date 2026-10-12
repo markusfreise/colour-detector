@@ -44,6 +44,65 @@
       <span v-if="analysis.layerMode" class="field__hint">Layer: a few thin washes, each painted over the dry one before.</span>
     </div>
 
+    <!-- The areas: their kind and how calm they are. -->
+    <div class="controls__pair">
+      <div class="field">
+        <span class="field__label">Areas</span>
+        <div class="segmented segmented--fill">
+          <button
+            v-for="a in areas"
+            :key="a.label"
+            type="button"
+            class="segmented__option"
+            :class="{ 'segmented__option--active': analysis.settings.geometric === a.value }"
+            :aria-pressed="analysis.settings.geometric === a.value"
+            :title="a.title"
+            @click="setGeometric(a.value)"
+          >
+            {{ a.label }}
+          </button>
+        </div>
+        <span v-if="analysis.settings.geometric" class="field__hint">Geometric: shapes with straight edges, laid over each other from large to small.</span>
+      </div>
+      <label class="field">
+        <span class="field__label">Simplify areas <output class="field__value">{{ analysis.settings[simplifyKey] }}</output></span>
+        <input
+          v-model.number="analysis.settings[simplifyKey]"
+          class="field__range"
+          type="range"
+          min="0"
+          max="10"
+          @change="analysis.analyse()"
+        />
+        <span class="field__hint">Higher = bigger, calmer shapes</span>
+      </label>
+    </div>
+
+    <div class="field">
+      <div class="field__label">
+        Show
+        <span class="controls__toggles">
+          <label v-if="analysis.settings.view === 'sketch'" class="checkbox" title="Quarters and diagonals, to transfer the sketch to paper">
+            <input v-model="analysis.settings.guides" type="checkbox" /> Guides
+          </label>
+          <label class="checkbox"><input v-model="analysis.settings.outlines" type="checkbox" /> Outlines</label>
+          <label class="checkbox"><input v-model="analysis.settings.numbers" type="checkbox" /> Numbers</label>
+        </span>
+      </div>
+      <div class="segmented segmented--fill">
+        <button
+          v-for="v in views"
+          :key="v.value"
+          type="button"
+          class="segmented__option"
+          :class="{ 'segmented__option--active': analysis.settings.view === v.value }"
+          @click="analysis.settings.view = v.value"
+        >
+          {{ v.label }}
+        </button>
+      </div>
+    </div>
+
     <div class="controls__settings">
       <label v-if="!analysis.layerMode" class="field">
         <span class="field__label">Colours <output class="field__value">{{ analysis.settings.colours }}</output></span>
@@ -73,17 +132,27 @@
         </span>
       </label>
 
-      <label class="field">
-        <span class="field__label">Simplify areas <output class="field__value">{{ analysis.settings[simplifyKey] }}</output></span>
+      <label v-if="!analysis.layerMode" class="field">
+        <span class="field__label">Variety <output class="field__value">{{ analysis.settings.variety }}</output></span>
         <input
-          v-model.number="analysis.settings[simplifyKey]"
+          v-model.number="analysis.settings.variety"
           class="field__range"
           type="range"
           min="0"
           max="10"
           @change="analysis.analyse()"
         />
-        <span class="field__hint">Higher = bigger, calmer shapes</span>
+      </label>
+      <label v-else class="field">
+        <span class="field__label">Accents <output class="field__value">{{ analysis.settings.layerAccents }}</output></span>
+        <input
+          v-model.number="analysis.settings.layerAccents"
+          class="field__range"
+          type="range"
+          min="0"
+          max="3"
+          @change="analysis.analyse()"
+        />
       </label>
 
       <div v-if="!analysis.layerMode" class="field">
@@ -119,6 +188,13 @@
         </div>
       </div>
     </div>
+    <span class="field__hint controls__hint">
+      {{
+        analysis.layerMode
+          ? 'Accents: small strong touches painted last, first for a colour the washes miss, then for the darks'
+          : 'Variety: lower = closer overall, higher = small areas keep their own colour'
+      }}
+    </span>
 
     <div class="controls__settings">
       <label class="field">
@@ -149,90 +225,19 @@
         />
       </label>
 
-      <label v-if="!analysis.layerMode" class="field">
-        <span class="field__label">Variety <output class="field__value">{{ analysis.settings.variety }}</output></span>
-        <input
-          v-model.number="analysis.settings.variety"
-          class="field__range"
-          type="range"
-          min="0"
-          max="10"
-          @change="analysis.analyse()"
-        />
-      </label>
-      <label v-else class="field">
-        <span class="field__label">Accents <output class="field__value">{{ analysis.settings.layerAccents }}</output></span>
-        <input
-          v-model.number="analysis.settings.layerAccents"
-          class="field__range"
-          type="range"
-          min="0"
-          max="3"
-          @change="analysis.analyse()"
-        />
-      </label>
-    </div>
-    <div class="controls__hints">
-      <span class="field__hint">
-        {{
-          analysis.layerMode
-            ? 'Accents: small strong touches painted last, first for a colour the washes miss, then for the darks'
-            : 'Variety: lower = closer overall, higher = small areas keep their own colour'
-        }}
-      </span>
-      <button
-        v-if="analysis.settings.saturation !== 100 || analysis.settings.contrast !== 100"
-        class="button button--ghost controls__reset"
-        type="button"
-        @click="resetAdjustment('saturation', 'contrast')"
-      >
-        Reset saturation and contrast
-      </button>
-    </div>
-
-    <div class="field">
-      <span class="field__label">Areas</span>
-      <div class="segmented segmented--fill">
+      <div class="field controls__reset-slot">
         <button
-          v-for="a in areas"
-          :key="a.label"
+          v-if="analysis.settings.saturation !== 100 || analysis.settings.contrast !== 100"
+          class="button button--ghost controls__reset"
           type="button"
-          class="segmented__option"
-          :class="{ 'segmented__option--active': analysis.settings.geometric === a.value }"
-          :aria-pressed="analysis.settings.geometric === a.value"
-          :title="a.title"
-          @click="setGeometric(a.value)"
+          title="Saturation and contrast back to the photo as it is"
+          @click="resetAdjustment('saturation', 'contrast')"
         >
-          {{ a.label }}
-        </button>
-      </div>
-      <span v-if="analysis.settings.geometric" class="field__hint">Geometric: shapes with straight edges, laid over each other from large to small.</span>
-    </div>
-
-    <div class="field">
-      <div class="field__label">
-        Show
-        <span class="controls__toggles">
-          <label v-if="analysis.settings.view === 'sketch'" class="checkbox" title="Quarters and diagonals, to transfer the sketch to paper">
-            <input v-model="analysis.settings.guides" type="checkbox" /> Guides
-          </label>
-          <label class="checkbox"><input v-model="analysis.settings.outlines" type="checkbox" /> Outlines</label>
-          <label class="checkbox"><input v-model="analysis.settings.numbers" type="checkbox" /> Numbers</label>
-        </span>
-      </div>
-      <div class="segmented segmented--fill">
-        <button
-          v-for="v in views"
-          :key="v.value"
-          type="button"
-          class="segmented__option"
-          :class="{ 'segmented__option--active': analysis.settings.view === v.value }"
-          @click="analysis.settings.view = v.value"
-        >
-          {{ v.label }}
+          Reset
         </button>
       </div>
     </div>
+    <AiPanel />
     </div>
     <p v-if="analysis.error" class="controls__error">{{ analysis.error }}</p>
   </section>
@@ -245,6 +250,7 @@ import { useCollectionStore } from '../stores/collection.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useLayoutStore } from '../stores/layout.js'
 import PanelToggle from './PanelToggle.vue'
+import AiPanel from './AiPanel.vue'
 
 const emit = defineEmits(['show-collection'])
 const analysis = useAnalysisStore()

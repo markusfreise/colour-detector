@@ -10,15 +10,15 @@ function stored() {
   }
 }
 
-// How the page is arranged on this device: which panels are folded, and where the colours float.
+// How the page is arranged on this device: which panels are folded, and where the floating ones are.
 export const useLayoutStore = defineStore('layout', {
   state: () => {
     const saved = stored()
     return {
       // Panel name -> true while only its header shows.
       collapsed: { ...saved.collapsed },
-      // Top left corner of the floating colours in the window, or null for its place at the bottom right.
-      palette: saved.palette ?? null,
+      // Panel name -> top left corner of a floating panel in the window; none for its place at the bottom right.
+      positions: { ...saved.positions },
     }
   },
   actions: {
@@ -26,13 +26,13 @@ export const useLayoutStore = defineStore('layout', {
       this.collapsed[name] = !this.collapsed[name]
       this.persist()
     },
-    movePalette(position) {
-      this.palette = position
+    move(name, position) {
+      this.positions[name] = position
       this.persist()
     },
     persist() {
       try {
-        localStorage.setItem(KEY, JSON.stringify({ collapsed: this.collapsed, palette: this.palette }))
+        localStorage.setItem(KEY, JSON.stringify({ collapsed: this.collapsed, positions: this.positions }))
       } catch {
         // Private mode: the arrangement lasts for this visit.
       }

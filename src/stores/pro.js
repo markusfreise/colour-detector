@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { isNative, onNative, sendNative } from '../lib/native.js'
+import { useAccountStore } from './account.js'
 
-// What the free version includes; the one-time purchase lifts both limits.
+// What the free version includes; the purchase lifts both limits.
 export const FREE_BOXES = 1
 export const FREE_IMAGES = 1
 
@@ -15,9 +16,12 @@ export const useProStore = defineStore('pro', {
     error: null,
   }),
   getters: {
-    // There is no shop in the browser, so nothing is locked there.
-    active: (state) => !isNative || state.unlocked,
-    purchasable: () => isNative,
+    // In the app the App Store decides. In the browser the account does; without accounts nothing is locked.
+    active(state) {
+      if (isNative) return state.unlocked
+      const account = useAccountStore()
+      return !account.enabled || account.pro
+    },
   },
   actions: {
     init() {

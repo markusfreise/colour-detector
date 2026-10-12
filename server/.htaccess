@@ -1,0 +1,7 @@
+# Everything goes through index.php; the configuration is never served.
+RewriteEngine On
+RewriteRule ^config(\.example)?\.php$ - [F,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
+# The Authorization and signature headers must reach PHP.
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1

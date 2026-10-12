@@ -1,0 +1,125 @@
+import { defineStore } from 'pinia'
+import { ACCOUNT_API } from '../config.js'
+import { accountsWanted, readReturn } from '../lib/account.js'
+
+// One request to the account API. The session travels as a cookie the page cannot read.
+async function call(path, body) {
+  let response
+  try {
+    response = await fetch(`${ACCOUNT_API}/${path}`, {
+      method: body === undefined ? 'GET' : 'POST',
+      credentials: 'same-origin',
+      headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    })
+  } catch {
+    throw new Error('The account service cannot be reached. Please check your connection.')
+  }
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) throw new Error(data.error ?? 'The account service did not answer as expected.')
+  return data
+}
+
+// The account: who is signed in, what they agreed to and what they paid for. No pictures, no profile.
+export const useAccountStore = defineStore('account', {
+  state: () => ({
+    // False: the app opens without signing in and nothing is locked (no API, or a development host).
+    enabled: accountsWanted(ACCOUNT_API, window.location),
+    loaded: false,
+    user: null,
+    providers: [],
+    plans: [],
+    busy: false,
+    error: null,
+    notice: null, // { kind, text } after coming back from signing in or paying
+    sentTo: '', // the address a sign-in link went to
+    open: false, // account dialog
+  }),
+  getters: {
+    // The app itself may be used: signed in, and both statements agreed to.
+    ready: (state) => !state.enabled || Boolean(state.user?.consent),
+    pro: (state) => Boolean(state.user?.pro),
+  },
+  actions: {
+    async init() {
+      if (!this.enabled) return
+      // A sign-in link opened in a tab that already shows the app only changes the fragment.
+      window.addEventListener('hashchange', () => this.comeBack())
+      await this.comeBack()
+    },
+    // Reads what the address says after signing in or paying, then asks who is signed in.
+    async comeBack() {
+      const back = readReturn(window.location.hash)
+      // The code or result is used once; it should not stay in the address or the history.
+      if (this.loaded && !back.handled) return
+      if (back.handled) window.history.replaceState(null, '', window.location.pathname + window.location.search)
+      if (back.notice) this.notice = back.notice
+      if (back.magic) await this.attempt(() => call('auth/magic/verify', { token: back.magic }))
+      await this.refresh()
+      // Stripe confirms a payment a moment after the buyer is back.
+      if (back.notice?.kind === 'paid') this.awaitPurchase()
+    },
+    async refresh() {
+      await this.attempt(async () => {
+        const data = await call('me')
+        this.user = data.user
+        this.providers = data.providers
+        this.plans = data.plans
+      }, false)
+      this.loaded = true
+    },
+    async awaitPurchase(tries = 8) {
+      for (let i = 0; i < tries && !this.pro; i++) {
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        await this.refresh()
+      }
+      if (this.pro) this.notice = { kind: 'info', text: 'Thank you. Everything is unlocked.' }
+    },
+    // Runs one request with the busy flag and the error shown in the dialogs.
+    async attempt(work, clear = true) {
+      this.busy = true
+      if (clear) this.error = null
+      try {
+        await work()
+        return true
+      } catch (error) {
+        this.error = error.message
+        return false
+      } finally {
+        this.busy = false
+      }
+    },
+    signInWith(provider) {
+      window.location.assign(`${ACCOUNT_API}/auth/${provider}/start`)
+    },
+    async sendLink(email) {
+      if (await this.attempt(() => call('auth/magic', { email }))) this.sentTo = email
+    },
+    async agree() {
+      await this.attempt(async () => {
+        this.user = (await call('consent', { privacy: true, local: true })).user
+      })
+    },
+    async signOut() {
+      if (await this.attempt(() => call('logout', {}))) {
+        this.user = null
+        this.sentTo = ''
+        this.open = false
+      }
+    },
+    async buy(plan) {
+      await this.attempt(async () => window.location.assign((await call('billing/checkout', { plan })).url))
+    },
+    async manage() {
+      await this.attempt(async () => window.location.assign((await call('billing/portal', {})).url))
+    },
+    exportUrl: () => `${ACCOUNT_API}/export`,
+    async remove() {
+      if (await this.attempt(() => call('delete', {}))) {
+        this.user = null
+        this.open = false
+        this.notice = { kind: 'info', text: 'Your account is deleted. Pictures and paint boxes saved in this browser are still here.' }
+      }
+    },
+  },
+})

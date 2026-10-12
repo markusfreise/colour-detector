@@ -22,8 +22,8 @@
 
 | Layer | Technology | Reason |
 |---|---|---|
-| Backend | **not needed** (v1) | All computation runs in the browser; no accounts, no shared data |
-| Auth | not needed | Single user, nothing stored server-side |
+| Backend | Optional account service in `server/` (PHP, SQLite, no packages) – TASK-35 | All computation runs in the browser. The service only knows accounts and payments, never pictures; off unless the build sets `VITE_ACCOUNT_API` |
+| Auth | Optional: e-mail link, Google, Meta, Apple; session cookie | Only an e-mail address is stored, no profile |
 | Roles | not needed | |
 | Frontend | Vue 3 (Composition API, `<script setup>`) + Pinia | Reactive editor state; Vue as requested |
 | Router | not needed (single screen) | Add Vue Router when settings/paint management get their own pages |

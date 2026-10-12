@@ -31,7 +31,11 @@ npm run build
 rsync -a --delete \
   --exclude 'webhook.php' \
   --exclude 'webhook-config.php' \
+  --exclude 'api/' \
   dist/ "$WEB_ROOT/"
+# The account API next to the app; its configuration stays on the server.
+mkdir -p "$WEB_ROOT/api"
+rsync -a --delete --exclude 'config.php' --exclude 'README.md' server/ "$WEB_ROOT/api/"
 cp deploy/webhook.php "$WEB_ROOT/webhook.php"
 
 echo "=== $(date -Is) done ==="

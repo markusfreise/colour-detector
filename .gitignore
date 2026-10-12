@@ -6,9 +6,11 @@ dist
 _project-assets
 webhook-config.php
 .env
+.env*.local
 .env.localcopy-DELETE
 .staging.json
 .mittwald-probe.json
 app/build
 app/*.xcodeproj/xcuserdata/
 app/*.xcodeproj/project.xcworkspace/xcuserdata/
+server/config.php

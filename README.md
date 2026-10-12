@@ -118,3 +118,7 @@ The script creates `webhook-config.php` with a random secret, runs the first bui
 | Events | Just the push event |
 
 Requirements on the host: git, Node 18 or newer with npm (nvm is picked up), rsync, `flock`, and PHP with `exec()` enabled. `webhook-config.php` holds the secret and is never committed.
+
+## Accounts (optional)
+
+The web app can ask visitors to sign in and offer paid plans (monthly, yearly, lifetime) through Stripe. Pictures still stay in the browser; the account service in `server/` only stores an e-mail address, the consent and the plan. It is off unless the build sets `VITE_ACCOUNT_API`, and it is skipped on `localhost` unless the address has `?login`. Setup: `server/README.md`. Drafts of the privacy policy, terms and imprint are in `public/privacy`, `public/terms` and `public/imprint`.

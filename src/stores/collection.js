@@ -38,7 +38,7 @@ export const useCollectionStore = defineStore('collection', {
       const analysis = useAnalysisStore()
       if (!analysis.image) return false
       const isNew = !analysis.savedId
-      if (isNew && !useProStore().require(this.items.length < FREE_IMAGES, 'save more than one picture')) return false
+      if (isNew && !useProStore().require(this.items.length < FREE_IMAGES, FREE_IMAGES ? 'save more than one picture' : 'save pictures')) return false
       this.error = null
       try {
         const id = analysis.savedId ?? `img-${Date.now().toString(36)}`

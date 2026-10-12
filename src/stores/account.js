@@ -24,7 +24,7 @@ async function call(path, body) {
 export const useAccountStore = defineStore('account', {
   state: () => ({
     // False: the app opens without signing in and nothing is locked (no API, or a development host).
-    enabled: accountsWanted(ACCOUNT_API, window.location),
+    enabled: typeof window !== 'undefined' && accountsWanted(ACCOUNT_API, window.location),
     loaded: false,
     user: null,
     providers: [],

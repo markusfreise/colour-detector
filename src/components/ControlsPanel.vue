@@ -244,6 +244,7 @@ import { useAnalysisStore } from '../stores/analysis.js'
 import { useCollectionStore } from '../stores/collection.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useLayoutStore } from '../stores/layout.js'
+import { useProStore } from '../stores/pro.js'
 import PanelToggle from './PanelToggle.vue'
 import { isNative, sendNative } from '../lib/native.js'
 import AiPanel from './AiPanel.vue'
@@ -252,6 +253,7 @@ const emit = defineEmits(['show-collection'])
 const analysis = useAnalysisStore()
 const collection = useCollectionStore()
 const layout = useLayoutStore()
+const usePro = useProStore()
 const collapsed = computed(() => !!layout.collapsed.controls)
 // "Take photo" opens the camera directly; that only exists on phones and tablets.
 const hasCamera = window.matchMedia?.('(pointer: coarse)').matches ?? false
@@ -296,6 +298,8 @@ const printable = computed(() => (analysis.layerMode ? !!analysis.layers : analy
 async function print() {
   // window.print() does nothing inside the app's web view; the shell prints it instead.
   if (isNative) return sendNative('print')
+  // A free account in the browser does not print.
+  if (!usePro.require(false, 'print or save a PDF')) return
   // The sheets of layer mode are built on `beforeprint`, but the page only renders them a tick
   // later, which is too late for the print snapshot. So build them first, then print.
   window.dispatchEvent(new Event('beforeprint'))

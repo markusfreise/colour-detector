@@ -24,9 +24,14 @@
     </template>
     <!-- In the browser: a subscription or one payment, through the account. -->
     <template v-else>
-      <p class="pro__text">The free version holds one saved picture and one paint box. To {{ pro.reason }}, choose a plan.</p>
+      <p class="pro__text">
+        The free version mixes from up to {{ FREE_PAINTS }} paints in one paint box, and does not save pictures or print.
+        To {{ pro.reason }}, choose a plan.
+      </p>
       <ul class="pro__list">
         <li>Save as many pictures as you like</li>
+        <li>Print the sheet or save it as a PDF</li>
+        <li>Mix from all your paints</li>
         <li>Keep a paint box for every set of paints you own</li>
       </ul>
       <p v-if="account.error" class="pro__error">{{ account.error }}</p>
@@ -61,7 +66,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { useProStore } from '../stores/pro.js'
+import { useProStore, FREE_PAINTS } from '../stores/pro.js'
 import { useAccountStore } from '../stores/account.js'
 import { isNative } from '../lib/native.js'
 

@@ -142,7 +142,7 @@
 import { computed, ref } from 'vue'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useAnalysisStore } from '../stores/analysis.js'
-import { useProStore, FREE_BOXES } from '../stores/pro.js'
+import { useProStore, FREE_BOXES, FREE_PAINTS } from '../stores/pro.js'
 import { chipStyle } from '../lib/color.js'
 import { paintNumber, paintForms, groupPaints, sortPaints } from '../lib/paintbox.js'
 import { horadamCatalogue } from '../data/horadam-catalogue.js'
@@ -194,6 +194,7 @@ function toggle(id, on) {
     if (on && full.value) return // the chip stays unticked; the note above says why
     paints.toggleLayerPaint(id, on)
   } else {
+    if (on && !pro.require(paints.enabledIds.size < pro.paintLimit, `mix from more than ${FREE_PAINTS} paints`)) return
     paints.toggle(id, on)
   }
   dirty.value = true

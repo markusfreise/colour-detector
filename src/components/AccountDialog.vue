@@ -45,7 +45,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useAccountStore } from '../stores/account.js'
-import { useProStore } from '../stores/pro.js'
+import { useProStore, FREE_PAINTS } from '../stores/pro.js'
 import { paidUntil } from '../lib/account.js'
 
 const account = useAccountStore()
@@ -58,7 +58,7 @@ const planText = computed(() => {
   const user = account.user
   if (user.plan === 'lifetime') return 'Lifetime licence: everything is unlocked.'
   if (user.plan === 'subscription') return `Subscription: everything is unlocked${user.until ? `, paid until ${paidUntil(user.until)}` : ''}.`
-  return 'Free version: one saved picture and one paint box.'
+  return `Free version: one paint box with up to ${FREE_PAINTS} paints, no saved pictures, no print.`
 })
 
 function upgrade() {

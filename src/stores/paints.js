@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { stockPaints } from '../data/paints.js'
+import { useProStore } from './pro.js'
 import { groupPaints, sortPaints, paintGroupKeys, AUTO_OFF_DEFAULT, HOUSE_VENDOR } from '../lib/paintbox.js'
 
 const LEGACY_KEY = 'colour-detector:enabled-paints'
@@ -67,8 +68,12 @@ export const usePaintsStore = defineStore('paints', {
       const byId = this.byId
       return this.activeBox.layerIds.map((id) => byId[id]).filter(Boolean)
     },
+    // The paints mixed with: what the box holds, cut to what the account may use. The box itself
+    // keeps its whole selection, so nothing is lost while a plan has run out.
     enabledIds() {
-      return new Set(this.activeBox.paintIds)
+      const ids = this.activeBox.paintIds
+      const limit = useProStore().paintLimit
+      return new Set(ids.length > limit ? ids.slice(0, limit) : ids)
     },
     enabled() {
       return this.all.filter((p) => this.enabledIds.has(p.id))
@@ -86,7 +91,7 @@ export const usePaintsStore = defineStore('paints', {
   },
   actions: {
     toggle(id, on) {
-      const next = new Set(this.enabledIds)
+      const next = new Set(this.activeBox.paintIds)
       if (on ?? !next.has(id)) next.add(id)
       else next.delete(id)
       this.setEnabled([...next])
@@ -96,7 +101,8 @@ export const usePaintsStore = defineStore('paints', {
     },
     /** Any selection made by hand switches Auto off for the box. */
     setEnabled(ids, auto = false) {
-      this.activeBox.paintIds = [...ids]
+      // A proposal lists the paints for the largest areas first: those stay when the account has a limit.
+      this.activeBox.paintIds = auto ? [...ids].slice(0, useProStore().paintLimit) : [...ids]
       this.activeBox.auto = auto
       this.persist()
     },

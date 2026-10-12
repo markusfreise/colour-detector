@@ -2,9 +2,12 @@ import { defineStore } from 'pinia'
 import { isNative, onNative, sendNative } from '../lib/native.js'
 import { useAccountStore } from './account.js'
 
-// What the free version includes; the purchase lifts both limits.
+// What the free version includes; a purchase lifts the limits.
 export const FREE_BOXES = 1
-export const FREE_IMAGES = 1
+// The app from the App Store keeps one picture for free; a free account in the browser saves none.
+export const FREE_IMAGES = isNative ? 1 : 0
+// A free account mixes from at most this many paints, and does not print.
+export const FREE_PAINTS = 8
 
 export const useProStore = defineStore('pro', {
   state: () => ({
@@ -21,6 +24,10 @@ export const useProStore = defineStore('pro', {
       if (isNative) return state.unlocked
       const account = useAccountStore()
       return !account.enabled || account.pro
+    },
+    // How many paints a paint box may use: all of them once unlocked. Only accounts in the browser have this limit.
+    paintLimit() {
+      return isNative || this.active ? Infinity : FREE_PAINTS
     },
   },
   actions: {

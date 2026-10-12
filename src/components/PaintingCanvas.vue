@@ -139,20 +139,24 @@ function drawGuides(ctx, w, h) {
 
 // The areas of mix mode at the size of the canvas: the palette entry of every canvas pixel, with
 // the outlines of the areas as smooth lines instead of enlarged pixel steps. Colours, outlines
-// and clicks all read this one map, so they agree. It is kept until the areas or their entries
-// change (every such change raises renderVersion); selecting a colour draws from the kept map.
+// and clicks all read this one map, so they agree. It is kept until the areas change: a new
+// segmentation, a new list of entries per region, or one region moved to another entry (which
+// changes that list in place, hence the sum over it). A new colour or recipe for an entry, a
+// selection or a setting of the view draws from the kept map.
 let canvasAreas = null
 function areasAtCanvasSize() {
   const seg = analysis.segmentation
   const regionEntry = analysis.regionEntry
   if (!seg || !regionEntry) return null
+  let sum = 0
+  for (let r = 0; r < regionEntry.length; r++) sum = (Math.imul(sum, 31) + regionEntry[r]) | 0
   const kept = canvasAreas
-  if (kept && kept.seg === seg && kept.regionEntry === regionEntry && kept.version === analysis.renderVersion) return kept.entryOf
+  if (kept && kept.seg === seg && kept.regionEntry === regionEntry && kept.sum === sum) return kept.entryOf
   const { width, height, regionMap } = seg
   const entries = new Int32Array(regionMap.length)
   for (let p = 0; p < entries.length; p++) entries[p] = regionEntry[regionMap[p]]
   const entryOf = upscaleAreas(entries, width, height, SCALE)
-  canvasAreas = { seg, regionEntry, version: analysis.renderVersion, entryOf }
+  canvasAreas = { seg, regionEntry, sum, entryOf }
   return entryOf
 }
 

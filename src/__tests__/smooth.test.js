@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { segmentImage, connectedComponents, toOklabPixels, mulberry32 } from '../lib/segment.js'
-import { compactPatches, patchColours, findAreas, findDetails, mergeAreas, roundOutlines, outlineShifts, upscaleAreas } from '../lib/smooth.js'
+import { compactPatches, settlePatches, patchColours, findAreas, findDetails, mergeAreas, roundOutlines, outlineShifts, upscaleAreas, apart } from '../lib/smooth.js'
 
 function makeImage(width, height, fn) {
   const rgba = new Uint8ClampedArray(width * height * 4)
@@ -137,7 +137,7 @@ describe('smooth', () => {
       [6, 0.2, 20, 22, 22, 24], // dark, but smaller than the smallest area
     ])
     const details = findDetails(labels, lab, w, h, { minSize: 6, maxSize: 40 })
-    const at = (x, y) => details[y * w + x]
+    const at = (x, y) => details.worth[y * w + x]
     // The eye: 30 pixels with 22 of outline, 0.5 from the colour around it.
     expect(at(12, 12)).toBeCloseTo((30 / 22) * 0.25, 2)
     expect(at(32, 12)).toBe(0)
@@ -146,7 +146,10 @@ describe('smooth', () => {
     expect(at(25, 40)).toBeGreaterThan(0.04)
     expect(at(20, 22)).toBe(0)
     // All of an area or none of it.
-    for (let p = 0; p < w * h; p++) if (labels[p] === 1) expect(details[p]).toBe(details[12 * w + 12])
+    for (let p = 0; p < w * h; p++) if (labels[p] === 1) expect(details.worth[p]).toBe(details.worth[12 * w + 12])
+    // On its own a detail counts as large as it is; what is none counts as nothing.
+    expect(details.span[12 * w + 12]).toBe(30)
+    expect(details.span[12 * w + 32]).toBe(0)
   })
 
   it('keeps or drops the letters of a line together', () => {
@@ -157,12 +160,218 @@ describe('smooth', () => {
     const worth = (map) => strokes.map(([, , x, y]) => +map[y * w + x].toFixed(2))
     // On its own a wide stroke is worth 20 / 24 x 0.85 ^ 2 = 0.6 and the narrow one 10 / 22 x 0.75 ^ 2 = 0.26.
     // Together all are worth the best of them, the faint one at most twice its own worth.
-    expect(worth(findDetails(labels, lab, w, h, { minSize: 6, maxSize: 40 }))).toEqual([0.6, 0.6, 0.6, 0.51])
+    const together = findDetails(labels, lab, w, h, { minSize: 6, maxSize: 40 })
+    expect(worth(together.worth)).toEqual([0.6, 0.6, 0.6, 0.51])
+    // And all count as large as the largest of them (20 pixels), the narrow one of 10 too.
+    expect(strokes.map(([, , x, y]) => together.span[y * w + x])).toEqual([20, 20, 20, 20])
     // Far from the others the faint stroke is judged on its own.
-    const apart = drawn(w, h, 0.95, [...strokes.slice(0, 3), [4, 0.2, 60, 10, 61, 20]])
-    const details = findDetails(apart.labels, apart.lab, w, h, { minSize: 6, maxSize: 40 })
-    expect(details[10 * w + 10]).toBeCloseTo(0.6, 2)
-    expect(details[10 * w + 60]).toBeCloseTo(0.26, 2)
+    const lone = drawn(w, h, 0.95, [...strokes.slice(0, 3), [4, 0.2, 60, 10, 61, 20]])
+    const details = findDetails(lone.labels, lone.lab, w, h, { minSize: 6, maxSize: 40 })
+    expect(details.worth[10 * w + 10]).toBeCloseTo(0.6, 2)
+    expect(details.worth[10 * w + 60]).toBeCloseTo(0.26, 2)
+    expect(details.span[10 * w + 60]).toBe(10)
+  })
+
+  it('keeps a detail as it was found: it takes nothing in and joins nothing', () => {
+    const w = 60, h = 40
+    // An eye on skin, with a scrap right beside it that is closer to the colour of the eye than
+    // to the skin, and a second scrap of nearly the colour of the skin.
+    const { labels, lab } = drawn(w, h, 0.7, [[1, 0.2, 10, 10, 18, 15], [2, 0.35, 18, 11, 20, 14], [3, 0.69, 30, 10, 33, 13]])
+    const details = findDetails(labels, lab, w, h, { minSize: 6, maxSize: 60 })
+    expect(details.worth[12 * w + 12]).toBeGreaterThan(0.04)
+    expect(details.worth[12 * w + 18]).toBeLessThan(0.04)
+    const out = mergeAreas(labels, lab, w, h, [{ floor: 6, minSize: 60, limit: 0.02, detailLimit: 0.04 }], { details })
+    // The scraps go into the skin, although the eye would be the cheaper neighbour of the first.
+    expect(out[12 * w + 18]).toBe(0)
+    expect(out[11 * w + 31]).toBe(0)
+    const eye = findAreas(out, w, h)
+    expect(eye.sizeOf[eye.areaOf[12 * w + 12]]).toBe(40)
+    // Without the eye being a detail it is too small to stay.
+    const gone = mergeAreas(labels, lab, w, h, [{ floor: 6, minSize: 60, limit: 0.02 }])
+    expect(sizes(gone, w, h)).toEqual([w * h])
+  })
+
+  it('drops a detail that is too small or too large for the step, and anything under the floor', () => {
+    const w = 60, h = 40
+    // Details of 20, 4 and 64 pixels.
+    const { labels, lab } = drawn(w, h, 0.7, [[1, 0.2, 10, 10, 15, 14], [2, 0.2, 40, 10, 42, 12], [3, 0.2, 30, 25, 38, 33]])
+    const details = findDetails(labels, lab, w, h, { minSize: 1, maxSize: 100 })
+    // The room a detail takes is its size; a thin or very small one takes none.
+    expect(details.room[28 * w + 34]).toBe(64)
+    expect(details.room[12 * w + 12]).toBe(0)
+    const stage = { minSize: 100, limit: 0.02, detailLimit: 0.04 }
+    const left = (rule) => sizes(mergeAreas(labels, lab, w, h, [{ ...stage, ...rule }], { details }), w, h).sort((a, b) => a - b)
+    // All three stay when nothing more is asked of them.
+    expect(left({}).slice(0, 3)).toEqual([4, 20, 64])
+    // The floor takes the one of 4 pixels, a least size of 30 the one of 20 as well.
+    expect(left({ floor: 6 }).slice(0, 2)).toEqual([20, 64])
+    expect(left({ floor: 6, detailSize: 30 })).toEqual([64, w * h - 64])
+    // A step with room for 50 pixels has none for the one of 64, which is then too small to stay.
+    expect(left({ floor: 6, detailRoom: 50 })).toEqual([20, w * h - 20])
+    expect(left({ floor: 6, detailRoom: 64 }).slice(0, 2)).toEqual([20, 64])
+  })
+
+  it('works out every round anew: an area that took one in waits for the next', () => {
+    const w = 40, h = 10
+    // Four stripes side by side, each 0.05 lighter than the one before: every pair is cheap enough
+    // to join, the whole run is not. In one round the outer pairs join; the two halves that are
+    // left are 0.1 apart and stay two areas.
+    const { labels, lab } = drawn(w, h, 0.4, [[1, 0.45, 10, 0, 20, h], [2, 0.5, 20, 0, 30, h], [3, 0.55, 30, 0, 40, h]])
+    const out = mergeAreas(labels, lab, w, h, [{ limit: 0.05 }])
+    expect(sizes(out, w, h)).toEqual([20 * h, 20 * h])
+    expect(out[5]).toBe(out[15])
+    expect(out[25]).toBe(out[35])
+    expect(out[15]).not.toBe(out[25])
+  })
+
+  it('counts two dark colours as closer than two light ones', () => {
+    const light = apart(0.6, 0, 0, 0.7, 0, 0), dark = apart(0.1, 0, 0, 0.2, 0, 0)
+    expect(light).toBeCloseTo(0.01, 6)
+    expect(dark).toBeLessThan(light / 2)
+    // A dark thing on a light ground counts in full.
+    expect(apart(0.1, 0, 0, 0.6, 0, 0)).toBeCloseTo(0.25, 6)
+    expect(apart(0.2, 0.01, 0, 0.1, 0, 0)).toBe(apart(0.1, 0, 0, 0.2, 0.01, 0))
+  })
+
+  it('takes noise from pixel to pixel for one colour, but not fine lines', () => {
+    const w = 100, h = 60
+    const rand = mulberry32(4)
+    // Left: every pixel its own colour. Right: black lines one pixel wide on white.
+    const rgba = makeImage(w, h, (x, y) => x < 50 ? [rand() * 255, rand() * 255, rand() * 255] : (y % 6 === 0 || x % 9 === 0 ? [0, 0, 0] : [255, 255, 255]))
+    const lab = toOklabPixels(rgba, w * h)
+    const patches = compactPatches(lab, w, h, 5)
+    const restless = settlePatches(lab, w, h, patches)
+    const at = (x, y) => restless[Math.floor(y / 5) * patches.cols + Math.floor(x / 5)]
+    expect(at(20, 30)).toBe(1)
+    expect(at(80, 30)).toBe(0)
+    // In the noise every pixel is back in the square of the grid it lies in.
+    expect(patches.patchOf[30 * w + 20]).toBe(6 * patches.cols + 4)
+    const calm = patchColours(lab, w, h, patches, { restless })
+    const L = (x, y) => calm[(y * w + x) * 3]
+    for (const [x, y] of [[10, 10], [30, 40], [20, 25]]) expect(Math.abs(L(x, y) - L(22, 30))).toBeLessThan(0.05)
+    // The lines are still black on white.
+    expect(L(81, 20)).toBeLessThan(0.3)
+    expect(L(84, 21)).toBeGreaterThan(0.9)
+    // A picture without such noise is left alone.
+    const flat = toOklabPixels(noisyPicture(w, h), w * h)
+    expect(settlePatches(flat, w, h, compactPatches(flat, w, h, 5))).toBe(null)
+  })
+
+  it('makes one calm area of noise in all colours, and fewer areas of specks with every step', () => {
+    const w = 160, h = 120
+    const rand = mulberry32(8)
+    const noise = makeImage(w, h, () => [rand() * 255, rand() * 255, rand() * 255])
+    for (const simplify of [0, 4, 10]) expect(segmentImage(noise, w, h, { colours: 8, simplify }).regions.length).toBeLessThan(6)
+    // Pixels in two greys are a picture of specks: Simplify takes them away.
+    const specks = makeImage(w, h, () => (rand() < 0.5 ? [90, 90, 90] : [190, 190, 190]))
+    const counts = [0, 4, 8, 10].map((simplify) => segmentImage(specks, w, h, { colours: 8, simplify }).regions.length)
+    for (let i = 1; i < counts.length; i++) expect(counts[i]).toBeLessThanOrEqual(counts[i - 1])
+    expect(counts[0]).toBeGreaterThan(50)
+    expect(counts[3]).toBeLessThan(counts[0] / 8)
+  })
+
+  // A rough field: grains of 3 x 3 pixels every `pitch` pixels, each with a label of its own kind
+  // (`kinds` of them in turn), and a photo that is noisier than the picture without noise.
+  function grainField(w, h, pitch, kinds, extra = []) {
+    const shapes = []
+    let i = 0
+    for (let y = 4; y + 3 < h; y += pitch) for (let x = 4; x + 3 < w; x += pitch) shapes.push([1 + (i++ % kinds), 0.4, x, y, x + 3, y + 3])
+    const { labels, lab } = drawn(w, h, 0.7, [...shapes, ...extra])
+    const rand = mulberry32(4)
+    const photo = Float32Array.from(lab, (v, j) => (j % 3 === 0 ? v + (rand() - 0.5) * 0.12 : v))
+    return { labels, lab, photo }
+  }
+
+  it('tells texture from details: grains of a rough zone are none, a thing on its own is', () => {
+    const w = 120, h = 90
+    // Grains all over the left half, and one dark piece of their size alone on the right.
+    const { labels, lab, photo } = grainField(60, h, 8, 2)
+    const wide = drawn(w, h, 0.7, [[9, 0.4, 90, 40, 93, 43]])
+    for (let y = 0; y < h; y++) for (let x = 0; x < 60; x++) { wide.labels[y * w + x] = labels[y * 60 + x]; wide.lab[(y * w + x) * 3] = lab[(y * 60 + x) * 3] }
+    const rand = mulberry32(4)
+    const noisy = Float32Array.from(wide.lab, (v, j) => (j % 3 === 0 ? v + (rand() - 0.5) * 0.12 : v))
+    const textured = new Uint8Array(w * h)
+    const plain = findDetails(wide.labels, wide.lab, w, h, { minSize: 6, maxSize: 40 })
+    const details = findDetails(wide.labels, wide.lab, w, h, { minSize: 6, maxSize: 40, photo: noisy, cell: 16, textured })
+    // Without the photo every grain is a detail; with it none is, and the lone piece still is.
+    expect(plain.worth[5 * w + 5]).toBeGreaterThan(0)
+    expect(details.worth[5 * w + 5]).toBe(0)
+    expect(details.worth[45 * w + 29]).toBe(0)
+    expect(details.worth[41 * w + 91]).toBeGreaterThan(0)
+    // The zone of texture is where the grains are.
+    expect(textured[40 * w + 30]).toBe(1)
+    expect(textured[40 * w + 100]).toBe(0)
+  })
+
+  it('never takes for texture a long line, a piece as large as an area that stays, or one on calm ground', () => {
+    const w = 120, h = 90
+    // A wire right across the grains and a window among them.
+    const field = grainField(w, h, 8, 2, [[7, 0.2, 0, 44, w, 45], [8, 0.2, 60, 60, 70, 72]])
+    const details = findDetails(field.labels, field.lab, w, h, { minSize: 6, maxSize: 200, photo: field.photo, cell: 16, pieceSize: 72 })
+    expect(details.worth[5 * w + 5]).toBe(0)
+    expect(details.worth[44 * w + 50]).toBeGreaterThan(0)
+    expect(details.worth[65 * w + 65]).toBeGreaterThan(0)
+    // The same grains on a ground the photo shows as calm as the picture: letters, not texture.
+    const calm = findDetails(field.labels, field.lab, w, h, { minSize: 6, maxSize: 200, photo: field.lab, cell: 16, pieceSize: 72 })
+    expect(calm.worth[5 * w + 5]).toBeGreaterThan(0)
+  })
+
+  it('judges texture the same whatever the size of the picture, when the cells scale with it', () => {
+    const verdict = (scale) => {
+      const w = 96 * scale, h = 64 * scale
+      const shapes = []
+      // Grains on the left half, two pieces of their size on their own on the right.
+      for (let y = 4; y + 3 < 64; y += 8) for (let x = 4; x + 3 < 48; x += 8) shapes.push([1 + ((x + y) >> 3) % 2, 0.4, x * scale, y * scale, (x + 3) * scale, (y + 3) * scale])
+      shapes.push([5, 0.4, 70 * scale, 20 * scale, 73 * scale, 23 * scale], [6, 0.4, 80 * scale, 44 * scale, 83 * scale, 47 * scale])
+      const { labels, lab } = drawn(w, h, 0.7, shapes)
+      const rand = mulberry32(4)
+      const photo = Float32Array.from(lab, (v, j) => (j % 3 === 0 ? v + (rand() - 0.5) * 0.12 : v))
+      const details = findDetails(labels, lab, w, h, { minSize: 6, maxSize: 40 * scale * scale, photo, cell: 16 * scale })
+      const kept = (x, y) => details.worth[(y * scale + 1) * w + x * scale + 1] > 0
+      return [kept(4, 4), kept(20, 28), kept(44, 60), kept(70, 20), kept(80, 44)]
+    }
+    expect(verdict(1)).toEqual([false, false, false, true, true])
+    expect(verdict(2)).toEqual(verdict(1))
+    expect(verdict(3)).toEqual(verdict(1))
+  })
+
+  it('keeps the parts of a small face: many pieces of many colours that stand out', () => {
+    const w = 120, h = 90
+    // Twelve strong pieces close together, each of a kind of its own; and twelve of one kind.
+    const many = [], same = []
+    for (let i = 0; i < 12; i++) {
+      const x = 10 + (i % 4) * 7, y = 10 + Math.floor(i / 4) * 7
+      many.push([1 + i, 0.2, x, y, x + 3, y + 3])
+      same.push([20, 0.2, x + 60, y + 40, x + 63, y + 43])
+    }
+    const { labels, lab } = drawn(w, h, 0.7, [...many, ...same])
+    const rand = mulberry32(4)
+    const photo = Float32Array.from(lab, (v, j) => (j % 3 === 0 ? v + (rand() - 0.5) * 0.12 : v))
+    const details = findDetails(labels, lab, w, h, { minSize: 6, maxSize: 40, photo, cell: 16 })
+    expect(details.worth[18 * w + 18]).toBeGreaterThan(0)
+    expect(details.worth[58 * w + 78]).toBe(0)
+  })
+
+  it('counts would-be details that touch as one thing', () => {
+    const w = 60, h = 40
+    // A dark mark of 12 pixels with a rim of 8 in another dark colour, and a mark of 12 alone.
+    const { labels, lab } = drawn(w, h, 0.9, [[1, 0.2, 10, 10, 14, 13], [2, 0.3, 14, 10, 16, 14], [3, 0.2, 40, 10, 44, 13]])
+    const details = findDetails(labels, lab, w, h, { minSize: 6, maxSize: 40 })
+    expect(details.span[11 * w + 11]).toBe(20)
+    expect(details.span[11 * w + 15]).toBe(20)
+    expect(details.span[11 * w + 41]).toBe(12)
+  })
+
+  it('joins areas in a zone of texture up to a larger size, but only what does not stand out', () => {
+    const w = 60, h = 40
+    // Two areas of 100 pixels on a ground of 0.5: one nearly its colour, one far from it.
+    const { labels, lab } = drawn(w, h, 0.5, [[1, 0.56, 5, 5, 15, 15], [2, 0.2, 35, 5, 45, 15]])
+    const stage = [{ minSize: 50, roughSize: 200, limit: 0 }]
+    // Outside a zone of texture both are large enough.
+    expect(sizes(mergeAreas(labels, lab, w, h, stage), w, h).sort((a, b) => a - b)).toEqual([100, 100, w * h - 200])
+    // Inside one the near colour runs into the ground, the far one stays (a window in a house front).
+    const rough = new Uint8Array(w * h).fill(1)
+    expect(sizes(mergeAreas(labels, lab, w, h, stage, { rough }), w, h).sort((a, b) => a - b)).toEqual([100, w * h - 100])
   })
 
   it('leaves a detail and the hole inside it alone when areas join', () => {
@@ -172,9 +381,15 @@ describe('smooth', () => {
     const details = findDetails(labels, lab, w, h, { minSize: 6, maxSize: 200 })
     const out = mergeAreas(labels, lab, w, h, [{ minSize: 200, limit: 0.02, detailLimit: 0.04 }], { details })
     expect(out[11 * w + 11]).toBe(1)
-    expect(out[15 * w + 15]).toBe(2)
     expect(out[12 * w + 42]).toBe(0)
     expect(sizes(out, w, h).sort((a, b) => a - b)).toEqual([16, 84, w * h - 100])
+    // The middle is nearly the colour of the ground around the letter: it is that ground, seen
+    // through the letter, and is painted with it.
+    expect(out[15 * w + 15]).toBe(0)
+    // A middle of another colour (the white of an eye) keeps its own.
+    const eye = drawn(w, h, 0.7, [[1, 0.1, 10, 10, 20, 20], [2, 0.95, 13, 13, 17, 17]])
+    const white = mergeAreas(eye.labels, eye.lab, w, h, [{ minSize: 200, limit: 0.02, detailLimit: 0.04 }], { details: findDetails(eye.labels, eye.lab, w, h, { minSize: 6, maxSize: 200 }) })
+    expect(white[15 * w + 15]).toBe(2)
     // When the letter is not worth keeping, it goes whole, with its inside.
     const gone = mergeAreas(labels, lab, w, h, [{ minSize: 200, limit: 0.02, detailLimit: 5 }], { details })
     expect(sizes(gone, w, h)).toEqual([w * h])
@@ -301,61 +516,6 @@ describe('smooth', () => {
     const label = (seg, p) => seg.regions[seg.regionMap[p]].cluster
     for (let x = 0; x < w; x += 7) expect(label(highFine, 5 * w + x)).toBe(label(high, 5 * w + x))
   })
-  it('does not let a detail grow when the outlines are rounded', () => {
-    const w = 40, h = 40
-    // A detail of 3 x 3 pixels on the border between two halves: without it the border is straight.
-    const { labels } = drawn(w, h, 0.3, [[1, 0.9, 20, 0, 40, 40], [2, 0.1, 18, 18, 21, 21]])
-    const fixed = Uint8Array.from(labels, (l) => (l === 2 ? 1 : 0))
-    const out = roundOutlines(labels, w, h, 3, { radius: 3, passes: 2, fixed })
-    expect(Array.from(out).filter((l) => l === 2).length).toBe(9)
-    for (let p = 0; p < w * h; p++) if (fixed[p]) expect(out[p]).toBe(2)
-  })
-
-  it('takes a speckle for texture, not for details', () => {
-    const w = 60, h = 40
-    // One dark square on plain ground, and a field of dark and light squares side by side.
-    const shapes = [[1, 0.1, 6, 6, 10, 10]]
-    for (let j = 0; j < 6; j++) for (let i = 0; i < 6; i++) shapes.push([2 + ((i + j) % 2), (i + j) % 2 ? 0.1 : 0.9, 30 + i * 4, 8 + j * 4, 34 + i * 4, 12 + j * 4])
-    const { labels, lab } = drawn(w, h, 0.9, shapes)
-    const extent = new Int32Array(w * h)
-    const details = findDetails(labels, lab, w, h, { minSize: 6, maxSize: 40, extent })
-    expect(details[8 * w + 8]).toBeGreaterThan(0)
-    expect(extent[8 * w + 8]).toBe(16)
-    // In the middle of the field every square has squares that could be details on all sides.
-    expect(details[21 * w + 43]).toBe(0)
-    expect(details[21 * w + 47]).toBe(0)
-  })
-
-  it('lets a detail go at a higher step when it is small, however strong its colour', () => {
-    const w = 60, h = 40
-    const { labels, lab } = drawn(w, h, 0.9, [[1, 0.1, 10, 10, 13, 13], [1, 0.1, 40, 10, 46, 16]])
-    const extent = new Int32Array(w * h)
-    const details = findDetails(labels, lab, w, h, { minSize: 6, maxSize: 40, extent })
-    const at = (detailSize) => sizes(mergeAreas(labels, lab, w, h, [{ minSize: 200, detailLimit: 0.04, detailSize }], { details, extent }), w, h).sort((a, b) => a - b)
-    expect(at(6)).toEqual([9, 36, w * h - 45])
-    expect(at(20)).toEqual([36, w * h - 36])
-    expect(at(40)).toEqual([w * h])
-  })
-
-  it('decides every join on sizes that still hold: two small areas that are large enough together stay', () => {
-    const w = 40, h = 20
-    // Two areas of 30 pixels side by side on a large ground; each is nearest in colour to the other.
-    const { labels, lab } = drawn(w, h, 0.9, [[1, 0.3, 10, 5, 15, 11], [2, 0.35, 15, 5, 20, 11]])
-    const out = sizes(mergeAreas(labels, lab, w, h, [{ minSize: 40 }]), w, h).sort((a, b) => a - b)
-    expect(out).toEqual([60, w * h - 60])
-  })
-
-  it('calms black and white speckle as Simplify rises', () => {
-    const w = 160, h = 120
-    const rand = mulberry32(4)
-    const rgba = makeImage(w, h, () => { const v = rand() < 0.5 ? 0 : 255; return [v, v, v] })
-    const areas = [0, 4, 10].map((simplify) => segmentImage(rgba, w, h, { colours: 6, simplify }).regions.length)
-    // Every grain passed as a detail before, at every step: about 900 areas at each.
-    expect(areas[0]).toBeLessThan(400)
-    expect(areas[1]).toBeLessThan(areas[0] / 2)
-    expect(areas[2]).toBeLessThan(areas[0] / 4)
-  })
-
   describe('smooth drawing', () => {
     // A map of two labels, 1 where `inside` says so.
     const shape = (w, h, inside) => Int32Array.from({ length: w * h }, (_, p) => (inside(p % w, Math.floor(p / w)) ? 1 : 0))
@@ -433,6 +593,56 @@ describe('smooth', () => {
         if (around.size > 2) expect(dx[c] === 0 && dy[c] === 0).toBe(true)
       }
       expect(moved).toBeGreaterThan(20)
+    })
+
+    it('draws a staircase of one up and one along in half steps, whichever way it runs', () => {
+      const w = 40, h = 40
+      for (const inside of [(x, y) => x > y, (x, y) => x + y > 39, (x, y) => x < y, (x, y) => x + y < 39]) {
+        const labels = shape(w, h, inside)
+        const big = upscaleAreas(labels, w, h, 2)
+        // Enlarged pixel by pixel every step is 2 long; drawn smooth none is longer than 1.
+        expect(longestStep(big, w * 2, h * 2, 8, w * 2 - 8)).toBe(1)
+        const ones = Array.from(big).filter((l) => l === 1).length
+        expect(Math.abs(ones - 4 * Array.from(labels).filter((l) => l === 1).length)).toBeLessThanOrEqual(2 * w)
+      }
+    })
+
+    it('loses nothing in dense patterns or at the edge of the picture', () => {
+      const w = 48, h = 36
+      const rand = mulberry32(21)
+      const maps = [
+        shape(w, h, (x, y) => (x + y) % 2 === 0), // single pixels
+        shape(w, h, (x, y) => ((x >> 1) + (y >> 1)) % 2 === 0), // squares of 2
+        shape(w, h, (x, y) => ((x >> 2) + (y >> 2)) % 2 === 0), // squares of 4
+        shape(w, h, (x) => x % 2 === 0), // lines of one pixel
+        shape(w, h, (x, y) => ((x + y) >> 1) % 2 === 0), // slanted stripes
+        Int32Array.from({ length: w * h }, () => Math.floor(rand() * 4)), // noise in four labels
+        shape(w, h, (x, y) => x + y < 6 || x === w - 1 || y === 0), // shapes at the edge
+      ]
+      for (const labels of maps) {
+        for (const scale of [2, 3]) {
+          const W = w * scale
+          const big = upscaleAreas(labels, w, h, scale)
+          const counts = [0, 0, 0, 0], drawnAs = [0, 0, 0, 0]
+          for (let p = 0; p < w * h; p++) {
+            counts[labels[p]] += scale * scale
+            const x = p % w, y = Math.floor(p / w)
+            let own = 0
+            for (let j = 0; j < scale; j++) for (let i = 0; i < scale; i++) {
+              const l = big[(y * scale + j) * W + x * scale + i]
+              drawnAs[l]++
+              if (l === labels[p]) own++
+              // The label of the pixel or of one beside it, never from further away.
+              const near = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]].some(([dx, dy]) => x + dx >= 0 && x + dx < w && y + dy >= 0 && y + dy < h && labels[(y + dy) * w + x + dx] === l)
+              expect(near).toBe(true)
+            }
+            // Every pixel keeps at least one of its enlarged pixels.
+            expect(own).toBeGreaterThan(0)
+          }
+          // No label gains or loses more than a twentieth of its pixels by the drawing.
+          for (let l = 0; l < 4; l++) if (counts[l]) expect(Math.abs(drawnAs[l] - counts[l])).toBeLessThanOrEqual(counts[l] * 0.05)
+        }
+      }
     })
 
     it('enlarges by any whole number, and by one not at all', () => {

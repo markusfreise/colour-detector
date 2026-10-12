@@ -13,7 +13,7 @@
 import { srgbToLinear, linearToOklab, oklabToLinear, oklabToHex, hexToOklab } from './color.js'
 import { geometricAreas } from './geometric.js'
 import { boxMask } from './details.js'
-import { compactPatches, patchColours, findDetails, mergeAreas, roundOutlines } from './smooth.js'
+import { compactPatches, settlePatches, patchColours, findDetails, mergeAreas, roundOutlines } from './smooth.js'
 
 export function mulberry32(seed) {
   let a = seed >>> 0
@@ -92,12 +92,12 @@ const PATCH_BLEND = 0.035
 // Sizes in pixels are meant for a picture of this many pixels and scale with the picture
 // (areas with its pixels, the rounding window with its side).
 const REFERENCE_PIXELS = 480000
+// The highest step of Simplify.
+const TOP_SIMPLIFY = 10
 // The smallest area that is no detail, in pixels at Simplify 0; it grows with (Simplify + 1) ^ MIN_AREA_POWER.
 const MIN_AREA = 72
 const MIN_AREA_POWER = 1.3
-// Nothing smaller than this many pixels is ever an area of its own, whatever the size of the
-// picture; but for the inside of a detail that stays (the hole of a letter), which is part of it
-// and can be as small as three pixels (DETAIL_HOLE in smooth.js).
+// Nothing smaller than this many pixels is ever an area of its own, whatever the size of the picture.
 const SMALLEST_AREA = 6
 // Two areas join while that costs less than this at Simplify 0 (see `mergeAreas` for the cost),
 // and MERGE_GROWTH times more with every step of Simplify.
@@ -106,20 +106,29 @@ const MERGE_GROWTH = 1.25
 // Before the details are looked for, the pieces of one thing join: at this part of MERGE_LIMIT.
 const TIDY_LIMIT = 0.25
 // A small area is a detail when losing it would cost at least this at Simplify 0 (see
-// `findDetails`), and DETAIL_GROWTH times more with every step: details go later than areas join,
-// so a face still has eyes when its cheeks are one area.
+// `findDetails`), and 1 + DETAIL_RISE x step ^ 3 times that further up: hardly more up to the
+// middle of Simplify, so that a face still has eyes when its cheeks are one area, and about nine
+// times as much at the top, where only what is as strong as black writing on white is left.
 const DETAIL_LIMIT = 0.04
-const DETAIL_GROWTH = 1.1
-// A detail, with the others of its group (the letters of a line), has at least SMALLEST_AREA
-// pixels at Simplify 0 and DETAIL_SIZE_STEP times that more with every step: what is left of a
-// speckle goes as Simplify rises, however strong its colour.
-const DETAIL_SIZE_STEP = 0.3
+const DETAIL_RISE = 0.008
+// A detail also has to count as this many pixels at Simplify 0 (see `findDetails`; less is no
+// more than a touch of the brush), and DETAIL_SIZE_GROWTH times more with every step, so that
+// the specks go first.
+const DETAIL_SIZE = 6
+const DETAIL_SIZE_GROWTH = 1.35
 // Rounding of the outlines: the window around a pixel at Simplify 0, and what a step of Simplify adds.
 const OUTLINE_RADIUS = 3
 const OUTLINE_RADIUS_STEP = 0.3
 const OUTLINE_PASSES = 2
 // Inside a focus box the areas are as at Simplify 0, and both limits are this part of theirs there.
 const FOCUS_LIMIT = 0.5
+// Texture is looked for in cells of this many pixels a side in a picture of REFERENCE_PIXELS
+// (see `dropTexture` in smooth.js); the cells scale with the side of the picture.
+const TEXTURE_CELL = 16
+// In a zone of texture the smallest area is that of this many steps of Simplify further up, and
+// the outlines are rounded as that many further up.
+const TEXTURE_STEPS = 1.5
+const TEXTURE_ROUNDER = 3
 
 const BIN_L = 50 // histogram steps per unit of L
 const BIN_AB = 100 // histogram steps per unit of a and b
@@ -432,49 +441,65 @@ export function labelAnchors(regionMap, width, height, regionCount) {
 /**
  * Calm areas from the labels of the clustering, in five steps:
  * 1. pieces of a few pixels join a neighbour, so that a letter or an eye is one area;
- * 2. the details are found: small or thin areas that stand out. They stay as they are from here on;
+ * 2. the details are found: small or thin areas that stand out, but not texture (one of many
+ *    small pieces in a rough zone: heather, leaves). They stay as they are from here on;
  * 3. areas join: the ones too small for a brush always, larger ones while it costs little;
  * 4. the outlines are rounded;
  * 5. what the rounding cut off or made too small joins a neighbour.
- * `simplify` (0..10) raises the smallest area, both limits and the rounding; the joining goes
- * through every step up to it, so a higher step joins what the lower one left. Inside `where`
- * (a mask of the focus boxes) the areas are those of Simplify 0, with half the limits.
+ * `simplify` (0..10) raises the smallest area, the limits, the least size of a detail and the
+ * rounding; the joining goes through every step up to it on the same details, so a higher step
+ * joins what the lower one left. Inside `where` (a mask of the focus boxes) the areas are those
+ * of Simplify 0, with half the limits. In a zone of texture the smallest area is larger and the
+ * outlines are rounder (TEXTURE_STEPS, TEXTURE_ROUNDER), so that heather or a tree becomes a few
+ * calm shapes; sizes there scale with the picture like all others.
  * @param {Int32Array} raw  cluster per pixel
  * @param {Float32Array} lab  colour per pixel, without noise
+ * @param {Float32Array} [photo]  colour per pixel as in the photo: tells texture from details
+ * @param {Int32Array} [kindOf]  per cluster, the mix it is a wash of
  * @returns {Int32Array} cluster per pixel
  */
-export function calmAreas(raw, lab, width, height, k, simplify, where = null) {
+export function calmAreas(raw, lab, width, height, k, simplify, where = null, photo = null, kindOf = null) {
   const count = width * height
   const minSizeAt = (level) => Math.max(SMALLEST_AREA, Math.round(MIN_AREA * (count / REFERENCE_PIXELS) * Math.pow(level + 1, MIN_AREA_POWER)))
   const mergeLimitAt = (level) => MERGE_LIMIT * Math.pow(MERGE_GROWTH, level)
-  const detailLimitAt = (level) => DETAIL_LIMIT * Math.pow(DETAIL_GROWTH, level)
+  const detailLimitAt = (level) => DETAIL_LIMIT * (1 + DETAIL_RISE * level * level * level)
+  const detailSizeAt = (level) => Math.round(DETAIL_SIZE * Math.pow(DETAIL_SIZE_GROWTH, level))
   const radiusAt = (level) => Math.max(1, Math.round((OUTLINE_RADIUS + level * OUTLINE_RADIUS_STEP) * Math.sqrt(count / REFERENCE_PIXELS)))
 
   // One stage per step of Simplify below the one asked for, then that one (see `mergeAreas`).
-  const detailSizeAt = (level) => Math.round(SMALLEST_AREA * (1 + DETAIL_SIZE_STEP * level))
-  const stageAt = (level) => ({ minSize: minSizeAt(level), limit: mergeLimitAt(level), detailLimit: detailLimitAt(level), detailSize: detailSizeAt(level), smallest: SMALLEST_AREA })
+  const stageAt = (level) => ({ floor: SMALLEST_AREA, minSize: minSizeAt(level), limit: mergeLimitAt(level), detailLimit: detailLimitAt(level), detailSize: detailSizeAt(level), detailRoom: minSizeAt(level), roughSize: minSizeAt(level + TEXTURE_STEPS) })
   const stages = []
   for (let level = 0; level < simplify; level++) stages.push(stageAt(level))
   const last = stageAt(simplify)
   stages.push(last)
-  const inside = { minSize: minSizeAt(0), limit: mergeLimitAt(0) * FOCUS_LIMIT, detailLimit: detailLimitAt(0) * FOCUS_LIMIT, detailSize: detailSizeAt(0), smallest: SMALLEST_AREA }
+  const inside = { floor: SMALLEST_AREA, minSize: minSizeAt(0), limit: mergeLimitAt(0) * FOCUS_LIMIT, detailLimit: detailLimitAt(0) * FOCUS_LIMIT, detailSize: detailSizeAt(0), detailRoom: minSizeAt(0) }
 
-  const tidy = mergeAreas(raw, lab, width, height, [{ minSize: SMALLEST_AREA, limit: MERGE_LIMIT * TIDY_LIMIT }])
-  const extent = new Int32Array(count)
-  const details = findDetails(tidy, lab, width, height, { minSize: SMALLEST_AREA, maxSize: last.minSize, extent })
-  const merged = mergeAreas(tidy, lab, width, height, stages, { details, extent, where, inside })
-  // The details that are left: no outline of theirs is rounded.
+  const tidy = mergeAreas(raw, lab, width, height, [{ floor: SMALLEST_AREA, limit: MERGE_LIMIT * TIDY_LIMIT }])
+  // The details are the same at every step (up to the largest that the top step has room for);
+  // a step only says which of them it keeps. So the steps join the same areas in the same order.
+  const rough = photo ? new Uint8Array(count) : null
+  const details = findDetails(tidy, lab, width, height, { minSize: SMALLEST_AREA, maxSize: minSizeAt(Math.max(TOP_SIMPLIFY, simplify)), photo, cell: Math.max(2, Math.round(TEXTURE_CELL * Math.sqrt(count / REFERENCE_PIXELS))), pieceSize: minSizeAt(0), kindOf, textured: rough })
+  const joining = { details, where, inside, rough }
+  const merged = mergeAreas(tidy, lab, width, height, stages, joining)
+  // The details that are left and are small or thin: no outline of theirs is rounded. One as large
+  // as an area that stays anyway (a window, a lip) keeps its place but gets a round outline.
   const fixed = new Uint8Array(count)
   for (let p = 0; p < count; p++) {
     const rule = where && where[p] ? inside : last
-    fixed[p] = details[p] > 0 && details[p] >= rule.detailLimit && extent[p] >= rule.detailSize ? 1 : 0
+    fixed[p] = details.worth[p] > 0 && details.worth[p] >= rule.detailLimit && details.span[p] >= rule.detailSize && details.room[p] < minSizeAt(0) ? 1 : 0
   }
   const rounded = roundOutlines(merged, width, height, k, { radius: radiusAt(simplify), passes: OUTLINE_PASSES, fixed })
+  if (rough) {
+    // The zones of texture once more, with a wider window; not where a focus box asks for fine areas.
+    if (where) for (let p = 0; p < count; p++) if (where[p]) rough[p] = 0
+    const wide = roundOutlines(rounded, width, height, k, { radius: radiusAt(simplify + TEXTURE_ROUNDER), passes: OUTLINE_PASSES, fixed, only: rough })
+    for (let p = 0; p < count; p++) rounded[p] = wide[p]
+  }
   if (where && simplify > 0) {
     const fine = roundOutlines(merged, width, height, k, { radius: radiusAt(0), passes: OUTLINE_PASSES, fixed, only: where })
     for (let p = 0; p < count; p++) if (where[p]) rounded[p] = fine[p]
   }
-  return mergeAreas(rounded, lab, width, height, [last], { details, extent, where, inside })
+  return mergeAreas(rounded, lab, width, height, [last], joining)
 }
 
 /**
@@ -491,7 +516,8 @@ export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, 
   // Noise goes before the colours are found: every pixel takes the colour of its patch.
   const original = toOklabPixels(rgba, count)
   const patches = compactPatches(original, width, height, PATCH_STEP)
-  const lab = patchColours(original, width, height, patches, { blend: PATCH_BLEND })
+  const restless = settlePatches(original, width, height, patches)
+  const lab = patchColours(original, width, height, patches, { blend: PATCH_BLEND, restless })
   const { labels: raw, clusters: found } = clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), {
     seed, areaPower, maxWashes, lightnessWeight,
     // Given colours (hex) as the mixes, instead of finding them.
@@ -499,14 +525,14 @@ export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, 
   })
   const k = found.length
   const where = focus?.length ? boxMask(focus, width, height) : null
-  const calm = calmAreas(raw, lab, width, height, k, simplify, where)
+  const calm = calmAreas(raw, lab, width, height, k, simplify, where, original, Int32Array.from(found, (c) => c.group))
   let labels = calm
   if (geometric) {
     labels = geometricAreas(calm, width, height, simplify)
     if (where) {
       // Where the details are, the areas keep their own outlines; what that cuts off joins a neighbour.
       for (let p = 0; p < count; p++) if (where[p]) labels[p] = calm[p]
-      labels = mergeAreas(labels, lab, width, height, [{ minSize: SMALLEST_AREA }])
+      labels = mergeAreas(labels, lab, width, height, [{ floor: SMALLEST_AREA }])
     }
   }
 

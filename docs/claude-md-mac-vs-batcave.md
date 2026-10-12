@@ -2,6 +2,10 @@
 
 Compared on 2026-10-12: `~/.claude/CLAUDE.md` on the Mac (76 lines) with `/root/.claude/CLAUDE.md` on batcave, container 114 (38 lines). Nothing was changed on either side.
 
+## Status
+
+Done on 2026-10-12: Markus gave the word, and the Mac's file was copied over the one on batcave. Both are now identical (76 lines, same checksum). The old file is kept next to it as `/root/.claude/CLAUDE.md.bak-2026-10-12`. What follows is the state before the copy.
+
 ## Result
 
 The file on batcave is an older copy of the one on the Mac. Everything it contains is identical to the Mac, word for word. Three sections of the Mac are missing on batcave; batcave has nothing the Mac lacks.

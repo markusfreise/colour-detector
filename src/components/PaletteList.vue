@@ -8,9 +8,6 @@
         </span>
       </h2>
       <div class="palette__actions">
-        <button class="button button--ghost" type="button" :disabled="!analysis.entries.length" @click="print">
-          Print / PDF
-        </button>
         <button class="button button--ghost" type="button" @click="emit('show-paintbox')">Show paint box</button>
         <PanelToggle name="palette" label="the colours" />
       </div>
@@ -84,7 +81,6 @@ import { usePaintsStore } from '../stores/paints.js'
 import { WASH_LETTERS } from '../lib/mixing.js'
 import { contrastText } from '../lib/color.js'
 import { paintNumber } from '../lib/paintbox.js'
-import { isNative, sendNative } from '../lib/native.js'
 import { useLayoutStore } from '../stores/layout.js'
 import PanelToggle from './PanelToggle.vue'
 
@@ -146,13 +142,6 @@ const mixes = computed(() => {
     }
   })
 })
-
-// The print stylesheet lays out the sheet; the browser's dialog offers "Save as PDF".
-function print() {
-  // window.print() does nothing inside the app's web view; the shell prints it instead.
-  if (isNative) sendNative('print')
-  else window.print()
-}
 
 function toggle(i) {
   analysis.selectEntry(analysis.selectedEntry === i ? null : i)

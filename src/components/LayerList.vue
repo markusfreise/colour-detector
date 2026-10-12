@@ -7,7 +7,6 @@
       </h2>
       <div class="palette__actions">
         <button class="button button--ghost" type="button" :disabled="!result || allShown" @click="analysis.soloLayer(null)">All</button>
-        <button class="button button--ghost" type="button" :disabled="!result" @click="print">Print / PDF</button>
         <button class="button button--ghost" type="button" @click="emit('show-paintbox')">Show paint box</button>
       </div>
     </header>
@@ -73,13 +72,12 @@
 </template>
 
 <script setup>
-import { computed, nextTick } from 'vue'
+import { computed } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { contrastText } from '../lib/color.js'
 import { matchQuality } from '../lib/mixing.js'
 import { paintNumber } from '../lib/paintbox.js'
-import { isNative, sendNative } from '../lib/native.js'
 
 const emit = defineEmits(['show-paintbox'])
 const analysis = useAnalysisStore()
@@ -165,15 +163,5 @@ function onTick(row, event) {
 // Hand the choice of the base paints back to the app.
 function auto() {
   analysis.proposeLayers()
-}
-
-// The print stylesheet lays out the sheets; the browser's dialog offers "Save as PDF".
-async function print() {
-  if (isNative) return sendNative('print')
-  // The sheets are built on `beforeprint`, but the page only renders them a tick later, which is
-  // too late for the print snapshot. So build them first and print once they are in the page.
-  window.dispatchEvent(new Event('beforeprint'))
-  await nextTick()
-  window.print()
 }
 </script>

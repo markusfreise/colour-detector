@@ -1,7 +1,7 @@
 <template>
   <section class="ai">
     <header class="ai__header">
-      <h2 class="panel__title">AI <span class="ai__badge">your own key</span></h2>
+      <h2 class="panel__title">Connect your own AI</h2>
       <div class="segmented">
         <button
           v-for="choice in choices"

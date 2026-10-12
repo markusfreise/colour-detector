@@ -3,26 +3,27 @@
     <div class="controls__image">
       <span class="controls__image-name" :title="analysis.imageName">{{ analysis.imageName }}</span>
       <span v-if="analysis.savedId" class="controls__saved">In collection</span>
+      <div class="controls__actions">
+        <label class="button button--secondary" title="Choose a photo">
+          New
+          <input class="controls__file" type="file" accept="image/*" @change="onFile" />
+        </label>
+        <label v-if="hasCamera" class="button button--secondary">
+          Take photo
+          <input class="controls__file" type="file" accept="image/*" capture="environment" @change="onFile" />
+        </label>
+        <button class="button button--ghost" type="button" title="Load the next sample photo" @click="analysis.loadSample()">
+          Sample
+        </button>
+        <button class="button button--ghost" type="button" :disabled="!analysis.image" @click="collection.saveCurrent()">
+          Save
+        </button>
+        <button class="button button--ghost" type="button" @click="emit('show-collection')">Collection</button>
+        <button class="button button--ghost" type="button" :disabled="!printable" @click="print">Print / PDF</button>
+      </div>
       <PanelToggle name="controls" label="the settings" />
     </div>
     <div v-show="!collapsed" class="controls__body">
-    <div class="controls__actions">
-      <label class="button button--secondary">
-        Choose photo
-        <input class="controls__file" type="file" accept="image/*" @change="onFile" />
-      </label>
-      <label v-if="hasCamera" class="button button--secondary">
-        Take photo
-        <input class="controls__file" type="file" accept="image/*" capture="environment" @change="onFile" />
-      </label>
-      <button class="button button--ghost" type="button" title="Load the next sample photo" @click="analysis.loadSample()">
-        Sample
-      </button>
-      <button class="button button--ghost" type="button" :disabled="!analysis.image" @click="collection.saveCurrent()">
-        Save
-      </button>
-      <button class="button button--ghost" type="button" @click="emit('show-collection')">Collection</button>
-    </div>
     <p v-if="collection.error" class="controls__error">{{ collection.error }}</p>
 
     <div class="field">
@@ -74,7 +75,6 @@
           max="10"
           @change="analysis.analyse()"
         />
-        <span class="field__hint">Higher = bigger, calmer shapes</span>
       </label>
     </div>
 
@@ -114,7 +114,6 @@
           max="32"
           @change="analysis.analyse()"
         />
-        <span class="field__hint">More colours = more detail</span>
       </label>
       <label v-else class="field">
         <span class="field__label">Layers <output class="field__value">{{ layerCount }}</output></span>
@@ -133,7 +132,7 @@
       </label>
 
       <label v-if="!analysis.layerMode" class="field">
-        <span class="field__label">Variety <output class="field__value">{{ analysis.settings.variety }}</output></span>
+        <span class="field__label">Details <output class="field__value">{{ analysis.settings.variety }}</output></span>
         <input
           v-model.number="analysis.settings.variety"
           class="field__range"
@@ -188,12 +187,8 @@
         </div>
       </div>
     </div>
-    <span class="field__hint controls__hint">
-      {{
-        analysis.layerMode
-          ? 'Accents: small strong touches painted last, first for a colour the washes miss, then for the darks'
-          : 'Variety: lower = closer overall, higher = small areas keep their own colour'
-      }}
+    <span v-if="analysis.layerMode" class="field__hint controls__hint">
+      Accents: small strong touches painted last, first for a colour the washes miss, then for the darks
     </span>
 
     <div class="controls__settings">
@@ -244,12 +239,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, nextTick } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { useCollectionStore } from '../stores/collection.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useLayoutStore } from '../stores/layout.js'
 import PanelToggle from './PanelToggle.vue'
+import { isNative, sendNative } from '../lib/native.js'
 import AiPanel from './AiPanel.vue'
 
 const emit = defineEmits(['show-collection'])
@@ -292,6 +288,20 @@ const views = computed(() =>
 const simplifyKey = computed(() => (analysis.layerMode ? 'layerSimplify' : 'simplify'))
 // On Auto the slider says how many paints to propose; by hand it shows how many were chosen.
 const layerCount = computed(() => (paints.activeBox.layerAuto ? analysis.settings.layerCount : paints.activeBox.layerIds.length))
+
+// Something to print: colours in mix mode, a plan of layers in layer mode.
+const printable = computed(() => (analysis.layerMode ? !!analysis.layers : analysis.entries.length > 0))
+
+// The print stylesheet lays out the sheet; the browser's dialog offers "Save as PDF".
+async function print() {
+  // window.print() does nothing inside the app's web view; the shell prints it instead.
+  if (isNative) return sendNative('print')
+  // The sheets of layer mode are built on `beforeprint`, but the page only renders them a tick
+  // later, which is too late for the print snapshot. So build them first, then print.
+  window.dispatchEvent(new Event('beforeprint'))
+  await nextTick()
+  window.print()
+}
 
 function onFile(event) {
   const file = event.target.files?.[0]

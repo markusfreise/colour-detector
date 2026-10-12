@@ -28,7 +28,7 @@ function startCheckout(): never
         fail(422, 'This plan is not offered.');
     }
     if ((int) $user['lifetime'] === 1) {
-        fail(409, 'This account already has a licence without end.');
+        fail(409, 'This account already has a lifetime licence.');
     }
     $once = $name === 'lifetime';
     if (!$once && isPro($user)) {
@@ -135,6 +135,31 @@ function stripeWebhook(): never
             break;
     }
     send(['received' => true]);
+}
+
+/** A voucher turns the account it was made out to into one with a lifetime licence. */
+function redeemVoucher(): never
+{
+    method('POST');
+    $user = requireUser();
+    $code = (string) (body()['code'] ?? '');
+    if (tooMany('voucher:' . $user['id'], VOUCHER_TRIES)) {
+        fail(429, 'Too many tries. Please try again in an hour.');
+    }
+    if ((int) $user['lifetime'] === 1) {
+        fail(409, 'This account already has a lifetime licence.');
+    }
+    $voucher = row('SELECT * FROM vouchers WHERE hash = ?', [voucherKey($code)]);
+    // One answer for an unknown code and for a code made out to another address.
+    if (!$voucher || $voucher['email'] !== $user['email']) {
+        fail(404, 'This code is not valid for ' . $user['email'] . '. A voucher only works with the address it was made out to.');
+    }
+    if ($voucher['redeemed_at']) {
+        fail(410, 'This voucher was already used.');
+    }
+    run('UPDATE vouchers SET redeemed_at = ? WHERE hash = ?', [time(), $voucher['hash']]);
+    run('UPDATE users SET lifetime = 1 WHERE id = ?', [$user['id']]);
+    send(['user' => describeUser(row('SELECT * FROM users WHERE id = ?', [$user['id']]))]);
 }
 
 /** Ends what is running at Stripe before an account goes. */

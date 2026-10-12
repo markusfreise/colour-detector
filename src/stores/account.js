@@ -110,6 +110,12 @@ export const useAccountStore = defineStore('account', {
     async buy(plan) {
       await this.attempt(async () => window.location.assign((await call('billing/checkout', { plan })).url))
     },
+    // A voucher for a lifetime licence, made out to the address of this account.
+    async redeem(code) {
+      return this.attempt(async () => {
+        this.user = (await call('billing/voucher', { code })).user
+      })
+    },
     async manage() {
       await this.attempt(async () => window.location.assign((await call('billing/portal', {})).url))
     },

@@ -35,9 +35,21 @@ All redirect addresses are `<app_url>api/auth/<provider>/callback`.
 | Stripe | Three prices (monthly and yearly recurring, lifetime one-time); a webhook to `<app_url>api/stripe/webhook` with the events `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `charge.refunded`; the customer portal switched on | `secret_key`, `webhook_secret`, the price IDs and button texts |
 | Mail | The host must be able to send as the `from` address (SPF, DKIM) | `mail.from` |
 
+## Vouchers
+
+A voucher is a lifetime licence for one e-mail address. Make one on the server, in the folder of the API:
+
+```
+php voucher.php create someone@example.org   # prints the code once, e.g. WCL-7K2M-QX4D-9HTN
+php voucher.php list
+php voucher.php revoke someone@example.org   # removes unused vouchers of that address
+```
+
+The holder signs in with that address and enters the code under "Unlock everything". A code works once and only for the account with that address.
+
 ## Routes
 
-`GET me` · `POST auth/magic` · `POST auth/magic/verify` · `GET auth/<provider>/start` · `GET|POST auth/<provider>/callback` · `POST consent` · `POST logout` · `GET export` · `POST delete` · `POST billing/checkout` · `POST billing/portal` · `POST stripe/webhook`
+`GET me` · `POST auth/magic` · `POST auth/magic/verify` · `GET auth/<provider>/start` · `GET|POST auth/<provider>/callback` · `POST consent` · `POST logout` · `GET export` · `POST delete` · `POST billing/checkout` · `POST billing/portal` · `POST billing/voucher` · `POST stripe/webhook`
 
 ## Limits
 

@@ -10,6 +10,8 @@ const SESSION_COOKIE = 'cd_session';
 const STATE_COOKIE = 'cd_state';
 const SESSION_DAYS = 60;
 const MAGIC_MINUTES = 15;
+// Voucher codes one account may try per hour.
+const VOUCHER_TRIES = 10;
 // Magic links per hour: for one address, and from one network address.
 const MAGIC_PER_EMAIL = 5;
 const MAGIC_PER_IP = 20;
@@ -70,6 +72,13 @@ function db(): PDO
     )');
     // For the rate limit only: a keyed hash of who asked, never the address itself.
     $db->exec('CREATE TABLE IF NOT EXISTS attempts (who TEXT NOT NULL, at INTEGER NOT NULL)');
+    // A voucher is a lifetime licence for one address. Only the hash of its code is kept.
+    $db->exec('CREATE TABLE IF NOT EXISTS vouchers (
+        hash TEXT PRIMARY KEY,
+        email TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        redeemed_at INTEGER
+    )');
     $db->exec('CREATE TABLE IF NOT EXISTS stripe_events (id TEXT PRIMARY KEY, at INTEGER NOT NULL)');
     return $db;
 }
@@ -151,6 +160,12 @@ function method(string $expected): void
     if (($_SERVER['REQUEST_METHOD'] ?? '') !== $expected) {
         fail(405, $expected . ' only.');
     }
+}
+
+/** A voucher code as typed: letters and digits only, upper case. */
+function voucherKey(string $code): string
+{
+    return hash('sha256', strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $code) ?? ''));
 }
 
 function token(): string

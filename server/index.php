@@ -74,6 +74,10 @@ switch ($route) {
             'licenceWithoutEnd' => (int) $user['lifetime'] === 1,
             'subscription' => $user['sub_id'] ? ['status' => $user['sub_status'], 'paidUntil' => $user['sub_until'] ? date('c', (int) $user['sub_until']) : null] : null,
             'stripeCustomer' => $user['stripe_customer'],
+            'vouchers' => array_map(
+                fn (array $v) => ['made' => date('c', (int) $v['created_at']), 'used' => $v['redeemed_at'] ? date('c', (int) $v['redeemed_at']) : null],
+                run('SELECT created_at, redeemed_at FROM vouchers WHERE email = ?', [$user['email']])->fetchAll(),
+            ),
         ]);
 
     case 'delete':
@@ -91,6 +95,9 @@ switch ($route) {
 
     case 'billing/portal':
         openPortal();
+
+    case 'billing/voucher':
+        redeemVoucher();
 
     case 'stripe/webhook':
         stripeWebhook();

@@ -11,3 +11,5 @@
 .pro__plan-note { color: var(--ink-soft); font-size: 1.2rem; }
 .pro__small { margin-bottom: 12px; color: var(--ink-soft); font-size: 1.2rem; }
 .pro__small a { color: var(--accent); }
+.pro__voucher { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 12px; }
+.pro__voucher-field { flex: 1; min-width: 0; margin-top: 0; }

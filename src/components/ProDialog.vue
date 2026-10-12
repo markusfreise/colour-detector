@@ -40,6 +40,14 @@
         </li>
       </ul>
       <p v-else class="pro__text">No plans are on offer at the moment.</p>
+      <!-- A voucher for a lifetime licence only works for the address it was made out to. -->
+      <form class="pro__voucher" @submit.prevent="redeem">
+        <label class="field pro__voucher-field">
+          <span class="field__label">Voucher for a lifetime licence</span>
+          <input v-model.trim="code" class="input" type="text" maxlength="40" autocomplete="off" spellcheck="false" placeholder="WCL-XXXX-XXXX-XXXX" />
+        </label>
+        <button class="button button--secondary" type="submit" :disabled="account.busy || !code">Redeem</button>
+      </form>
       <p class="pro__small">
         Payment is handled by Stripe. Prices include VAT. Details, also on what "lifetime" means, are in the
         <a href="terms/" target="_blank" rel="noopener">terms</a>.
@@ -60,6 +68,14 @@ import { isNative } from '../lib/native.js'
 const pro = useProStore()
 const account = useAccountStore()
 const dialog = ref(null)
+const code = ref('')
+
+async function redeem() {
+  if (!(await account.redeem(code.value))) return
+  code.value = ''
+  account.notice = { kind: 'info', text: 'Thank you. Your lifetime licence is active.' }
+  dialog.value.close()
+}
 
 const PLAN_NAMES = { monthly: 'Monthly', yearly: 'Yearly', lifetime: 'Lifetime licence' }
 // What "lifetime" means stands next to its price, not only in the terms.

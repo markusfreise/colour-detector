@@ -2,7 +2,7 @@
 
 // The one screen: the picture fills the window, and everything else lies over it. The operations
 // on the picture are attached to the top left, the panels to the top right; what belongs to the
-// picture itself (steps, close-ups, the hint) is centred at the top and at the bottom.
+// picture itself (steps, close-ups) is centred at the top and at the bottom.
 // The footer of the block is in footer.scss.
 
 .app {
@@ -60,16 +60,19 @@
         bottom: var(--app-bottom);
     }
 
-    &__hint {
-        padding: var(--gap-025x) #{pxtorem(10)};
-        border-radius: var(--radius-small);
-        background: var(--c-background-raised);
-        box-shadow: var(--shadow-flat);
-        color: var(--c-copy-light);
-        font-size: var(--fs-note);
+    // A narrow window: the buttons of the picture are at the bottom (painting.scss), so nothing
+    // is kept free for them at the top, and what is centred at the bottom lies above them.
+    @media (max-width: 760px) {
+        --app-tools: 0rem;
+
+        &__bottom {
+            bottom: calc(var(--app-bottom) + #{pxtorem(28 + 48)} + var(--gap-05x));
+        }
     }
 
     &__sidebar {
+        // Above the rest that lies over the picture: its panels float over the whole window.
+        z-index: 3;
         top: var(--app-top);
         right: var(--app-right);
         display: flex;

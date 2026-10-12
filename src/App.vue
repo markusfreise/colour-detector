@@ -22,7 +22,6 @@
       <div class="app__bottom">
         <CloseupStrip />
         <LayerStrip />
-        <p v-if="hint" class="app__hint">{{ hint }}</p>
       </div>
       <aside class="app__sidebar">
         <ControlsPanel />
@@ -54,7 +53,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useAnalysisStore } from './stores/analysis.js'
 import PaintingCanvas from './components/PaintingCanvas.vue'
 import CloseupBar from './components/CloseupBar.vue'
@@ -86,16 +85,6 @@ const consent = useConsentStore()
 const account = useAccountStore()
 const paintBox = ref(null)
 const collectionDialog = ref(null)
-const hint = computed(() => {
-  if (!analysis.layerMode) return 'Click an area to see its recipe and change its colour. The frame button zooms in on a part of the picture.'
-  if (!analysis.layers || analysis.layerStep != null) return ''
-  const solo = analysis.layerSolo
-  if (solo == null) return 'Click a layer in the list to see only that one. Click the picture to see what a spot gets.'
-  if (analysis.settings.numbers && analysis.layers.layers[solo].top > 1) {
-    return 'Numbers are coats: paint every numbered area once, then the 2s again when dry.'
-  }
-  return 'Paint the coloured areas with this wash. Click the layer again to see all.'
-})
 onMounted(() => {
   consent.init()
   account.init()

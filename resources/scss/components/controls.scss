@@ -29,6 +29,13 @@
             grid-template-columns: 4fr 4fr;
 
         }
+        // A narrow window has no room for sliders side by side.
+        @media (max-width: 524px) {
+            grid-template-columns: 1fr;
+            &_two {
+                grid-template-columns: 1fr;
+            }
+        }
         gap: #{pxtorem(12)};
         align-items: start;
 

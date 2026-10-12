@@ -6,7 +6,14 @@
         <AppIcon name="paintbox" />
       </button>
     </div>
-    <div class="flyout" v-if="!collapsed">
+    <!-- The colours float over the picture like the settings: dragged by the handle, their place is remembered. -->
+    <div v-if="!collapsed" ref="panel" class="flyout flyout--floating flyout--low" :class="{ 'flyout--dragging': dragging }" :style="style">
+      <div class="flyout__handle" title="Drag to move the colours" @pointerdown="startDrag"></div>
+      <button class="flyout__close" type="button" title="Close" aria-label="Close the colours" @click="layout.toggle('palette')">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+          <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
+        </svg>
+      </button>
       <h2 class="panel__title">
         Colours
         <span v-if="analysis.entries.length" class="palette__count">
@@ -86,13 +93,14 @@ import { paintNumber } from '../lib/paintbox.js'
 import AppIcon from './AppIcon.vue'
 import { useLayoutStore } from '../stores/layout.js'
 import PanelToggle from './PanelToggle.vue'
-import App from '../App.vue'
+import { useFloating } from './floating.js'
 
 const emit = defineEmits(['show-paintbox'])
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 const layout = useLayoutStore()
 const collapsed = computed(() => !!layout.collapsed.palette)
+const { panel, style, dragging, startDrag } = useFloating('colours')
 
 const percent = (share) => Math.round(share * 100) || '<1'
 const formatParts = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1))

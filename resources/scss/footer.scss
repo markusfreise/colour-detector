@@ -12,6 +12,12 @@
         z-index: 2;
         right: max(var(--gap), env(safe-area-inset-right));
         bottom: max(var(--gap), env(safe-area-inset-bottom));
+
+        // In a narrow window the links are centred under the buttons of the picture.
+        @media (max-width: 760px) {
+            left: max(var(--gap), env(safe-area-inset-left));
+            justify-content: center;
+        }
     }
 
     &__footer-link {

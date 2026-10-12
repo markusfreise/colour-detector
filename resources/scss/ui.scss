@@ -6,7 +6,9 @@
     padding: #{pxtorem(32)};
     border-radius: var(--radius);
     color: var(--c-copy);
-    min-width: #{pxtorem(480)};
+    // Never wider than a narrow window.
+    min-width: min(#{pxtorem(480)}, 95vw);
+    max-width: 95vw;
     border: 1px solid var(--c-border);
 
     // A flyout that floats over the picture (floating.js): it starts left of the buttons at the
@@ -20,6 +22,22 @@
         max-height: calc(100vh - var(--app-top) - var(--app-bottom));
         overflow-y: auto;
         box-shadow: var(--shadow);
+
+        // In a narrow window it starts across the window instead of beside the buttons.
+        @media (max-width: 524px) {
+            right: 2.5vw;
+        }
+    }
+
+    // A second floating flyout starts below the first, so that both are seen when both are open.
+    &--low {
+        top: calc(var(--app-top) + #{pxtorem(420)});
+        max-height: calc(100vh - var(--app-top) - var(--app-bottom) - #{pxtorem(420)});
+
+        @media (max-width: 524px), (max-height: 900px) {
+            top: var(--app-top);
+            max-height: calc(100vh - var(--app-top) - var(--app-bottom));
+        }
     }
 
     // The handle: a strip across the top of the panel with a short bar in its middle, and room

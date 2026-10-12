@@ -1,5 +1,5 @@
 <template>
-  <div v-if="entry" class="tip" :style="style" role="tooltip">
+  <div v-if="entry" ref="tip" class="tip" :style="style" role="tooltip">
     <div class="tip__header">
       <span class="swatch swatch--small" :style="{ background: recipe?.hex ?? entry.targetHex }"></span>
       <strong>Colour {{ entry.label }}</strong>
@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, onUpdated, reactive, ref } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import RecipeLine from './RecipeLine.vue'
 
@@ -25,18 +25,33 @@ const props = defineProps({
 })
 
 const OFFSET = 18 // clear of the pointer
+const MARGIN = 8 // what stays between the tip and the edge of the window
 
 const analysis = useAnalysisStore()
 const entry = computed(() => (props.index == null ? null : analysis.entries[props.index] ?? null))
 // The recommended recipe: the one chosen for this colour in the list.
 const recipe = computed(() => entry.value?.recipes[entry.value.chosen] ?? null)
-// Below and right of the pointer, or on the other side of it near the edge of the window.
-const style = computed(() => {
-  const left = props.x > window.innerWidth * 0.6, up = props.y > window.innerHeight * 0.6
-  return {
-    left: `${props.x + (left ? -OFFSET : OFFSET)}px`,
-    top: `${props.y + (up ? -OFFSET : OFFSET)}px`,
-    transform: `translate(${left ? '-100%' : '0'}, ${up ? '-100%' : '0'})`,
-  }
-})
+// Below and right of the pointer, or on the other side of it where there is no room; and never
+// outside the window, however narrow that is. The tip is measured once it is drawn: its size
+// depends on the recipe and on the width of the window.
+const tip = ref(null)
+const size = reactive({ width: 0, height: 0 })
+function measure() {
+  if (!tip.value) return
+  size.width = tip.value.offsetWidth
+  size.height = tip.value.offsetHeight
+}
+onMounted(measure)
+onUpdated(measure)
+const place = (at, length, room) => {
+  const after = at + OFFSET, before = at - OFFSET - length
+  const wanted = after + length + MARGIN <= room || before < MARGIN ? after : before
+  return Math.max(MARGIN, Math.min(wanted, room - length - MARGIN))
+}
+const style = computed(() => ({
+  left: `${place(props.x, size.width, window.innerWidth)}px`,
+  top: `${place(props.y, size.height, window.innerHeight)}px`,
+  // Not shown before its size is known, so that it does not jump.
+  visibility: size.width ? 'visible' : 'hidden',
+}))
 </script>

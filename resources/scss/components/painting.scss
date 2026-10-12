@@ -61,6 +61,37 @@
         aspect-ratio: auto;
     }
 
+    // In a narrow window the toolbars take the top corners: the buttons go to the bottom, above
+    // the footer links, and get smaller so that they fit in one row on a phone.
+    @media (max-width: 760px) {
+        &__tools {
+            top: auto;
+            bottom: calc(max(var(--gap), env(safe-area-inset-bottom)) + #{pxtorem(28)});
+            flex-wrap: wrap;
+            justify-content: center;
+            width: max-content;
+            max-width: calc(100vw - var(--gap-2x));
+        }
+    }
+
+    @media (max-width: 524px) {
+        &__tools .button,
+        &__tools .segmented__option {
+            width: #{pxtorem(40)};
+            height: #{pxtorem(40)};
+        }
+
+        &__tools .segmented {
+            height: #{pxtorem(42)};
+        }
+
+        &__tools .button svg,
+        &__tools .segmented__option svg {
+            width: #{pxtorem(30)};
+            height: #{pxtorem(30)};
+        }
+    }
+
     &__tool--on {
         background: var(--c-corporate);
         border-color: var(--c-corporate);

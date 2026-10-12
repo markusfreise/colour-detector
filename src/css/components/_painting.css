@@ -5,3 +5,8 @@
 .painting__zoom:hover { background: var(--line); }
 .painting__canvas--busy { opacity: 0.5; }
 .painting__status { position: absolute; top: 20px; left: 58px; background: var(--surface); padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+.painting__zoom--frame { top: 54px; }
+.painting__zoom--on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.painting__zoom--on:hover { background: var(--accent); }
+.painting__canvas--framing { touch-action: none; }
+.painting__frame { position: absolute; border: 2px dashed #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 0 9999px rgba(0, 0, 0, 0.25); border-radius: 2px; pointer-events: none; }

@@ -14,27 +14,50 @@
         <path v-if="fit" d="M8.5 6.2v4.6" />
       </svg>
     </button>
+    <!-- A frame drawn on the base picture becomes a close-up: that part, analysed on its own. -->
+    <button
+      v-if="analysis.image && analysis.closeupId == null"
+      class="painting__zoom painting__zoom--frame"
+      :class="{ 'painting__zoom--on': framing }"
+      type="button"
+      :aria-pressed="framing"
+      :title="framing ? 'Drag a frame over the part to zoom in on. Click here to cancel.' : 'Zoom in on a part of the picture'"
+      :aria-label="framing ? 'Cancel choosing a part of the picture' : 'Zoom in on a part of the picture'"
+      @click="framing = !framing"
+    >
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4" />
+        <path d="M10 7.5v5M7.5 10h5" />
+      </svg>
+    </button>
     <canvas
       ref="canvas"
       class="painting__canvas"
-      :class="{ 'painting__canvas--busy': analysis.busy }"
+      :class="{ 'painting__canvas--busy': analysis.busy, 'painting__canvas--framing': framing }"
       @click="onClick"
       @mousemove="onMove"
       @mouseleave="hover = null"
+      @pointerdown="startFrame"
+      @pointermove="moveFrame"
+      @pointerup="endFrame"
+      @pointercancel="frame = null"
     ></canvas>
+    <div v-if="frame" class="painting__frame" :style="frameStyle"></div>
+    <p v-if="framing && !frame" class="painting__status">Drag a frame over the part to zoom in on</p>
     <RecipeTip v-if="hover" :index="hover.entry" :x="hover.x" :y="hover.y" />
     <p v-if="analysis.busy" class="painting__status">{{ analysis.layerMode ? 'Planning layers…' : 'Analysing…' }}</p>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
 import { drawLayerView, labelFont, paintPixels } from './layerView.js'
 import { smoothCurve } from '../lib/sketch.js'
 import { upscaleAreas } from '../lib/smooth.js'
 import RecipeTip from './RecipeTip.vue'
+import { closeupRect } from '../lib/closeup.js'
 
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
@@ -293,6 +316,48 @@ function drawLayers(el) {
   }
 }
 
+// Choosing a part of the picture for a close-up: a frame dragged over the canvas.
+const framing = ref(false)
+const frame = ref(null) // { from, to } in shares of the canvas while the frame is dragged
+let skipClick = false // the click that ends a drag picks no area
+
+function shareAt(event) {
+  const rect = canvas.value.getBoundingClientRect()
+  return { x: (event.clientX - rect.left) / rect.width, y: (event.clientY - rect.top) / rect.height }
+}
+function startFrame(event) {
+  if (!framing.value || event.button) return
+  event.currentTarget.setPointerCapture(event.pointerId)
+  const at = shareAt(event)
+  frame.value = { from: at, to: at }
+  hover.value = null
+}
+function moveFrame(event) {
+  if (frame.value) frame.value = { from: frame.value.from, to: shareAt(event) }
+}
+function endFrame() {
+  if (!frame.value) return
+  const rect = closeupRect(frame.value.from, frame.value.to)
+  frame.value = null
+  skipClick = true
+  // Too small a frame was a slip: the choice stays open for another try.
+  if (!rect) return
+  framing.value = false
+  analysis.addCloseup(rect)
+}
+// The frame on screen, placed over the canvas inside the panel.
+const frameStyle = computed(() => {
+  const el = canvas.value
+  const drawn = frame.value && closeupRect(frame.value.from, frame.value.to, 0)
+  if (!el || !drawn) return { display: 'none' }
+  return {
+    left: `${el.offsetLeft + drawn.x * el.offsetWidth}px`,
+    top: `${el.offsetTop + drawn.y * el.offsetHeight}px`,
+    width: `${drawn.w * el.offsetWidth}px`,
+    height: `${drawn.h * el.offsetHeight}px`,
+  }
+})
+
 // The canvas pixel under the pointer and the working pixel it belongs to, or null outside the picture.
 function pixelAt(event) {
   const size = analysis.layerMode ? analysis.layers : analysis.segmentation
@@ -307,7 +372,7 @@ function pixelAt(event) {
 
 // Mix mode: the recipe of the colour under the pointer follows the pointer.
 function onMove(event) {
-  const at = analysis.layerMode || analysis.busy || analysis.settings.view === 'sketch' || !analysis.regionEntry ? null : pixelAt(event)
+  const at = framing.value || analysis.layerMode || analysis.busy || analysis.settings.view === 'sketch' || !analysis.regionEntry ? null : pixelAt(event)
   const entry = at ? analysis.regionEntry[regionAtCanvasPixel(at.cx, at.cy)] : null
   // Nothing over the part of the picture that is blanked while one colour is selected.
   if (entry == null || !analysis.entries[entry] || (analysis.settings.view !== 'original' && !shown(entry))) hover.value = null
@@ -315,6 +380,10 @@ function onMove(event) {
 }
 
 function onClick(event) {
+  if (skipClick || framing.value) {
+    skipClick = false
+    return
+  }
   const at = pixelAt(event)
   if (!at) return
   const { cx, cy, x, y } = at

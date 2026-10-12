@@ -14,7 +14,9 @@
     <main class="app__main">
       <div class="app__stage">
         <LayerSteps />
+        <CloseupBar />
         <PaintingCanvas />
+        <CloseupStrip />
         <LayerStrip />
         <p v-if="hint" class="app__hint">{{ hint }}</p>
       </div>
@@ -51,6 +53,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { useAnalysisStore } from './stores/analysis.js'
 import PaintingCanvas from './components/PaintingCanvas.vue'
+import CloseupBar from './components/CloseupBar.vue'
+import CloseupStrip from './components/CloseupStrip.vue'
 import ControlsPanel from './components/ControlsPanel.vue'
 import EntryEditor from './components/EntryEditor.vue'
 import PaletteList from './components/PaletteList.vue'
@@ -79,7 +83,7 @@ const account = useAccountStore()
 const paintBox = ref(null)
 const collectionDialog = ref(null)
 const hint = computed(() => {
-  if (!analysis.layerMode) return 'Click an area to see its recipe and change its colour.'
+  if (!analysis.layerMode) return 'Click an area to see its recipe and change its colour. The frame button zooms in on a part of the picture.'
   if (!analysis.layers || analysis.layerStep != null) return ''
   const solo = analysis.layerSolo
   if (solo == null) return 'Click a layer in the list to see only that one. Click the picture to see what a spot gets.'

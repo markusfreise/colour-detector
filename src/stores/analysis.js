@@ -9,6 +9,8 @@ import { useAiStore } from './ai.js'
 import { aiRequest, readAiAnswer, aiCost, aiImageSize } from '../lib/ai.js'
 import { boxMask, detailWash } from '../lib/details.js'
 import { toOklabPixels } from '../lib/segment.js'
+import { closeupSize } from '../lib/closeup.js'
+import { useProStore } from './pro.js'
 
 // Working resolution: the picture is scaled down to about this many pixels, whatever its shape.
 export const WORK_PIXELS = 800 * 600
@@ -121,6 +123,9 @@ export const useAnalysisStore = defineStore('analysis', {
     aiBusy: false,
     aiError: null,
     pictureStamp: 0, // counts the pictures opened
+    closeups: [], // [{ id, number, rect, thumb, edits }] parts of the base picture, each analysed as its own picture
+    closeupId: null, // the close-up on screen, null for the base picture
+    base: null, // { image, pixels, name, savedId, edits } of the base picture while a close-up is on screen (raw)
     pendingEdits: null, // { key, edits } of a picture opened in layer mode, for its first mix analysis
     busy: false,
     error: null,
@@ -279,6 +284,10 @@ export const useAnalysisStore = defineStore('analysis', {
         const ctx = canvas.getContext('2d', { willReadFrequently: true })
         ctx.drawImage(img, 0, 0, width, height)
         const { data } = ctx.getImageData(0, 0, width, height)
+        // The close-ups belonged to the picture before.
+        this.closeups = []
+        this.closeupId = null
+        this.base = null
         this.image = markRaw(img)
         this.pixels = markRaw({ rgba: data, width, height })
         this.imageName = name
@@ -287,6 +296,77 @@ export const useAnalysisStore = defineStore('analysis', {
       } catch (e) {
         this.error = `Could not load image: ${e.message}`
       }
+    },
+
+    /**
+     * A part of the base picture as a picture of its own: cut from the photo at its full size, so
+     * the analysis finds what the whole picture has no room for. `rect` is in shares of the picture.
+     */
+    async addCloseup(rect) {
+      if (!this.image || !useProStore().require(false, 'zoom in on a part of the picture')) return
+      const source = this.base?.image ?? this.image
+      const cut = closeupSize(source.naturalWidth ?? source.width, source.naturalHeight ?? source.height, rect, 160 * 160)
+      const thumb = document.createElement('canvas')
+      thumb.width = cut.width
+      thumb.height = cut.height
+      thumb.getContext('2d').drawImage(source, cut.sx, cut.sy, cut.sw, cut.sh, 0, 0, cut.width, cut.height)
+      const number = this.closeups.reduce((most, c) => Math.max(most, c.number), 0) + 1
+      const closeup = { id: `closeup-${number}`, number, rect, thumb: thumb.toDataURL('image/jpeg', 0.8), edits: [] }
+      this.closeups.push(closeup)
+      await this.openCloseup(closeup.id)
+    },
+    // The colour changes of the picture on screen go with it, so they are there again on return.
+    keepEdits() {
+      const edits = this.exportEdits()
+      const closeup = this.closeups.find((c) => c.id === this.closeupId)
+      if (closeup) closeup.edits = edits
+      else if (this.base) this.base.edits = edits
+    },
+    async openCloseup(id) {
+      const closeup = this.closeups.find((c) => c.id === id)
+      if (!closeup || id === this.closeupId || !this.image) return
+      if (this.closeupId == null) {
+        this.base = markRaw({ image: this.image, pixels: this.pixels, name: this.imageName, savedId: this.savedId, edits: [] })
+      }
+      this.keepEdits()
+      const source = this.base.image
+      const cut = closeupSize(source.naturalWidth ?? source.width, source.naturalHeight ?? source.height, closeup.rect, WORK_PIXELS)
+      const canvas = document.createElement('canvas')
+      canvas.width = cut.width
+      canvas.height = cut.height
+      const ctx = canvas.getContext('2d', { willReadFrequently: true })
+      ctx.imageSmoothingQuality = 'high'
+      ctx.drawImage(source, cut.sx, cut.sy, cut.sw, cut.sh, 0, 0, cut.width, cut.height)
+      this.closeupId = id
+      this.savedId = null
+      this.image = markRaw(canvas)
+      this.pixels = markRaw({ rgba: ctx.getImageData(0, 0, cut.width, cut.height).data, width: cut.width, height: cut.height })
+      this.imageName = `${this.base.name} – detail ${closeup.number}`
+      await this.showPicture(closeup.edits)
+    },
+    async showBase() {
+      if (this.closeupId == null || !this.base) return
+      this.keepEdits()
+      const base = this.base
+      this.closeupId = null
+      this.base = null
+      this.image = base.image
+      this.pixels = base.pixels
+      this.imageName = base.name
+      this.savedId = base.savedId
+      await this.showPicture(base.edits)
+    },
+    // Analyses the picture that was just put in place and brings its colour changes back.
+    async showPicture(edits) {
+      this.selectedEntry = null
+      this.selectedRegion = null
+      this.forgetPicture()
+      this.pendingEdits = { key: mixKeyOf(this.settings, 0), edits }
+      await this.analyse()
+    },
+    async removeCloseup(id) {
+      if (id === this.closeupId) await this.showBase()
+      this.closeups = this.closeups.filter((c) => c.id !== id)
     },
 
     /**

@@ -1,0 +1,13 @@
+round team algo critic quality mean
+1 A 78 62 78 72.7
+1 B 78 64 77 73.0
+1 C 80 62 78 73.3  <- winner
+2 A 84 67 81 77.3
+2 B 84 74 82 80.0  <- winner
+2 C 82 72 78 77.3
+3 A 80 74 74 76.0
+3 B 83 74 83 80.0
+3 C 80 77 83 80.0  <- winner (tie with B on the mean; C has the higher lowest score)
+4 A 81 80 84 81.7  <- winner, final
+4 B 84 75 85 81.3
+4 C 81 76 76 77.7

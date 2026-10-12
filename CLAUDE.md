@@ -52,6 +52,14 @@ Vue 3 (Composition API, `<script setup>`) · Pinia · Vite 5 · Vitest · Web Wo
 4. Commit with the TASK ID, mark the backlog row done
 5. Only then start the next task
 
+## On batcave
+
+Agents also work in a checkout on batcave (LXC 114, `/var/www/watercolourlove`), so that long runs go on while the Mac is off.
+
+- **Push at once:** every change made on batcave is committed and pushed to the working branch right away. Nothing stays only in that checkout; before starting, pull.
+- **Dev instance:** https://watercolourlove.croeso.de serves `dist/` of that checkout: run `npm run build` to show a change there. Never name this address in public texts.
+- **Deploy to the public host:** only Markus starts it, with the deploy webhook (`deploy/remote-deploy.sh` builds what is pushed and publishes it). Agents do not call it.
+
 ## Not without asking
 
 - Pushing to `main` (that is a live deploy)

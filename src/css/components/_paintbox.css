@@ -23,7 +23,7 @@
 .paintbox__paint-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 12px; }
 .paintbox__input { display: flex; flex-direction: column; gap: 4px; font-weight: 600; }
 .paintbox__input--wide { grid-column: span 2; }
-.paintbox__note { grid-column: 1 / -1; color: var(--ink-soft); font-size: 12px; }
+.paintbox__note { grid-column: 1 / -1; color: var(--ink-soft); font-size: 1.2rem; }
 .paintbox__form-actions { grid-column: 1 / -1; display: flex; gap: 6px; }
 .paintbox__own { display: flex; flex-direction: column; gap: 6px; }
 .paintbox__own-item { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }

@@ -1,5 +1,5 @@
 .layers__header { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
-.layers__name { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.layers__name { font-size: 1.4rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .layers__list { display: flex; flex-direction: column; gap: 4px; }
 .layers__item { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 8px; row-gap: 3px; align-items: center; padding: 5px 6px 7px; border-radius: 8px; }
 .layers__item:hover { background: var(--paper); }
@@ -10,7 +10,7 @@
 .layers__summary { margin-left: 0; }
 .layers__coats { grid-column: 2; }
 .layers__coats .palette__wash { flex-basis: 56px; white-space: nowrap; }
-.layers__note { margin-top: 10px; color: var(--ink-soft); font-size: 12px; }
+.layers__note { margin-top: 10px; color: var(--ink-soft); font-size: 1.2rem; }
 .layers__note--warn { color: var(--rough); }
 .layers__empty { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; color: var(--ink-soft); }
 .layers__empty-actions { display: flex; gap: 6px; }
@@ -26,4 +26,4 @@
 .layers__item--unused { color: var(--ink-soft); }
 .layers__item--unused .swatch { opacity: 0.4; }
 .layers__item--unused .layers__row { cursor: default; }
-.layers__kind { margin-left: 4px; padding: 0 6px; border: 1px solid var(--line); border-radius: 999px; font-size: 11px; color: var(--ink-soft); }
+.layers__kind { margin-left: 4px; padding: 0 6px; border: 1px solid var(--line); border-radius: 999px; font-size: 1.1rem; color: var(--ink-soft); }

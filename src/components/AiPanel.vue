@@ -1,5 +1,5 @@
 <template>
-  <section class="panel ai">
+  <section class="panel ai" :class="{ 'panel--collapsed': collapsed }">
     <header class="ai__header">
       <h2 class="panel__title">AI <span class="ai__badge">your own key</span></h2>
       <div class="segmented">
@@ -16,7 +16,9 @@
           {{ choice.label }}
         </button>
       </div>
+      <PanelToggle name="ai" label="the AI settings" />
     </header>
+    <div v-show="!collapsed">
     <p class="field__hint">
       An AI model looks at the picture and says what matters in it: the colours to mix, the paints, the small details to
       keep and to paint last, and the main shapes for the sketch. The app works out the areas and the recipes from that.
@@ -118,6 +120,7 @@
 
       <button v-if="ai.key || ai.agreed" class="button button--ghost ai__forget" type="button" @click="ai.forget()">Forget key and consent</button>
     </template>
+    </div>
   </section>
 </template>
 
@@ -126,12 +129,16 @@ import { computed } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
 import { useAiStore } from '../stores/ai.js'
+import { useLayoutStore } from '../stores/layout.js'
+import PanelToggle from './PanelToggle.vue'
 import { AI_PROVIDERS, aiEstimate, aiImageSize } from '../lib/ai.js'
 
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 const ai = useAiStore()
 const providers = AI_PROVIDERS
+const layout = useLayoutStore()
+const collapsed = computed(() => !!layout.collapsed.ai)
 
 const choices = [
   { value: false, label: 'Off', title: 'The app chooses colours and paints itself' },

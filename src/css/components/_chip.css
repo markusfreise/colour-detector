@@ -1,4 +1,4 @@
-.chip { display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; padding: 6px 10px; border: 1px solid var(--chip-line); border-radius: 6px; background: var(--chip-colour, transparent); color: var(--chip-ink, inherit); font-size: 10px; line-height: 1.25; }
+.chip { display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; padding: 6px 10px; border: 1px solid var(--chip-line); border-radius: 6px; background: var(--chip-colour, transparent); color: var(--chip-ink, inherit); font-size: 1rem; line-height: 1.25; }
 .chip--row { flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; }
 .chip--empty { border-style: dashed; }
 .chip__strong { font-weight: 700; }

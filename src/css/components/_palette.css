@@ -1,7 +1,7 @@
 .palette__header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.palette__actions { display: flex; flex-wrap: wrap; gap: 6px; }
-.palette__count { display: block; white-space: nowrap; font-weight: 400; color: var(--ink-soft); font-size: 12px; }
-.palette__key { display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 6px 0; color: var(--ink-soft); font-size: 12px; }
+.palette__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; }
+.palette__count { display: block; white-space: nowrap; font-weight: 400; color: var(--ink-soft); font-size: 1.2rem; }
+.palette__key { display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 6px 0; color: var(--ink-soft); font-size: 1.2rem; }
 .palette__list { display: flex; flex-direction: column; gap: 4px; }
 .palette__item { display: grid; grid-template-columns: 38px minmax(0, 1fr); column-gap: 10px; row-gap: 3px; padding: 5px 6px 7px; border-radius: 8px; }
 .palette__item:hover { background: var(--paper); }
@@ -11,12 +11,19 @@
 .palette__mix .palette__base { grid-column: 2; grid-row: 1; width: 36px; }
 .palette__summary { grid-column: 2; grid-row: 1; margin-left: 46px; display: flex; flex-direction: column; min-width: 0; }
 /* The paints by number and name, as small as the line below; wraps so that no number is cut off. */
-.palette__paints { font-size: 12px; line-height: 1.3; }
-.palette__meta { color: var(--ink-soft); font-size: 12px; }
+.palette__paints { font-size: 1.2rem; line-height: 1.3; }
+.palette__meta { color: var(--ink-soft); font-size: 1.2rem; }
 .palette__bar { grid-column: 2; display: flex; height: 16px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.14); }
 .palette__part { flex: 1 1 0; min-width: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.palette__part-text { font-size: 10px; font-weight: 700; line-height: 1; white-space: nowrap; }
+.palette__part-text { font-size: 1rem; font-weight: 700; line-height: 1; white-space: nowrap; }
 .palette__bar--washes { height: 22px; }
-.palette__wash { flex: 1 1 0; min-width: 0; padding: 0; border: 0; border-radius: 0; font: inherit; font-size: 11px; font-weight: 700; line-height: 1; cursor: pointer; }
+.palette__wash { flex: 1 1 0; min-width: 0; padding: 0; border: 0; border-radius: 0; font: inherit; font-size: 1.1rem; font-weight: 700; line-height: 1; cursor: pointer; }
 .palette__wash + .palette__wash { box-shadow: -1px 0 0 rgba(0, 0, 0, 0.14); }
 .palette__wash--active { outline: 2px solid var(--accent); outline-offset: -2px; }
+/* On a wide window the colours float over the page: dragged by the header, scrolling inside. */
+@media (min-width: 1101px) {
+  .palette { position: fixed; right: var(--gap); bottom: var(--gap); z-index: 5; display: flex; flex-direction: column; width: min(36rem, calc(100vw - 16px)); max-height: min(70vh, calc(100vh - 16px)); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); }
+  .palette__header { cursor: grab; user-select: none; touch-action: none; }
+  .palette--dragging .palette__header { cursor: grabbing; }
+  .palette__body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+}

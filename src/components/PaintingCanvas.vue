@@ -19,7 +19,10 @@
       class="painting__canvas"
       :class="{ 'painting__canvas--busy': analysis.busy }"
       @click="onClick"
+      @mousemove="onMove"
+      @mouseleave="hover = null"
     ></canvas>
+    <RecipeTip v-if="hover" :index="hover.entry" :x="hover.x" :y="hover.y" />
     <p v-if="analysis.busy" class="painting__status">{{ analysis.layerMode ? 'Planning layers…' : 'Analysing…' }}</p>
   </div>
 </template>
@@ -31,6 +34,7 @@ import { hexToRgb, contrastText } from '../lib/color.js'
 import { drawLayerView, labelFont, paintPixels } from './layerView.js'
 import { smoothCurve } from '../lib/sketch.js'
 import { upscaleAreas } from '../lib/smooth.js'
+import RecipeTip from './RecipeTip.vue'
 
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
@@ -40,6 +44,8 @@ const analysis = useAnalysisStore()
 const canvas = ref(null)
 // The picture fits the height of the window unless the magnifier asks for its full size.
 const fit = ref(true)
+// The colour under the pointer and where the pointer is, for its recipe next to it.
+const hover = ref(null)
 
 // Whether an entry is drawn: everything, or only the mix of the selected colour.
 function shown(entryIndex) {
@@ -287,15 +293,31 @@ function drawLayers(el) {
   }
 }
 
-function onClick(event) {
+// The canvas pixel under the pointer and the working pixel it belongs to, or null outside the picture.
+function pixelAt(event) {
   const size = analysis.layerMode ? analysis.layers : analysis.segmentation
-  if (!size) return
+  if (!size) return null
   const rect = canvas.value.getBoundingClientRect()
-  // The canvas pixel under the pointer, and the working pixel it belongs to.
   const cx = Math.floor(((event.clientX - rect.left) / rect.width) * size.width * SCALE)
   const cy = Math.floor(((event.clientY - rect.top) / rect.height) * size.height * SCALE)
   const x = Math.floor(cx / SCALE), y = Math.floor(cy / SCALE)
-  if (x < 0 || y < 0 || x >= size.width || y >= size.height) return
+  if (x < 0 || y < 0 || x >= size.width || y >= size.height) return null
+  return { cx, cy, x, y }
+}
+
+// Mix mode: the recipe of the colour under the pointer follows the pointer.
+function onMove(event) {
+  const at = analysis.layerMode || analysis.busy || analysis.settings.view === 'sketch' || !analysis.regionEntry ? null : pixelAt(event)
+  const entry = at ? analysis.regionEntry[regionAtCanvasPixel(at.cx, at.cy)] : null
+  // Nothing over the part of the picture that is blanked while one colour is selected.
+  if (entry == null || !analysis.entries[entry] || (analysis.settings.view !== 'original' && !shown(entry))) hover.value = null
+  else hover.value = { entry, x: event.clientX, y: event.clientY }
+}
+
+function onClick(event) {
+  const at = pixelAt(event)
+  if (!at) return
+  const { cx, cy, x, y } = at
   if (analysis.settings.view === 'sketch') return // nothing to pick in the sketch
   if (analysis.layerMode) {
     analysis.selectPoint({ x, y })

@@ -3,14 +3,14 @@
 .editor__compare { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .editor__swatch { display: flex; flex-direction: column; gap: 4px; }
 .editor__chip { min-height: 55px; }
-.editor__caption { color: var(--ink-soft); font-size: 12px; }
+.editor__caption { color: var(--ink-soft); font-size: 1.2rem; }
 .editor__target { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
 .editor__picker { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; }
 .editor__picker input { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
 .editor__detach { margin-top: 10px; width: 100%; justify-content: center; }
-.editor__subtitle { font-size: 13px; font-weight: 650; margin: 14px 0 6px; }
+.editor__subtitle { font-size: 1.3rem; font-weight: 650; margin: 14px 0 6px; }
 .editor__recipes { display: flex; flex-direction: column; gap: 6px; }
 .editor__recipe { border: 1px solid var(--line); border-radius: 8px; padding: 8px; cursor: pointer; }
 .editor__recipe--active { border-color: var(--accent); background: var(--accent-soft); }
 .editor__empty { color: var(--ink-soft); }
-.editor__washes { margin: 0 0 8px; color: var(--ink-soft); font-size: 12px; }
+.editor__washes { margin: 0 0 8px; color: var(--ink-soft); font-size: 1.2rem; }

@@ -1,6 +1,12 @@
 <template>
-  <section class="panel palette">
-    <header class="palette__header">
+  <section
+    ref="panel"
+    class="panel palette"
+    :class="{ 'panel--collapsed': collapsed, 'palette--dragging': dragging }"
+    :style="layout.palette ? { left: `${layout.palette.x}px`, top: `${layout.palette.y}px`, right: 'auto', bottom: 'auto' } : null"
+  >
+    <!-- The header is the handle: the colours float over the page and are dragged by it. -->
+    <header class="palette__header" title="Drag to move" @pointerdown="startDrag">
       <h2 class="panel__title">
         Colours
         <span v-if="analysis.entries.length" class="palette__count">
@@ -12,8 +18,10 @@
           Print / PDF
         </button>
         <button class="button button--ghost" type="button" @click="emit('show-paintbox')">Show paint box</button>
+        <PanelToggle name="palette" label="the colours" />
       </div>
     </header>
+    <div v-show="!collapsed" class="palette__body">
     <p v-if="analysis.mixCount < analysis.entries.length" class="palette__key">
       <span v-for="w in WASH_LETTERS" :key="w.letter"><strong>{{ w.letter }}</strong> {{ w.label }}</span>
     </p>
@@ -71,21 +79,78 @@
         </div>
       </li>
     </ol>
+    </div>
   </section>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
 import { WASH_LETTERS } from '../lib/mixing.js'
 import { contrastText } from '../lib/color.js'
 import { paintNumber } from '../lib/paintbox.js'
 import { isNative, sendNative } from '../lib/native.js'
+import { useLayoutStore } from '../stores/layout.js'
+import PanelToggle from './PanelToggle.vue'
 
 const emit = defineEmits(['show-paintbox'])
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
+const layout = useLayoutStore()
+const collapsed = computed(() => !!layout.collapsed.palette)
+
+// Dragging by the header. The panel only floats on wide windows; in one column it is part of the page.
+const MARGIN = 8 // what stays between the panel and the edge of the window
+const panel = ref(null)
+const dragging = ref(false)
+let grip = null
+
+// A position that keeps the panel inside the window.
+function inWindow(x, y) {
+  const rect = panel.value.getBoundingClientRect()
+  return {
+    x: Math.round(Math.min(Math.max(MARGIN, x), Math.max(MARGIN, window.innerWidth - rect.width - MARGIN))),
+    y: Math.round(Math.min(Math.max(MARGIN, y), Math.max(MARGIN, window.innerHeight - rect.height - MARGIN))),
+  }
+}
+
+function startDrag(event) {
+  if (event.button || event.target.closest('button')) return
+  if (getComputedStyle(panel.value).position !== 'fixed') return
+  const rect = panel.value.getBoundingClientRect()
+  grip = { x: event.clientX - rect.left, y: event.clientY - rect.top }
+  dragging.value = true
+  event.currentTarget.setPointerCapture(event.pointerId)
+  event.currentTarget.addEventListener('pointermove', drag)
+  event.currentTarget.addEventListener('pointerup', endDrag)
+  event.currentTarget.addEventListener('pointercancel', endDrag)
+  event.preventDefault()
+}
+
+function drag(event) {
+  layout.palette = inWindow(event.clientX - grip.x, event.clientY - grip.y)
+}
+
+function endDrag(event) {
+  event.currentTarget.removeEventListener('pointermove', drag)
+  event.currentTarget.removeEventListener('pointerup', endDrag)
+  event.currentTarget.removeEventListener('pointercancel', endDrag)
+  dragging.value = false
+  if (layout.palette) layout.movePalette(layout.palette)
+}
+
+// A smaller window must not leave the panel outside it.
+function keepInWindow() {
+  if (layout.palette && panel.value && getComputedStyle(panel.value).position === 'fixed') {
+    layout.palette = inWindow(layout.palette.x, layout.palette.y)
+  }
+}
+onMounted(() => {
+  keepInWindow()
+  window.addEventListener('resize', keepInWindow)
+})
+onBeforeUnmount(() => window.removeEventListener('resize', keepInWindow))
 
 const percent = (share) => Math.round(share * 100) || '<1'
 const formatParts = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1))

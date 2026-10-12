@@ -2,6 +2,8 @@
 @media print {
   @page { margin: 12mm; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* The sheet is laid out in millimetres: its text keeps the size it was fitted with (1.4rem = 14px). */
+  html { font-size: 10px; }
   body { background: #fff; }
   .app { max-width: none; padding: 0; }
   .app__main { display: block; }

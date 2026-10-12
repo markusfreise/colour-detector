@@ -1,9 +1,11 @@
 <template>
-  <section class="panel controls">
+  <section class="panel controls" :class="{ 'panel--collapsed': collapsed }">
     <div class="controls__image">
       <span class="controls__image-name" :title="analysis.imageName">{{ analysis.imageName }}</span>
       <span v-if="analysis.savedId" class="controls__saved">In collection</span>
+      <PanelToggle name="controls" label="the settings" />
     </div>
+    <div v-show="!collapsed" class="controls__body">
     <div class="controls__actions">
       <label class="button button--secondary">
         Choose photo
@@ -231,6 +233,7 @@
         </button>
       </div>
     </div>
+    </div>
     <p v-if="analysis.error" class="controls__error">{{ analysis.error }}</p>
   </section>
 </template>
@@ -240,10 +243,14 @@ import { computed } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { useCollectionStore } from '../stores/collection.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
+import { useLayoutStore } from '../stores/layout.js'
+import PanelToggle from './PanelToggle.vue'
 
 const emit = defineEmits(['show-collection'])
 const analysis = useAnalysisStore()
 const collection = useCollectionStore()
+const layout = useLayoutStore()
+const collapsed = computed(() => !!layout.collapsed.controls)
 // "Take photo" opens the camera directly; that only exists on phones and tablets.
 const hasCamera = window.matchMedia?.('(pointer: coarse)').matches ?? false
 const paints = usePaintsStore()

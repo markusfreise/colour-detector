@@ -1,6 +1,6 @@
 .pro { width: min(440px, calc(100vw - 32px)); padding: 20px; color: var(--ink); }
 .pro::backdrop { background: rgba(0, 0, 0, 0.45); }
-.pro__title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.pro__title { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
 .pro__text { color: var(--ink-soft); }
 .pro__list { margin: 12px 0; padding-left: 18px; list-style: disc; }
 .pro__error { margin-bottom: 10px; color: var(--rough); }

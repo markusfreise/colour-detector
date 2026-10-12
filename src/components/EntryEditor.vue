@@ -1,9 +1,14 @@
 <template>
   <section v-if="entry" ref="panel" class="panel editor" :class="{ 'editor--dragging': dragging }" :style="style">
-    <!-- The header is the handle: on a wide window the panel floats over the page and is dragged by it. -->
-    <header class="editor__header" @pointerdown="startDrag">
+    <!-- On a wide window the panel floats over the picture and is dragged by the handle. -->
+    <div class="flyout__handle" title="Drag to move the colour" @pointerdown="startDrag"></div>
+    <button class="flyout__close" type="button" title="Close" aria-label="Close" @click="analysis.selectEntry(null)">
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+        <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
+      </svg>
+    </button>
+    <header class="editor__header">
       <h2 class="panel__title">Colour {{ entry.label }}</h2>
-      <button class="button button--ghost" type="button" @click="analysis.selectEntry(null)">Close</button>
     </header>
 
     <div class="editor__body">

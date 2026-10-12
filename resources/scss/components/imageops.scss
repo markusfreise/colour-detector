@@ -1,0 +1,18 @@
+@use "../functions" as *;
+
+// The operations on the picture as a whole (ImageOps.vue): a column of buttons at the top left
+// of the window (placed by app__left).
+
+.imageops {
+    display: flex;
+    flex-direction: column;
+    gap: #{pxtorem(6)};
+
+    &__button {
+        justify-content: center;
+    }
+
+    &__file {
+        display: none;
+    }
+}

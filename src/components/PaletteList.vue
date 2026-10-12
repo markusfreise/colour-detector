@@ -1,17 +1,18 @@
 <template>
-  <section class="panel palette" :class="{ 'panel--collapsed': collapsed }">
-    <header class="palette__header">
+  <section class="panel sidebar" :class="{ 'panel--collapsed': collapsed }">
+    <div class="toolbar">
+      <PanelToggle name="palette" icon="colours" label="the colours" />
+      <button class="button button--ghost" type="button" @click="emit('show-paintbox')">
+        <AppIcon name="paintbox" />
+      </button>
+    </div>
+    <div class="flyout" v-if="!collapsed">
       <h2 class="panel__title">
         Colours
         <span v-if="analysis.entries.length" class="palette__count">
           {{ analysis.entries.length }} in {{ analysis.mixCount }} {{ analysis.mixCount === 1 ? 'mix' : 'mixes' }}
         </span>
       </h2>
-      <div class="palette__actions">
-        <button class="button button--ghost" type="button" @click="emit('show-paintbox')">Show paint box</button>
-        <PanelToggle name="palette" label="the colours" />
-      </div>
-    </header>
     <div v-show="!collapsed" class="palette__body">
     <p v-if="analysis.mixCount < analysis.entries.length" class="palette__key">
       <span v-for="w in WASH_LETTERS" :key="w.letter"><strong>{{ w.letter }}</strong> {{ w.label }}</span>
@@ -71,6 +72,7 @@
       </li>
     </ol>
     </div>
+    </div>
   </section>
 </template>
 
@@ -81,8 +83,10 @@ import { usePaintsStore } from '../stores/paints.js'
 import { WASH_LETTERS } from '../lib/mixing.js'
 import { contrastText } from '../lib/color.js'
 import { paintNumber } from '../lib/paintbox.js'
+import AppIcon from './AppIcon.vue'
 import { useLayoutStore } from '../stores/layout.js'
 import PanelToggle from './PanelToggle.vue'
+import App from '../App.vue'
 
 const emit = defineEmits(['show-paintbox'])
 const analysis = useAnalysisStore()

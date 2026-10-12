@@ -1,0 +1,36 @@
+@use "../functions" as *;
+
+// The recipe of the colour under the pointer, next to the pointer.
+
+.tip {
+    position: fixed;
+    z-index: 20;
+    width: min(#{pxtorem(480)}, 90vw);
+    padding: #{pxtorem(10)};
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-medium);
+    background: var(--c-background-raised);
+    box-shadow: 0 #{pxtorem(6)} #{pxtorem(24)} rgba(0, 0, 0, 0.22);
+    pointer-events: none;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: var(--gap-05x);
+        margin-bottom: var(--gap-05x);
+    }
+
+    &__share {
+        margin-left: auto;
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+    }
+
+    &__paper {
+        font-style: italic;
+    }
+
+    @media print {
+        display: none;
+    }
+}

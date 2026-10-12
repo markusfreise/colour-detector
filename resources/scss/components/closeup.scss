@@ -1,0 +1,90 @@
+@use "../functions" as *;
+
+// Close-ups: the way back above the picture, and the collected parts as thumbnails under it.
+
+.closeup {
+    &--bar {
+        display: flex;
+        align-items: center;
+        gap: #{pxtorem(10)};
+        margin-bottom: var(--gap-05x);
+    }
+
+    &__name {
+        font-weight: 600;
+    }
+
+    &--strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--gap-05x);
+        margin-top: #{pxtorem(10)};
+    }
+
+    &__item {
+        position: relative;
+    }
+
+    &__open {
+        display: block;
+        padding: 0;
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius-medium);
+        background: var(--c-background-raised);
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    &__item--active &__open {
+        outline: 2px solid var(--c-corporate);
+        outline-offset: 1px;
+    }
+
+    &__thumb {
+        display: block;
+        height: #{pxtorem(72)};
+        width: auto;
+        max-width: #{pxtorem(140)};
+        object-fit: cover;
+    }
+
+    &__number {
+        position: absolute;
+        left: var(--gap-025x);
+        bottom: var(--gap-025x);
+        min-width: #{pxtorem(20)};
+        padding: 0 #{pxtorem(5)};
+        border-radius: #{pxtorem(999)};
+        background: rgba(0, 0, 0, 0.6);
+        color: var(--c-white);
+        font-size: var(--fs-caption);
+        font-weight: 700;
+        text-align: center;
+        pointer-events: none;
+    }
+
+    &__remove {
+        position: absolute;
+        top: #{pxtorem(-6)};
+        right: #{pxtorem(-6)};
+        display: grid;
+        place-items: center;
+        width: #{pxtorem(22)};
+        height: #{pxtorem(22)};
+        padding: 0;
+        border: 1px solid var(--c-border);
+        border-radius: 50%;
+        background: var(--c-background-raised);
+        color: var(--c-copy-light);
+        cursor: pointer;
+
+        &:hover {
+            color: var(--c-danger);
+            border-color: var(--c-danger);
+        }
+    }
+
+    @media print {
+        display: none;
+    }
+}

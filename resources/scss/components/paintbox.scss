@@ -1,0 +1,212 @@
+@use "../functions" as *;
+
+// The paint box dialog: boxes, paints by group, own paints (PaintBox.vue).
+
+.paintbox {
+    width: min(var(--width-dialog-wide), calc(100vw - var(--gap-2x)));
+    max-height: calc(100vh - var(--gap-2x));
+    padding: 0;
+    color: var(--c-copy);
+    overflow-y: auto;
+
+    &::backdrop {
+        background: var(--c-backdrop);
+    }
+
+    &__body {
+        padding: #{pxtorem(14)};
+    }
+
+    &__header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: var(--gap-05x);
+        margin: #{pxtorem(-14)} #{pxtorem(-14)} 0;
+        padding: #{pxtorem(14)} #{pxtorem(14)} 0;
+        background: var(--c-background-raised);
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+        gap: #{pxtorem(6)};
+    }
+
+    // The cross of the flyouts (ui.scss), here in the row of the buttons.
+    &__close {
+        position: static;
+    }
+
+    &__group {
+        margin-top: #{pxtorem(14)};
+        padding: #{pxtorem(12)};
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius);
+        background: var(--c-background);
+
+        &--selected {
+            border-color: var(--c-corporate);
+            background: var(--c-background-raised);
+        }
+    }
+
+    &__group-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: #{pxtorem(12)};
+        margin-bottom: var(--gap-05x);
+    }
+
+    &__group-header &__group-title {
+        margin-bottom: 0;
+    }
+
+    &__group-title {
+        font-size: 1.4em;
+        font-weight: 650;
+        margin-bottom: var(--gap-05x);
+    }
+
+    &__empty {
+        color: var(--c-copy-light);
+    }
+
+    &__list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(#{pxtorem(112)}, 1fr));
+        gap: #{pxtorem(6)};
+    }
+
+    &__chip {
+        position: relative;
+        min-height: #{pxtorem(46)};
+        cursor: pointer;
+
+        &:has(.paintbox__checkbox:focus-visible) {
+            outline: 2px solid var(--c-corporate);
+            outline-offset: 2px;
+        }
+    }
+
+    &__checkbox {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+    }
+
+    &__form {
+        position: absolute;
+        top: #{pxtorem(6)};
+        right: #{pxtorem(10)};
+    }
+
+    &__chip--used &__name {
+        font-weight: 700;
+    }
+
+    &__boxes {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: #{pxtorem(6)};
+        margin-top: #{pxtorem(12)};
+    }
+
+    &__box-list {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 100%;
+
+        // Names, not icons: as wide as the name, not square.
+        .segmented__option {
+            aspect-ratio: auto;
+            padding: #{pxtorem(9)} #{pxtorem(14)};
+            white-space: nowrap;
+        }
+    }
+
+    &__edit {
+        display: flex;
+        flex-wrap: wrap;
+        gap: #{pxtorem(6)};
+        margin-top: var(--gap-05x);
+
+        .input {
+            flex: 1 1 #{pxtorem(180)};
+        }
+    }
+
+    &__own-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: var(--gap-05x);
+    }
+
+    &__paint-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(#{pxtorem(120)}, 1fr));
+        gap: var(--gap-05x);
+        margin-bottom: #{pxtorem(12)};
+    }
+
+    &__input {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-025x);
+        font-weight: 600;
+
+        &--wide {
+            grid-column: span 2;
+        }
+    }
+
+    &__note {
+        grid-column: 1 / -1;
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+    }
+
+    &__form-actions {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: #{pxtorem(6)};
+    }
+
+    &__own {
+        display: flex;
+        flex-direction: column;
+        gap: #{pxtorem(6)};
+    }
+
+    &__own-item {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--gap-05x);
+    }
+
+    &__own-chip {
+        width: #{pxtorem(150)};
+        min-height: #{pxtorem(40)};
+    }
+
+    &__own-vendor {
+        flex: 1;
+        min-width: #{pxtorem(80)};
+        color: var(--c-copy-light);
+    }
+
+    &__chip--disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+}

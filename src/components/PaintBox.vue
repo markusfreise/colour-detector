@@ -6,21 +6,36 @@
         <div class="paintbox__actions">
           <button
             class="button"
-            :class="autoOn ? 'button--secondary' : 'button--ghost'"
+            :class="autoOn ? 'button--active' : 'button--ghost'"
             type="button"
             :aria-pressed="autoOn"
-            :title="layerMode ? 'Let the app choose the base paints for this picture' : 'Let the app select the paints that suit each picture'"
+            :title="layerMode ? 'Auto: let the app choose the base paints for this picture' : 'Auto: let the app select the paints that suit each picture'"
             :disabled="!analysis.pixels"
             @click="auto"
           >
-            Auto
+            <AppIcon name="colours" label="Auto" />
           </button>
-          <button v-if="!layerMode" class="button button--ghost" type="button" @click="reset">Revert</button>
-          <button class="button button--ghost" type="button" @click="clear">Clear</button>
-          <button class="button button--secondary" type="button" :disabled="!dirty" @click="apply">
-            {{ layerMode ? 'Update layers' : 'Update mixes' }}
+          <button v-if="!layerMode" class="button button--ghost" type="button" title="Revert: back to the standard selection" @click="reset">
+            <AppIcon name="reset" label="Revert" />
           </button>
-          <button class="button button--ghost" type="button" @click="close">Close</button>
+          <button class="button button--ghost" type="button" title="Clear: select no paint" @click="clear">
+            <AppIcon name="clear" label="Clear" />
+          </button>
+          <button
+            class="button"
+            :class="dirty ? 'button--active' : 'button--ghost'"
+            type="button"
+            :disabled="!dirty"
+            :title="layerMode ? 'Update layers' : 'Update mixes'"
+            @click="apply"
+          >
+            <AppIcon name="update" :label="layerMode ? 'Update layers' : 'Update mixes'" />
+          </button>
+          <button class="flyout__close paintbox__close" type="button" title="Close" aria-label="Close" @click="close">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+              <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
+            </svg>
+          </button>
         </div>
       </header>
 
@@ -147,6 +162,7 @@ import { chipStyle } from '../lib/color.js'
 import { paintNumber, paintForms, groupPaints, sortPaints } from '../lib/paintbox.js'
 import { horadamCatalogue } from '../data/horadam-catalogue.js'
 import PaintChip from './PaintChip.vue'
+import AppIcon from './AppIcon.vue'
 
 const paints = usePaintsStore()
 const analysis = useAnalysisStore()

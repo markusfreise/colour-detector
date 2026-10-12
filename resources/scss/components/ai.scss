@@ -1,0 +1,80 @@
+@use "../functions" as *;
+
+// The AI option: provider, key, consent and the answer.
+// It is the last part of the settings, under a line.
+
+.ai {
+    margin-top: var(--gap);
+    padding-top: #{pxtorem(14)};
+    border-top: 1px solid var(--c-border);
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: var(--gap-05x);
+        margin-bottom: #{pxtorem(6)};
+
+        .panel__title {
+            flex: 1;
+            margin-bottom: 0;
+        }
+    }
+
+    &__check {
+        display: flex;
+        align-items: flex-start;
+        gap: #{pxtorem(6)};
+        margin-top: #{pxtorem(10)};
+        font-size: var(--fs-note);
+
+        input {
+            flex: none;
+            margin-top: #{pxtorem(3)};
+        }
+    }
+
+    &__consent {
+        padding: #{pxtorem(10)};
+        border-radius: var(--radius-medium);
+        background: var(--c-background);
+        color: var(--c-copy-light);
+    }
+
+    &__ask {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: #{pxtorem(6)} #{pxtorem(10)};
+        margin-top: #{pxtorem(12)};
+    }
+
+    &__notes {
+        margin-top: #{pxtorem(12)};
+    }
+
+    &__mixes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--gap-025x) #{pxtorem(12)};
+        margin: var(--gap-05x) 0;
+        font-size: var(--fs-note);
+    }
+
+    &__mix {
+        display: flex;
+        align-items: center;
+        gap: #{pxtorem(5)};
+    }
+
+    &__details {
+        font-size: var(--fs-note);
+    }
+
+    &__wash {
+        vertical-align: #{pxtorem(-3)};
+    }
+
+    &__forget {
+        margin-top: #{pxtorem(10)};
+    }
+}

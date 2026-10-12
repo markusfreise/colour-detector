@@ -26,7 +26,7 @@ Project language is **English**: UI text, error messages, code comments, commit 
 
 ## Tech stack
 
-Vue 3 (Composition API, `<script setup>`) · Pinia · Vite 5 · Vitest · Web Worker · BEM CSS. No backend, no router, no Axios.
+Vue 3 (Composition API, `<script setup>`) · Pinia · Vite 5 · Vitest · Web Worker · SCSS (BEM). No backend, no router, no Axios.
 
 ## Where things are
 
@@ -40,7 +40,7 @@ Vue 3 (Composition API, `<script setup>`) · Pinia · Vite 5 · Vitest · Web Wo
 
 - **Branches:** `main` (= live) ← `develop` ← `feature/TASK-xx-name`. No stage.
 - **Commits:** `<type>(TASK-xx): <summary>` — feat, fix, chore, refactor, test, docs. One step = one commit.
-- **CSS:** BEM (`block__element--modifier`), one file per block in `src/css/components/`, no scoped styles, no utility classes.
+- **CSS:** SCSS in the house structure under `resources/scss/` (entry `site.scss`, tokens in `properties.scss`, PRD §12). BEM (`block__element--modifier`), one file per block in `resources/scss/components/`, px values through `pxtorem()`, no scoped styles.
 - **Vue:** Composition API, Pinia for state. Large typed arrays/images via `markRaw`.
 - **Tests:** Vitest in `src/__tests__/` — `npm test`.
 

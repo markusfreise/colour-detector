@@ -1,0 +1,84 @@
+@use "functions" as *;
+
+// Printed sheet (also "Save as PDF"): the picture, then every colour with its chosen mix.
+@media print {
+    @page {
+        margin: 12mm;
+    }
+
+    // The sheet is laid out in millimetres: its text is smaller than on the screen.
+    :root {
+        --fs-mini: #{pxtorem(10)};
+        --fs-caption: #{pxtorem(11)};
+        --fs-small: #{pxtorem(12)};
+        --fs-note: #{pxtorem(13)};
+        --fs-copy: #{pxtorem(14)};
+        --fs-medium: #{pxtorem(15)};
+        --fs-large: #{pxtorem(20)};
+        --fs-hl-small: #{pxtorem(22)};
+        --fs-hl-medium: #{pxtorem(24)};
+        --fs-hl-large: #{pxtorem(28)};
+    }
+
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    body {
+        background: var(--c-white);
+    }
+
+    .app {
+        max-width: none;
+        padding: 0;
+
+        &__main {
+            display: block;
+        }
+
+        &__stage {
+            position: static;
+        }
+    }
+
+    .app__tagline,
+    .app__hint,
+    .app__sidebar,
+    .app__footer,
+    .consent,
+    .paintbox,
+    .collection,
+    .pro,
+    .painting__status,
+    .painting__tools,
+    .steps {
+        display: none;
+    }
+
+    .painting {
+        border: 0;
+        padding: 0;
+
+        &__canvas {
+            max-height: 150mm;
+            width: auto;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+    }
+
+    .legend {
+        display: block;
+        margin-top: 6mm;
+    }
+
+    // Layer mode prints its own pictures: the finished one and one per layer.
+    .app--layer .app__main {
+        display: none;
+    }
+
+    .layersheet {
+        display: block;
+    }
+}

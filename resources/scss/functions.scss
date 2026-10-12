@@ -1,0 +1,15 @@
+@use "sass:math";
+
+// px values as relative units; base 16px.
+
+@function pxtorem($px) {
+    @return math.div($px, 16) * 1rem;
+}
+
+@function pxtoem($px, $basis: 16) {
+    @return math.div($px, $basis) * 1em;
+}
+
+@function pxtovw($px, $viewport: 1440) {
+    @return math.div($px, $viewport) * 100vw;
+}

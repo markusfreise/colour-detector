@@ -1,0 +1,239 @@
+@use "functions" as *;
+
+.flyout {
+    left: 0;
+    background: var(--c-white);
+    padding: #{pxtorem(32)};
+    border-radius: var(--radius);
+    color: var(--c-copy);
+    min-width: #{pxtorem(480)};
+    border: 1px solid var(--c-border);
+
+    // A flyout that floats over the picture (floating.js): it starts left of the buttons at the
+    // top right, is dragged by its handle and scrolls inside when it is taller than the window.
+    &--floating {
+        position: fixed;
+        z-index: 4;
+        top: var(--app-top);
+        right: calc(var(--app-right) + #{pxtorem(48)} + var(--gap));
+        left: auto;
+        max-height: calc(100vh - var(--app-top) - var(--app-bottom));
+        overflow-y: auto;
+        box-shadow: var(--shadow);
+    }
+
+    // The handle: a strip across the top of the panel with a short bar in its middle, and room
+    // above and below the bar.
+    &__handle {
+        display: grid;
+        place-items: center;
+        height: #{pxtorem(24)};
+        margin: #{pxtorem(-20)} 0 #{pxtorem(12)};
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
+
+        &::before {
+            content: "";
+            width: #{pxtorem(40)};
+            height: #{pxtorem(5)};
+            border-radius: #{pxtorem(3)};
+            background: var(--c-copy-light);
+            opacity: 0.45;
+        }
+
+        &:hover::before {
+            opacity: 1;
+        }
+    }
+
+    &--dragging &__handle {
+        cursor: grabbing;
+    }
+
+    // The cross that closes the panel, at its top right; it lies over the strip of the handle.
+    // The panel it is in must be positioned.
+    &__close {
+        position: absolute;
+        z-index: 1;
+        top: #{pxtorem(10)};
+        right: #{pxtorem(10)};
+        display: grid;
+        place-items: center;
+        width: #{pxtorem(32)};
+        height: #{pxtorem(32)};
+        padding: 0;
+        border: 0;
+        border-radius: var(--radius-small);
+        background: transparent;
+        color: var(--c-copy-light);
+        cursor: pointer;
+
+        svg {
+            width: #{pxtorem(16)};
+            height: #{pxtorem(16)};
+        }
+
+        &:hover {
+            background: var(--c-background);
+            color: var(--c-copy);
+        }
+    }
+}
+
+.panel {
+    position: relative;
+    &.sidebar {
+        display: flex;
+        gap: var(--gap);
+        width: 100%;
+        // The buttons of all panels stay in one column, left of whichever panel is open, and a
+        // folded panel keeps the height of its button when an open one is taller than the window.
+        flex: none;
+        justify-content: flex-start;
+        align-items: stretch;
+        overflow: hidden;
+        &:has(.flyout) {
+            max-width: calc(#{pxtorem(780)});
+            overflow: visible;
+        }
+    }
+    .toolbar {
+        display: flex;
+        gap: var(--gap);
+        flex-direction: column;
+    }
+    &__title {
+        font-size: var(--fs-medium);
+        font-weight: 650;
+        margin-bottom: #{pxtorem(10)};
+    }
+
+    &__toggle {
+        flex: none;
+        display: grid;
+        place-items: center;
+        width: #{pxtorem(28)};
+        height: #{pxtorem(28)};
+        padding: 0;
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius-small);
+        background: transparent;
+        color: var(--c-copy-light);
+        cursor: pointer;
+
+        &:hover {
+            color: var(--c-copy);
+            background: var(--c-background);
+        }
+        &:has(svg) {
+            aspect-ratio: 1 / 1;
+        }
+        svg {
+            width: #{pxtorem(38)};
+            transition: transform 0.15s;
+        }
+
+        &--collapsed svg {
+            transform: rotate(180deg);
+        }
+    }
+
+    &--collapsed &__title {
+        margin-bottom: 0;
+    }
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: #{pxtorem(6)};
+    border: 1px solid transparent;
+    border-radius: var(--radius-medium);
+    padding: #{pxtorem(9)} #{pxtorem(14)} #{pxtorem(5)};
+    cursor: pointer;
+    background: var(--c-white);
+    color: var(--c-white);
+    white-space: nowrap;
+    box-shadow: var(--shadow-flat);
+
+    &:disabled {
+        opacity: 0.45;
+        cursor: default;
+    }
+
+    &--secondary {
+        background: var(--c-corporate);
+        color: var(--c-white);
+    }
+    &--active {
+        background: var(--c-corporate);
+        color: var(--c-white) !important;
+        svg {
+            path {
+                fill: var(--c-white) !important;
+            }
+        }
+    }
+    &:hover {
+        svg {
+            path {
+                fill: var(--c-corporate);
+            }
+        }
+        &:not(:has(svg)) {
+            background: var(--c-corporate);
+            color: var(--c-white) !important;
+        }
+    }
+    &--ghost {
+        background: transparent;
+        border-color: var(--c-border);
+        color: var(--c-copy-light);
+        &:hover {
+            color: var(--c-copy);
+        }
+    }
+    &:has(svg) {
+        &:not(.button--active) {
+            background: white;
+        }
+        width: #{pxtorem(48)};
+        height: #{pxtorem(48)};
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        aspect-ratio: 1 / 1;
+        svg {
+            path {
+                fill: var(--c-copy-light);
+            }
+            width: #{pxtorem(38)};
+            height: #{pxtorem(38)};
+            transition: transform 0.15s;
+        }
+    }
+}
+
+
+.swatch {
+    display: inline-block;
+    width: #{pxtorem(28)};
+    height: #{pxtorem(28)};
+    border-radius: var(--radius-small);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    flex: none;
+
+    &--small {
+        width: #{pxtorem(16)};
+        height: #{pxtorem(16)};
+        border-radius: #{pxtorem(4)};
+    }
+
+    &--half {
+        width: #{pxtorem(18)};
+        height: #{pxtorem(28)};
+        border-radius: 0;
+    }
+}

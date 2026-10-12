@@ -1,0 +1,61 @@
+@use "../functions" as *;
+@use "../mixins" as *;
+
+.segmented {
+    &__group {
+        display: flex;
+        gap: var(--gap);
+    }
+    &.vertical {
+        height: auto;
+        flex-direction: column;
+        width: #{pxtorem(48)};
+    }
+    overflow: hidden;
+    box-shadow:  var(--shadow-flat);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-small);
+    background: var(--c-white);
+    &--fill {
+        display: flex;
+    }
+    &__option {
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        color: var(--c-copy-light);
+        aspect-ratio: 1 / 1;
+        svg {
+            width: #{pxtorem(38)};
+            height: #{pxtorem(38)};
+        }
+        &:has(+ .segmented__option) {
+            border-right: 1px solid var(--c-border);
+            margin: 0;
+        }
+        &:hover:not(.segmented__option--active) {
+            background: var(--c-border)-light;
+            svg {
+                path {
+                    fill: var(--c-corporate);
+                }
+            }
+        }
+        &--active {
+            box-shadow: var(--shadow-flat);
+            background: var(--c-corporate);
+            color: white;
+            font-weight: 600;
+            box-shadow: var(--shadow-flat);
+        }
+        &--active {
+            background: var(--c-corporate);
+        }
+    }
+
+    &--fill &__option {
+        flex: 1 1 0;
+        min-width: 0;
+        padding-inline: var(--gap-025x);
+    }
+}

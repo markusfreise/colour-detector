@@ -1,0 +1,52 @@
+@use "../functions" as *;
+
+// Printed sheets of layer mode: the finished picture with a table, then one picture per layer.
+
+.layersheet {
+    display: none;
+
+    &__picture {
+        display: block;
+        max-width: 100%;
+        max-height: 105mm;
+        margin: 0 auto;
+
+        &--finished {
+            max-height: 130mm;
+        }
+    }
+
+    &__table {
+        width: 100%;
+        margin-top: 6mm;
+        border-collapse: collapse;
+        font-size: #{pxtorem(11)};
+
+        th,
+        td {
+            padding: #{pxtorem(3)} #{pxtorem(6)};
+            border-bottom: 1px solid #ccc;
+            text-align: left;
+            vertical-align: middle;
+        }
+    }
+
+    &__layer {
+        margin: 8mm 0 0;
+        break-inside: avoid;
+    }
+
+    &__caption {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: 3mm;
+        font-size: #{pxtorem(11)};
+    }
+
+    &__note {
+        margin-top: 6mm;
+        font-size: #{pxtorem(10)};
+        color: #555;
+    }
+}

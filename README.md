@@ -86,7 +86,7 @@ The build uses a relative base path, so `dist/` works from any folder on any sta
 | `src/stores/` | Pinia stores: `paints` (stock and enabled set), `analysis` (image, settings, areas, recipes) and `ai` (provider, key, consent) |
 | `src/components/` | Vue 3 components (`<script setup>`) |
 | `src/workers/` | Web Worker for the segmentation |
-| `src/css/` | Plain CSS, BEM, one file per block |
+| `resources/scss/` | SCSS, BEM: entry `site.scss`, tokens in `properties.scss`, one file per block in `components/` |
 | `src/data/paints.js` | The paint stock |
 | `deploy/` | GitHub webhook and deploy script for the server |
 | `app/` | Native app Tintmap (SwiftUI, XcodeGen) |

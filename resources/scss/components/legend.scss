@@ -1,0 +1,120 @@
+@use "../functions" as *;
+
+// The colours with their mixes on the printed sheet (PrintLegend.vue); shown by print.scss.
+
+.legend {
+    display: none;
+
+    &__title {
+        font-size: #{pxtorem(15)};
+        font-weight: 650;
+        margin-bottom: var(--gap-025x);
+    }
+
+    &__key {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px #{pxtorem(12)};
+        margin-bottom: var(--gap-05x);
+        color: var(--c-copy-light);
+        font-size: #{pxtorem(11)};
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: #{pxtorem(7)};
+    }
+
+    &__item {
+        display: grid;
+        grid-template-columns: #{pxtorem(22)} #{pxtorem(170)} minmax(0, 1fr) #{pxtorem(34)};
+        gap: var(--gap-05x);
+        align-items: stretch;
+        break-inside: avoid;
+    }
+
+    &__number {
+        align-self: center;
+        font-weight: 700;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__washes {
+        display: flex;
+        min-height: #{pxtorem(40)};
+        border: 1px solid var(--c-chip-border);
+        border-radius: var(--radius-small);
+        overflow: hidden;
+    }
+
+    &__wash {
+        flex: 1 1 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: #{pxtorem(9)};
+        line-height: 1.3;
+
+        strong {
+            font-size: #{pxtorem(11)};
+        }
+
+        & + & {
+            box-shadow: -1px 0 0 rgba(0, 0, 0, 0.18);
+        }
+    }
+
+    &__recipe {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: #{pxtorem(3)};
+        min-width: 0;
+    }
+
+    &__paints {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: #{pxtorem(6)};
+    }
+
+    &__paint {
+        min-height: #{pxtorem(22)};
+        padding-block: var(--gap-025x);
+    }
+
+    &__bar {
+        display: flex;
+        height: #{pxtorem(12)};
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        border-radius: #{pxtorem(4)};
+        overflow: hidden;
+    }
+
+    &__part {
+        flex: 1 1 0;
+        min-width: #{pxtorem(6)};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        font-size: #{pxtorem(9)};
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    &__paper {
+        font-style: italic;
+    }
+
+    &__share {
+        align-self: center;
+        color: var(--c-copy-light);
+        font-size: #{pxtorem(12)};
+        text-align: right;
+    }
+}

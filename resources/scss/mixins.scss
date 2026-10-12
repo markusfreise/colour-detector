@@ -1,0 +1,8 @@
+// Project-wide mixins.
+
+// One line of text, cut off with an ellipsis.
+@mixin ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

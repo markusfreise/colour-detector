@@ -1,0 +1,120 @@
+@use "../functions" as *;
+
+// Signing in and the two statements, before the app opens.
+
+.gate {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: var(--gap);
+
+    &__card {
+        width: min(var(--width-dialog), 100%);
+        padding: var(--gap-15x);
+    }
+
+    &__title {
+        font-size: var(--fs-hl-medium);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: #{pxtorem(10)};
+    }
+
+    &__text {
+        margin-bottom: #{pxtorem(14)};
+        color: var(--c-copy-light);
+
+        strong {
+            color: var(--c-copy);
+        }
+    }
+
+    &__notice {
+        margin-bottom: #{pxtorem(14)};
+        padding: #{pxtorem(10)} #{pxtorem(12)};
+        border-radius: var(--radius-medium);
+        background: var(--c-corporate-soft);
+
+        &--error {
+            background: transparent;
+            border: 1px solid var(--c-danger);
+            color: var(--c-danger);
+        }
+    }
+
+    &__providers {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-05x);
+        margin-bottom: #{pxtorem(6)};
+    }
+
+    &__provider {
+        justify-content: center;
+        padding-block: #{pxtorem(9)};
+    }
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: #{pxtorem(10)};
+
+        .button {
+            justify-content: center;
+            padding-block: #{pxtorem(9)};
+        }
+    }
+
+    &__field {
+        margin-top: #{pxtorem(10)};
+    }
+
+    &__check {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--gap-05x);
+        margin-bottom: #{pxtorem(12)};
+
+        input {
+            flex: none;
+            margin-top: 0.35em;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--gap-05x);
+        margin-top: #{pxtorem(6)};
+    }
+
+    &__link {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--c-corporate);
+        font: inherit;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    &__error {
+        margin-top: #{pxtorem(12)};
+        color: var(--c-danger);
+    }
+
+    &__footer {
+        display: flex;
+        gap: var(--gap);
+        margin-top: #{pxtorem(20)};
+        padding-top: #{pxtorem(14)};
+        border-top: 1px solid var(--c-border);
+        font-size: var(--fs-small);
+    }
+
+    &__footer a,
+    &__text a,
+    &__check a {
+        color: var(--c-corporate);
+    }
+}

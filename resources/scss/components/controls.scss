@@ -1,0 +1,69 @@
+@use "../functions" as *;
+@use "../mixins" as *;
+
+.controls {
+    &__image {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--gap-05x);
+    }
+
+    &__image-name {
+        flex: 1 1 6em;
+        min-width: 0;
+        @include ellipsis;
+        font-weight: 600;
+    }
+
+    &__saved {
+        flex: none;
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+    }
+
+    &__settings {
+        display: grid;
+        grid-template-columns: 4fr 4fr 4fr;
+        &_two {
+            grid-template-columns: 4fr 4fr;
+
+        }
+        gap: #{pxtorem(12)};
+        align-items: start;
+
+        .field {
+            min-width: 0;
+        }
+    }
+
+    &__toggles {
+        display: flex;
+        gap: #{pxtorem(12)};
+        font-weight: 400;
+    }
+
+    &__error {
+        margin-top: #{pxtorem(10)};
+        color: var(--c-danger);
+    }
+
+    &__pair {
+        .field {
+            min-width: 0;
+        }
+    }
+
+    &__hint {
+        display: block;
+        margin-top: #{pxtorem(6)};
+    }
+
+    &__reset-slot {
+        align-self: end;
+    }
+
+    &__reset {
+        justify-content: center;
+    }
+}

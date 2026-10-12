@@ -18,8 +18,8 @@ self.onmessage = (event) => {
       self.postMessage({ jobId, result: colouringSketch(rgba, width, height, { subjects: event.data.subjects }) })
       return
     }
-    const { colours, simplify, geometric, anchors, focus } = event.data
-    const result = segmentImage(rgba, width, height, { colours, simplify, geometric, anchors, focus })
+    const { colours, simplify, geometric, anchors, focus, maxWashes, washStep } = event.data
+    const result = segmentImage(rgba, width, height, { colours, simplify, geometric, anchors, focus, maxWashes, washStep })
     self.postMessage({ jobId, result }, [result.regionMap.buffer])
   } catch (error) {
     self.postMessage({ jobId, error: String(error?.message || error) })

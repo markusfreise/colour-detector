@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { segmentImage, connectedComponents, toOklabPixels, mulberry32 } from '../lib/segment.js'
+import { segmentImage, connectedComponents, toOklabPixels, mulberry32, FINEST } from '../lib/segment.js'
 import { compactPatches, settlePatches, patchColours, findAreas, findDetails, mergeAreas, roundOutlines, outlineShifts, upscaleAreas, apart } from '../lib/smooth.js'
 
 function makeImage(width, height, fn) {
@@ -416,6 +416,24 @@ describe('smooth', () => {
       }
       before = areas
     }
+  })
+
+  it('gets finer with every step below Simplify 0, down to areas that follow the photo', () => {
+    // Texture: blotches of three pixels in many shades of green, which Simplify 0 runs together.
+    const w = 160, h = 120, size = 3
+    const rand = mulberry32(11)
+    const cols = Math.ceil(w / size)
+    const blotch = Array.from({ length: cols * Math.ceil(h / size) }, () => { const t = rand(); return [50 + 70 * t, 80 + 80 * t, 40 + 30 * rand()] })
+    const rgba = makeImage(w, h, (x, y) => blotch[Math.floor(y / size) * cols + Math.floor(x / size)])
+    const counts = []
+    for (let simplify = 0; simplify >= FINEST; simplify--) counts.push(segmentImage(rgba, w, h, { colours: 6, simplify }).regions.length)
+    for (let i = 1; i < counts.length; i++) expect(counts[i]).toBeGreaterThan(counts[i - 1])
+    expect(counts.at(-1)).toBeGreaterThan(counts[0] * 8)
+    // Even at the lowest step no area is smaller than a touch of the brush.
+    const finest = segmentImage(rgba, w, h, { colours: 6, simplify: FINEST })
+    expect(finest.regions.filter((r) => r.size < 6).length).toBe(0)
+    // Geometric areas take a step below 0 as 0.
+    expect(() => segmentImage(rgba, w, h, { colours: 6, simplify: FINEST, geometric: true })).not.toThrow()
   })
 
   it('gives a noisy picture a few calm areas at any Simplify and keeps what stands out', () => {

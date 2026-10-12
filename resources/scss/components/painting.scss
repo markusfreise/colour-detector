@@ -1,0 +1,126 @@
+@use "../functions" as *;
+
+// The picture (PaintingCanvas.vue): it fills its place, here the whole window, without a border.
+// The canvas keeps its own size and is moved and zoomed by a transform.
+
+.painting {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--c-background);
+    // Pinching and dragging move the picture, not the page.
+    touch-action: none;
+    overscroll-behavior: none;
+    cursor: crosshair;
+
+    &--moving {
+        cursor: grabbing;
+    }
+
+    &__canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        max-width: none;
+        transform-origin: 0 0;
+        transition: opacity 0.2s;
+
+        &--busy {
+            opacity: 0.5;
+        }
+    }
+
+    // Fit and frame, centred at the top of the window.
+    &__tools {
+        position: absolute;
+        z-index: 2;
+        top: max(var(--gap), env(safe-area-inset-top));
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: #{pxtorem(6)};
+        cursor: default;
+    }
+
+    // The view buttons are as large as the buttons beside them (48 px, as .button with an icon).
+    &__tools .segmented {
+        display: flex;
+        height: #{pxtorem(48)};
+    }
+
+    &__tools .segmented__option {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: #{pxtorem(48)};
+        height: 100%;
+        padding: 0;
+        aspect-ratio: auto;
+    }
+
+    &__tool--on {
+        background: var(--c-corporate);
+        border-color: var(--c-corporate);
+        color: var(--c-white);
+
+        &:hover {
+            background: var(--c-corporate);
+        }
+    }
+
+    &__status {
+        padding: var(--gap-025x) #{pxtorem(10)};
+        border-radius: var(--radius-small);
+        background: var(--c-background-raised);
+        box-shadow: var(--shadow-flat);
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    // What is missing for a picture, in the middle of the window.
+    &__notice {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: calc(100% - var(--gap-2x));
+        padding: var(--gap) var(--gap-15x);
+        border-radius: var(--radius);
+        background: var(--c-white);
+        box-shadow: var(--shadow);
+        font-size: var(--fs-medium);
+        font-weight: 600;
+        text-align: center;
+        cursor: default;
+    }
+
+    &__frame {
+        position: absolute;
+        border: 2px dashed var(--c-white);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 0 9999px rgba(0, 0, 0, 0.25);
+        border-radius: 2px;
+        pointer-events: none;
+    }
+
+    // On paper the picture is as wide as the sheet, wherever it was on screen.
+    @media print {
+        height: auto;
+        overflow: visible;
+
+        &__canvas {
+            position: static;
+            width: 100%;
+            height: auto;
+            transform: none !important;
+        }
+
+        &__tools,
+        &__notice {
+            display: none;
+        }
+    }
+}

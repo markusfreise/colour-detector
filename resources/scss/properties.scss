@@ -1,0 +1,76 @@
+@use "functions" as *;
+
+// Design tokens as CSS custom properties. Light is the default,
+// prefers-color-scheme switches to the dark values.
+
+:root {
+    // Colours
+    --c-background: #f7f4ee;
+    --c-background-raised: #ffffff;
+    --c-copy: #2a2622;
+    --c-copy-light: #6d655c;
+    --c-head: var(--c-copy);
+    --c-corporate: #2f5d8a;
+    --c-corporate-soft: #e3ecf5;
+    --c-accent: var(--c-corporate);
+    --c-success: #3b7d4f;
+    --c-warning: #b07a1c;
+    --c-danger: #b2453a;
+    --c-border: #e4ddd2;
+    --c-border-light: #efece7;
+    --c-chip-border: #242424;
+    --c-white: #ffffff;
+    --c-backdrop: rgba(0, 0, 0, 0.45);
+
+    // Font families
+    --ff-copy: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --ff-head: var(--ff-copy);
+    --ff-fixed: ui-monospace, 'SF Mono', Menlo, monospace;
+
+    // Font sizes. --fs-caption and --fs-note are steps between the usual ones.
+    --fs-mini: #{pxtorem(16)};
+    --fs-caption: #{pxtorem(20)};
+    --fs-small: #{pxtorem(16)};
+    --fs-note: #{pxtorem(20)};
+    --fs-copy: #{pxtorem(18)};
+    --fs-medium: #{pxtorem(22)};
+    --fs-large: #{pxtorem(24)};
+    --fs-hl-small: #{pxtorem(24)};
+    --fs-hl-medium: #{pxtorem(30)};
+    --fs-hl-large: #{pxtorem(36)};
+
+    // Gaps
+    --gap: #{pxtorem(16)};
+    --gap-025x: calc(var(--gap) * 0.25);
+    --gap-05x: calc(var(--gap) * 0.5);
+    --gap-15x: calc(var(--gap) * 1.5);
+    --gap-2x: calc(var(--gap) * 2);
+    --gap-3x: calc(var(--gap) * 3);
+
+    // Widths
+    --max-width: #{pxtorem(1600)};
+    --width-margin: calc(50vw - var(--max-width) * 0.5);
+    --width-sidebar: clamp(#{pxtorem(380)}, #{pxtorem(608)}, 44vw);
+    --width-dialog: #{pxtorem(736)};
+    --width-dialog-wide: #{pxtorem(920)};
+
+    // Radius and shadow
+    --radius: #{pxtorem(10)};
+    --radius-medium: #{pxtorem(8)};
+    --radius-small: #{pxtorem(6)};
+    --shadow: 0 #{pxtorem(8)} #{pxtorem(30)} rgba(0, 0, 0, 0.18);
+    --shadow-flat: 0 #{pxtorem(1)} #{pxtorem(3)} rgba(0, 0, 0, 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --c-background: #1b1a18;
+        --c-background-raised: #252321;
+        --c-copy: #eee9e1;
+        --c-copy-light: #a89f94;
+        --c-corporate: #8fb6dc;
+        --c-corporate-soft: #2b3642;
+        --c-border: #3a3632;
+        --c-chip-border: #5a544d;
+    }
+}

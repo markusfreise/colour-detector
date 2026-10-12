@@ -1,0 +1,97 @@
+@use "../functions" as *;
+@use "../mixins" as *;
+
+// The saved pictures dialog (CollectionDialog.vue).
+
+.collection {
+    width: min(var(--width-dialog-wide), calc(100vw - var(--gap-2x)));
+    max-height: calc(100vh - var(--gap-2x));
+    padding: 0;
+    color: var(--c-copy);
+    overflow-y: auto;
+
+    &::backdrop {
+        background: var(--c-backdrop);
+    }
+
+    &__body {
+        padding: #{pxtorem(14)};
+    }
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: var(--gap-05x);
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: #{pxtorem(6)};
+    }
+
+    &__error {
+        margin-top: #{pxtorem(10)};
+        color: var(--c-danger);
+    }
+
+    &__empty {
+        margin-top: #{pxtorem(14)};
+        color: var(--c-copy-light);
+    }
+
+    &__list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(#{pxtorem(180)}, 1fr));
+        gap: #{pxtorem(12)};
+        margin-top: #{pxtorem(14)};
+    }
+
+    &__item {
+        display: flex;
+        flex-direction: column;
+        gap: #{pxtorem(6)};
+        padding: var(--gap-05x);
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius);
+        background: var(--c-background);
+
+        &--active {
+            border-color: var(--c-corporate);
+            background: var(--c-background-raised);
+        }
+    }
+
+    &__open {
+        border: 0;
+        padding: 0;
+        background: none;
+        cursor: pointer;
+    }
+
+    &__thumb {
+        display: block;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        border-radius: var(--radius-small);
+    }
+
+    &__name {
+        font-weight: 600;
+        @include ellipsis;
+    }
+
+    &__item-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: #{pxtorem(6)};
+    }
+
+    &__rename {
+        display: flex;
+        gap: #{pxtorem(6)};
+    }
+}

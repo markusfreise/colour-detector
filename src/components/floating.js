@@ -4,10 +4,10 @@ import { useLayoutStore } from '../stores/layout.js'
 const MARGIN = 8 // what stays between the panel and the edge of the window
 
 /**
- * A panel that floats over the page and is dragged by its header. It only floats where its CSS
+ * A panel that floats over the page and is dragged by its handle. It only floats where its CSS
  * makes it `position: fixed` (wide windows); in one column it is part of the page.
  * @param {string} name  the panel's key in the layout store
- * @returns panel ref, inline style, dragging flag and the pointerdown handler for the header
+ * @returns panel ref, inline style, dragging flag and the pointerdown handler for the handle
  */
 export function useFloating(name) {
   const layout = useLayoutStore()

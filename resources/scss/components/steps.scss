@@ -1,0 +1,81 @@
+@use "../functions" as *;
+
+// Walk through the painting order, above the picture (layer mode).
+
+.steps {
+    margin-bottom: #{pxtorem(10)};
+
+    &__bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--gap-05x);
+    }
+
+    &__text {
+        flex: 1;
+        min-width: #{pxtorem(220)};
+    }
+
+    &__close {
+        margin-left: auto;
+    }
+
+    &__body {
+        display: flex;
+        align-items: flex-start;
+        gap: #{pxtorem(12)};
+        margin-top: var(--gap-05x);
+    }
+
+    &__target {
+        flex: none;
+        width: #{pxtorem(150)};
+        min-height: #{pxtorem(54)};
+    }
+
+    &__lines {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin: 0;
+        font-size: var(--fs-note);
+
+        div {
+            display: flex;
+            gap: #{pxtorem(6)};
+        }
+
+        dt {
+            flex: none;
+            width: #{pxtorem(40)};
+            font-weight: 650;
+        }
+
+        dd {
+            margin: 0;
+        }
+    }
+
+    &__warn {
+        margin-top: #{pxtorem(6)};
+        color: var(--c-danger);
+        font-size: var(--fs-note);
+    }
+
+    @media (max-width: 900px) {
+        &__text {
+            order: -1;
+            flex-basis: 100%;
+        }
+
+        &__bar .button {
+            flex: 1;
+            min-height: #{pxtorem(44)};
+        }
+
+        &__close {
+            margin-left: 0;
+        }
+    }
+}

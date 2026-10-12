@@ -1,0 +1,35 @@
+@use "../functions" as *;
+
+// One button per layer under the picture, on narrow screens only.
+
+.layerstrip {
+    display: none;
+
+    @media (max-width: 900px) {
+        display: flex;
+        gap: #{pxtorem(6)};
+        margin-top: #{pxtorem(10)};
+        overflow-x: auto;
+
+        &__layer {
+            flex: none;
+            width: #{pxtorem(44)};
+            height: #{pxtorem(44)};
+            border: 1px solid rgba(0, 0, 0, 0.14);
+            border-radius: var(--radius-medium);
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+
+            &--active {
+                outline: 2px solid var(--c-corporate);
+                outline-offset: 1px;
+            }
+        }
+
+        &__all {
+            flex: none;
+            min-height: #{pxtorem(44)};
+        }
+    }
+}

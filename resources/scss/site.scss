@@ -1,0 +1,16 @@
+// Entry: loads every partial in cascade order.
+@use "reset";
+@use "fonts";
+@use "animations";
+@use "properties";
+@use "typography";
+@use "scaffold";
+@use "header";
+@use "footer";
+@use "tables";
+@use "forms";
+@use "ui";
+@use "components";
+@use "views";
+@use "utilities";
+@use "print";

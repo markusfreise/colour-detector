@@ -1,0 +1,14 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--c-background);
+}
+
+.wrap {
+    width: min(100% - var(--gap-2x), var(--max-width));
+    margin-inline: auto;
+}

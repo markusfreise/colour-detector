@@ -1,0 +1,176 @@
+@use "../functions" as *;
+@use "../mixins" as *;
+
+// The layers of layer mode, with their coats (LayerList.vue).
+
+.layers {
+    &__header {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-05x);
+        margin-bottom: #{pxtorem(6)};
+    }
+
+    &__name {
+        font-size: var(--fs-copy);
+        font-weight: 600;
+        @include ellipsis;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-025x);
+    }
+
+    &__item {
+        display: grid;
+        grid-template-columns: #{pxtorem(44)} minmax(0, 1fr);
+        column-gap: var(--gap-05x);
+        row-gap: #{pxtorem(3)};
+        align-items: center;
+        padding: #{pxtorem(5)} #{pxtorem(6)} #{pxtorem(7)};
+        border-radius: var(--radius-medium);
+
+        &:hover {
+            background: var(--c-background);
+        }
+
+        &--active,
+        &--current {
+            background: var(--c-corporate-soft);
+        }
+    }
+
+    &__tick {
+        gap: #{pxtorem(6)};
+    }
+
+    &__number {
+        font-weight: 700;
+        color: var(--c-copy-light);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: #{pxtorem(10)};
+        min-width: 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    &__summary {
+        margin-left: 0;
+    }
+
+    &__coats {
+        grid-column: 2;
+
+        .palette__wash {
+            flex-basis: #{pxtorem(56)};
+            white-space: nowrap;
+        }
+    }
+
+    &__note {
+        margin-top: #{pxtorem(10)};
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+
+        &--warn {
+            color: var(--c-danger);
+        }
+    }
+
+    &__empty {
+        display: flex;
+        flex-direction: column;
+        gap: #{pxtorem(10)};
+        margin-top: var(--gap-05x);
+        color: var(--c-copy-light);
+    }
+
+    &__empty-actions {
+        display: flex;
+        gap: #{pxtorem(6)};
+    }
+
+    &__spot {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-025x);
+    }
+
+    &__spot-row {
+        display: grid;
+        grid-template-columns: #{pxtorem(18)} #{pxtorem(16)} minmax(0, 1fr) auto;
+        align-items: center;
+        gap: var(--gap-05x);
+        width: 100%;
+        padding: 2px var(--gap-025x);
+        border: 0;
+        border-radius: var(--radius-small);
+        background: none;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+            background: var(--c-background);
+        }
+
+        &:disabled {
+            cursor: default;
+        }
+
+        &--none {
+            color: var(--c-copy-light);
+
+            .swatch {
+                opacity: 0.25;
+            }
+        }
+    }
+
+    &__spot-name {
+        @include ellipsis;
+    }
+
+    &__spot-coats {
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+    }
+
+    &__spot-row--none &__spot-coats {
+        font-weight: 400;
+    }
+
+    &__item--unused {
+        color: var(--c-copy-light);
+
+        .swatch {
+            opacity: 0.4;
+        }
+    }
+
+    &__item--unused &__row {
+        cursor: default;
+    }
+
+    &__kind {
+        margin-left: var(--gap-025x);
+        padding: 0 #{pxtorem(6)};
+        border: 1px solid var(--c-border);
+        border-radius: #{pxtorem(999)};
+        font-size: var(--fs-caption);
+        color: var(--c-copy-light);
+    }
+}

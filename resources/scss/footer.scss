@@ -1,0 +1,26 @@
+@use "functions" as *;
+
+// Page footer of the app: manual and legal links, at the bottom right of the window.
+
+.app {
+    &__footer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: #{pxtorem(6)} var(--gap);
+        position: fixed;
+        z-index: 2;
+        right: max(var(--gap), env(safe-area-inset-right));
+        bottom: max(var(--gap), env(safe-area-inset-bottom));
+    }
+
+    &__footer-link {
+        border: 0;
+        background: none;
+        padding: 0;
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+        text-decoration: underline;
+        cursor: pointer;
+    }
+}

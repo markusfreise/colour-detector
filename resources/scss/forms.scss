@@ -1,0 +1,63 @@
+@use "functions" as *;
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: #{pxtorem(6)};
+    margin-top: #{pxtorem(14)};
+
+    &__label {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 600;
+    }
+
+    &__value {
+        font-weight: 400;
+        color: var(--c-copy-light);
+    }
+
+    &__range {
+        width: 100%;
+        accent-color: var(--c-corporate);
+    }
+
+    &__hint {
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+    }
+}
+
+.checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: #{pxtorem(6)};
+    cursor: pointer;
+}
+
+.input {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-medium);
+    padding: #{pxtorem(5)} #{pxtorem(9)};
+    background: var(--c-background-raised);
+    color: var(--c-copy);
+    font: inherit;
+
+    &:focus-visible {
+        outline: 2px solid var(--c-corporate);
+        outline-offset: 1px;
+    }
+
+    &--colour {
+        height: #{pxtorem(34)};
+        padding: 2px;
+        cursor: pointer;
+    }
+
+    // iOS zooms the page when a focused field has text smaller than 16px.
+    @media (pointer: coarse) {
+        font-size: 16px;
+    }
+}

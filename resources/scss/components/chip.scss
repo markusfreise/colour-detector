@@ -1,0 +1,38 @@
+@use "../functions" as *;
+@use "../mixins" as *;
+
+// A paint or a mixed colour as a filled label (PaintChip.vue).
+
+.chip {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-width: 0;
+    padding: #{pxtorem(6)} #{pxtorem(10)};
+    border: 1px solid var(--c-chip-border);
+    border-radius: var(--radius-small);
+    background: var(--chip-colour, transparent);
+    color: var(--chip-ink, inherit);
+    font-size: var(--fs-mini);
+    line-height: 1.25;
+
+    &--row {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: #{pxtorem(10)};
+    }
+
+    &--empty {
+        border-style: dashed;
+    }
+
+    &__strong {
+        font-weight: 700;
+    }
+
+    &__text {
+        min-width: 0;
+        @include ellipsis;
+    }
+}

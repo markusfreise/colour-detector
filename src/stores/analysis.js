@@ -14,6 +14,10 @@ import { useProStore } from './pro.js'
 
 // Working resolution: the picture is scaled down to about this many pixels, whatever its shape.
 export const WORK_PIXELS = 800 * 600
+// Value mode: the values a grey picture is split into at most, and the least factor of strength
+// (log) between two of them.
+const VALUE_STEPS = 24
+const VALUE_STEP = 0.15
 
 // Recipes count as the same mix when they use the same paints.
 const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+')
@@ -41,7 +45,7 @@ let layerProposal = null // "picture/box/count" the current proposal was made fo
 // The settings the mix analysis (`segmentation`) was made with, see `mixCurrent`.
 let mixKey = null
 let sketchRunning = null // the picture a sketch is being worked out for
-const mixKeyOf = ({ saturation, contrast, simplify, colours, geometric }, plan = 0) => [saturation, contrast, simplify, colours, !!geometric, plan].join('/')
+const mixKeyOf = ({ saturation, contrast, simplify, colours, geometric, values }, plan = 0) => [saturation, contrast, simplify, colours, !!geometric, plan].join('/') + (values ? '/values' : '')
 
 // A small JPEG of the picture for the AI model: enough to judge colours, cheap to send, and
 // re-encoded from pixels, so it carries no metadata of the photo.
@@ -143,6 +147,7 @@ export const useAnalysisStore = defineStore('analysis', {
       geometric: false, // areas as polygons with straight edges that overlap, instead of their organic outline
       maxPaints: 3,
       variety: 5, // 0 = the picture as accurate as possible, 10 = small areas of another hue keep their mix
+      values: false, // mix mode: the picture in grey, every value painted with one paint of the box (a value study)
       saturation: 200, // percent, applied to the photo before the analysis
       contrast: 100,
       view: 'mixed', // mixed | target | original
@@ -154,7 +159,9 @@ export const useAnalysisStore = defineStore('analysis', {
     selected: (state) => (state.selectedEntry == null ? null : state.entries[state.selectedEntry]),
     layerMode: (state) => state.settings.mode === 'layer',
     /** What an AI plan belongs to: the picture as it is analysed. */
-    aiKey: (state) => [state.pictureStamp, state.settings.saturation, state.settings.contrast].join('/'),
+    aiKey: (state) => [state.pictureStamp, state.settings.saturation, state.settings.contrast, state.settings.values ? 'values' : ''].join('/'),
+    // Value mode belongs to mix mode: layers are fitted to colours.
+    valueMode: (state) => !!state.settings.values && state.settings.mode !== 'layer',
     /** What a sketch belongs to: the picture, and the AI's answer for it once there is one. */
     sketchKey(state) {
       return `${state.pictureStamp}/${state.aiPlan?.key === this.aiKey ? state.aiPlan.serial : 0}`
@@ -237,7 +244,7 @@ export const useAnalysisStore = defineStore('analysis', {
     /** Open a picture from the collection with its saved settings and colour changes. */
     async loadSaved(record) {
       // Pictures saved before layer mode existed are mix pictures.
-      Object.assign(this.settings, { mode: 'mix', geometric: false }, record.settings, { ai: false })
+      Object.assign(this.settings, { mode: 'mix', geometric: false, values: false }, record.settings, { ai: false })
       const url = URL.createObjectURL(record.blob)
       await this.loadFromSource(url, record.name)
       URL.revokeObjectURL(url)
@@ -400,14 +407,16 @@ export const useAnalysisStore = defineStore('analysis', {
       this.error = null
       const { width, height } = this.pixels
       const { saturation, contrast } = this.settings
-      const rgba = adjustImage(this.pixels.rgba, { saturation: saturation / 100, contrast: contrast / 100 })
+      // In value mode the picture is grey, whatever the saturation is set to.
+      const rgba = adjustImage(this.pixels.rgba, { saturation: this.valueMode ? 0 : saturation / 100, contrast: contrast / 100 })
       this.adjusted = rgba === this.pixels.rgba ? null : markRaw({ rgba, width, height })
       if (this.aiDetails?.key !== this.aiKey) this.findDetails()
       if (this.layerMode) return this.analyseLayers(rgba, width, height, token)
       // With an AI plan its colours are the mixes; the analysis only assigns the picture to them.
       const plan = this.aiActive
       // The colours of the details are mixes too, so that a small thing keeps its colour.
-      const anchors = plan?.mixes.length ? [...new Set([...plan.mixes, ...plan.details.filter((d) => d.hex)].map((m) => m.hex))] : undefined
+      const values = this.valueMode
+      const anchors = !values && plan?.mixes.length ? [...new Set([...plan.mixes, ...plan.details.filter((d) => d.hex)].map((m) => m.hex))] : undefined
       const focus = plan?.details.length ? plan.details.map((d) => [...d.box]) : undefined
       const key = mixKeyOf(this.settings, anchors ? this.aiPlan.serial : 0)
       try {
@@ -417,7 +426,11 @@ export const useAnalysisStore = defineStore('analysis', {
           rgba: rgba.slice(),
           width,
           height,
-          colours: mixesToRequest(this.settings.colours),
+          // A grey picture is one mix in the eyes of the analysis: it is split into values, and
+          // "Colours" still counts the mixes those are painted with (planMixes).
+          colours: values ? 1 : mixesToRequest(this.settings.colours),
+          maxWashes: values ? VALUE_STEPS : undefined,
+          washStep: values ? VALUE_STEP : undefined,
           simplify: this.settings.simplify,
           geometric: this.settings.geometric,
           anchors,
@@ -724,7 +737,7 @@ export const useAnalysisStore = defineStore('analysis', {
       if (!force && this.aiPaints) return // the AI chose them
       // Every wash is a target: a wash its mix cannot reach needs paints for a mix of its own.
       const targets = this.segmentation.clusters.filter((c) => c.pixelCount).map((c) => ({ hex: c.hex, weight: c.pixelCount }))
-      paints.setEnabled(proposePaints(targets, paints.autoCandidates, { maxPaints: this.settings.maxPaints }), true)
+      paints.setEnabled(proposePaints(targets, paints.autoCandidates, { maxPaints: this.settings.maxPaints, values: this.valueMode }), true)
     },
 
     /**
@@ -747,12 +760,14 @@ export const useAnalysisStore = defineStore('analysis', {
       const old = this.entries
       const oldRegionEntry = this.regionEntry
 
-      const washOf = (recipe, hex) => (recipe.paints.length ? washRecipe(recipe, hex, byId) : recipe)
+      const values = this.valueMode
+      const washOf = (recipe, hex) => (recipe.paints.length ? washRecipe(recipe, hex, byId, { values }) : recipe)
       const groups = planMixes(seg.clusters, paints, {
         maxPaints: this.settings.maxPaints,
         // The AI's colours are the mixes: none of them is joined with another.
         wanted: this.aiActive?.mixes.length ? Math.max(this.settings.colours, this.aiActive.mixes.length) : this.settings.colours,
         variety: this.settings.variety,
+        values,
       })
       const mixRecipes = {}
       const built = []
@@ -764,7 +779,8 @@ export const useAnalysisStore = defineStore('analysis', {
           const levels = new Map()
           for (const item of items) {
             item.hex = oklabToHex(item.lab)
-            item.letter = recipes.length ? washLetter(washOf(recipes[0], item.hex).strength) : ''
+            // A value study is painted in finer steps of water.
+            item.letter = recipes.length ? washLetter(washOf(recipes[0], item.hex).strength, values) : ''
             const same = levels.get(item.letter)
             if (same) {
               const n = same.pixels + item.pixels
@@ -846,11 +862,11 @@ export const useAnalysisStore = defineStore('analysis', {
       const entry = this.entries[index]
       if (entry.overridden) {
         entry.family = `own-${index}`
-        entry.recipes = findRecipes(entry.targetHex, store.enabled, { maxPaints: this.settings.maxPaints, limit: 5 })
+        entry.recipes = findRecipes(entry.targetHex, store.enabled, { maxPaints: this.settings.maxPaints, limit: 5, values: this.valueMode })
       } else {
         entry.family = `mix-${entry.group}`
         entry.recipes = (this.mixRecipes[entry.group] ?? []).map((r) =>
-          r.paints.length ? washRecipe(r, entry.targetHex, store.byId) : r,
+          r.paints.length ? washRecipe(r, entry.targetHex, store.byId, { values: this.valueMode }) : r,
         )
       }
       entry.chosen = 0

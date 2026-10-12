@@ -1,0 +1,68 @@
+@use "../functions" as *;
+
+// The account: an address, the plan, and the ways out.
+
+.account {
+    width: min(var(--width-dialog), calc(100vw - var(--gap-2x)));
+    padding: #{pxtorem(20)};
+    color: var(--c-copy);
+
+    &::backdrop {
+        background: var(--c-backdrop);
+    }
+
+    &__title {
+        font-size: var(--fs-large);
+        font-weight: 700;
+        margin-bottom: var(--gap-05x);
+    }
+
+    &__line {
+        margin-bottom: #{pxtorem(6)};
+
+        &--soft {
+            color: var(--c-copy-light);
+        }
+    }
+
+    &__error {
+        margin: var(--gap-05x) 0;
+        color: var(--c-danger);
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: #{pxtorem(6)};
+        margin-top: #{pxtorem(12)};
+
+        &--end {
+            justify-content: flex-end;
+        }
+
+        a.button {
+            text-decoration: none;
+        }
+    }
+
+    &__danger {
+        margin-top: var(--gap);
+        padding-top: #{pxtorem(12)};
+        border-top: 1px solid var(--c-border);
+    }
+
+    &__link {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--c-copy-light);
+        font: inherit;
+        font-size: var(--fs-small);
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    &__delete {
+        background: var(--c-danger);
+    }
+}

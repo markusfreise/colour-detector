@@ -82,7 +82,7 @@ export const LIGHTNESS_WEIGHT = 0.5
 // A mix is painted in at most this many washes (water levels).
 export const MAX_WASHES = 5
 // One more wash for every factor of about 1.7 between the weakest and the strongest part of a mix.
-const WASH_STEP = 0.55
+export const WASH_STEP = 0.55
 const MIN_REFLECTANCE = 0.0005
 
 // Side of the patches the picture is cut into before its colours are found, in pixels.
@@ -94,6 +94,10 @@ const PATCH_BLEND = 0.035
 const REFERENCE_PIXELS = 480000
 // The highest step of Simplify.
 const TOP_SIMPLIFY = 10
+// The lowest step of Simplify. Below 0 it goes the other way: what calms the areas at every step
+// from 0 on (the patches, the joining, the texture, the rounding) is taken back evenly, and at
+// FINEST none of it is left: the areas follow the photo, down to SMALLEST_AREA.
+export const FINEST = -4
 // The smallest area that is no detail, in pixels at Simplify 0; it grows with (Simplify + 1) ^ MIN_AREA_POWER.
 const MIN_AREA = 72
 const MIN_AREA_POWER = 1.3
@@ -181,7 +185,7 @@ export function colourBins(lab, count) {
  * @returns {{labels: Int32Array, clusters: Array<{group:number, level:number}>}}
  *   labels = cluster per pixel; clusters are ordered mix by mix, lightest wash first
  */
-export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPower = AREA_POWER, maxWashes = MAX_WASHES, lightnessWeight = LIGHTNESS_WEIGHT, anchors = null } = {}) {
+export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPower = AREA_POWER, maxWashes = MAX_WASHES, washStep = WASH_STEP, lightnessWeight = LIGHTNESS_WEIGHT, anchors = null } = {}) {
   const rand = mulberry32(seed)
   const { points, counts, binOf } = colourBins(lab, count)
   const n = counts.length
@@ -277,7 +281,7 @@ export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPo
       return logS.get(members[members.length - 1])
     }
     const lo = at(0.02), hi = at(0.98)
-    const levels = Math.max(1, Math.min(maxWashes, members.length, 1 + Math.round((hi - lo) / WASH_STEP)))
+    const levels = Math.max(1, Math.min(maxWashes, members.length, 1 + Math.round((hi - lo) / washStep)))
     const centres = Array.from({ length: levels }, (_, l) => (levels === 1 ? (lo + hi) / 2 : lo + ((hi - lo) * l) / (levels - 1)))
     const level = new Map()
     for (let it = 0; it < 12; it++) {
@@ -452,6 +456,8 @@ export function labelAnchors(regionMap, width, height, regionCount) {
  * of Simplify 0, with half the limits. In a zone of texture the smallest area is larger and the
  * outlines are rounder (TEXTURE_STEPS, TEXTURE_ROUNDER), so that heather or a tree becomes a few
  * calm shapes; sizes there scale with the picture like all others.
+ * Below 0 (down to FINEST) there is one stage, with the sizes, limits and rounding of Simplify 0
+ * taken back evenly; at FINEST only areas under SMALLEST_AREA join and no outline is rounded.
  * @param {Int32Array} raw  cluster per pixel
  * @param {Float32Array} lab  colour per pixel, without noise
  * @param {Float32Array} [photo]  colour per pixel as in the photo: tells texture from details
@@ -460,6 +466,8 @@ export function labelAnchors(regionMap, width, height, regionCount) {
  */
 export function calmAreas(raw, lab, width, height, k, simplify, where = null, photo = null, kindOf = null) {
   const count = width * height
+  // What is left of the calming below Simplify 0: 1 from 0 on, 0 at FINEST.
+  const calm = simplify < 0 ? Math.max(0, 1 - simplify / FINEST) : 1
   const minSizeAt = (level) => Math.max(SMALLEST_AREA, Math.round(MIN_AREA * (count / REFERENCE_PIXELS) * Math.pow(level + 1, MIN_AREA_POWER)))
   const mergeLimitAt = (level) => MERGE_LIMIT * Math.pow(MERGE_GROWTH, level)
   const detailLimitAt = (level) => DETAIL_LIMIT * (1 + DETAIL_RISE * level * level * level)
@@ -468,13 +476,20 @@ export function calmAreas(raw, lab, width, height, k, simplify, where = null, ph
 
   // One stage per step of Simplify below the one asked for, then that one (see `mergeAreas`).
   const stageAt = (level) => ({ floor: SMALLEST_AREA, minSize: minSizeAt(level), limit: mergeLimitAt(level), detailLimit: detailLimitAt(level), detailSize: detailSizeAt(level), detailRoom: minSizeAt(level), roughSize: minSizeAt(level + TEXTURE_STEPS) })
+  // Below 0: the stage of Simplify 0 with its sizes (by area, hence the square) and limits taken back.
+  const fineSizeAt = (level) => Math.max(SMALLEST_AREA, Math.round(minSizeAt(level) * calm * calm))
+  const fineStage = () => ({ floor: SMALLEST_AREA, minSize: fineSizeAt(0), limit: mergeLimitAt(0) * calm, detailLimit: detailLimitAt(0) * calm, detailSize: detailSizeAt(0), detailRoom: fineSizeAt(0), roughSize: fineSizeAt(TEXTURE_STEPS * calm) })
   const stages = []
   for (let level = 0; level < simplify; level++) stages.push(stageAt(level))
-  const last = stageAt(simplify)
+  const last = simplify < 0 ? fineStage() : stageAt(simplify)
   stages.push(last)
-  const inside = { floor: SMALLEST_AREA, minSize: minSizeAt(0), limit: mergeLimitAt(0) * FOCUS_LIMIT, detailLimit: detailLimitAt(0) * FOCUS_LIMIT, detailSize: detailSizeAt(0), detailRoom: minSizeAt(0) }
+  const inside = simplify < 0
+    ? { ...last, limit: last.limit * FOCUS_LIMIT, detailLimit: last.detailLimit * FOCUS_LIMIT, roughSize: undefined }
+    : { floor: SMALLEST_AREA, minSize: minSizeAt(0), limit: mergeLimitAt(0) * FOCUS_LIMIT, detailLimit: detailLimitAt(0) * FOCUS_LIMIT, detailSize: detailSizeAt(0), detailRoom: minSizeAt(0) }
+  // The window of the rounding; below 0 it shrinks to nothing.
+  const windowAt = (level) => (simplify < 0 ? Math.round((OUTLINE_RADIUS + level * OUTLINE_RADIUS_STEP) * calm * Math.sqrt(count / REFERENCE_PIXELS)) : radiusAt(level))
 
-  const tidy = mergeAreas(raw, lab, width, height, [{ floor: SMALLEST_AREA, limit: MERGE_LIMIT * TIDY_LIMIT }])
+  const tidy = mergeAreas(raw, lab, width, height, [{ floor: SMALLEST_AREA, limit: MERGE_LIMIT * TIDY_LIMIT * calm }])
   // The details are the same at every step (up to the largest that the top step has room for);
   // a step only says which of them it keeps. So the steps join the same areas in the same order.
   const rough = photo ? new Uint8Array(count) : null
@@ -488,11 +503,11 @@ export function calmAreas(raw, lab, width, height, k, simplify, where = null, ph
     const rule = where && where[p] ? inside : last
     fixed[p] = details.worth[p] > 0 && details.worth[p] >= rule.detailLimit && details.span[p] >= rule.detailSize && details.room[p] < minSizeAt(0) ? 1 : 0
   }
-  const rounded = roundOutlines(merged, width, height, k, { radius: radiusAt(simplify), passes: OUTLINE_PASSES, fixed })
+  const rounded = roundOutlines(merged, width, height, k, { radius: windowAt(Math.max(0, simplify)), passes: OUTLINE_PASSES, fixed })
   if (rough) {
     // The zones of texture once more, with a wider window; not where a focus box asks for fine areas.
     if (where) for (let p = 0; p < count; p++) if (where[p]) rough[p] = 0
-    const wide = roundOutlines(rounded, width, height, k, { radius: radiusAt(simplify + TEXTURE_ROUNDER), passes: OUTLINE_PASSES, fixed, only: rough })
+    const wide = roundOutlines(rounded, width, height, k, { radius: windowAt(Math.max(0, simplify) + TEXTURE_ROUNDER * calm), passes: OUTLINE_PASSES, fixed, only: rough })
     for (let p = 0; p < count; p++) rounded[p] = wide[p]
   }
   if (where && simplify > 0) {
@@ -506,32 +521,41 @@ export function calmAreas(raw, lab, width, height, k, simplify, where = null, ph
  * Full pipeline.
  * @param {Uint8ClampedArray} rgba image data at working resolution
  * @param {{colours:number, simplify:number, geometric:boolean}} options colours = number of mixes,
- *   simplify 0..10, geometric = areas as polygons with straight edges instead of their organic outline,
+ *   simplify FINEST..10 (0 and up: calm areas, ever fewer; below 0: ever finer, at FINEST the areas
+ *   follow the photo), geometric = areas as polygons with straight edges instead of their organic outline,
  *   anchors = hex colours that are the mixes (then `colours` is not used),
  *   focus = boxes [left, top, right, bottom] (0..1) in which the areas stay as fine as at Simplify 0
- *   and details are kept more readily, whatever `simplify` is
+ *   and details are kept more readily, whatever `simplify` is,
+ *   maxWashes / washStep = washes a mix is split into at most, and the factor of strength (log)
+ *   between two of them: a grey picture is one mix, so these set the number of its values
  */
-export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, focus = null, seed = 7, areaPower, maxWashes, lightnessWeight } = {}) {
+export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, focus = null, seed = 7, areaPower, maxWashes, washStep, lightnessWeight } = {}) {
   const count = width * height
   // Noise goes before the colours are found: every pixel takes the colour of its patch.
   const original = toOklabPixels(rgba, count)
-  const patches = compactPatches(original, width, height, PATCH_STEP)
-  const restless = settlePatches(original, width, height, patches)
-  const lab = patchColours(original, width, height, patches, { blend: PATCH_BLEND, restless })
+  // Below Simplify 0 the patches shrink, and with a side under two pixels there are none.
+  const calm = simplify < 0 ? Math.max(0, 1 - simplify / FINEST) : 1
+  const step = Math.round(PATCH_STEP * calm)
+  let lab = original
+  if (step >= 2) {
+    const patches = compactPatches(original, width, height, step)
+    const restless = settlePatches(original, width, height, patches)
+    lab = patchColours(original, width, height, patches, { blend: PATCH_BLEND * calm, restless })
+  }
   const { labels: raw, clusters: found } = clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), {
-    seed, areaPower, maxWashes, lightnessWeight,
+    seed, areaPower, maxWashes, washStep, lightnessWeight,
     // Given colours (hex) as the mixes, instead of finding them.
     anchors: given?.length ? given.map(hexToOklab) : null,
   })
   const k = found.length
   const where = focus?.length ? boxMask(focus, width, height) : null
-  const calm = calmAreas(raw, lab, width, height, k, simplify, where, original, Int32Array.from(found, (c) => c.group))
-  let labels = calm
+  const calmed = calmAreas(raw, lab, width, height, k, simplify, where, original, Int32Array.from(found, (c) => c.group))
+  let labels = calmed
   if (geometric) {
-    labels = geometricAreas(calm, width, height, simplify)
+    labels = geometricAreas(calmed, width, height, Math.max(0, simplify))
     if (where) {
       // Where the details are, the areas keep their own outlines; what that cuts off joins a neighbour.
-      for (let p = 0; p < count; p++) if (where[p]) labels[p] = calm[p]
+      for (let p = 0; p < count; p++) if (where[p]) labels[p] = calmed[p]
       labels = mergeAreas(labels, lab, width, height, [{ floor: SMALLEST_AREA }])
     }
   }

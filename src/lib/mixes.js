@@ -6,7 +6,7 @@
 // joined again and again until the wanted number is left. Washes are used before a mix is spent:
 // what a larger mix reaches with more or less water does not keep a mix of its own.
 
-import { findRecipes, washRecipe } from './mixing.js'
+import { findRecipes, washRecipe, VALUE_WATER_PENALTY } from './mixing.js'
 import { hexToOklab, deltaE } from './color.js'
 
 /** How many mixes to ask the analysis for, so there is something to choose from. */
@@ -17,7 +17,10 @@ export function mixesToRequest(wanted) {
 /**
  * @param {Array<{index:number, group:number, hex:string, pixelCount:number}>} clusters  from segmentImage
  * @param {Array<{id:string, hex:string}>} paints  paints to mix with
- * @param {{maxPaints?: number, wanted?: number, variety?: number}} options
+ * @param {{maxPaints?: number, wanted?: number, variety?: number, values?: boolean}} options
+ *   values = value mode (see `findRecipes`): every colour of the analysis (a value of the grey
+ *   picture) looks for a mix of its own, and only lightness counts. Joined down to `wanted`, a
+ *   mix then paints the values around its own with more or less water: its washes;
  *   wanted = number of mixes to end up with;
  *   variety 0..10 = what decides which mixes are joined: at 0 the error times the area it covers
  *   (the picture as a whole stays as accurate as possible), at 10 the error in hue alone (a small
@@ -25,7 +28,7 @@ export function mixesToRequest(wanted) {
  * @returns {Array<{group:(number|string), clusters:Array, recipes:Array, pixels:number}>}
  *   recipes are fitted to the largest wash the mix started with
  */
-export function planMixes(clusters, paints, { maxPaints = 3, wanted = Infinity, variety = 5 } = {}) {
+export function planMixes(clusters, paints, { maxPaints = 3, wanted = Infinity, variety = 5, values = false } = {}) {
   const byId = Object.fromEntries(paints.map((p) => [p.id, p]))
   const white = hexToOklab('#ffffff')
   const level = Math.min(10, Math.max(0, variety)) / 10
@@ -37,6 +40,14 @@ export function planMixes(clusters, paints, { maxPaints = 3, wanted = Infinity, 
     const [base] = mix.recipes
     if (!base) return 0
     const target = hexToOklab(cluster.hex)
+    if (values) {
+      // Value mode: how far the value is missed, and how much water has to change for it. A mix
+      // reaches every lighter value with more water (water is its white), so what tells two
+      // mixes apart is how far each is from the strength it has by itself.
+      if (!base.paints.length) return Math.abs(white[0] - target[0]) * 100
+      const wash = washRecipe(base, cluster.hex, byId, { values })
+      return wash.deltaE + VALUE_WATER_PENALTY * Math.abs(Math.log(wash.strength))
+    }
     const reached = base.paints.length ? hexToOklab(washRecipe(base, cluster.hex, byId).hex) : white
     return deltaE([reached[0] * lightness, reached[1], reached[2]], [target[0] * lightness, target[1], target[2]])
   }
@@ -47,8 +58,9 @@ export function planMixes(clusters, paints, { maxPaints = 3, wanted = Infinity, 
   for (const c of clusters) {
     if (!c.pixelCount) continue
     total += c.pixelCount
-    if (!found.has(c.group)) found.set(c.group, [])
-    found.get(c.group).push(c)
+    const group = values ? c.index : c.group
+    if (!found.has(group)) found.set(group, [])
+    found.get(group).push(c)
   }
 
   // The same paints in about the same ratio are the same mix, whatever the analysis called them.
@@ -57,7 +69,7 @@ export function planMixes(clusters, paints, { maxPaints = 3, wanted = Infinity, 
   const byKey = new Map()
   for (const [group, members] of found) {
     const anchor = members.reduce((x, y) => (y.pixelCount > x.pixelCount ? y : x))
-    const recipes = findRecipes(anchor.hex, paints, { maxPaints, limit: 5 })
+    const recipes = findRecipes(anchor.hex, paints, { maxPaints, limit: 5, values })
     const key = mixKey(recipes[0])
     const same = byKey.get(key)
     if (same) {

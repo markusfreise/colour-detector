@@ -2,26 +2,30 @@
   <!-- With accounts on, the app opens after signing in and agreeing to the two statements. -->
   <AccountGate v-if="!account.ready" />
   <div v-else class="app" :class="{ 'app--layer': analysis.layerMode }">
-    <header class="app__header">
-      <h1 class="app__title">{{ APP_NAME }}</h1>
-      <p class="app__tagline">Find the main colours in a photo and mix them from your watercolours.</p>
-      <button v-if="account.enabled" class="button button--ghost app__account" type="button" @click="account.open = true">Account</button>
-    </header>
     <p v-if="account.notice" class="app__notice">
       {{ account.notice.text }}
       <button class="app__footer-link" type="button" @click="account.notice = null">Hide</button>
     </p>
     <main class="app__main">
+      <!-- The picture is the background of the window; everything else lies over it. -->
       <div class="app__stage">
+        <PaintingCanvas />
+      </div>
+      <div class="app__left">
+        <ImageOps @show-collection="collectionDialog.open()" />
+        <button v-if="account.enabled" class="button button--ghost" type="button" @click="account.open = true">Account</button>
+      </div>
+      <div class="app__top">
         <LayerSteps />
         <CloseupBar />
-        <PaintingCanvas />
+      </div>
+      <div class="app__bottom">
         <CloseupStrip />
         <LayerStrip />
         <p v-if="hint" class="app__hint">{{ hint }}</p>
       </div>
       <aside class="app__sidebar">
-        <ControlsPanel @show-collection="collectionDialog.open()" />
+        <ControlsPanel />
         <template v-if="analysis.layerMode">
           <LayerArea />
           <LayerList @show-paintbox="paintBox.open()" />
@@ -56,6 +60,7 @@ import PaintingCanvas from './components/PaintingCanvas.vue'
 import CloseupBar from './components/CloseupBar.vue'
 import CloseupStrip from './components/CloseupStrip.vue'
 import ControlsPanel from './components/ControlsPanel.vue'
+import ImageOps from './components/ImageOps.vue'
 import EntryEditor from './components/EntryEditor.vue'
 import PaletteList from './components/PaletteList.vue'
 import LayerList from './components/LayerList.vue'
@@ -75,7 +80,6 @@ import { useAccountStore } from './stores/account.js'
 import { isNative } from './lib/native.js'
 import { useProStore } from './stores/pro.js'
 import { useCollectionStore } from './stores/collection.js'
-import { APP_NAME } from './config.js'
 
 const analysis = useAnalysisStore()
 const consent = useConsentStore()

@@ -1,0 +1,91 @@
+@use "../functions" as *;
+
+// The plan dialog: what Pro adds, the plans, a voucher (ProDialog.vue).
+
+.pro {
+    width: min(var(--width-dialog), calc(100vw - var(--gap-2x)));
+    padding: #{pxtorem(20)};
+    color: var(--c-copy);
+
+    &::backdrop {
+        background: var(--c-backdrop);
+    }
+
+    &__title {
+        font-size: var(--fs-large);
+        font-weight: 700;
+        margin-bottom: var(--gap-05x);
+    }
+
+    &__text {
+        color: var(--c-copy-light);
+    }
+
+    &__list {
+        margin: #{pxtorem(12)} 0;
+        padding-left: #{pxtorem(18)};
+        list-style: disc;
+    }
+
+    &__error {
+        margin-bottom: #{pxtorem(10)};
+        color: var(--c-danger);
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: #{pxtorem(6)};
+    }
+
+    &__plans {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-05x);
+        margin: #{pxtorem(12)} 0;
+    }
+
+    &__plan {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: #{pxtorem(12)};
+        padding: #{pxtorem(10)};
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius-medium);
+    }
+
+    &__plan-text {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    &__plan-note {
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+    }
+
+    &__small {
+        margin-bottom: #{pxtorem(12)};
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+
+        a {
+            color: var(--c-corporate);
+        }
+    }
+
+    &__voucher {
+        display: flex;
+        align-items: flex-end;
+        gap: var(--gap-05x);
+        margin-bottom: #{pxtorem(12)};
+    }
+
+    &__voucher-field {
+        flex: 1;
+        min-width: 0;
+        margin-top: 0;
+    }
+}

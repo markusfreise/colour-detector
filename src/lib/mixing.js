@@ -123,9 +123,72 @@ function* combinations(items, size, start = 0, prefix = []) {
   for (let i = start; i < items.length; i++) yield* combinations(items, size, i + 1, [...prefix, items[i]])
 }
 
-function evaluate(candidate, amounts, targetLab) {
-  const linear = mixAbsorbances(candidate.map((c) => c.A), amounts)
-  return deltaE(linearToOklab(linear), targetLab)
+// How far a mix is from a target. With `values` only its lightness counts (see `valueRecipes`).
+function evaluate(candidate, amounts, targetLab, values = false) {
+  const lab = linearToOklab(mixAbsorbances(candidate.map((c) => c.A), amounts))
+  return values ? Math.abs(lab[0] - targetLab[0]) * 100 : deltaE(lab, targetLab)
+}
+
+// Value mode: among the mixes that reach a value, the one that needs least change in water wins;
+// every factor e of more or less water than the mix's own strength counts as this much error.
+export const VALUE_WATER_PENALTY = 2
+// Value mode: the proportions a mix of two is tried in; three paints are tried in equal parts,
+// and only while the paint box is small enough to try every three of them.
+const VALUE_PAIR_PARTS = [[1, 1], [2, 1], [1, 2]]
+const VALUE_TRIPLES_UP_TO = 12
+
+/**
+ * Value mode: the picture is grey, and the paints and their mixes stand for its values, whatever
+ * their hue. Every paint, every two (and three) of them in a few plain proportions is a mix with
+ * a value of its own; each is given as much water as brings it to the lightness of the target,
+ * and the mix whose own strength is closest to that wins. So a yellow takes the lights, a mix of
+ * two darks the darks, and what lies between is built from the rest.
+ * `deltaE` of a recipe is then the difference in lightness alone.
+ */
+function valueRecipes(targetLab, paints, { maxPaints, limit }) {
+  const paper = Math.abs(1 - targetLab[0]) * 100
+  const results = [{ items: [], deltaE: paper, score: paper }]
+  const pool = paints.map((paint) => ({ paint, A: absorbanceFromHex(paint.hex) }))
+  const consider = (candidate, parts) => {
+    const whole = parts.reduce((sum, v) => sum + v, 0)
+    const base = parts.map((v) => v / whole) // the mix at the strength of one paint
+    const amountsAt = (logT) => base.map((v) => v * Math.exp(logT))
+    const lightness = (logT) => linearToOklab(mixAbsorbances(candidate.map((c) => c.A), amountsAt(logT)))[0]
+    // More paint is darker: the water with the lightness of the target, or the end that comes closest.
+    let lo = Math.log(0.02), hi = Math.log(MAX_AMOUNT / Math.max(...base))
+    if (lightness(lo) <= targetLab[0]) hi = lo
+    else if (lightness(hi) >= targetLab[0]) lo = hi
+    else {
+      for (let i = 0; i < 30; i++) {
+        const mid = (lo + hi) / 2
+        if (lightness(mid) > targetLab[0]) lo = mid
+        else hi = mid
+      }
+    }
+    const logT = (lo + hi) / 2
+    const amounts = amountsAt(logT)
+    const err = evaluate(candidate, amounts, targetLab, true)
+    results.push({
+      items: candidate.map((c, i) => ({ paint: c.paint, amount: amounts[i] })),
+      deltaE: err,
+      score: err + VALUE_WATER_PENALTY * Math.abs(logT) + EXTRA_PAINT_PENALTY * (candidate.length - 1),
+    })
+  }
+  for (const c of pool) consider([c], [1])
+  if (maxPaints >= 2) for (const pair of combinations(pool, 2)) for (const parts of VALUE_PAIR_PARTS) consider(pair, parts)
+  if (maxPaints >= 3 && pool.length <= VALUE_TRIPLES_UP_TO) for (const triple of combinations(pool, 3)) consider(triple, [1, 1, 1])
+  // The best proportion of every set of paints.
+  const seen = new Set()
+  return results
+    .sort((x, y) => x.score - y.score)
+    .filter((r) => {
+      const key = r.items.map((it) => it.paint.id).sort().join('+')
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+    .slice(0, limit)
+    .map((r) => toRecipe(r))
 }
 
 // Pattern search on the amounts to minimise perceptual error.
@@ -156,12 +219,14 @@ function refine(candidate, amounts, targetLab) {
  * Find the best watercolour recipes for a target colour.
  * @param {string} targetHex
  * @param {Array<{id:string, hex:string}>} paints  available paints
- * @param {{maxPaints?: number, limit?: number}} options
+ * @param {{maxPaints?: number, limit?: number, values?: boolean}} options  values = value mode:
+ *   paints and their mixes matched by lightness alone (`valueRecipes`)
  * @returns {Array<Recipe>} sorted best-first
  */
-export function findRecipes(targetHex, paints, { maxPaints = 3, limit = 5 } = {}) {
+export function findRecipes(targetHex, paints, { maxPaints = 3, limit = 5, values = false } = {}) {
   const targetLinear = rgbToLinear(hexToRgb(targetHex))
   const targetLab = linearToOklab(targetLinear)
+  if (values) return valueRecipes(targetLab, paints, { maxPaints, limit })
   const T = targetLinear.map((v) => -Math.log(Math.min(1, Math.max(MIN_REFLECTANCE, v))))
   const paperLab = linearToOklab([1, 1, 1])
 
@@ -229,15 +294,16 @@ export function findRecipes(targetHex, paints, { maxPaints = 3, limit = 5 } = {}
  * nearly as close as the best one, takes the recipe needing the fewest paints not chosen yet.
  * @param {Array<{hex:string, weight?:number}>} targets
  * @param {Array<{id:string, hex:string}>} paints  paints to choose from
- * @param {{maxPaints?: number, tolerance?: number}} options  tolerance = allowed extra ΔE over the best recipe
+ * @param {{maxPaints?: number, tolerance?: number, values?: boolean}} options  tolerance = allowed extra ΔE over the best recipe;
+ *   values = value mode, as in `findRecipes`
  * @returns {string[]} paint ids
  */
-export function proposePaints(targets, paints, { maxPaints = 3, tolerance = 2 } = {}) {
+export function proposePaints(targets, paints, { maxPaints = 3, tolerance = 2, values = false } = {}) {
   const chosen = new Set()
   const newPaints = (recipe) => recipe.paints.filter((p) => !chosen.has(p.paintId)).length
   const byWeight = [...targets].sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0))
   for (const target of byWeight) {
-    const recipes = findRecipes(target.hex, paints, { maxPaints, limit: 8 })
+    const recipes = findRecipes(target.hex, paints, { maxPaints, limit: 8, values })
     if (!recipes.length) continue
     const best = Math.min(...recipes.map((r) => r.deltaE))
     const [pick] = recipes
@@ -254,14 +320,15 @@ export function proposePaints(targets, paints, { maxPaints = 3, tolerance = 2 } 
  * @param {Recipe} recipe  the mix to dilute or strengthen
  * @param {string} targetHex
  * @param {Record<string, {id:string, hex:string}>} paintsById
+ * @param {{values?: boolean}} options  values = value mode: as close in lightness as the mix can get
  * @returns {Recipe|null} null when the recipe has no paints (paper white)
  */
-export function washRecipe(recipe, targetHex, paintsById) {
+export function washRecipe(recipe, targetHex, paintsById, { values = false } = {}) {
   if (!recipe?.paints.length) return null
   const targetLab = linearToOklab(rgbToLinear(hexToRgb(targetHex)))
   const candidate = recipe.paints.map((p) => ({ paint: paintsById[p.paintId], A: absorbanceFromHex(paintsById[p.paintId].hex) }))
   const base = recipe.paints.map((p) => p.amount)
-  const error = (logT) => evaluate(candidate, base.map((v) => v * Math.exp(logT)), targetLab)
+  const error = (logT) => evaluate(candidate, base.map((v) => v * Math.exp(logT)), targetLab, values)
   // Coarse scan over the water level, then golden-section search around the best step.
   const lo = Math.log(0.02 / Math.max(...base))
   const hi = Math.log(MAX_AMOUNT / Math.max(...base))
@@ -328,13 +395,25 @@ export const WASH_LETTERS = [
   { letter: 'C', label: 'concentrated' },
 ]
 
-export function washLetter(strength) {
-  if (strength <= 0.02) return ''
-  if (strength < 0.35) return 'W'
-  if (strength < 0.8) return 'L'
-  if (strength < 1.5) return 'M'
-  if (strength < 2.5) return 'R'
-  return 'C'
+const WASH_LIMITS = [0.02, 0.35, 0.8, 1.5, 2.5, 4]
+// A value study needs more steps of water than five: with `fine` every level is split in this many.
+const WASH_FINE = 5
+
+/**
+ * @param {number} strength
+ * @param {boolean} [fine]  the level and its step within it, W1 to C5 (value mode)
+ */
+export function washLetter(strength, fine = false) {
+  if (strength <= WASH_LIMITS[0]) return ''
+  let level = 0
+  while (level < WASH_LETTERS.length - 1 && strength >= WASH_LIMITS[level + 1]) level++
+  const { letter } = WASH_LETTERS[level]
+  // Only on request: the function is also handed to `map`, whose index is no request.
+  if (fine !== true) return letter
+  // Steps of water are even on a log scale.
+  const lo = Math.log(WASH_LIMITS[level]), hi = Math.log(WASH_LIMITS[level + 1])
+  const step = Math.min(WASH_FINE - 1, Math.max(0, Math.floor(((Math.log(strength) - lo) / (hi - lo)) * WASH_FINE)))
+  return `${letter}${step + 1}`
 }
 
 /** Match quality label for a ΔE (OKLab ×100) value. */

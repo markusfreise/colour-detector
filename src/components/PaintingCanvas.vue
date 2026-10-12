@@ -1,40 +1,23 @@
 <template>
-  <div class="painting" :class="{ 'painting--fit': fit }">
-    <button
-      class="painting__zoom"
-      type="button"
-      :aria-pressed="!fit"
-      :title="fit ? 'Show the picture in full size' : 'Fit the picture to the window'"
-      :aria-label="fit ? 'Show the picture in full size' : 'Fit the picture to the window'"
-      @click="fit = !fit"
-    >
-      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-        <circle cx="8.5" cy="8.5" r="5.5" />
-        <path d="M12.7 12.7 17 17M6.2 8.5h4.6" />
-        <path v-if="fit" d="M8.5 6.2v4.6" />
-      </svg>
-    </button>
-    <!-- A frame drawn on the base picture becomes a close-up: that part, analysed on its own. -->
-    <button
-      v-if="analysis.image && analysis.closeupId == null"
-      class="painting__zoom painting__zoom--frame"
-      :class="{ 'painting__zoom--on': framing }"
-      type="button"
-      :aria-pressed="framing"
-      :title="framing ? 'Drag a frame over the part to zoom in on. Click here to cancel.' : 'Zoom in on a part of the picture'"
-      :aria-label="framing ? 'Cancel choosing a part of the picture' : 'Zoom in on a part of the picture'"
-      @click="framing = !framing"
-    >
-      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-        <path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4" />
-        <path d="M10 7.5v5M7.5 10h5" />
-      </svg>
-    </button>
+  <!-- The picture fills the window behind everything else; it is moved and zoomed in place. -->
+  <div
+    ref="root"
+    class="painting"
+    :class="{ 'painting--moving': moving }"
+    @click="onClick"
+    @wheel.prevent="onWheel"
+    @pointerdown="onDown"
+    @pointermove="onPointerMove"
+    @pointerup="onUp"
+    @pointercancel="onUp"
+    @gesturestart.prevent="onGestureStart"
+    @gesturechange.prevent="onGestureChange"
+  >
     <canvas
       ref="canvas"
       class="painting__canvas"
       :class="{ 'painting__canvas--busy': analysis.busy, 'painting__canvas--framing': framing }"
-      @click="onClick"
+      :style="canvasStyle"
       @mousemove="onMove"
       @mouseleave="hover = null"
       @pointerdown="startFrame"
@@ -43,20 +26,64 @@
       @pointercancel="frame = null"
     ></canvas>
     <div v-if="frame" class="painting__frame" :style="frameStyle"></div>
-    <p v-if="framing && !frame" class="painting__status">Drag a frame over the part to zoom in on</p>
+    <div class="painting__tools">
+      <button class="button button--ghost painting__tool" type="button" title="Fit the picture to the window" @click="fit">
+        <AppIcon name="zoom" label="Fit the picture to the window" />
+      </button>
+      <!-- A frame drawn on the base picture becomes a close-up: that part, analysed on its own. -->
+      <button
+        v-if="analysis.image && analysis.closeupId == null"
+        class="button button--ghost painting__tool"
+        :class="{ 'painting__tool--on': framing }"
+        type="button"
+        :aria-pressed="framing"
+        :title="framing ? 'Drag a frame over the part to zoom in on. Click here to cancel.' : 'Zoom in on a part of the picture'"
+        @click="framing = !framing"
+      >
+        <AppIcon name="frame" :label="framing ? 'Cancel choosing a part of the picture' : 'Zoom in on a part of the picture'" />
+      </button>
+      <ViewSwitch />
+      <!-- What is drawn over the picture. -->
+      <button
+        class="button painting__tool"
+        :class="{ 'button--active': analysis.settings.outlines }"
+        type="button"
+        :aria-pressed="analysis.settings.outlines"
+        title="Outlines"
+        @click="analysis.settings.outlines = !analysis.settings.outlines"
+      >
+        <AppIcon name="outlines" label="Show outlines" />
+      </button>
+      <button
+        class="button painting__tool"
+        :class="{ 'button--active': analysis.settings.numbers }"
+        type="button"
+        :aria-pressed="analysis.settings.numbers"
+        title="Numbers"
+        @click="analysis.settings.numbers = !analysis.settings.numbers"
+      >
+        <AppIcon name="numbers" label="Show numbers" />
+      </button>
+      <p v-if="analysis.busy" class="painting__status">{{ analysis.layerMode ? 'Planning layers…' : 'Analysing…' }}</p>
+      <p v-else-if="framing && !frame" class="painting__status">Drag a frame over the part to zoom in on</p>
+    </div>
+    <!-- Without a paint the picture would be blank paper. One is enough: it is painted in washes. -->
+    <p v-if="noPaints" class="painting__notice">Put at least one colour in paintbox</p>
     <RecipeTip v-if="hover" :index="hover.entry" :x="hover.x" :y="hover.y" />
-    <p v-if="analysis.busy" class="painting__status">{{ analysis.layerMode ? 'Planning layers…' : 'Analysing…' }}</p>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted } from 'vue'
+import { computed, reactive, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
+import { usePaintsStore } from '../stores/paints.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
 import { drawLayerView, labelFont, paintPixels } from './layerView.js'
 import { smoothCurve } from '../lib/sketch.js'
 import { upscaleAreas } from '../lib/smooth.js'
 import RecipeTip from './RecipeTip.vue'
+import AppIcon from './AppIcon.vue'
+import ViewSwitch from './ViewSwitch.vue'
 import { closeupRect } from '../lib/closeup.js'
 
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
@@ -64,9 +91,11 @@ const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
 const BLANK = [255, 255, 255] // paper
 
 const analysis = useAnalysisStore()
+const paints = usePaintsStore()
+// The paint box in use holds no paint: none to paint with, or in layer mode none to glaze with.
+const noPaints = computed(() => !!analysis.image && (analysis.layerMode ? !analysis.busy && !analysis.layers : paints.enabled.length === 0))
 const canvas = ref(null)
-// The picture fits the height of the window unless the magnifier asks for its full size.
-const fit = ref(true)
+const root = ref(null)
 // The colour under the pointer and where the pointer is, for its recipe next to it.
 const hover = ref(null)
 
@@ -81,6 +110,15 @@ function drawPhoto(ctx, el) {
   // The photo's own size: while a new picture is analysed, the areas on screen are still those of the one before.
   if (analysis.adjusted) paintPixels(ctx, el, analysis.adjusted.rgba, analysis.adjusted.width, analysis.adjusted.height, true)
   else ctx.drawImage(analysis.image, 0, 0, el.width, el.height)
+}
+
+// The Overlay view: the photo at half strength over the paint, to compare the two in place.
+function overlayPhoto(ctx, el) {
+  if (analysis.settings.view !== 'overlay' || !(analysis.adjusted || analysis.image)) return
+  ctx.save()
+  ctx.globalAlpha = 0.5
+  drawPhoto(ctx, el)
+  ctx.restore()
 }
 
 function draw() {
@@ -262,6 +300,8 @@ function drawMixes(el) {
       }
     }
     ctx.putImageData(new ImageData(img, w, h), 0, 0)
+    // Under the numbers, so that they stay readable.
+    overlayPhoto(ctx, el)
   }
 
   if (numbers) {
@@ -302,6 +342,7 @@ function drawLayers(el) {
     scale: SCALE,
     backdrop: view === 'original' ? drawPhoto : null,
   })
+  overlayPhoto(ctx, el)
 
   const point = analysis.layerPoint
   if (point) {
@@ -319,7 +360,10 @@ function drawLayers(el) {
 // Choosing a part of the picture for a close-up: a frame dragged over the canvas.
 const framing = ref(false)
 const frame = ref(null) // { from, to } in shares of the canvas while the frame is dragged
-let skipClick = false // the click that ends a drag picks no area
+// The click that ends a drag picks no area. Not every drag ends in a click (a pinch does not), so
+// it is the time of the drag that counts, not a flag that would wait for the next click.
+let draggedAt = -Infinity
+const afterDrag = (event) => event.timeStamp - draggedAt < 400
 
 function shareAt(event) {
   const rect = canvas.value.getBoundingClientRect()
@@ -339,24 +383,133 @@ function endFrame() {
   if (!frame.value) return
   const rect = closeupRect(frame.value.from, frame.value.to)
   frame.value = null
-  skipClick = true
+  draggedAt = performance.now()
   // Too small a frame was a slip: the choice stays open for another try.
   if (!rect) return
   framing.value = false
   analysis.addCloseup(rect)
 }
-// The frame on screen, placed over the canvas inside the panel.
+// The frame on screen, over the canvas where it lies in the window.
 const frameStyle = computed(() => {
-  const el = canvas.value
   const drawn = frame.value && closeupRect(frame.value.from, frame.value.to, 0)
-  if (!el || !drawn) return { display: 'none' }
-  return {
-    left: `${el.offsetLeft + drawn.x * el.offsetWidth}px`,
-    top: `${el.offsetTop + drawn.y * el.offsetHeight}px`,
-    width: `${drawn.w * el.offsetWidth}px`,
-    height: `${drawn.h * el.offsetHeight}px`,
-  }
+  if (!drawn) return { display: 'none' }
+  const w = size.width * view.k, h = size.height * view.k
+  return { left: `${view.x + drawn.x * w}px`, top: `${view.y + drawn.y * h}px`, width: `${drawn.w * w}px`, height: `${drawn.h * h}px` }
 })
+
+// Where the picture lies in the window: its top left corner, and `k` screen pixels per canvas
+// pixel. It starts fitted to the window and stays so (a new picture, another window size) until
+// it is moved or zoomed; the zoom button fits it again.
+const view = reactive({ x: 0, y: 0, k: 1 })
+const size = reactive({ width: 0, height: 0 }) // of the canvas, as last drawn
+const moving = ref(false)
+let fitted = true
+const MOST = 8 // screen pixels per canvas pixel at most
+const DRAG = 4 // a pointer that moved less than this was a click
+
+const canvasStyle = computed(() => ({ transform: `translate(${view.x}px, ${view.y}px) scale(${view.k})` }))
+
+function fitScale() {
+  const el = root.value
+  return size.width && el?.clientWidth ? Math.min(el.clientWidth / size.width, el.clientHeight / size.height) : 1
+}
+function fit() {
+  const el = root.value
+  if (!el || !size.width) return
+  view.k = fitScale()
+  view.x = (el.clientWidth - size.width * view.k) / 2
+  view.y = (el.clientHeight - size.height * view.k) / 2
+  fitted = true
+}
+// The picture never leaves the window: where it is larger than the window its edges stay outside
+// or on the edge of the window, and where it is smaller it stays centred.
+function clampView() {
+  const el = root.value
+  const w = size.width * view.k, h = size.height * view.k
+  view.x = w <= el.clientWidth ? (el.clientWidth - w) / 2 : Math.min(0, Math.max(el.clientWidth - w, view.x))
+  view.y = h <= el.clientHeight ? (el.clientHeight - h) / 2 : Math.min(0, Math.max(el.clientHeight - h, view.y))
+}
+function panBy(dx, dy) {
+  view.x += dx
+  view.y += dy
+  fitted = false
+  clampView()
+}
+// Zoom by `factor`, keeping the point of the picture at (cx, cy) of the window where it is.
+function zoomAt(cx, cy, factor) {
+  const rect = root.value.getBoundingClientRect()
+  const px = cx - rect.left, py = cy - rect.top
+  // Never smaller than fitted.
+  const k = Math.min(MOST, Math.max(fitScale(), view.k * factor))
+  view.x = px - (px - view.x) * (k / view.k)
+  view.y = py - (py - view.y) * (k / view.k)
+  view.k = k
+  fitted = false
+  clampView()
+}
+
+// A pinch on a trackpad arrives as a wheel with ctrl held; two fingers moved together as a plain wheel.
+function onWheel(event) {
+  hover.value = null
+  if (event.ctrlKey || event.metaKey) zoomAt(event.clientX, event.clientY, Math.exp(-event.deltaY * 0.01))
+  else panBy(-event.deltaX, -event.deltaY)
+}
+// Safari on the Mac reports the pinch as a gesture of its own.
+let gestureScale = 1
+function onGestureStart() {
+  gestureScale = 1
+}
+function onGestureChange(event) {
+  zoomAt(event.clientX, event.clientY, event.scale / gestureScale)
+  gestureScale = event.scale
+}
+
+// Fingers and the mouse: one pointer dragged moves the picture, two pinch it (move and zoom at once).
+const pointers = new Map()
+let travelled = 0
+const centre = () => {
+  const [a, b] = [...pointers.values()]
+  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) || 1 }
+}
+function onDown(event) {
+  if (event.button || event.target.closest('button')) return
+  pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
+  travelled = 0
+  // A second finger ends a frame that the first one began.
+  if (pointers.size === 2) frame.value = null
+}
+function onPointerMove(event) {
+  const last = pointers.get(event.pointerId)
+  if (!last) return
+  const at = { x: event.clientX, y: event.clientY }
+  if (pointers.size === 2) {
+    const before = centre()
+    pointers.set(event.pointerId, at)
+    const now = centre()
+    panBy(now.x - before.x, now.y - before.y)
+    zoomAt(now.x, now.y, now.d / before.d)
+    draggedAt = performance.now()
+    moving.value = true
+    return
+  }
+  // While a frame is chosen, one pointer draws the frame.
+  if (framing.value) return
+  travelled += Math.hypot(at.x - last.x, at.y - last.y)
+  if (travelled < DRAG) return
+  pointers.set(event.pointerId, at)
+  if (!moving.value) {
+    moving.value = true
+    hover.value = null
+    root.value.setPointerCapture(event.pointerId)
+  }
+  panBy(at.x - last.x, at.y - last.y)
+  draggedAt = performance.now()
+}
+function onUp(event) {
+  if (!pointers.delete(event.pointerId)) return
+  if (moving.value) draggedAt = performance.now()
+  if (!pointers.size) moving.value = false
+}
 
 // The canvas pixel under the pointer and the working pixel it belongs to, or null outside the picture.
 function pixelAt(event) {
@@ -372,7 +525,7 @@ function pixelAt(event) {
 
 // Mix mode: the recipe of the colour under the pointer follows the pointer.
 function onMove(event) {
-  const at = framing.value || analysis.layerMode || analysis.busy || analysis.settings.view === 'sketch' || !analysis.regionEntry ? null : pixelAt(event)
+  const at = moving.value || framing.value || analysis.layerMode || analysis.busy || analysis.settings.view === 'sketch' || !analysis.regionEntry ? null : pixelAt(event)
   const entry = at ? analysis.regionEntry[regionAtCanvasPixel(at.cx, at.cy)] : null
   // Nothing over the part of the picture that is blanked while one colour is selected.
   if (entry == null || !analysis.entries[entry] || (analysis.settings.view !== 'original' && !shown(entry))) hover.value = null
@@ -380,10 +533,7 @@ function onMove(event) {
 }
 
 function onClick(event) {
-  if (skipClick || framing.value) {
-    skipClick = false
-    return
-  }
+  if (afterDrag(event) || framing.value || event.target.closest('button')) return
   const at = pixelAt(event)
   if (!at) return
   const { cx, cy, x, y } = at
@@ -413,7 +563,24 @@ watch(
     analysis.settings.outlines,
     analysis.settings.numbers,
   ],
-  draw,
+  render,
 )
-onMounted(draw)
+
+// Draw, and fit the picture again when it has another size than the one before (a new photo, a close-up).
+function render() {
+  draw()
+  const el = canvas.value
+  if (!el || (el.width === size.width && el.height === size.height)) return
+  size.width = el.width
+  size.height = el.height
+  fit()
+}
+
+let resizing = null
+onMounted(() => {
+  render()
+  resizing = new ResizeObserver(() => (fitted ? fit() : clampView()))
+  resizing.observe(root.value)
+})
+onBeforeUnmount(() => resizing?.disconnect())
 </script>

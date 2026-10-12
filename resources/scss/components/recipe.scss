@@ -1,0 +1,109 @@
+@use "../functions" as *;
+
+// One mix: the result, its paints and their shares (RecipeLine.vue).
+
+.recipe {
+    display: grid;
+    grid-template-columns: #{pxtorem(105)} minmax(0, 1fr);
+    gap: #{pxtorem(6)};
+
+    &__result {
+        min-height: #{pxtorem(50)};
+    }
+
+    &__dilution::first-letter {
+        text-transform: uppercase;
+    }
+
+    &__paints {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: #{pxtorem(6)};
+        align-content: center;
+    }
+
+    &__paint {
+        min-height: #{pxtorem(22)};
+        padding-block: var(--gap-025x);
+    }
+
+    &__amount {
+        flex: none;
+        white-space: nowrap;
+    }
+
+    &__parts {
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__paper {
+        align-self: center;
+        font-style: italic;
+    }
+
+    &__bar {
+        grid-column: 1 / -1;
+        display: flex;
+        height: #{pxtorem(18)};
+        border-radius: #{pxtorem(4)};
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.14);
+    }
+
+    &__part {
+        flex: 1 1 0;
+        min-width: #{pxtorem(6)};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    &__part-text {
+        font-size: var(--fs-mini);
+        font-weight: 700;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    &--wide {
+        grid-template-columns: #{pxtorem(130)} minmax(0, 1fr);
+    }
+
+    &--wide &__result {
+        min-height: #{pxtorem(36)};
+    }
+
+    &--wide &__paints {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    &--full {
+        grid-template-columns: 1fr;
+    }
+
+    &--full &__result {
+        min-height: 0;
+    }
+
+    &--full &__paints {
+        grid-template-columns: 1fr;
+    }
+
+    &--full .chip {
+        font-size: var(--fs-small);
+    }
+
+    &--full .chip__text {
+        overflow: visible;
+        white-space: normal;
+    }
+
+    &--full &__paint {
+        justify-content: flex-start;
+    }
+
+    &--full &__part-text {
+        font-size: var(--fs-caption);
+    }
+}

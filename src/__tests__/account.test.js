@@ -10,7 +10,7 @@ describe('accountsWanted', () => {
   })
 
   it('is on for a public host', () => {
-    expect(accountsWanted('api', at('colour-detector.markus-freise.de'))).toBe(true)
+    expect(accountsWanted('api', at('watercolourlove.markus-freise.de'))).toBe(true)
   })
 
   it('is off on development hosts', () => {

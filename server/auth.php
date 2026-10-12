@@ -57,13 +57,13 @@ function sendMagicLink(): never
     // The link opens the app, which hands the code over itself: a mail scanner that only
     // fetches the link does not use it up.
     $link = config('app_url') . '#magic=' . $value;
-    $text = "Open this link to sign in to Colour Detector:\n\n$link\n\n"
+    $text = "Open this link to sign in to Watercolourlove:\n\n$link\n\n"
         . 'It works once and for ' . MAGIC_MINUTES . " minutes. If you did not ask for it, ignore this message.\n";
     $mail = config('mail') ?? [];
     $transport = $mail['transport'] ?? 'mail';
     if ($transport === 'mail') {
         $headers = 'From: ' . ($mail['from'] ?? '') . "\r\nContent-Type: text/plain; charset=utf-8";
-        mail($email, 'Your sign-in link for Colour Detector', $text, $headers);
+        mail($email, 'Your sign-in link for Watercolourlove', $text, $headers);
     } else {
         file_put_contents($transport, "To: $email\n$text\n", FILE_APPEND | LOCK_EX);
     }

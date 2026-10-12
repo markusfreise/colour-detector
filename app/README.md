@@ -1,6 +1,6 @@
 # Tintmap – the native app
 
-The iOS, iPadOS and macOS app of Colour Detector. SwiftUI, one multiplatform target, no third-party code.
+The iOS, iPadOS and macOS app of Watercolourlove. SwiftUI, one multiplatform target, no third-party code.
 
 | | |
 |---|---|

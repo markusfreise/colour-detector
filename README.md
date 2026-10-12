@@ -1,8 +1,8 @@
-# Colour Detector
+# Watercolourlove
 
 Finds the main colours in a photo, works out how to mix each one from your own watercolours, and shows the photo as flat, numbered colour areas — a paint-by-numbers plan for a watercolour.
 
-![Colour Detector with the sample photo, the colour list and the recipes for one colour](docs/screenshot.png)
+![Watercolourlove with the sample photo, the colour list and the recipes for one colour](docs/screenshot.png)
 
 Everything runs in the browser. There is no backend and no account, and the photo stays on your machine. The one exception is the optional AI help: when you switch it on, enter your own API key and agree, a reduced copy of the picture is sent to the AI provider you chose (see "AI help" below).
 

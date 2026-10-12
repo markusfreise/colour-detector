@@ -1,6 +1,6 @@
 <?php
 /**
- * Accounts for Colour Detector: shared helpers (configuration, database, sessions, HTTP).
+ * Accounts for Watercolourlove: shared helpers (configuration, database, sessions, HTTP).
  * No framework and no packages: PDO with SQLite, curl and openssl.
  */
 

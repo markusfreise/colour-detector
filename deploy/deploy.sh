@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pull, build and publish Colour Detector.
+# Pull, build and publish Watercolourlove.
 # Usage: deploy.sh <repo_dir> <web_root> [branch]
 # Started by webhook.php; can also be run by hand over SSH.
 set -euo pipefail

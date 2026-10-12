@@ -1,11 +1,11 @@
-# PRD: Colour Detector
+# PRD: Watercolourlove
 **Version:** 1.0.0 · **Date:** 2026-10-10 · **Language:** EN · **Slug:** `colour-detector` · **Status:** In development (MVP built)
 
 ## 1. Project overview
 
 | Field | Value |
 |---|---|
-| Project name | Colour Detector |
+| Project name | Watercolourlove |
 | Slug | `colour-detector` |
 | Project type | WebApp (static SPA, client-side only) |
 | Short description | Finds the main colours in a photo, works out how to mix each one from Markus' own watercolours, and shows the photo as flat, numbered colour areas ("paint by numbers"). |

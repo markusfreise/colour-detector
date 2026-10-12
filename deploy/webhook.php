@@ -1,6 +1,6 @@
 <?php
 /**
- * GitHub push webhook for Colour Detector.
+ * GitHub push webhook for Watercolourlove.
  *
  * Lives in the web root (https://markus-freise.de/colour-detective/webhook.php).
  * Verifies GitHub's HMAC signature, then starts deploy.sh in the background

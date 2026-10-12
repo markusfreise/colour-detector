@@ -1,4 +1,4 @@
-# Colour Detector
+# Watercolourlove
 
 Finds the main colours in a photo, mixes each from Markus' own watercolours and shows the photo as flat, numbered colour areas.
 
@@ -9,7 +9,9 @@ Finds the main colours in a photo, mixes each from Markus' own watercolours and 
 
 | | |
 |---|---|
+| Name | Watercolourlove (until 2026-10-12: Colour Detector; repo, folder, slug and storage keys keep the old name) |
 | Slug | `colour-detector` |
+| Preview | https://watercolourlove.markus-freise.de (Mittwald, synced by hand; a real domain follows) |
 | Live | https://markus-freise.de/colour-detective/ (push to `main` → webhook → build) |
 | Repo | git@github.com:markusfreise/colour-detector.git |
 | Local | ~/Sites/colour-detector |

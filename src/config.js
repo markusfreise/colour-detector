@@ -1,7 +1,7 @@
 import { isNative } from './lib/native.js'
 
 // The app in the App Store is called Tintmap; the website keeps its name.
-export const APP_NAME = isNative ? 'Tintmap' : 'Colour Detector'
+export const APP_NAME = isNative ? 'Tintmap' : 'Watercolourlove'
 
 // Google Analytics 4 measurement ID ("G-XXXXXXXXXX"). Empty = no analytics and no consent banner.
 // VITE_GA_ID overrides it for a single build or dev session.

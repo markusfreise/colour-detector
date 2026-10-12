@@ -1,6 +1,6 @@
 <?php
 /**
- * Account API for Colour Detector, served under <app>/api/.
+ * Account API for Watercolourlove, served under <app>/api/.
  *
  * Pictures never come here: the app keeps them in the browser. An account is an e-mail address,
  * the consent given and what was paid for.

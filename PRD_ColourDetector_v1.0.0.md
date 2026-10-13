@@ -46,7 +46,7 @@ colour-detector/
 ├── vite.config.js
 ├── package.json
 ├── public/
-│   └── sample-cwm-idwal.webp      ← sample photo (Cwm Idwal, Snowdonia)
+│   └── sample-*.webp              ← sample pictures, own works, longest side 1024 px (Bielefeld, Llyn Idwal)
 ├── src/
 │   ├── main.js · App.vue
 │   ├── components/                ← PaintingCanvas, ControlsPanel, PaletteList,

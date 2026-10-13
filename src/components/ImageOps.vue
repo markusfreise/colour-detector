@@ -9,8 +9,8 @@
       Take photo
       <input class="imageops__file" type="file" accept="image/*" capture="environment" @change="onFile" />
     </label>
-    <button class="button button--ghost imageops__button" type="button" title="Sample: load the next sample photo" @click="analysis.loadSample()">
-      <AppIcon name="sample" label="Sample" />
+    <button class="button button--ghost imageops__button" type="button" title="Samples: choose a sample picture" @click="emit('show-samples')">
+      <AppIcon name="sample" label="Samples" />
     </button>
     <button class="button button--ghost imageops__button" type="button" :disabled="!analysis.image" title="Save" @click="collection.saveCurrent()">
       <AppIcon name="save" label="Save" />
@@ -32,7 +32,7 @@ import { useProStore } from '../stores/pro.js'
 import { isNative, sendNative } from '../lib/native.js'
 import AppIcon from './AppIcon.vue'
 
-const emit = defineEmits(['show-collection'])
+const emit = defineEmits(['show-collection', 'show-samples'])
 const analysis = useAnalysisStore()
 const collection = useCollectionStore()
 const usePro = useProStore()

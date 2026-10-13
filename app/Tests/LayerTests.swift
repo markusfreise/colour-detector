@@ -539,7 +539,7 @@ final class LayerTests: XCTestCase {
 
     func testPlansTheSamplePhotos() throws {
         let paints = try stock()
-        guard let cwm = try sample("sample-cwm-idwal", fullHash: "3722326108"), let dusk = try sample("sample-street-dusk", fullHash: "460611925") else {
+        guard let cwm = try sample("sample-llyn-idwal", fullHash: "3722326108"), let dusk = try sample("sample-bielefeld", fullHash: "460611925") else {
             throw XCTSkip("This system decodes the sample photos to other pixels than the reference values were made from.")
         }
         XCTAssertEqual([cwm.width, cwm.height, dusk.width, dusk.height], [500, 330, 192, 256])

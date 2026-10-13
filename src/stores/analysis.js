@@ -21,18 +21,18 @@ const VALUE_STEP = 0.15
 
 // Recipes count as the same mix when they use the same paints.
 const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+')
-// Sample photos; the Sample button steps through them, the first one loads at start.
-const SAMPLES = [
-  // Temporary: a published photo, to be replaced before anything is published.
-  { file: 'sample-meadow.webp', name: 'Meadow (sample)' },
-  { file: 'sample-family.webp', name: 'Family (sample)' },
-  // Temporary: a press photo, to be replaced before anything is published.
-  { file: 'sample-stage.webp', name: 'Stage (sample)' },
-  { file: 'sample-portrait.webp', name: 'Portrait (sample)' },
-  { file: 'sample-street-dusk.webp', name: 'Street at dusk (sample)' },
-  { file: 'sample-cwm-idwal.webp', name: 'Cwm Idwal (sample)' },
-]
-let nextSample = 0
+// Sample pictures, offered in the sample library (SampleDialog.vue); the first one loads at start.
+// They are Markus Freise's own works (see public/imprint), no longer than 1024 px.
+export const SAMPLES = [
+  { file: 'sample-bielefeld.webp', name: 'Bielefeld' },
+  { file: 'sample-llyn-idwal.webp', name: 'Llyn Idwal' },
+].map((sample) => ({ url: `${import.meta.env.BASE_URL}${sample.file}`, name: sample.name, local: false }))
+// Pictures in `local-samples/` exist only in this checkout: the folder is not in the repo, and the
+// list is filled by the dev server only (vite.config.js). "white-dress.webp" → "White dress".
+for (const file of __LOCAL_SAMPLES__) {
+  const title = file.replace(/\.\w+$/, '').replace(/-/g, ' ')
+  SAMPLES.push({ url: `${import.meta.env.BASE_URL}local-samples/${file}`, name: `${title[0].toUpperCase()}${title.slice(1)}`, local: true })
+}
 
 let worker = null
 let jobCounter = 0
@@ -230,12 +230,10 @@ export const useAnalysisStore = defineStore('analysis', {
     },
   },
   actions: {
-    /** Load the next sample photo; `restart` goes back to the first one (used at start). */
-    async loadSample(restart = false) {
-      if (restart) nextSample = 0
-      const sample = SAMPLES[nextSample]
-      nextSample = (nextSample + 1) % SAMPLES.length
-      await this.loadFromSource(`${import.meta.env.BASE_URL}${sample.file}`, sample.name)
+    /** Load a sample picture by its place in the list; the first one is used at start. */
+    async loadSample(index = 0) {
+      const sample = SAMPLES[index] ?? SAMPLES[0]
+      await this.loadFromSource(sample.url, `${sample.name} (sample)`)
     },
     async loadFile(file) {
       const url = URL.createObjectURL(file)

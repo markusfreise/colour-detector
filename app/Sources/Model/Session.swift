@@ -184,9 +184,8 @@ final class Session {
 
     /// Sample photos; "Sample" steps through them, the first one loads at start.
     private static let samples = [
-        (file: "sample-family", name: "Family (sample)"),
-        (file: "sample-street-dusk", name: "Street at dusk (sample)"),
-        (file: "sample-cwm-idwal", name: "Cwm Idwal (sample)"),
+        (file: "sample-bielefeld", name: "Bielefeld (sample)"),
+        (file: "sample-llyn-idwal", name: "Llyn Idwal (sample)"),
     ]
 
     @ObservationIgnored private let library: Library

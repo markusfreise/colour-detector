@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
@@ -17,14 +17,20 @@ const folderPages = () => {
   return { name: 'folder-pages', configureServer: serve, configurePreviewServer: serve }
 }
 
-export default defineConfig({
+// Sample pictures that stay on this machine: the dev server serves the folder as it is, a build
+// gets an empty list and so never contains them.
+const localSamples = (command) =>
+  command === 'serve' && existsSync('local-samples') ? readdirSync('local-samples').filter((file) => /\.(webp|jpe?g|png)$/i.test(file)) : []
+
+export default defineConfig(({ command }) => ({
   // Relative base: the build works at any path, e.g. https://markus-freise.de/colour-detective/
   base: './',
   plugins: [vue(), folderPages()],
+  define: { __LOCAL_SAMPLES__: JSON.stringify(localSamples(command)) },
   // devSourcemap: the browser's inspector shows the .scss file and line in `npm run dev`
   css: { devSourcemap: true, preprocessorOptions: { scss: { api: 'modern-compiler' } } },
   // The account API for local tests: php -S 127.0.0.1:8787 server/index.php
   server: { proxy: { '/api': 'http://127.0.0.1:8787' } },
   worker: { format: 'es' },
   test: { environment: 'node' },
-})
+}))

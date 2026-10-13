@@ -12,7 +12,7 @@
         <PaintingCanvas />
       </div>
       <div class="app__left">
-        <ImageOps @show-collection="collectionDialog.open()" />
+        <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" />
         <button v-if="account.enabled" class="button button--ghost" type="button" @click="account.open = true">Account</button>
       </div>
       <div class="app__top">
@@ -46,6 +46,7 @@
     </footer>
     <PaintBox ref="paintBox" />
     <CollectionDialog ref="collectionDialog" />
+    <SampleDialog ref="sampleDialog" />
     <ProDialog />
     <AccountDialog v-if="account.enabled" />
     <ConsentBanner />
@@ -71,6 +72,7 @@ import PaintBox from './components/PaintBox.vue'
 import ConsentBanner from './components/ConsentBanner.vue'
 import PrintLegend from './components/PrintLegend.vue'
 import CollectionDialog from './components/CollectionDialog.vue'
+import SampleDialog from './components/SampleDialog.vue'
 import ProDialog from './components/ProDialog.vue'
 import AccountGate from './components/AccountGate.vue'
 import AccountDialog from './components/AccountDialog.vue'
@@ -85,11 +87,12 @@ const consent = useConsentStore()
 const account = useAccountStore()
 const paintBox = ref(null)
 const collectionDialog = ref(null)
+const sampleDialog = ref(null)
 onMounted(() => {
   consent.init()
   account.init()
   useProStore().init()
   useCollectionStore().refresh()
-  analysis.loadSample(true)
+  analysis.loadSample()
 })
 </script>

@@ -8,19 +8,19 @@ from PIL import Image
 
 WORK_PIXELS = 800 * 600  # as in src/stores/analysis.js
 SAMPLES = {
-    'family': 'sample-family.webp',
-    'meadow': 'sample-meadow.webp',
-    'stage': 'sample-stage.webp',
-    'portrait': 'sample-portrait.webp',
-    'street': 'sample-street-dusk.webp',
-    'idwal': 'sample-cwm-idwal.webp',
+    'family': 'local-samples/family.webp',
+    'meadow': 'local-samples/meadow.webp',
+    'stage': 'local-samples/stage.webp',
+    'portrait': 'local-samples/portrait.webp',
+    'street': 'public/sample-bielefeld.webp',
+    'idwal': 'public/sample-llyn-idwal.webp',
 }
 
 repo = pathlib.Path(sys.argv[1])
 out = pathlib.Path(__file__).parent / 'photos'
 out.mkdir(exist_ok=True)
 for name, file in SAMPLES.items():
-    image = Image.open(repo / 'public' / file).convert('RGBA')
+    image = Image.open(repo / file).convert('RGBA')
     scale = min(1, math.sqrt(WORK_PIXELS / (image.width * image.height)))
     width, height = max(1, round(image.width * scale)), max(1, round(image.height * scale))
     image = image.resize((width, height), Image.LANCZOS)

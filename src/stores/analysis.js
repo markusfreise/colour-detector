@@ -26,6 +26,9 @@ const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+'
 export const SAMPLES = [
   { file: 'sample-bielefeld.webp', name: 'Bielefeld' },
   { file: 'sample-llyn-idwal.webp', name: 'Llyn Idwal' },
+  { file: 'sample-rooftops-dusk.webp', name: 'Rooftops at dusk' },
+  { file: 'sample-winter-fields.webp', name: 'Winter fields' },
+  { file: 'sample-old-town-snow.webp', name: 'Old town in snow' },
 ].map((sample) => ({ url: `${import.meta.env.BASE_URL}${sample.file}`, name: sample.name, local: false }))
 // Pictures in `local-samples/` exist only in this checkout: the folder is not in the repo, and the
 // list is filled by the dev server only (vite.config.js). "white-dress.webp" → "White dress".

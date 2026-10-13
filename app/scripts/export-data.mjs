@@ -10,7 +10,7 @@ writeFileSync(new URL('paints.json', out), JSON.stringify(stockPaints))
 writeFileSync(new URL('horadam.json', out), JSON.stringify(horadamCatalogue))
 // sample-llyn-idwal.webp is not copied: the app keeps it at 2000 px, the pixels the reference
 // values in Tests/LayerTests.swift were made from; the web app's copy is scaled down to 1024 px.
-for (const file of ['sample-bielefeld.webp']) {
+for (const file of ['sample-bielefeld.webp', 'sample-rooftops-dusk.webp', 'sample-winter-fields.webp', 'sample-old-town-snow.webp']) {
   copyFileSync(new URL(`../../public/${file}`, import.meta.url), new URL(file, out))
 }
 console.log(`Exported ${stockPaints.length} paints and ${horadamCatalogue.length} chart colours.`)

@@ -8,9 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		03195CA16AC483A5C01335DB /* PaintBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A264532849ADB3D5E9D7EC43 /* PaintBoxView.swift */; };
+		12B70655B61330C24A3A3EDB /* sample-rooftops-dusk.webp in Resources */ = {isa = PBXBuildFile; fileRef = 00AD382FB81395697C71B3A5 /* sample-rooftops-dusk.webp */; };
 		1CFADE6DE4BBF43E2ADB9662 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A801B29219055FE67D69845 /* CollectionView.swift */; };
+		2DD230F92C26427C111A8F7C /* sample-old-town-snow.webp in Resources */ = {isa = PBXBuildFile; fileRef = 1F551F1A201E800D3EAA16F3 /* sample-old-town-snow.webp */; };
 		3A9B51E258E13DDE1A84F338 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E56FBEFDA78E2F8837CEE95 /* Theme.swift */; };
 		3AAAA1A9936A5527B66A8963 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B982E51466E8DDE54DFC9EF /* Store.swift */; };
+		4534E0B00B14C410A1102E09 /* sample-winter-fields.webp in Resources */ = {isa = PBXBuildFile; fileRef = E146CB5185264552F900263F /* sample-winter-fields.webp */; };
 		461E2BE5740FDB0B553B8B73 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE0247E9C5E76434A1C38F2 /* Session.swift */; };
 		52512884CA5ADE64FB762589 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4915A96F23A0DBED72F67AF /* Assets.xcassets */; };
 		640604855636CB6E8D44FAEE /* LayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EDC1EF532557AE681F4A0AB /* LayerTests.swift */; };
@@ -54,10 +57,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		00AD382FB81395697C71B3A5 /* sample-rooftops-dusk.webp */ = {isa = PBXFileReference; path = "sample-rooftops-dusk.webp"; sourceTree = "<group>"; };
 		0EDC1EF532557AE681F4A0AB /* LayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerTests.swift; sourceTree = "<group>"; };
 		1666D7EF3E8CFF24D1701111 /* PrintSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintSheet.swift; sourceTree = "<group>"; };
 		186C73725045D85988B60B3E /* PaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteView.swift; sourceTree = "<group>"; };
 		18FAFE6C95A7F6FEC107EE34 /* PaintingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaintingView.swift; sourceTree = "<group>"; };
+		1F551F1A201E800D3EAA16F3 /* sample-old-town-snow.webp */ = {isa = PBXFileReference; path = "sample-old-town-snow.webp"; sourceTree = "<group>"; };
 		28821C267403BAEDB114A978 /* Mixing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mixing.swift; sourceTree = "<group>"; };
 		34E8CE5B7620FD4EFC085F78 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		456DE57C0B14DB6899F88B6D /* TintmapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TintmapApp.swift; sourceTree = "<group>"; };
@@ -89,6 +94,7 @@
 		BBE0247E9C5E76434A1C38F2 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		C7702DDF72F030A5B9C77A00 /* Layers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layers.swift; sourceTree = "<group>"; };
 		D4915A96F23A0DBED72F67AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E146CB5185264552F900263F /* sample-winter-fields.webp */ = {isa = PBXFileReference; path = "sample-winter-fields.webp"; sourceTree = "<group>"; };
 		E2B54A2444BDD57E1E57A8DA /* Tintmap-macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Tintmap-macOS.entitlements"; sourceTree = "<group>"; };
 		F65030AC25EDCBD92B29AB9E /* TintmapTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TintmapTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE5B4ACA60799BDDCFF4738E /* EntryEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryEditorView.swift; sourceTree = "<group>"; };
@@ -122,6 +128,9 @@
 				8788D8484C64CC1D8903CEB9 /* paints.json */,
 				86FF845D0AA38EA3A8BA4A7D /* sample-bielefeld.webp */,
 				85BEB207779F8F922411DCEB /* sample-llyn-idwal.webp */,
+				1F551F1A201E800D3EAA16F3 /* sample-old-town-snow.webp */,
+				00AD382FB81395697C71B3A5 /* sample-rooftops-dusk.webp */,
+				E146CB5185264552F900263F /* sample-winter-fields.webp */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -299,6 +308,9 @@
 				65463BE553374D6DF4E6A6C6 /* paints.json in Resources */,
 				8FE8644EABB8F2F22032F7AB /* sample-bielefeld.webp in Resources */,
 				CF1F8A56AF7E499B9D32B31B /* sample-llyn-idwal.webp in Resources */,
+				2DD230F92C26427C111A8F7C /* sample-old-town-snow.webp in Resources */,
+				12B70655B61330C24A3A3EDB /* sample-rooftops-dusk.webp in Resources */,
+				4534E0B00B14C410A1102E09 /* sample-winter-fields.webp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

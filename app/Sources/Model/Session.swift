@@ -186,6 +186,9 @@ final class Session {
     private static let samples = [
         (file: "sample-bielefeld", name: "Bielefeld (sample)"),
         (file: "sample-llyn-idwal", name: "Llyn Idwal (sample)"),
+        (file: "sample-rooftops-dusk", name: "Rooftops at dusk (sample)"),
+        (file: "sample-winter-fields", name: "Winter fields (sample)"),
+        (file: "sample-old-town-snow", name: "Old town in snow (sample)"),
     ]
 
     @ObservationIgnored private let library: Library

@@ -136,10 +136,6 @@
             <span>Number</span>
             <input v-model="paintForm.number" class="input" type="text" maxlength="8" required @change="lookUp" />
           </label>
-          <label class="paintbox__input paintbox__input--wide">
-            <span>Name</span>
-            <input v-model="paintForm.name" class="input" type="text" maxlength="60" required />
-          </label>
           <label class="paintbox__input">
             <span>Form</span>
             <select v-model="paintForm.form" class="input input--select">
@@ -147,7 +143,11 @@
               <option value="tube">Tube</option>
             </select>
           </label>
-          <label class="paintbox__input">
+          <label class="paintbox__input paintbox__input--wide">
+            <span>Name</span>
+            <input v-model="paintForm.name" class="input" type="text" maxlength="60" required />
+          </label>
+          <label class="paintbox__input paintbox__input--wide">
             <span>Colour</span>
             <input v-model="paintForm.hex" class="input input--colour" type="color" />
           </label>
@@ -161,16 +161,26 @@
           </div>
         </form>
         <ul v-if="paints.custom.length" class="paintbox__own">
-          <li v-for="p in paints.custom" :key="p.id" class="paintbox__own-item">
-            <span class="chip paintbox__own-chip" :style="chipStyle(p.hex)">
-              <span class="chip__strong">{{ paintNumber(p.number) }}</span>
-              <span class="chip__text">{{ p.name }}</span>
+          <!-- One paint per row: the colour itself carries what is done with it. -->
+          <li v-for="p in paints.custom" :key="p.id" class="chip chip--row paintbox__own-chip" :style="chipStyle(p.hex)">
+            <span class="paintbox__own-lines">
+              <span class="chip__text"><span class="chip__strong">{{ paintNumber(p.number) }}</span> {{ p.name }}</span>
+              <span class="chip__text paintbox__own-vendor">{{ p.vendor }} · {{ paintForms(p) === 'P' ? 'Pan' : 'Tube' }}</span>
             </span>
-            <span class="paintbox__own-vendor">{{ p.vendor }} · {{ paintForms(p) === 'P' ? 'Pan' : 'Tube' }}</span>
-            <button class="button button--ghost" type="button" @click="startPaint(p)">Edit</button>
-            <button class="button button--ghost" type="button" @click="deletePaint(p.id)">
-              {{ confirming === p.id ? 'Really delete?' : 'Delete' }}
-            </button>
+            <span class="paintbox__own-actions">
+              <button class="paintbox__own-action" type="button" title="Edit this paint" @click="startPaint(p)">
+                <AppIcon name="edit" label="Edit this paint" />
+              </button>
+              <button
+                class="paintbox__own-action"
+                :class="{ 'paintbox__own-action--armed': confirming === p.id }"
+                type="button"
+                :title="confirming === p.id ? 'Press again to delete this paint' : 'Delete this paint'"
+                @click="deletePaint(p.id)"
+              >
+                <AppIcon name="trash" :label="confirming === p.id ? 'Press again to delete this paint' : 'Delete this paint'" />
+              </button>
+            </span>
           </li>
         </ul>
         <p v-else-if="!paintForm" class="paintbox__empty">Add paints of any brand that are not in the list above.</p>

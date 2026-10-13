@@ -5,8 +5,8 @@
       <AppIcon name="new" />
       <input class="imageops__file" type="file" accept="image/*" aria-label="New: choose a photo" @change="onFile" />
     </label>
-    <label v-if="hasCamera" class="button button--secondary imageops__button">
-      Take photo
+    <label v-if="hasCamera" class="button button--secondary imageops__button" title="Take photo">
+      <AppIcon name="camera" label="Take photo" />
       <input class="imageops__file" type="file" accept="image/*" capture="environment" @change="onFile" />
     </label>
     <button class="button button--ghost imageops__button" type="button" title="Samples: choose a sample picture" @click="emit('show-samples')">

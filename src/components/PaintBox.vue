@@ -102,30 +102,35 @@
           <button v-if="!paintForm" class="button button--secondary" type="button" @click="startPaint()">Add paint</button>
         </div>
         <form v-if="paintForm" class="paintbox__paint-form" @submit.prevent="savePaint">
-          <!-- The libraries that come with the app: one fills the series in below, and its numbers
-               then fill in name and colour. -->
+          <!-- A paint from one of the libraries that come with the app: first the library, then the
+               colour out of it, and the whole form is filled in. -->
           <label class="paintbox__input paintbox__input--wide">
             <span>Library</span>
-            <select v-model="libraryPick" class="input" @change="useLibrary">
+            <select v-model="libraryPick" class="input input--select">
               <option value="">Add new below</option>
               <option v-for="preset in PAINT_LIBRARIES" :key="preset.id" :value="preset.id">{{ preset.name }}</option>
             </select>
           </label>
+          <label v-if="picked" class="paintbox__input paintbox__input--wide">
+            <span>Colour from {{ picked.name }}</span>
+            <select v-model="colourPick" class="input input--select" @change="useColour">
+              <option value="">Choose a colour</option>
+              <option v-for="colour in picked.catalogue" :key="colour.number" :value="colour.number">
+                {{ paintNumber(colour.number) }} {{ colour.name }}
+              </option>
+            </select>
+          </label>
           <label class="paintbox__input paintbox__input--wide">
             <span>Vendor and Series</span>
-            <input
-              v-model="paintForm.vendor"
-              class="input"
-              type="text"
-              list="paintbox-series"
-              maxlength="60"
-              required
-              @change="lookUp"
-            />
-            <datalist id="paintbox-series">
-              <option v-for="name in series" :key="name" :value="name"></option>
-            </datalist>
-            <span v-if="newSeries" class="paintbox__hint">New series will be created</span>
+            <select v-model="seriesPick" class="input input--select">
+              <option v-for="name in series" :key="name" :value="name">{{ name }}</option>
+              <option value="new">New series</option>
+            </select>
+          </label>
+          <label v-if="seriesPick === 'new'" class="paintbox__input paintbox__input--wide">
+            <span>Name of the series</span>
+            <input v-model="paintForm.vendor" class="input" type="text" maxlength="60" required @change="lookUp" />
+            <span class="paintbox__hint">New series will be created</span>
           </label>
           <label class="paintbox__input">
             <span>Number</span>
@@ -137,7 +142,7 @@
           </label>
           <label class="paintbox__input">
             <span>Form</span>
-            <select v-model="paintForm.form" class="input">
+            <select v-model="paintForm.form" class="input input--select">
               <option value="pan">Pan</option>
               <option value="tube">Tube</option>
             </select>
@@ -193,7 +198,8 @@ const dialog = ref(null)
 const boxMode = ref(null) // 'new' | 'rename' | null
 const boxName = ref('')
 const paintForm = ref(null) // the paint being added or edited
-const libraryPick = ref('') // the library dropdown, back on "Add new below" after every choice
+const libraryPick = ref('') // the library dropdown, back on "Add new below" once a colour is taken
+const colourPick = ref('') // the colour dropdown of that library
 const confirming = ref(null) // 'box' or a paint id: the delete button was clicked once
 
 // In layer mode the dialog edits the base paints of the box instead of its selection for mixing.
@@ -307,28 +313,32 @@ function deleteBox() {
 
 function startPaint(paint) {
   libraryPick.value = ''
+  colourPick.value = ''
   paintForm.value = paint
     ? { id: paint.id, vendor: paint.vendor, number: paint.number, name: paint.name, form: paint.forms[0], hex: paint.hex }
     : { id: null, vendor: HOUSE_VENDOR, number: '', name: '', form: 'pan', hex: '#c88c5f' }
 }
 
-// The series already in use and those that come with the app, for the autocomplete.
+// The series already in use and those that come with the app.
 const series = computed(() => seriesNames(paints.all, PAINT_LIBRARIES))
 // The library the series belongs to: its numbers fill in name and colour.
 const library = computed(() => libraryByName(paintForm.value?.vendor))
-// A series of one's own, which the paint brings into being.
-const newSeries = computed(() => {
-  const name = paintForm.value?.vendor.trim().toLowerCase()
-  return !!name && !series.value.some((s) => s.toLowerCase() === name)
+// The library whose colours are on offer, once one is chosen.
+const picked = computed(() => PAINT_LIBRARIES.find((preset) => preset.id === libraryPick.value) ?? null)
+// The series as a dropdown; "new" opens a field for a series of one's own.
+const seriesPick = computed({
+  get: () => (series.value.includes(paintForm.value?.vendor) ? paintForm.value.vendor : 'new'),
+  set: (name) => {
+    paintForm.value.vendor = name === 'new' ? '' : name
+  },
 })
 
-// A library chosen from the dropdown fills the form in; the dropdown goes back to "Add new below".
-function useLibrary() {
-  const chosen = PAINT_LIBRARIES.find((l) => l.id === libraryPick.value)
+// A colour taken from the library fills the whole form in; both dropdowns go back to their default.
+function useColour() {
+  const colour = picked.value?.catalogue.find((c) => c.number === colourPick.value)
+  if (colour) Object.assign(paintForm.value, { vendor: picked.value.name, number: colour.number, name: colour.name, hex: colour.hex })
+  colourPick.value = ''
   libraryPick.value = ''
-  if (!chosen) return
-  paintForm.value.vendor = chosen.name
-  lookUp()
 }
 
 // A number that is on the colour chart of its library fills in the rest.

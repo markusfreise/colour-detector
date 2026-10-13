@@ -11,5 +11,6 @@ describe('icons', () => {
       for (const d of icons[name]) expect(d).toMatch(/^M /)
     }
     expect(icons.brush).toBeDefined()
+    expect(icons.camera).toBeDefined()
   })
 })

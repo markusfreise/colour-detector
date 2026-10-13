@@ -50,6 +50,18 @@
         outline-offset: 1px;
     }
 
+    // A dropdown: as tall as a button, with a chevron of its own instead of the one of the system.
+    &--select {
+        min-height: #{pxtorem(48)};
+        padding-right: #{pxtorem(36)};
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, var(--c-copy-light) 50%), linear-gradient(135deg, var(--c-copy-light) 50%, transparent 50%);
+        background-position: calc(100% - #{pxtorem(20)}) center, calc(100% - #{pxtorem(14)}) center;
+        background-size: #{pxtorem(6)} #{pxtorem(6)}, #{pxtorem(6)} #{pxtorem(6)};
+        background-repeat: no-repeat;
+        cursor: pointer;
+    }
+
     &--colour {
         height: #{pxtorem(34)};
         padding: 2px;

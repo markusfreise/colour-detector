@@ -1,0 +1,3 @@
+# Not for the server: pictures of others, and local keys.
+/local-samples/
+/server/config.php

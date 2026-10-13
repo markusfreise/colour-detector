@@ -1,1 +1,13 @@
-// @keyframes. None yet.
+// @keyframes.
+
+// The spot tapped in the picture, so that it is found again under the card.
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.1;
+    }
+}

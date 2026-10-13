@@ -32,6 +32,30 @@
         }
     }
 
+    // The spot that was tapped, while its colour is looked at: it blinks, so that it is found
+    // again in a picture of many areas.
+    &__spot {
+        position: absolute;
+        z-index: 1;
+        width: #{pxtorem(16)};
+        height: #{pxtorem(16)};
+        margin: #{pxtorem(-8)} 0 0 #{pxtorem(-8)};
+        border: #{pxtorem(2)} solid var(--c-white);
+        border-radius: 50%;
+        background: var(--c-corporate);
+        box-shadow: 0 0 0 #{pxtorem(1)} rgba(0, 0, 0, 0.45);
+        pointer-events: none;
+        animation: blink 1.2s ease-in-out infinite;
+
+        @media (prefers-reduced-motion: reduce) {
+            animation: none;
+        }
+
+        @media print {
+            display: none;
+        }
+    }
+
     // Fit and frame, centred at the top of the window.
     &__tools {
         position: absolute;

@@ -20,10 +20,11 @@
         <CloseupBar />
       </div>
       <div class="app__bottom">
-        <ColourInspector v-if="!analysis.layerMode" @breakdown="breakdown.open()" />
         <CloseupStrip />
         <LayerStrip />
       </div>
+      <!-- Over the picture, moved up and down by hand: the colour that was tapped. -->
+      <ColourInspector v-if="!analysis.layerMode" @breakdown="breakdown.open()" />
       <aside class="app__sidebar">
         <ControlsPanel />
         <template v-if="analysis.layerMode">

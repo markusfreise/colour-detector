@@ -26,6 +26,8 @@
       @pointercancel="frame = null"
     ></canvas>
     <div v-if="frame" class="painting__frame" :style="frameStyle"></div>
+    <!-- The spot whose colour is being looked at, blinking under the card. -->
+    <span v-if="spot" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
     <div class="painting__tools">
       <button class="button button--ghost painting__tool" type="button" title="Fit the picture to the window" @click="fit">
         <AppIcon name="zoom" label="Fit the picture to the window" />
@@ -374,6 +376,19 @@ function drawLayers(el) {
   }
 }
 
+// The canvas pixel that was tapped, while its colour is looked at (ColourInspector.vue).
+const spot = ref(null)
+const spotStyle = computed(() => ({
+  left: `${view.x + (spot.value.cx + 0.5) * view.k}px`,
+  top: `${view.y + (spot.value.cy + 0.5) * view.k}px`,
+}))
+watch(
+  () => analysis.inspected,
+  (at) => {
+    if (!at) spot.value = null
+  },
+)
+
 // Choosing a part of the picture for a close-up: a frame dragged over the canvas.
 const framing = ref(false)
 const frame = ref(null) // { from, to } in shares of the canvas while the frame is dragged
@@ -567,6 +582,7 @@ function onClick(event) {
   if (!shown(analysis.regionEntry[region])) return analysis.select(null)
   // Looking at a colour leaves the picture as it is; the same area again closes the card.
   analysis.inspect(analysis.inspected?.region === region ? null : region)
+  spot.value = analysis.inspected ? { cx, cy } : null
 }
 
 watch(

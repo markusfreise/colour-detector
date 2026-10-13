@@ -153,7 +153,7 @@ export const useAnalysisStore = defineStore('analysis', {
       values: false, // mix mode: the picture in grey, every value painted with one paint of the box (a value study)
       saturation: 200, // percent, applied to the photo before the analysis
       contrast: 100,
-      view: 'mixed', // mixed | target | original
+      view: 'mixed', // mixed | target | overlay | original | template
       outlines: true,
       numbers: true,
     },

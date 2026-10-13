@@ -1,5 +1,5 @@
 <template>
-  <!-- What the picture shows: the paint, the colours of the photo, the photo over the paint, the photo. -->
+  <!-- What the picture shows: the paint, the colours of the photo, the photo over the paint, the photo, the empty template. -->
   <div class="segmented viewswitch">
     <button
       v-for="v in views"
@@ -36,6 +36,7 @@ const views = computed(() =>
         { value: 'target', label: 'Photo colour', icon: 'colours' },
         { value: 'overlay', label: 'Overlay: the photo at half strength over the paint', icon: 'overlay' },
         { value: 'original', label: 'Photo', icon: 'photo' },
+        { value: 'template', label: 'Template to print: areas and numbers in light grey, nothing filled in', icon: 'print' },
       ],
 )
 // A view that has no button (the sketch of a saved picture) falls back to the paint.

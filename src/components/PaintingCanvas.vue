@@ -89,6 +89,9 @@ import { closeupRect } from '../lib/closeup.js'
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
 const BLANK = [255, 255, 255] // paper
+// The Template view: lines and numbers light enough to disappear under the paint.
+const TEMPLATE_LINE = 196
+const TEMPLATE_NUMBER = '#a6a6a6'
 
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
@@ -260,6 +263,8 @@ function drawMixes(el) {
   const ctx = el.getContext('2d')
   const { view, outlines, numbers } = analysis.settings
   const original = view === 'original'
+  // Nothing filled in: the paper with the areas and their numbers in light grey, to print and paint on.
+  const template = view === 'template'
   // An outline runs through the canvas pixels that have another area to their right or below.
   const onOutline = (p, x, y) => (x < w - 1 && entryOf[p] !== entryOf[p + 1]) || (y < h - 1 && entryOf[p] !== entryOf[p + w])
 
@@ -278,6 +283,15 @@ function drawMixes(el) {
       }
       paintPixels(ctx, el, lines, w, h)
     }
+  } else if (template) {
+    const img = new Uint8ClampedArray(w * h * 4).fill(255)
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const p = y * w + x
+        if (onOutline(p, x, y)) img[p * 4] = img[p * 4 + 1] = img[p * 4 + 2] = TEMPLATE_LINE
+      }
+    }
+    ctx.putImageData(new ImageData(img, w, h), 0, 0)
   } else {
     // With a colour selected, only its mix stays: all its washes, the rest of the picture goes blank.
     const colours = analysis.entries.map((e, index) => (shown(index) ? hexToRgb(analysis.displayHex(e)) : BLANK))
@@ -309,9 +323,9 @@ function drawMixes(el) {
     for (const region of regions) {
       if (region.anchorDist < MIN_LABEL_DIST) continue
       const entryIndex = analysis.regionEntry[region.id]
-      if (view !== 'original' && !shown(entryIndex)) continue
+      if (!original && !template && !shown(entryIndex)) continue
       const entry = analysis.entries[entryIndex]
-      ctx.fillStyle = view === 'original' ? '#ffffff' : contrastText(analysis.displayHex(entry))
+      ctx.fillStyle = original ? '#ffffff' : template ? TEMPLATE_NUMBER : contrastText(analysis.displayHex(entry))
       ctx.fillText(entry.label, (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE)
     }
   }

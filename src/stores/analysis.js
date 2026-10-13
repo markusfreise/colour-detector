@@ -117,6 +117,10 @@ export const useAnalysisStore = defineStore('analysis', {
     renderVersion: 0, // bumped whenever the canvas needs a redraw
     selectedEntry: null,
     selectedRegion: null,
+    // The colour being looked at: { entry, region } of the area tapped in the picture, or of the
+    // colour chosen in the list, with no area of its own. Looking at a colour leaves the picture
+    // as it is; showing it on its own is the selection above.
+    inspected: null,
     // Layer mode (glazing): the picture as coats of a few base paints.
     layers: null, // result of layerImage (raw); null until analysed or without base paints
     layerShown: [], // per layer: shown in the picture
@@ -160,6 +164,8 @@ export const useAnalysisStore = defineStore('analysis', {
   }),
   getters: {
     selected: (state) => (state.selectedEntry == null ? null : state.entries[state.selectedEntry]),
+    /** The colour of the inspector card and of its full breakdown. */
+    inspectedColour: (state) => (state.inspected == null ? null : state.entries[state.inspected.entry] ?? null),
     layerMode: (state) => state.settings.mode === 'layer',
     /** What an AI plan belongs to: the picture as it is analysed. */
     aiKey: (state) => [state.pictureStamp, state.settings.saturation, state.settings.contrast, state.settings.values ? 'values' : ''].join('/'),
@@ -368,6 +374,7 @@ export const useAnalysisStore = defineStore('analysis', {
     async showPicture(edits) {
       this.selectedEntry = null
       this.selectedRegion = null
+      this.inspected = null
       this.forgetPicture()
       this.pendingEdits = { key: mixKeyOf(this.settings, 0), edits }
       await this.analyse()
@@ -395,6 +402,7 @@ export const useAnalysisStore = defineStore('analysis', {
         this.mixRecipes = {}
         this.selectedEntry = null
         this.selectedRegion = null
+        this.inspected = null
       } else {
         this.layers = null
         this.layerShown = []
@@ -585,6 +593,7 @@ export const useAnalysisStore = defineStore('analysis', {
       this.regionEntry = null
       this.selectedEntry = null
       this.selectedRegion = null
+      this.inspected = null
       this.autoPaints()
       this.recomputeAllRecipes()
     },
@@ -869,6 +878,7 @@ export const useAnalysisStore = defineStore('analysis', {
         delete entry.kept
       })
       if (this.selectedEntry != null && !this.entries[this.selectedEntry]) this.selectedEntry = null
+      if (this.inspected && !this.entries[this.inspected.entry]) this.inspected = null
       this.relabel()
       this.renderVersion++
     },
@@ -923,15 +933,31 @@ export const useAnalysisStore = defineStore('analysis', {
       if (regionId == null || !this.regionEntry) {
         this.selectedEntry = null
         this.selectedRegion = null
+        this.inspected = null
         return
       }
       this.selectedRegion = regionId
       this.selectedEntry = this.regionEntry[regionId]
+      this.inspect(regionId)
     },
 
     selectEntry(index) {
       this.selectedEntry = index
       this.selectedRegion = null
+      this.inspectEntry(index)
+    },
+
+    /**
+     * Look at the colour of one area: the inspector card next to the picture, and the full
+     * breakdown it opens. The picture stays as it is, so the area keeps its place in the whole.
+     */
+    inspect(regionId) {
+      this.inspected = regionId == null || !this.regionEntry ? null : { entry: this.regionEntry[regionId], region: regionId }
+    },
+
+    /** Look at a colour with no area of its own: the one chosen in the colour list. */
+    inspectEntry(index) {
+      this.inspected = index == null ? null : { entry: index, region: null }
     },
 
     setTarget(index, hex) {
@@ -975,6 +1001,7 @@ export const useAnalysisStore = defineStore('analysis', {
       source.share -= region.size / total
       this.regionEntry[regionId] = id
       this.selectedEntry = id
+      this.inspected = { entry: id, region: regionId }
       this.order.splice(this.order.indexOf(from) + 1, 0, id)
       this.renderVersion++
       return id

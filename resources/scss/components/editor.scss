@@ -1,21 +1,9 @@
 @use "../functions" as *;
 
-// The recipes of the chosen colour (EntryEditor.vue).
+// The colour being looked at, in full: target against mix, the colour by hand and the recipes.
+// It is the content of the breakdown dialog (EntryEditor.vue in ColourBreakdown.vue).
 
 .editor {
-    // A panel of its own over the picture, like a flyout.
-    padding: #{pxtorem(32)};
-    border: 1px solid var(--c-corporate);
-    border-radius: var(--radius);
-    background: var(--c-white);
-    color: var(--c-copy);
-
-    &__header {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-    }
-
     &__compare {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -49,12 +37,13 @@
         display: inline-flex;
         align-items: center;
         gap: var(--gap-05x);
+        min-height: #{pxtorem(48)};
         cursor: pointer;
         font-weight: 600;
 
         input {
-            width: #{pxtorem(36)};
-            height: #{pxtorem(28)};
+            width: #{pxtorem(48)};
+            height: #{pxtorem(40)};
             padding: 0;
             border: 1px solid var(--c-border);
             border-radius: var(--radius-small);
@@ -66,6 +55,7 @@
     &__detach {
         margin-top: #{pxtorem(10)};
         width: 100%;
+        min-height: #{pxtorem(48)};
         justify-content: center;
     }
 
@@ -101,38 +91,5 @@
         margin: 0 0 var(--gap-05x);
         color: var(--c-copy-light);
         font-size: var(--fs-small);
-    }
-
-    // The handle (ui.scss) only where the panel floats.
-    .flyout__handle {
-        display: none;
-    }
-
-    // On a wide window the recipes float over the page: dragged by the handle, scrolling inside.
-    @media (min-width: 1101px) {
-        position: fixed;
-        right: var(--gap);
-        bottom: var(--gap);
-        z-index: 5;
-        display: flex;
-        flex-direction: column;
-        width: min(#{pxtorem(576)}, calc(100vw - var(--gap)));
-        max-height: calc(100vh - var(--gap));
-        box-shadow: 0 #{pxtorem(8)} #{pxtorem(30)} rgba(0, 0, 0, 0.2);
-
-        .flyout__handle {
-            display: grid;
-            flex: none;
-        }
-
-        &--dragging .flyout__handle {
-            cursor: grabbing;
-        }
-
-        &__body {
-            min-height: 0;
-            overflow-y: auto;
-            overscroll-behavior: contain;
-        }
     }
 }

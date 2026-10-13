@@ -20,6 +20,7 @@
         <CloseupBar />
       </div>
       <div class="app__bottom">
+        <ColourInspector v-if="!analysis.layerMode" @breakdown="breakdown.open()" />
         <CloseupStrip />
         <LayerStrip />
       </div>
@@ -30,7 +31,6 @@
           <LayerList @show-paintbox="paintBox.open()" />
         </template>
         <template v-else>
-          <EntryEditor />
           <PaletteList @show-paintbox="paintBox.open()" />
         </template>
       </aside>
@@ -44,6 +44,7 @@
       <a class="app__footer-link" href="imprint/">Imprint</a>
       <button v-if="consent.available" class="app__footer-link" type="button" @click="consent.review()">Privacy settings</button>
     </footer>
+    <ColourBreakdown ref="breakdown" />
     <PaintBox ref="paintBox" />
     <CollectionDialog ref="collectionDialog" />
     <SampleDialog ref="sampleDialog" />
@@ -61,7 +62,8 @@ import CloseupBar from './components/CloseupBar.vue'
 import CloseupStrip from './components/CloseupStrip.vue'
 import ControlsPanel from './components/ControlsPanel.vue'
 import ImageOps from './components/ImageOps.vue'
-import EntryEditor from './components/EntryEditor.vue'
+import ColourInspector from './components/ColourInspector.vue'
+import ColourBreakdown from './components/ColourBreakdown.vue'
 import PaletteList from './components/PaletteList.vue'
 import LayerList from './components/LayerList.vue'
 import LayerSteps from './components/LayerSteps.vue'
@@ -86,6 +88,7 @@ const analysis = useAnalysisStore()
 const consent = useConsentStore()
 const account = useAccountStore()
 const paintBox = ref(null)
+const breakdown = ref(null)
 const collectionDialog = ref(null)
 const sampleDialog = ref(null)
 onMounted(() => {

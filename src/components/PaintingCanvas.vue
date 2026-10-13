@@ -101,6 +101,9 @@ const canvas = ref(null)
 const root = ref(null)
 // The colour under the pointer and where the pointer is, for its recipe next to it.
 const hover = ref(null)
+// A recipe next to the pointer needs a pointer that hovers. A finger has none: there a tap on an
+// area opens the inspector card instead (ColourInspector.vue).
+const canHover = window.matchMedia?.('(hover: hover) and (pointer: fine)').matches ?? false
 
 // Whether an entry is drawn: everything, or only the mix of the selected colour.
 function shown(entryIndex) {
@@ -539,6 +542,7 @@ function pixelAt(event) {
 
 // Mix mode: the recipe of the colour under the pointer follows the pointer.
 function onMove(event) {
+  if (!canHover) return
   const at = moving.value || framing.value || analysis.layerMode || analysis.busy || analysis.settings.view === 'sketch' || !analysis.regionEntry ? null : pixelAt(event)
   const entry = at ? analysis.regionEntry[regionAtCanvasPixel(at.cx, at.cy)] : null
   // Nothing over the part of the picture that is blanked while one colour is selected.
@@ -558,9 +562,11 @@ function onClick(event) {
   }
   if (!analysis.regionEntry) return
   const region = regionAtCanvasPixel(cx, cy)
-  // A click on the blanked part of the picture brings everything back.
-  if (analysis.selectedRegion === region || !shown(analysis.regionEntry[region])) analysis.select(null)
-  else analysis.select(region)
+  hover.value = null
+  // While one colour is shown on its own, a click on the blanked part brings the picture back.
+  if (!shown(analysis.regionEntry[region])) return analysis.select(null)
+  // Looking at a colour leaves the picture as it is; the same area again closes the card.
+  analysis.inspect(analysis.inspected?.region === region ? null : region)
 }
 
 watch(

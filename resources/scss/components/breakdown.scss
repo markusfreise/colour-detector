@@ -1,0 +1,55 @@
+@use "../functions" as *;
+
+// The whole breakdown of one colour, over the picture and across the window: target against mix,
+// the colour by hand, every recipe (ColourBreakdown.vue, with EntryEditor.vue inside).
+
+.breakdown {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: var(--c-background);
+    color: var(--c-copy);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    &::backdrop {
+        background: var(--c-backdrop);
+    }
+
+    // The breakdown is read, not scanned: one column of text width, in the middle of the window.
+    &__body {
+        width: min(var(--width-dialog), 100%);
+        margin: 0 auto;
+        padding: var(--gap);
+    }
+
+    // Close stays where it is, however far the recipes reach down.
+    &__header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--gap-05x);
+        margin: calc(var(--gap) * -1) calc(var(--gap) * -1) 0;
+        padding: var(--gap) var(--gap) var(--gap-05x);
+        background: var(--c-background);
+    }
+
+    &__close {
+        min-height: #{pxtorem(48)};
+    }
+
+    @media print {
+        display: none;
+    }
+}

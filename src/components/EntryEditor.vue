@@ -1,17 +1,7 @@
 <template>
-  <section v-if="entry" ref="panel" class="panel editor" :class="{ 'editor--dragging': dragging }" :style="style">
-    <!-- On a wide window the panel floats over the picture and is dragged by the handle. -->
-    <div class="flyout__handle" title="Drag to move the colour" @pointerdown="startDrag"></div>
-    <button class="flyout__close" type="button" title="Close" aria-label="Close" @click="analysis.selectEntry(null)">
-      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
-        <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
-      </svg>
-    </button>
-    <header class="editor__header">
-      <h2 class="panel__title">Colour {{ entry.label }}</h2>
-    </header>
-
-    <div class="editor__body">
+  <!-- The colour being looked at, in full: what the photo asks for against what the paints give,
+       the colour by hand, and every recipe. It is the content of the breakdown (ColourBreakdown.vue). -->
+  <div v-if="entry" class="editor">
     <div class="editor__compare">
       <div class="editor__swatch">
         <span class="chip editor__chip" :style="chipStyle(entry.targetHex)">
@@ -37,10 +27,10 @@
       </button>
     </div>
     <button
-      v-if="analysis.selectedRegion != null && sharedAreas > 1"
+      v-if="region != null && sharedAreas > 1"
       class="button button--secondary editor__detach"
       type="button"
-      @click="analysis.detachRegion(analysis.selectedRegion)"
+      @click="analysis.detachRegion(region)"
     >
       Edit only the clicked area
     </button>
@@ -61,32 +51,23 @@
       </li>
     </ul>
     <p v-if="!entry.recipes.length" class="editor__empty">No paints selected in the paint box.</p>
-    </div>
-  </section>
+  </div>
 </template>
 
 <script setup>
-import { computed, nextTick, watch } from 'vue'
+import { computed } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { chipStyle } from '../lib/color.js'
 import RecipeLine from './RecipeLine.vue'
-import { useFloating } from './floating.js'
 
 const analysis = useAnalysisStore()
-const index = computed(() => analysis.selectedEntry)
-const entry = computed(() => analysis.selected)
+const index = computed(() => analysis.inspected?.entry ?? null)
+// The area that was tapped, when the colour was reached through the picture: only then can that
+// one area be taken out of the mix.
+const region = computed(() => analysis.inspected?.region ?? null)
+const entry = computed(() => analysis.inspectedColour)
 const recipe = computed(() => entry.value?.recipes[entry.value.chosen])
 
-const { panel, style, dragging, startDrag, floats } = useFloating('editor')
-// An area clicked in the picture brings its colour into view; in one column the panel may be below the fold.
-watch(
-  () => analysis.selectedRegion,
-  async (region) => {
-    if (region == null) return
-    await nextTick()
-    if (!floats()) panel.value?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' })
-  },
-)
 const sharedAreas = computed(() => {
   if (!analysis.regionEntry || index.value == null) return 0
   analysis.renderVersion // re-evaluate after detaching

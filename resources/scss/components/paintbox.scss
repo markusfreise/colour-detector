@@ -188,6 +188,12 @@
         gap: #{pxtorem(6)};
     }
 
+    // The buttons of the forms stand as tall as the fields above them.
+    &__form-actions .button,
+    &__edit .button {
+        min-height: #{pxtorem(48)};
+    }
+
     &__own {
         display: flex;
         flex-direction: column;

@@ -120,6 +120,35 @@ function drawPhoto(ctx, el) {
   else ctx.drawImage(analysis.image, 0, 0, el.width, el.height)
 }
 
+// Saves the picture as it is drawn now (view, outlines, numbers) as a JPG, at the size of the canvas.
+function exportJpg() {
+  const el = canvas.value
+  if (!el?.width) return
+  // JPG has no transparency: the drawing goes on white paper.
+  const sheet = document.createElement('canvas')
+  sheet.width = el.width
+  sheet.height = el.height
+  const ctx = sheet.getContext('2d')
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, sheet.width, sheet.height)
+  ctx.drawImage(el, 0, 0)
+  sheet.toBlob(
+    (blob) => {
+      if (!blob) return
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      // "Bielefeld (sample)" and "IMG_1234.jpeg" both become a plain file name.
+      const name = analysis.imageName.replace(/\.\w+$/, '').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'picture'
+      link.download = `${name}-${analysis.settings.view}.jpg`
+      link.click()
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000)
+    },
+    'image/jpeg',
+    0.92,
+  )
+}
+defineExpose({ exportJpg })
+
 // The Overlay view: the photo at half strength over the paint, to compare the two in place.
 function overlayPhoto(ctx, el) {
   if (analysis.settings.view !== 'overlay' || !(analysis.adjusted || analysis.image)) return

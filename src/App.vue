@@ -9,10 +9,10 @@
     <main class="app__main">
       <!-- The picture is the background of the window; everything else lies over it. -->
       <div class="app__stage">
-        <PaintingCanvas />
+        <PaintingCanvas ref="painting" />
       </div>
       <div class="app__left">
-        <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" />
+        <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
         <button v-if="account.enabled" class="button button--ghost" type="button" @click="account.open = true">Account</button>
       </div>
       <div class="app__top">
@@ -89,6 +89,7 @@ const analysis = useAnalysisStore()
 const consent = useConsentStore()
 const account = useAccountStore()
 const paintBox = ref(null)
+const painting = ref(null)
 const breakdown = ref(null)
 const collectionDialog = ref(null)
 const sampleDialog = ref(null)

@@ -21,6 +21,10 @@
     <button class="button button--ghost imageops__button" type="button" :disabled="!printable" title="Print / PDF" @click="print">
       <AppIcon name="pdf" label="Print / PDF" />
     </button>
+    <!-- A download does not work inside the app's web view. -->
+    <button v-if="!isNative" class="button button--ghost imageops__button" type="button" :disabled="!analysis.image || analysis.busy" title="Export: save the picture as it is shown as a JPG" @click="exportPicture">
+      <AppIcon name="export" label="Export as JPG" />
+    </button>
   </nav>
 </template>
 
@@ -32,7 +36,7 @@ import { useProStore } from '../stores/pro.js'
 import { isNative, sendNative } from '../lib/native.js'
 import AppIcon from './AppIcon.vue'
 
-const emit = defineEmits(['show-collection', 'show-samples'])
+const emit = defineEmits(['show-collection', 'show-samples', 'export-picture'])
 const analysis = useAnalysisStore()
 const collection = useCollectionStore()
 const usePro = useProStore()
@@ -53,6 +57,12 @@ async function print() {
   window.dispatchEvent(new Event('beforeprint'))
   await nextTick()
   window.print()
+}
+
+function exportPicture() {
+  // A free account in the browser does not export, as it does not print.
+  if (!usePro.require(false, 'export the picture')) return
+  emit('export-picture')
 }
 
 function onFile(event) {

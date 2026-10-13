@@ -136,23 +136,17 @@
               @change="analysis.analyse()"
             />
           </div>
-          <div v-else class="field">
-            <span class="field__label">Max. coats</span>
-            <div class="segmented segmented--fill">
-              <button
-                v-for="n in [1, 2, 3]"
-                :key="n"
-                type="button"
-                class="segmented__option"
-                :class="{ 'segmented__option--active': analysis.settings.maxCoats === n }"
-                :aria-pressed="analysis.settings.maxCoats === n"
-                title="How often one wash may be painted over itself"
-                @click="setMaxCoats(n)"
-              >
-                {{ n }}
-              </button>
-            </div>
-          </div>
+          <label v-else class="field" title="How often one wash may be painted over itself">
+            <span class="field__label">Max. coats <output class="field__value">{{ analysis.settings.maxCoats }}</output></span>
+            <input
+              v-model.number="analysis.settings.maxCoats"
+              class="field__range"
+              type="range"
+              min="1"
+              max="3"
+              @change="analysis.analyse()"
+            />
+          </label>
         </div>
         <span v-if="analysis.layerMode" class="field__hint controls__hint">
           Accents: small strong touches painted last, first for a colour the washes miss, then for the darks
@@ -234,11 +228,6 @@ const layerCount = computed(() => (paints.activeBox.layerAuto ? analysis.setting
 // Saturation and contrast back to the photo as it is.
 function resetAdjustment(...keys) {
   for (const key of keys) analysis.settings[key] = 100
-  analysis.analyse()
-}
-
-function setMaxCoats(n) {
-  analysis.settings.maxCoats = n
   analysis.analyse()
 }
 

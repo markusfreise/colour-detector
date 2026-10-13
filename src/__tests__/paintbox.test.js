@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { colourFamily } from '../lib/color.js'
-import { paintNumber, paintForms, groupPaints, sortPaints, paintGroupKeys } from '../lib/paintbox.js'
+import { paintNumber, paintForms, groupPaints, sortPaints, paintGroupKeys, seriesNames, HOUSE_VENDOR } from '../lib/paintbox.js'
 import { stockPaints } from '../data/paints.js'
+import { PAINT_LIBRARIES, libraryByName } from '../data/libraries.js'
 
 describe('colourFamily', () => {
   it('maps paints to their colour-wheel family', () => {
@@ -27,7 +28,7 @@ describe('paintNumber', () => {
   })
 })
 
-const paint = (number, hex, forms, vendor = 'Schmincke') => ({ id: number, number, hex, forms, vendor })
+const paint = (number, hex, forms, vendor = HOUSE_VENDOR) => ({ id: number, number, hex, forms, vendor })
 
 describe('paintForms', () => {
   it('labels pans, tubes and both', () => {
@@ -71,7 +72,7 @@ describe('groupPaints', () => {
       paint('A2', '#fae409', ['travelbox']),
       paint('347', '#e2544d', ['half pan']),
     ])
-    expect(groups.map((g) => g.name)).toEqual(['Schmincke Pans', 'Travelbox'])
+    expect(groups.map((g) => g.name)).toEqual([`${HOUSE_VENDOR} Pans`, 'Travelbox'])
     expect(groups[1].paints.map((p) => p.number)).toEqual(['A2', 'A10', 'B2'])
   })
 
@@ -82,7 +83,7 @@ describe('groupPaints', () => {
       paint('496', '#2b61ab', ['tube 15 ml']),
       paint('12', '#e6331d', ['pan'], 'Daniel Smith'),
     ])
-    expect(groups.map((g) => g.name)).toEqual(['Schmincke Tubes', 'Travelbox', 'Daniel Smith', 'Michael Harding'])
+    expect(groups.map((g) => g.name)).toEqual([`${HOUSE_VENDOR} Tubes`, 'Travelbox', 'Daniel Smith', 'Michael Harding'])
     expect(groups[0].paints.map((p) => p.number)).toEqual(['496'])
   })
 
@@ -98,5 +99,26 @@ describe('groupPaints', () => {
   it('places every stock paint in at least one form group', () => {
     const ids = new Set(groupPaints(stockPaints).flatMap((g) => g.paints.map((p) => p.id)))
     expect(ids.size).toBe(stockPaints.length)
+  })
+})
+
+describe('paint libraries', () => {
+  it('ships Schmincke Horadam as the series of the stock', () => {
+    const horadam = libraryByName(HOUSE_VENDOR)
+    expect(horadam).toBe(PAINT_LIBRARIES[0])
+    expect(horadam.catalogue.find((c) => c.number === '347').name).toBe('Kadmiumrot mittel')
+    // However it is written in the form.
+    expect(libraryByName('  schmincke horadam ')).toBe(horadam)
+    expect(libraryByName('Michael Harding')).toBe(null)
+    expect(libraryByName(undefined)).toBe(null)
+  })
+
+  it('offers the series in use and those of the libraries, for the autocomplete', () => {
+    const names = seriesNames(
+      [paint('W311', '#c88c5f', ['tube 15 ml'], 'Michael Harding'), paint('347', '#e2544d', ['half pan'])],
+      PAINT_LIBRARIES,
+    )
+    expect(names).toEqual(['Michael Harding', HOUSE_VENDOR])
+    expect(seriesNames(stockPaints, PAINT_LIBRARIES)).toContain('Travelbox')
   })
 })

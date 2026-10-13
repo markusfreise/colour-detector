@@ -102,9 +102,30 @@
           <button v-if="!paintForm" class="button button--secondary" type="button" @click="startPaint()">Add paint</button>
         </div>
         <form v-if="paintForm" class="paintbox__paint-form" @submit.prevent="savePaint">
-          <label class="paintbox__input">
-            <span>Brand</span>
-            <input v-model="paintForm.vendor" class="input" type="text" maxlength="40" required />
+          <!-- The libraries that come with the app: one fills the series in below, and its numbers
+               then fill in name and colour. -->
+          <label class="paintbox__input paintbox__input--wide">
+            <span>Library</span>
+            <select v-model="libraryPick" class="input" @change="useLibrary">
+              <option value="">Add new below</option>
+              <option v-for="preset in PAINT_LIBRARIES" :key="preset.id" :value="preset.id">{{ preset.name }}</option>
+            </select>
+          </label>
+          <label class="paintbox__input paintbox__input--wide">
+            <span>Vendor and Series</span>
+            <input
+              v-model="paintForm.vendor"
+              class="input"
+              type="text"
+              list="paintbox-series"
+              maxlength="60"
+              required
+              @change="lookUp"
+            />
+            <datalist id="paintbox-series">
+              <option v-for="name in series" :key="name" :value="name"></option>
+            </datalist>
+            <span v-if="newSeries" class="paintbox__hint">New series will be created</span>
           </label>
           <label class="paintbox__input">
             <span>Number</span>
@@ -127,10 +148,10 @@
           </label>
           <p class="paintbox__note">
             Pick the colour of a medium wash on white paper, not the colour straight from the pan or tube.
-            Schmincke Horadam numbers fill in name and colour.
+            <template v-if="library">{{ library.name }} numbers fill in name and colour.</template>
           </p>
           <div class="paintbox__form-actions">
-            <button class="button" type="submit">{{ paintForm.id ? 'Save paint' : 'Add paint' }}</button>
+            <button class="button button--secondary" type="submit">{{ paintForm.id ? 'Save paint' : 'Add paint' }}</button>
             <button class="button button--ghost" type="button" @click="paintForm = null">Cancel</button>
           </div>
         </form>
@@ -159,8 +180,8 @@ import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { useProStore, FREE_BOXES, FREE_PAINTS } from '../stores/pro.js'
 import { chipStyle } from '../lib/color.js'
-import { paintNumber, paintForms, groupPaints, sortPaints } from '../lib/paintbox.js'
-import { horadamCatalogue } from '../data/horadam-catalogue.js'
+import { paintNumber, paintForms, groupPaints, sortPaints, seriesNames, HOUSE_VENDOR } from '../lib/paintbox.js'
+import { PAINT_LIBRARIES, libraryByName } from '../data/libraries.js'
 import PaintChip from './PaintChip.vue'
 import AppIcon from './AppIcon.vue'
 
@@ -172,6 +193,7 @@ const dialog = ref(null)
 const boxMode = ref(null) // 'new' | 'rename' | null
 const boxName = ref('')
 const paintForm = ref(null) // the paint being added or edited
+const libraryPick = ref('') // the library dropdown, back on "Add new below" after every choice
 const confirming = ref(null) // 'box' or a paint id: the delete button was clicked once
 
 // In layer mode the dialog edits the base paints of the box instead of its selection for mixing.
@@ -284,16 +306,36 @@ function deleteBox() {
 }
 
 function startPaint(paint) {
+  libraryPick.value = ''
   paintForm.value = paint
     ? { id: paint.id, vendor: paint.vendor, number: paint.number, name: paint.name, form: paint.forms[0], hex: paint.hex }
-    : { id: null, vendor: 'Schmincke', number: '', name: '', form: 'pan', hex: '#c88c5f' }
+    : { id: null, vendor: HOUSE_VENDOR, number: '', name: '', form: 'pan', hex: '#c88c5f' }
 }
 
-// A Horadam number that is on the colour chart fills in the rest.
+// The series already in use and those that come with the app, for the autocomplete.
+const series = computed(() => seriesNames(paints.all, PAINT_LIBRARIES))
+// The library the series belongs to: its numbers fill in name and colour.
+const library = computed(() => libraryByName(paintForm.value?.vendor))
+// A series of one's own, which the paint brings into being.
+const newSeries = computed(() => {
+  const name = paintForm.value?.vendor.trim().toLowerCase()
+  return !!name && !series.value.some((s) => s.toLowerCase() === name)
+})
+
+// A library chosen from the dropdown fills the form in; the dropdown goes back to "Add new below".
+function useLibrary() {
+  const chosen = PAINT_LIBRARIES.find((l) => l.id === libraryPick.value)
+  libraryPick.value = ''
+  if (!chosen) return
+  paintForm.value.vendor = chosen.name
+  lookUp()
+}
+
+// A number that is on the colour chart of its library fills in the rest.
 function lookUp() {
   const form = paintForm.value
-  if (form.id || form.name || !/schmincke/i.test(form.vendor)) return
-  const known = horadamCatalogue.find((c) => c.number === form.number.trim())
+  if (!form || form.id || form.name) return
+  const known = library.value?.catalogue.find((c) => c.number === form.number.trim())
   if (known) Object.assign(form, { name: known.name, hex: known.hex })
 }
 

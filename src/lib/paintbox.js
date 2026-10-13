@@ -1,8 +1,9 @@
 // Paint box presentation: number formatting and grouping by form and colour family.
 import { COLOUR_FAMILIES, colourFamily } from './color.js'
 
-// The brand the stock is built on: its paints are grouped by form, every other brand gets a group of its own.
-export const HOUSE_VENDOR = 'Schmincke'
+// The series the stock is built on, as it is written on the tube: its paints are grouped by form,
+// every other series gets a group of its own.
+export const HOUSE_VENDOR = 'Schmincke Horadam'
 
 // `byPlace`: the group keeps the order of the box (row and column, "A1" to "C6") instead of the colour wheel.
 export const PAINT_FORMS = [
@@ -28,6 +29,12 @@ function byNumber(a, b) {
   const na = parseInt(String(a.number).replace(/\D/g, ''), 10)
   const nb = parseInt(String(b.number).replace(/\D/g, ''), 10)
   return (na || 0) - (nb || 0) || String(a.number).localeCompare(String(b.number))
+}
+
+/** The series on offer, for the autocomplete of the paint form: the ones in use and the libraries. */
+export function seriesNames(paints, libraries = []) {
+  const names = new Set([HOUSE_VENDOR, ...libraries.map((library) => library.name), ...paints.map((p) => p.vendor).filter(Boolean)])
+  return [...names].sort((a, b) => a.localeCompare(b))
 }
 
 /** Paints in colour-wheel order, by number inside each family. */

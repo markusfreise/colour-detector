@@ -12,7 +12,7 @@
 export const stockPaints = [
   {
     "id": "schmincke-horadam-347",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "347",
     "name": "Cadmium red medium",
@@ -27,7 +27,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-208",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "208",
     "name": "Aureolin hue",
@@ -42,7 +42,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-214",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "214",
     "name": "Chrome orange hue",
@@ -56,7 +56,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-217",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "217",
     "name": "Quinacridone gold hue",
@@ -70,7 +70,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-218",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "218",
     "name": "Transparent orange",
@@ -86,7 +86,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-225",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "225",
     "name": "Cadmium yellow medium",
@@ -101,7 +101,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-226",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "226",
     "name": "Cadmium yellow deep",
@@ -115,7 +115,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-229",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "229",
     "name": "Naples yellow",
@@ -130,7 +130,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-230",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "230",
     "name": "Naples yellow reddish",
@@ -144,7 +144,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-336",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "336",
     "name": "Quinacridone (unidentified)",
@@ -159,7 +159,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-344",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "344",
     "name": "Perylene red deep",
@@ -173,7 +173,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-346",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "346",
     "name": "Ruby red deep",
@@ -187,7 +187,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-351",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "351",
     "name": "Ruby red",
@@ -201,7 +201,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-353",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "353",
     "name": "Permanent carmine",
@@ -215,7 +215,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-356",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "356",
     "name": "Madder lake rose",
@@ -229,7 +229,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-357",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "357",
     "name": "Alizarin crimson hue",
@@ -245,7 +245,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-360",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "360",
     "name": "Permanent red orange",
@@ -260,7 +260,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-363",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "363",
     "name": "Scarlet red",
@@ -274,7 +274,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-365",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "365",
     "name": "Vermilion",
@@ -288,7 +288,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-367",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "367",
     "name": "Purple magenta",
@@ -302,7 +302,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-369",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "369",
     "name": "Quinacridone magenta",
@@ -317,7 +317,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-370",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "370",
     "name": "Potter's pink",
@@ -331,7 +331,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-472",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "472",
     "name": "Quinacridone purple",
@@ -345,7 +345,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-473",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "473",
     "name": "Cobalt violet hue",
@@ -359,7 +359,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-476",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "476",
     "name": "Schmincke violet",
@@ -373,7 +373,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-480",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "480",
     "name": "Mountain blue",
@@ -387,7 +387,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-485",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "485",
     "name": "Indigo",
@@ -401,7 +401,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-494",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "494",
     "name": "Ultramarine finest",
@@ -415,7 +415,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-496",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "496",
     "name": "Ultramarine blue",
@@ -429,7 +429,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-498",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "498",
     "name": "Delft blue",
@@ -443,7 +443,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-509",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "509",
     "name": "Cobalt turquoise",
@@ -458,7 +458,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-512",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "512",
     "name": "Chromium oxide green",
@@ -473,7 +473,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-515",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "515",
     "name": "Olive green",
@@ -490,7 +490,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-525",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "525",
     "name": "Olive green yellowish",
@@ -504,7 +504,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-526",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "526",
     "name": "Permanent green",
@@ -519,7 +519,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-645",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "645",
     "name": "Caput mortuum",
@@ -533,7 +533,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-655",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "655",
     "name": "Yellow ochre",
@@ -549,7 +549,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-656",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "656",
     "name": "Yellow ochre natural",
@@ -565,7 +565,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-659",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "659",
     "name": "Titanium gold ochre",
@@ -579,7 +579,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-661",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "661",
     "name": "Burnt sienna",
@@ -593,7 +593,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-662",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "662",
     "name": "Sepia brown reddish",
@@ -607,7 +607,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-663",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "663",
     "name": "Sepia brown",
@@ -622,7 +622,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-669",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "669",
     "name": "Vandyke brown",
@@ -637,7 +637,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-670",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "670",
     "name": "Madder brown",
@@ -652,7 +652,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-672",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "672",
     "name": "Mahogany brown",
@@ -666,7 +666,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-780",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "780",
     "name": "Ivory black",
@@ -681,7 +681,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-782",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "782",
     "name": "Neutral tint",
@@ -697,7 +697,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-786",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "786",
     "name": "Anthracite",
@@ -711,7 +711,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-787",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "787",
     "name": "Payne's grey bluish",
@@ -725,7 +725,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-920",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "920",
     "name": "Brilliant opera pink",
@@ -739,7 +739,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-933",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "933",
     "name": "Shire green",
@@ -754,7 +754,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-972",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "972",
     "name": "Galaxy violet",
@@ -769,7 +769,7 @@ export const stockPaints = [
   },
   {
     "id": "schmincke-horadam-974",
-    "vendor": "Schmincke",
+    "vendor": "Schmincke Horadam",
     "line": "Horadam Aquarell",
     "number": "974",
     "name": "Galaxy brown",

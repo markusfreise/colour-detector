@@ -13,7 +13,7 @@
             :disabled="!analysis.pixels"
             @click="auto"
           >
-            <AppIcon name="colours" label="Auto" />
+            <AppIcon name="auto" label="Auto" />
           </button>
           <button v-if="!layerMode" class="button button--ghost" type="button" title="Revert: back to the standard selection" @click="reset">
             <AppIcon name="reset" label="Revert" />

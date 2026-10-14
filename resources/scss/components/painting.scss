@@ -69,6 +69,13 @@
         cursor: default;
     }
 
+    // As tall as the icon buttons beside it.
+    &__pro {
+        height: #{pxtorem(48)};
+        padding-block: 0;
+        font-weight: 600;
+    }
+
     // The view buttons are as large as the buttons beside them (48 px, as .button with an icon).
     &__tools .segmented {
         display: flex;
@@ -113,6 +120,11 @@
         &__tools .segmented__option svg {
             width: #{pxtorem(30)};
             height: #{pxtorem(30)};
+        }
+
+        &__tools .painting__pro {
+            width: auto;
+            padding-inline: #{pxtorem(10)};
         }
     }
 

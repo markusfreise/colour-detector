@@ -29,6 +29,10 @@
     <!-- The spot whose colour is being looked at, blinking under the card. -->
     <span v-if="spot" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
     <div class="painting__tools">
+      <!-- Until everything is unlocked: the plans, one click away. -->
+      <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(false, 'use everything')">
+        Get pro
+      </button>
       <button class="button button--ghost painting__tool" type="button" title="Fit the picture to the window" @click="fit">
         <AppIcon name="zoom" label="Fit the picture to the window" />
       </button>
@@ -79,6 +83,7 @@
 import { computed, reactive, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
+import { useProStore } from '../stores/pro.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
 import { drawLayerView, labelFont, paintPixels } from './layerView.js'
 import { smoothCurve } from '../lib/sketch.js'
@@ -97,6 +102,7 @@ const TEMPLATE_NUMBER = '#a6a6a6'
 
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
+const pro = useProStore()
 // The paint box in use holds no paint: none to paint with, or in layer mode none to glaze with.
 const noPaints = computed(() => !!analysis.image && (analysis.layerMode ? !analysis.busy && !analysis.layers : paints.enabled.length === 0))
 const canvas = ref(null)

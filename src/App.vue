@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useAnalysisStore } from './stores/analysis.js'
 import PaintingCanvas from './components/PaintingCanvas.vue'
 import CloseupBar from './components/CloseupBar.vue'
@@ -93,6 +93,17 @@ const painting = ref(null)
 const breakdown = ref(null)
 const collectionDialog = ref(null)
 const sampleDialog = ref(null)
+// Right after signing in (and agreeing, the first time) the plans come up once, unless they are paid for.
+const pro = useProStore()
+watch(
+  () => account.ready && account.welcome && account.loaded,
+  (show) => {
+    if (!show) return
+    account.welcome = false
+    if (!pro.active && account.plans.length) pro.require(false, 'use everything')
+  },
+  { flush: 'post' },
+)
 onMounted(() => {
   consent.init()
   account.init()

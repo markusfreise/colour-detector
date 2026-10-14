@@ -24,13 +24,14 @@ const NOTICES = {
 /**
  * What the fragment of the address says after coming back to the app.
  * @param {string} hash  location.hash
- * @returns {{ magic?: string, notice?: { kind: string, text: string }, handled: boolean }}
+ * @returns {{ magic?: string, signedIn?: boolean, notice?: { kind: string, text: string }, handled: boolean }}
+ *   `signedIn`: the visitor has just signed in (a sign-in link or a provider).
  */
 export function readReturn(hash) {
   const fragment = hash.replace(/^#/, '')
   const magic = /^magic=([0-9a-f]{64})$/.exec(fragment)
-  if (magic) return { magic: magic[1], handled: true }
-  if (fragment === 'login=ok') return { handled: true }
+  if (magic) return { magic: magic[1], signedIn: true, handled: true }
+  if (fragment === 'login=ok') return { signedIn: true, handled: true }
   if (NOTICES[fragment]) return { notice: NOTICES[fragment], handled: true }
   return { handled: false }
 }

@@ -34,6 +34,7 @@ export const useAccountStore = defineStore('account', {
     notice: null, // { kind, text } after coming back from signing in or paying
     sentTo: '', // the address a sign-in link went to
     open: false, // account dialog
+    welcome: false, // just signed in: the plans are offered once the app is open
   }),
   getters: {
     // The app itself may be used: signed in, and both statements agreed to.
@@ -56,6 +57,7 @@ export const useAccountStore = defineStore('account', {
       if (back.notice) this.notice = back.notice
       if (back.magic) await this.attempt(() => call('auth/magic/verify', { token: back.magic }))
       await this.refresh()
+      if (back.signedIn && this.user) this.welcome = true
       // Stripe confirms a payment a moment after the buyer is back.
       if (back.notice?.kind === 'paid') this.awaitPurchase()
     },

@@ -33,7 +33,7 @@ describe('accountsWanted', () => {
 describe('readReturn', () => {
   it('finds a sign-in code', () => {
     const code = 'ab'.repeat(32)
-    expect(readReturn(`#magic=${code}`)).toEqual({ magic: code, handled: true })
+    expect(readReturn(`#magic=${code}`)).toEqual({ magic: code, signedIn: true, handled: true })
   })
 
   it('refuses a code of another shape', () => {
@@ -42,7 +42,7 @@ describe('readReturn', () => {
   })
 
   it('reads the results of signing in and paying', () => {
-    expect(readReturn('#login=ok')).toEqual({ handled: true })
+    expect(readReturn('#login=ok')).toEqual({ signedIn: true, handled: true })
     expect(readReturn('#login=failed').notice.kind).toBe('error')
     expect(readReturn('#login=no-email').notice.kind).toBe('error')
     expect(readReturn('#billing=ok').notice.kind).toBe('paid')

@@ -13,7 +13,9 @@
       </div>
       <div class="app__left">
         <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
-        <button v-if="account.enabled" class="button button--ghost" type="button" @click="account.open = true">Account</button>
+        <button v-if="account.enabled" class="button button--ghost" type="button" title="Account" @click="account.open = true">
+          <AppIcon name="user" label="Account" />
+        </button>
       </div>
       <div class="app__top">
         <LayerSteps />
@@ -77,6 +79,7 @@ import PrintLegend from './components/PrintLegend.vue'
 import CollectionDialog from './components/CollectionDialog.vue'
 import SampleDialog from './components/SampleDialog.vue'
 import ProDialog from './components/ProDialog.vue'
+import AppIcon from './components/AppIcon.vue'
 import AccountGate from './components/AccountGate.vue'
 import AccountDialog from './components/AccountDialog.vue'
 import { useConsentStore } from './stores/consent.js'

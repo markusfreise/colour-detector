@@ -9,7 +9,8 @@
       <img class="gate__layer" :src="background" alt="" />
       <img class="gate__layer gate__layer--turned" :src="background" alt="" />
       <PaintingCanvas v-if="showing" class="gate__map" :class="{ 'gate__map--shown': mapShown }" backdrop />
-      <img v-if="photo" class="gate__photo" :class="{ 'gate__photo--shown': photoShown }" :src="photo" alt="" />
+      <!-- Always in the page, so that every photo fades in, the first one too. -->
+      <img class="gate__photo" :class="{ 'gate__photo--shown': photoShown }" :src="photo ?? undefined" alt="" />
     </div>
     <section class="panel gate__card" aria-labelledby="gate-title">
       <!-- The logo in the colour of the text, so it reads in light and dark. -->
@@ -103,7 +104,7 @@ const buttons = computed(() => ['google', 'apple', 'meta'].filter((id) => accoun
 // not signed in or has not agreed yet; signing in ends it, and the app opens its own sample with
 // the user's paints (App.vue).
 const DWELL = 6000 // a rendering on its own
-const FADE = 1200 // as long as the fades in gate.scss
+const FADE = 2500 // as long as the fades in gate.scss
 const HOLD = 1500 // the photo on its own, at the least
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
@@ -149,6 +150,8 @@ async function showcase() {
       if (!running) return
       await ready(picture.url)
       photo.value = picture.url
+      // The new source has to be in place before the fade starts.
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
       photoShown.value = true
       // The rendering of the new photo is made while the photo is on screen.
       await Promise.all([pause(FADE + HOLD), analysis.loadFromSource(picture.url, picture.name)])

@@ -25,6 +25,16 @@
       @pointerup="endFrame"
       @pointercancel="frame = null"
     ></canvas>
+    <!-- No picture yet: the whole canvas is the way to the first one. -->
+    <label v-if="!analysis.image && !analysis.busy && !backdrop" class="painting__welcome">
+      <input class="painting__file" type="file" accept="image/*" @change="onWelcomeFile" />
+      <span class="painting__welcome-text">
+        Welcome to {{ APP_NAME }}<br />
+        <strong>Load your first photo.</strong><br />
+        Click anywhere here to choose one.<br />
+        Or try one of the <button class="painting__welcome-link" type="button" @click.prevent.stop="emit('show-samples')">sample photos</button>.
+      </span>
+    </label>
     <div v-if="frame" class="painting__frame" :style="frameStyle"></div>
     <!-- The spot whose colour is being looked at, blinking under the card. -->
     <span v-if="spot && !backdrop" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
@@ -92,6 +102,7 @@ import RecipeTip from './RecipeTip.vue'
 import AppIcon from './AppIcon.vue'
 import ViewSwitch from './ViewSwitch.vue'
 import { closeupRect } from '../lib/closeup.js'
+import { APP_NAME } from '../config.js'
 
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
@@ -103,6 +114,12 @@ const TEMPLATE_NUMBER = '#a6a6a6'
 // As the background behind signing in: the picture covers the window and only shows the recipe
 // under the pointer; no tools, no moving, zooming or picking.
 const props = defineProps({ backdrop: { type: Boolean, default: false } })
+const emit = defineEmits(['show-samples'])
+
+function onWelcomeFile(event) {
+  const file = event.target.files?.[0]
+  if (file) analysis.loadFile(file)
+}
 
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()

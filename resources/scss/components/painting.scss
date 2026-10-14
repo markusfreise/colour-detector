@@ -18,6 +18,48 @@
         cursor: grabbing;
     }
 
+    // Before the first picture: the whole canvas opens the photo picker.
+    &__welcome {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        padding: var(--gap-2x);
+        cursor: pointer;
+    }
+
+    &__file {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    &__welcome-text {
+        max-width: #{pxtorem(420)};
+        color: var(--c-copy-light);
+        font-size: var(--fs-medium);
+        line-height: 1.5;
+        text-align: center;
+
+        strong {
+            color: var(--c-head);
+            font-size: var(--fs-hl-small);
+        }
+    }
+
+    &__welcome-link {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--c-corporate);
+        font: inherit;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
     // Behind signing in: see-through until the first picture is drawn, the page scrolls as usual.
     &--backdrop {
         background: transparent;

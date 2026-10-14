@@ -9,7 +9,7 @@
     <main class="app__main">
       <!-- The picture is the background of the window; everything else lies over it. -->
       <div class="app__stage">
-        <PaintingCanvas ref="painting" />
+        <PaintingCanvas ref="painting" @show-samples="sampleDialog.open()" />
       </div>
       <div class="app__left">
         <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
@@ -113,13 +113,26 @@ onMounted(() => {
   useProStore().init()
   useCollectionStore().refresh()
 })
-// The app's own sample, once the app is open: behind the gate the showcase has the picture
-// (AccountGate.vue), and it is gone by the time this runs.
+// Once the app is open it shows the picture used last, or nothing and the welcome to load one
+// (PaintingCanvas.vue). Behind the gate the showcase has the picture (AccountGate.vue), and it is
+// gone by the time this runs.
+const collection = useCollectionStore()
 watch(
   () => account.ready,
   (ready) => {
-    if (ready) analysis.loadSample()
+    if (ready && !analysis.image) collection.openLast()
   },
   { immediate: true, flush: 'post' },
 )
+// The picture used last is kept when another one is opened, and with its settings and colour
+// changes whenever the page goes out of sight.
+watch(
+  () => analysis.image,
+  (image) => {
+    if (image && account.ready) collection.rememberCurrent()
+  },
+)
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden' && account.ready) collection.rememberCurrent()
+})
 </script>

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { listImages, getImage, putImage, deleteImage } from '../lib/collectionDb.js'
+import { listImages, getImage, putImage, deleteImage, getLast, putLast } from '../lib/collectionDb.js'
+import { usePaintsStore } from './paints.js'
 import { useAnalysisStore } from './analysis.js'
 import { useProStore, FREE_IMAGES } from './pro.js'
 
@@ -15,6 +16,10 @@ function scaled(image, size, type, quality) {
   if (type === 'dataUrl') return canvas.toDataURL('image/jpeg', quality)
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality))
 }
+
+// The image of the picture used last, as it was stored: it is encoded once per picture.
+let lastImage = null
+let lastBlob = null
 
 export const useCollectionStore = defineStore('collection', {
   state: () => ({
@@ -57,6 +62,46 @@ export const useCollectionStore = defineStore('collection', {
         return true
       } catch (e) {
         this.error = `Could not save the picture: ${e.message}`
+        return false
+      }
+    },
+
+    /**
+     * Keeps the picture on screen as the one used last, with its settings and colour changes, so
+     * that it opens again after the next sign-in or start. Not the showcase behind signing in, and
+     * not a close-up (its base picture is the one that counts).
+     */
+    async rememberCurrent() {
+      const analysis = useAnalysisStore()
+      if (!analysis.image || analysis.closeupId != null || usePaintsStore().showcase) return
+      try {
+        if (analysis.image !== lastImage) {
+          lastBlob = await scaled(analysis.image, STORE_SIZE, 'blob', 0.9)
+          lastImage = analysis.image
+        }
+        await putLast({
+          name: analysis.imageName,
+          blob: lastBlob,
+          settings: { ...analysis.settings },
+          edits: analysis.exportEdits(),
+          savedId: analysis.savedId ?? null,
+          updatedAt: Date.now(),
+        })
+      } catch {
+        // Not kept: the next start opens without it.
+      }
+    },
+
+    /** Opens the picture used last; false when there is none. */
+    async openLast() {
+      try {
+        const record = await getLast()
+        if (!record?.blob) return false
+        await useAnalysisStore().loadSaved({ ...record, id: record.savedId ?? null })
+        lastImage = useAnalysisStore().image
+        lastBlob = record.blob
+        return true
+      } catch {
         return false
       }
     },

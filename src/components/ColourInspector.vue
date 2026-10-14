@@ -3,7 +3,7 @@
        covers, and the recipe to mix it. The whole breakdown opens from here. The card lies over
        the picture and is moved up and down by its handle; where it was put is remembered. -->
   <aside v-if="entry" ref="card" class="inspector" :class="{ 'inspector--dragging': dragging }" :style="style" aria-label="The colour tapped in the picture">
-    <div class="flyout__handle" title="Drag to move the colour up or down" @pointerdown="startDrag"></div>
+    <div class="flyout__handle" :title="wide ? 'Drag to move the colour' : 'Drag to move the colour up or down'" @pointerdown="startDrag"></div>
     <div class="inspector__head">
       <span class="swatch inspector__swatch" :style="{ background: recipe?.hex ?? entry.targetHex }"></span>
       <h2 class="inspector__title">Colour {{ entry.label }}</h2>
@@ -34,13 +34,19 @@ const entry = computed(() => analysis.inspectedColour)
 const recipe = computed(() => entry.value?.recipes[entry.value.chosen] ?? null)
 const share = computed(() => Math.round((entry.value?.share ?? 0) * 100) || '<1')
 
-// Moved up and down only: the card is as wide as the window and has nowhere to go sideways.
+// In a narrow window the card is as wide as the window and only moves up and down. With room
+// beside it (wider than NARROW, as in the stylesheet) it floats free and is dragged anywhere.
+const NARROW = 760
 const card = ref(null)
 const dragging = ref(false)
-let grip = 0
+const wide = ref(window.innerWidth > NARROW)
+let grip = { x: 0, y: 0 }
 const style = computed(() => {
   const at = layout.positions.inspector
-  return at ? { top: `${at.y}px`, bottom: 'auto' } : null
+  if (!at) return null
+  return wide.value && at.x != null
+    ? { top: `${at.y}px`, bottom: 'auto', left: `${at.x}px`, transform: 'none' }
+    : { top: `${at.y}px`, bottom: 'auto' }
 })
 
 // The gap of the design, in pixels, however it is written in the stylesheet.
@@ -50,16 +56,19 @@ function margin() {
   return value.endsWith('rem') ? size * parseFloat(getComputedStyle(document.documentElement).fontSize) : size || 16
 }
 
-// A place that keeps the whole card in the window, a gap above and below.
-function inWindow(y) {
+// A place that keeps the whole card in the window, a gap around it.
+function inWindow(x, y) {
   const gap = margin()
-  const room = window.innerHeight - card.value.offsetHeight - gap
-  return Math.round(Math.min(Math.max(gap, y), Math.max(gap, room)))
+  const clamp = (v, room) => Math.round(Math.min(Math.max(gap, v), Math.max(gap, room)))
+  const at = { y: clamp(y, window.innerHeight - card.value.offsetHeight - gap) }
+  if (x != null) at.x = clamp(x, window.innerWidth - card.value.offsetWidth - gap)
+  return at
 }
 
 function startDrag(event) {
   if (event.button) return
-  grip = event.clientY - card.value.getBoundingClientRect().top
+  const rect = card.value.getBoundingClientRect()
+  grip = { x: event.clientX - rect.left, y: event.clientY - rect.top }
   dragging.value = true
   event.currentTarget.setPointerCapture(event.pointerId)
   event.currentTarget.addEventListener('pointermove', drag)
@@ -69,7 +78,8 @@ function startDrag(event) {
 }
 
 function drag(event) {
-  layout.positions.inspector = { y: inWindow(event.clientY - grip) }
+  const x = wide.value ? event.clientX - grip.x : null
+  layout.positions.inspector = inWindow(x, event.clientY - grip.y)
 }
 
 function endDrag(event) {
@@ -82,8 +92,9 @@ function endDrag(event) {
 
 // A smaller window, or another colour with a taller recipe, must not push the card out of sight.
 function keepInWindow() {
+  wide.value = window.innerWidth > NARROW
   const at = layout.positions.inspector
-  if (at && card.value) layout.positions.inspector = { y: inWindow(at.y) }
+  if (at && card.value) layout.positions.inspector = inWindow(wide.value ? at.x : null, at.y)
 }
 watch(card, (el) => el && keepInWindow(), { flush: 'post' })
 watch(recipe, () => card.value && keepInWindow(), { flush: 'post' })

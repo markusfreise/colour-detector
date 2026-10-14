@@ -4,7 +4,8 @@
 // it, with the way to the whole breakdown (ColourInspector.vue).
 
 .inspector {
-    // Over the picture, in the middle and at most 400 px wide, moved up and down by its handle.
+    // Over the picture, in the middle and at most 400 px wide. Its handle moves it up and down, and
+    // anywhere once the window has room beside it (ColourInspector.vue).
     position: fixed;
     z-index: 4;
     left: 50%;

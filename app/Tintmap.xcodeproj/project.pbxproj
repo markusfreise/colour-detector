@@ -29,6 +29,7 @@
 		920FFEA1E03DF418073351D3 /* SamplesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2AEC3839BCF460BEB765CC /* SamplesView.swift */; };
 		96DF6D338ADE25932DB3329A /* DebugSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A5D9BC8A8EA0B9C9F184F5 /* DebugSnapshot.swift */; };
 		997D41B2496A58B0A8CDF28F /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8CE5B7620FD4EFC085F78 /* RootView.swift */; };
+		9BF9F44BE563C1082B39DF54 /* Closeup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13377B861401AEAA99E19493 /* Closeup.swift */; };
 		A7AC78082094A5D6A8808500 /* Library.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD60AE475F8C41975C7F37 /* Library.swift */; };
 		AAD307AE23FB9DFDDCB6A40B /* LayerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1FE3F00F616DF002146FF8 /* LayerViews.swift */; };
 		AAE462A709F6B286047733E1 /* Segmentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653FEFFB5A095F61C7DC40F5 /* Segmentation.swift */; };
@@ -63,6 +64,7 @@
 /* Begin PBXFileReference section */
 		00AD382FB81395697C71B3A5 /* sample-rooftops-dusk.webp */ = {isa = PBXFileReference; path = "sample-rooftops-dusk.webp"; sourceTree = "<group>"; };
 		0EDC1EF532557AE681F4A0AB /* LayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerTests.swift; sourceTree = "<group>"; };
+		13377B861401AEAA99E19493 /* Closeup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Closeup.swift; sourceTree = "<group>"; };
 		1666D7EF3E8CFF24D1701111 /* PrintSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintSheet.swift; sourceTree = "<group>"; };
 		186C73725045D85988B60B3E /* PaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteView.swift; sourceTree = "<group>"; };
 		18FAFE6C95A7F6FEC107EE34 /* PaintingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaintingView.swift; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 		61C25A440DBD983ABF186966 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				13377B861401AEAA99E19493 /* Closeup.swift */,
 				8A03528745567BF3273C9355 /* ColorMath.swift */,
 				956D99FEBAA0CA4B9F1693C0 /* Geometric.swift */,
 				C7702DDF72F030A5B9C77A00 /* Layers.swift */,
@@ -344,6 +347,7 @@
 			files = (
 				B6DE07D77F9EB643B68AEA6E /* CameraPicker.swift in Sources */,
 				66A7743790C685F5429FF454 /* Chips.swift in Sources */,
+				9BF9F44BE563C1082B39DF54 /* Closeup.swift in Sources */,
 				1CFADE6DE4BBF43E2ADB9662 /* CollectionView.swift in Sources */,
 				CC707CF6B2003FFE76E179D9 /* ColorMath.swift in Sources */,
 				078F107BB4A0A7CE97158E20 /* ColourCard.swift in Sources */,

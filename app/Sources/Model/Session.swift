@@ -239,6 +239,21 @@ final class Session {
     private(set) var inspectedEntry: Int?
     private(set) var busy = false
     var error: String?
+    /// A frame is being drawn over the picture, to choose a close-up. The colour card makes room for it.
+    var framing = false {
+        didSet {
+            guard framing, !oldValue else { return }
+            selectedRegion = nil
+            inspectedEntry = nil
+            layerPoint = nil
+        }
+    }
+    /// Parts of the base picture, each analysed as a picture of its own.
+    private(set) var closeups: [Closeup] = []
+    /// The close-up on screen, nil for the base picture.
+    private(set) var closeupID: Int?
+    /// The base picture while a close-up is on screen.
+    @ObservationIgnored private var base: (image: CGImage, pixels: (rgba: [UInt8], width: Int, height: Int), name: String, savedID: String?, edits: [EntryEdit])?
 
     // Layer mode (glazing): the picture as coats of a few base paints.
     /// The plan; nil until analysed or without base paints.
@@ -327,16 +342,92 @@ final class Session {
             return false
         }
         error = nil
-        image = decoded
-        pixels = work
+        // The close-ups belonged to the picture before.
+        closeups = []
+        closeupID = nil
+        base = nil
+        framing = false
+        if let settings { self.settings = settings }
+        show(image: decoded, pixels: work, name: name, savedID: nil, edits: edits)
+        return true
+    }
+
+    /// Puts a picture in place and analyses it, with its colour changes.
+    private func show(image: CGImage, pixels: (rgba: [UInt8], width: Int, height: Int), name: String, savedID: String?, edits: [EntryEdit]) {
+        self.image = image
+        self.pixels = pixels
         originalPixels = nil
         imageName = name
-        savedID = nil
+        self.savedID = savedID
+        selectedEntry = nil
+        selectedRegion = nil
+        inspectedEntry = nil
         pictureSerial += 1
         pendingEdits = nil
-        if let settings { self.settings = settings }
         analyse(edits: edits)
-        return true
+    }
+
+    // MARK: Close-ups
+
+    struct Closeup: Identifiable {
+        let id: Int
+        /// The part of the base picture, in shares of it.
+        let rect: CGRect
+        let thumb: CGImage
+        /// Colour changes made while it was on screen.
+        var edits: [EntryEdit] = []
+    }
+
+    /// A part of the base picture as a picture of its own, cut from the photo as it is kept, so the
+    /// analysis finds what the whole picture has no room for. `rect` is in shares of the picture.
+    func addCloseup(_ rect: CGRect) {
+        guard let source = base?.image ?? image else { return }
+        let cut = Closeups.size(sourceWidth: source.width, sourceHeight: source.height, rect: rect, workPixels: 160 * 160)
+        guard let part = source.cropping(to: CGRect(x: cut.sx, y: cut.sy, width: cut.sw, height: cut.sh)),
+              let thumb = Pictures.scaled(part, maxSide: max(cut.width, cut.height)) else { return }
+        let number = (closeups.map(\.id).max() ?? 0) + 1
+        closeups.append(Closeup(id: number, rect: rect, thumb: thumb))
+        openCloseup(number)
+    }
+
+    func openCloseup(_ id: Int) {
+        guard let closeup = closeups.first(where: { $0.id == id }), id != closeupID, let image, let pixels else { return }
+        if closeupID == nil { base = (image, pixels, imageName, savedID, []) }
+        keepEdits()
+        guard let base else { return }
+        let source = base.image
+        let cut = Closeups.size(sourceWidth: source.width, sourceHeight: source.height, rect: closeup.rect, workPixels: Self.workPixels)
+        guard let part = source.cropping(to: CGRect(x: cut.sx, y: cut.sy, width: cut.sw, height: cut.sh)),
+              let rgba = Pictures.pixels(of: part, width: cut.width, height: cut.height) else {
+            error = "Could not cut out this part of the picture."
+            return
+        }
+        framing = false
+        closeupID = id
+        show(image: part, pixels: (rgba, cut.width, cut.height), name: "\(base.name) – detail \(id)", savedID: nil, edits: closeup.edits)
+    }
+
+    func showBase() {
+        guard closeupID != nil, let base else { return }
+        keepEdits()
+        closeupID = nil
+        self.base = nil
+        show(image: base.image, pixels: base.pixels, name: base.name, savedID: base.savedID, edits: base.edits)
+    }
+
+    func removeCloseup(_ id: Int) {
+        if id == closeupID { showBase() }
+        closeups.removeAll { $0.id == id }
+    }
+
+    /// The colour changes of the picture on screen go with it, so they are there again on return.
+    private func keepEdits() {
+        let edits = exportEdits()
+        if let index = closeups.firstIndex(where: { $0.id == closeupID }) {
+            closeups[index].edits = edits
+        } else {
+            base?.edits = edits
+        }
     }
 
     // MARK: Analysis

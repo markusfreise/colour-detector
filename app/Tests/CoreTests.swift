@@ -151,4 +151,43 @@ final class CoreTests: XCTestCase {
         XCTAssertGreaterThan(Mixes.toRequest(wanted: 5), 5)
         XCTAssertLessThanOrEqual(Mixes.toRequest(wanted: 32), 48)
     }
+
+    // MARK: Close-ups
+
+    func testCloseupRectIsTheSameFromEitherCorner() throws {
+        let rect = try XCTUnwrap(Closeups.rect(from: CGPoint(x: 0.6, y: 0.7), to: CGPoint(x: 0.2, y: 0.3)))
+        XCTAssertEqual(rect.minX, 0.2, accuracy: 1e-9)
+        XCTAssertEqual(rect.minY, 0.3, accuracy: 1e-9)
+        XCTAssertEqual(rect.width, 0.4, accuracy: 1e-9)
+        XCTAssertEqual(rect.height, 0.4, accuracy: 1e-9)
+    }
+
+    func testCloseupRectStaysInsideThePicture() {
+        XCTAssertEqual(Closeups.rect(from: CGPoint(x: -0.3, y: 0.5), to: CGPoint(x: 0.5, y: 1.4)), CGRect(x: 0, y: 0.5, width: 0.5, height: 0.5))
+    }
+
+    func testCloseupRectTakesAShortDragForASlip() {
+        XCTAssertNil(Closeups.rect(from: CGPoint(x: 0.5, y: 0.5), to: CGPoint(x: 0.51, y: 0.9)))
+        XCTAssertNil(Closeups.rect(from: CGPoint(x: 0.5, y: 0.5), to: CGPoint(x: 0.9, y: 0.51)))
+    }
+
+    func testCloseupSizeShrinksALargePartAndKeepsItsShape() {
+        let work = 800 * 600
+        let size = Closeups.size(sourceWidth: 4000, sourceHeight: 3000, rect: CGRect(x: 0.25, y: 0.25, width: 0.5, height: 0.5), workPixels: work)
+        XCTAssertEqual([size.sx, size.sy, size.sw, size.sh], [1000, 750, 2000, 1500])
+        XCTAssertLessThanOrEqual(Double(size.width * size.height), Double(work) * 1.01)
+        XCTAssertEqual(Double(size.width) / Double(size.height), 2000.0 / 1500, accuracy: 0.01)
+    }
+
+    func testCloseupSizeEnlargesASmallPartUpToTheLimit() {
+        let size = Closeups.size(sourceWidth: 800, sourceHeight: 600, rect: CGRect(x: 0, y: 0, width: 0.1, height: 0.1), workPixels: 800 * 600)
+        XCTAssertEqual(size.width, 80 * Int(Closeups.maxEnlarge))
+        XCTAssertEqual(size.height, 60 * Int(Closeups.maxEnlarge))
+    }
+
+    func testCloseupSizeNeverReachesPastTheSource() {
+        let size = Closeups.size(sourceWidth: 101, sourceHeight: 51, rect: CGRect(x: 0.9, y: 0.9, width: 0.1, height: 0.1), workPixels: 800 * 600)
+        XCTAssertLessThanOrEqual(size.sx + size.sw, 101)
+        XCTAssertLessThanOrEqual(size.sy + size.sh, 51)
+    }
 }

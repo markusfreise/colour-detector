@@ -10,11 +10,12 @@ struct PaywallView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Unlock Everything").font(.title.bold())
-            Text("The free version holds one saved picture and one paint box. To \(reason), unlock the full version with a single purchase. No subscription.")
+            Text("The free version holds one saved picture and one paint box, without close-ups. To \(reason), unlock the full version with a single purchase. No subscription.")
                 .foregroundStyle(.secondary)
             VStack(alignment: .leading, spacing: 8) {
                 Label("Save as many pictures as you like", systemImage: "photo.on.rectangle")
                 Label("Keep a paint box for every set of paints you own", systemImage: "shippingbox")
+                Label("Zoom in on parts of a picture and analyse them on their own", systemImage: "viewfinder")
             }
             if let error = store.error {
                 Text(error).foregroundStyle(.red)

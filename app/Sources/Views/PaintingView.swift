@@ -3,7 +3,7 @@ import SwiftUI
 /// The picture as numbered colour areas, or in layer mode as the paper with its layers. It fills
 /// the screen behind the bars and cards, as in the web app; pinch to zoom, drag to move a zoomed
 /// picture (never past its edges, as in the web app), double-tap to fit it again. Tap an area to look at its colour, or in layer mode a spot to
-/// see its layers.
+/// see its layers. While choosing a close-up, a drag draws a frame over the part to zoom in on.
 struct PaintingView: View {
     @Environment(Session.self) private var session
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -15,6 +15,8 @@ struct PaintingView: View {
     /// Where the inspected area was tapped, in working pixels: the spot pulses there.
     @State private var spot: CGPoint?
     @State private var pulsing = false
+    /// The frame being drawn for a close-up, from where the drag began to where it is, in shares of the picture.
+    @State private var frameDrag: (from: CGPoint, to: CGPoint)?
 
     /// Margin around the picture inside the padding, so its shadow stays visible.
     private static let padding = 16.0
@@ -36,8 +38,19 @@ struct PaintingView: View {
             .frame(width: frame.size.width, height: frame.size.height)
             .contentShape(Rectangle())
             .gesture(magnify(in: frame.size))
-            .simultaneousGesture(pan(in: frame.size), including: zoom > 1 ? .all : .subviews)
+            .simultaneousGesture(pan(in: frame.size), including: zoom > 1 && !session.framing ? .all : .subviews)
             .onTapGesture(count: 2) { fit() }
+            .overlay(alignment: .bottom) {
+                if session.framing, frameDrag == nil, !session.busy {
+                    Text("Drag a frame over the part to zoom in on")
+                        .font(.callout)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(.regularMaterial, in: Capsule())
+                        .padding(12)
+                        .allowsHitTesting(false)
+                }
+            }
             .overlay(alignment: .topTrailing) {
                 if zoom > 1.01 {
                     Button("Fit Picture", systemImage: "plus.magnifyingglass", action: fit)
@@ -62,6 +75,14 @@ struct PaintingView: View {
                         Color.clear
                             .contentShape(Rectangle())
                             .onTapGesture { location in tap(location, in: geometry.size, working: size) }
+                        if session.framing {
+                            Color.clear
+                                .contentShape(Rectangle())
+                                .gesture(framing(in: geometry.size))
+                            if let drag = frameDrag, let rect = Closeups.rect(from: drag.from, to: drag.to, smallest: 0) {
+                                frameMark(rect, in: geometry.size)
+                            }
+                        }
                         if let point = marker(working: size) {
                             ring
                                 .position(x: point.x / Double(size.width) * geometry.size.width, y: point.y / Double(size.height) * geometry.size.height)
@@ -81,6 +102,41 @@ struct PaintingView: View {
                 .aspectRatio(4 / 3, contentMode: .fit)
                 .padding(Self.padding)
         }
+    }
+
+    /// The frame as in the web app: dashed white with a dark rim, the rest of the picture dimmed.
+    private func frameMark(_ rect: CGRect, in size: CGSize) -> some View {
+        let box = CGRect(x: rect.minX * size.width, y: rect.minY * size.height, width: rect.width * size.width, height: rect.height * size.height)
+        return ZStack {
+            Path { path in
+                path.addRect(CGRect(origin: .zero, size: size))
+                path.addRect(box)
+            }
+            .fill(.black.opacity(0.25), style: FillStyle(eoFill: true))
+            Rectangle()
+                .stroke(.black.opacity(0.6), lineWidth: 1 / zoom)
+                .frame(width: box.width + 2 / zoom, height: box.height + 2 / zoom)
+                .position(x: box.midX, y: box.midY)
+            Rectangle()
+                .stroke(.white, style: StrokeStyle(lineWidth: 2 / zoom, dash: [6 / zoom, 4 / zoom]))
+                .frame(width: box.width, height: box.height)
+                .position(x: box.midX, y: box.midY)
+        }
+        .allowsHitTesting(false)
+    }
+
+    /// One finger draws the frame; a frame too small to count was a slip and the choice stays open.
+    private func framing(in size: CGSize) -> some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { value in
+                let share = { (p: CGPoint) in CGPoint(x: p.x / size.width, y: p.y / size.height) }
+                frameDrag = (frameDrag?.from ?? share(value.startLocation), share(value.location))
+            }
+            .onEnded { _ in
+                defer { frameDrag = nil }
+                guard let drag = frameDrag, let rect = Closeups.rect(from: drag.from, to: drag.to) else { return }
+                session.addCloseup(rect)
+            }
     }
 
     /// The spot that was tapped: the layer spot, or the area whose colour is on the card.

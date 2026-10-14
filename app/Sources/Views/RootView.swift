@@ -18,6 +18,7 @@ struct RootView: View {
     @State private var showingFiles = false
     @State private var showingCamera = false
     @State private var showingPaywall = false
+    @State private var paywallReason = "save more than one picture"
     @State private var showingSamples = false
     @State private var showingBreakdown = false
     @State private var showingPanel = false
@@ -45,7 +46,7 @@ struct RootView: View {
         }
         .sheet(isPresented: $showingPaintBox, onDismiss: paintBoxClosed) { PaintBoxView() }
         .sheet(isPresented: $showingCollection) { CollectionView() }
-        .sheet(isPresented: $showingPaywall) { PaywallView(reason: "save more than one picture") }
+        .sheet(isPresented: $showingPaywall) { PaywallView(reason: paywallReason) }
         .sheet(isPresented: $showingSamples) { SamplesView() }
         .sheet(isPresented: $showingBreakdown) { BreakdownSheet() }
         .photosPicker(isPresented: $showingPhotos, selection: $photo, matching: .images)
@@ -83,7 +84,7 @@ struct RootView: View {
     #if DEBUG
     /// "-screen paintbox|collection|editor|breakdown|samples|settings|colours|paywall" opens that screen at
     /// launch, for screenshots; "-view mixed|target|overlay|original|template" sets what the picture shows;
-    /// "-sample" steps to the next sample photo.
+    /// "-sample" steps to the next sample photo; "-closeup" opens a close-up, "-framing" starts choosing one.
     private func openScreenForScreenshot() async {
         let arguments = ProcessInfo.processInfo.arguments
         if arguments.contains("-sample") { session.loadSample() }
@@ -99,6 +100,12 @@ struct RootView: View {
             session.layerStepView = view
         }
         if arguments.contains("-spot"), let plan = session.layers { session.selectPoint((plan.width / 2, plan.height / 2)) }
+        // "-closeup" opens a close-up of the middle of the picture; "-framing" starts choosing one.
+        if arguments.contains("-closeup") {
+            session.addCloseup(CGRect(x: 0.35, y: 0.3, width: 0.3, height: 0.3))
+            while session.busy || session.entries.isEmpty { try? await Task.sleep(for: .milliseconds(100)) }
+        }
+        if arguments.contains("-framing") { session.framing = true }
         if let mode = arguments.firstIndex(of: "-view").flatMap({ arguments.dropFirst($0 + 1).first }).flatMap(ViewMode.init(rawValue:)) {
             session.settings.view = mode
         }
@@ -140,13 +147,18 @@ struct RootView: View {
         PaintingView()
             .background(Theme.page.ignoresSafeArea())
             .overlay(alignment: .top) {
-                if session.layerMode, session.layers != nil {
-                    LayerStepsView()
-                        .padding(14)
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-                        .padding(.horizontal, 12)
-                        .padding(.top, 4)
+                VStack(spacing: 8) {
+                    if session.layerMode, session.layers != nil {
+                        LayerStepsView()
+                            .padding(14)
+                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                            .padding(.horizontal, 12)
+                    }
+                    if !session.closeups.isEmpty {
+                        CloseupStrip()
+                    }
                 }
+                .padding(.top, 4)
             }
             .overlay(alignment: .bottom) {
                 Group {
@@ -198,6 +210,7 @@ struct RootView: View {
             // What the picture shows, then the panels: within reach of the thumb.
             ToolbarItemGroup(placement: .bottomBar) {
                 viewMenu
+                frameToggle
                 outlinesToggle
                 numbersToggle
                 Spacer()
@@ -217,6 +230,7 @@ struct RootView: View {
     @ToolbarContentBuilder private var wideToolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .principal) {
             viewPicker
+            frameToggle
             outlinesToggle
             numbersToggle
         }
@@ -300,6 +314,23 @@ struct RootView: View {
         .fixedSize()
     }
 
+    /// A frame drawn on the base picture becomes a close-up: that part, analysed on its own.
+    private var frameToggle: some View {
+        Toggle(isOn: Binding(get: { session.framing }, set: { on in
+            guard !on || store.unlocked else {
+                paywallReason = "zoom in on a part of the picture"
+                showingPaywall = true
+                return
+            }
+            session.framing = on
+        })) {
+            Label(session.framing ? "Cancel Close-Up" : "Close-Up", systemImage: "viewfinder")
+        }
+        .toggleStyle(.button)
+        .disabled(session.image == nil || session.closeupID != nil)
+        .help(session.framing ? "Cancel choosing a part of the picture" : "Zoom in on a part of the picture")
+    }
+
     private var outlinesToggle: some View {
         @Bindable var session = session
         return Toggle(isOn: $session.settings.outlines) { Label("Outlines", systemImage: "squareshape.split.3x3") }
@@ -353,6 +384,7 @@ struct RootView: View {
 
     private func save() {
         guard session.savedID != nil || store.unlocked || collection.items.count < Store.freePictures else {
+            paywallReason = "save more than one picture"
             showingPaywall = true
             return
         }
@@ -383,5 +415,64 @@ struct RootView: View {
             return
         }
         session.load(data, name: url.deletingPathExtension().lastPathComponent)
+    }
+}
+
+/// The close-ups of the picture, over its upper edge: back to the whole picture, and one tap to
+/// each part looked at so far. The cross removes one.
+private struct CloseupStrip: View {
+    @Environment(Session.self) private var session
+
+    var body: some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 10) {
+                if session.closeupID != nil {
+                    Button("Whole Picture", systemImage: "arrow.uturn.backward") { session.showBase() }
+                        .buttonStyle(.bordered)
+                        .disabled(session.busy)
+                }
+                ForEach(session.closeups) { closeup in
+                    let active = closeup.id == session.closeupID
+                    Button { session.openCloseup(closeup.id) } label: {
+                        Image(decorative: closeup.thumb, scale: 1)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 44, height: 44)
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                            .overlay(alignment: .bottomLeading) {
+                                Text("\(closeup.id)")
+                                    .font(.caption2.bold())
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 4)
+                                    .background(.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 3))
+                                    .padding(3)
+                            }
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 6).strokeBorder(active ? Color.accentColor : .clear, lineWidth: 2.5)
+                            }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Detail \(closeup.id)")
+                    .accessibilityAddTraits(active ? .isSelected : [])
+                    .overlay(alignment: .topTrailing) {
+                        Button { session.removeCloseup(closeup.id) } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .symbolRenderingMode(.palette)
+                                .foregroundStyle(.white, .black.opacity(0.6))
+                                .font(.system(size: 18))
+                        }
+                        .buttonStyle(.plain)
+                        .offset(x: 7, y: -7)
+                        .accessibilityLabel("Remove detail \(closeup.id)")
+                    }
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+        }
+        .scrollIndicators(.hidden)
+        .fixedSize(horizontal: false, vertical: true)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .padding(.horizontal, 12)
     }
 }

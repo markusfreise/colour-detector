@@ -29,18 +29,21 @@
         }
     }
 
-    // Square and larger than the window, so that the turned one still covers every corner.
+    // As large as the window. The turned one is 10 degrees off upside down, so it is only as much
+    // larger as a 10 degree tilt needs to cover every corner (cos 10° = 0.985, sin 10° = 0.174).
     &__layer {
         position: absolute;
         top: 50%;
         left: 50%;
-        width: 150vmax;
-        height: 150vmax;
+        width: 100vw;
+        height: 100vh;
         translate: -50% -50%;
         object-fit: cover;
         animation: pulse 14s ease-in-out infinite alternate;
 
         &--turned {
+            width: calc(100vw * 0.985 + 100vh * 0.174);
+            height: calc(100vw * 0.174 + 100vh * 0.985);
             rotate: 170deg;
             mix-blend-mode: multiply;
             animation-delay: -5s;

@@ -1,5 +1,11 @@
 <template>
   <main class="gate">
+    <!-- A watercolour behind it: the picture, and the same one turned almost upside down and
+         multiplied onto it; both pulse slowly, a little apart. -->
+    <div class="gate__backdrop" aria-hidden="true">
+      <img class="gate__layer" :src="background" alt="" />
+      <img class="gate__layer gate__layer--turned" :src="background" alt="" />
+    </div>
     <section class="panel gate__card" aria-labelledby="gate-title">
       <!-- The logo in the colour of the text, so it reads in light and dark. -->
       <h1 id="gate-title" class="gate__title">
@@ -71,6 +77,7 @@ import { computed, ref } from 'vue'
 import { useAccountStore } from '../stores/account.js'
 import { APP_NAME } from '../config.js'
 import logoSvg from '../../resources/logo.svg?raw'
+import background from '../../resources/background.webp'
 
 const account = useAccountStore()
 const logo = logoSvg.replace(/fill="black"/g, 'fill="currentColor"')

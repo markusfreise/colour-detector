@@ -3,10 +3,53 @@
 // Signing in and the two statements, before the app opens.
 
 .gate {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     min-height: 100vh;
     display: grid;
     place-items: center;
     padding: var(--gap);
+
+    &__backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        overflow: hidden;
+        isolation: isolate;
+
+        // In dark mode the light watercolour is dimmed, so it does not glare around the card.
+        @media (prefers-color-scheme: dark) {
+            &::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.55);
+            }
+        }
+    }
+
+    // Square and larger than the window, so that the turned one still covers every corner.
+    &__layer {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 150vmax;
+        height: 150vmax;
+        translate: -50% -50%;
+        object-fit: cover;
+        animation: pulse 14s ease-in-out infinite alternate;
+
+        &--turned {
+            rotate: 170deg;
+            mix-blend-mode: multiply;
+            animation-delay: -5s;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            animation: none;
+        }
+    }
 
     // A card like the settings panel, at most 400 px wide.
     &__card {
@@ -24,10 +67,10 @@
         color: var(--c-head);
     }
 
-    // At most 246 px wide, its height follows.
+    // As wide as the card, its height follows.
     &__logo {
         display: block;
-        max-width: #{pxtorem(246)};
+        width: 100%;
 
         svg {
             display: block;

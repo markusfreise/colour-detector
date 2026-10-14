@@ -11,3 +11,14 @@
         opacity: 0.1;
     }
 }
+
+// The watercolour behind signing in: it swells a little and settles again.
+@keyframes pulse {
+    from {
+        scale: 1;
+    }
+
+    to {
+        scale: 1.06;
+    }
+}

@@ -78,6 +78,11 @@
         <p v-else class="paintbox__empty">
           {{ layerMode ? 'No base paints chosen. Click a paint below to add it, or press Auto.' : 'No paints selected. Click a paint below to add it.' }}
         </p>
+        <p v-if="!layerMode && selected.length >= pro.paintLimit" class="paintbox__note paintbox__limit">
+          Maximum number of colours reached.
+          <button class="paintbox__get-pro" type="button" @click="pro.require(false, `mix from more than ${FREE_PAINTS} paints`)">Get Pro</button>
+          to lift this limit.
+        </p>
       </div>
 
       <div v-for="group in available" :key="group.key" class="paintbox__group">
@@ -103,8 +108,12 @@
         </div>
         <form v-if="paintForm" class="paintbox__paint-form" @submit.prevent="savePaint">
           <!-- A paint from one of the libraries that come with the app: first the library, then the
-               colour out of it, and the whole form is filled in. -->
-          <label class="paintbox__input paintbox__input--wide">
+               colour out of it, and the whole form is filled in. The libraries are Pro. -->
+          <p v-if="!pro.active" class="paintbox__note paintbox__input--wide">
+            <button class="paintbox__get-pro" type="button" @click="pro.require(false, 'add colours from the catalogues of known manufacturers')">Get pro</button>
+            and easily add pre-defined colours from the catalogues of known manufacturers and brands.
+          </p>
+          <label v-else class="paintbox__input paintbox__input--wide">
             <span>Library</span>
             <select v-model="libraryPick" class="input input--select">
               <option value="">Add new below</option>
@@ -153,7 +162,7 @@
           </label>
           <p class="paintbox__note">
             Pick the colour of a medium wash on white paper, not the colour straight from the pan or tube.
-            <template v-if="library">{{ library.name }} numbers fill in name and colour.</template>
+            <template v-if="library && pro.active">{{ library.name }} numbers fill in name and colour.</template>
           </p>
           <div class="paintbox__form-actions">
             <button class="button button--secondary" type="submit">{{ paintForm.id ? 'Save paint' : 'Add paint' }}</button>
@@ -354,7 +363,7 @@ function useColour() {
 // A number that is on the colour chart of its library fills in the rest.
 function lookUp() {
   const form = paintForm.value
-  if (!form || form.id || form.name) return
+  if (!form || form.id || form.name || !pro.active) return
   const known = library.value?.catalogue.find((c) => c.number === form.number.trim())
   if (known) Object.assign(form, { name: known.name, hex: known.hex })
 }

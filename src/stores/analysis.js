@@ -8,7 +8,7 @@ import { renderLayers } from '../lib/layers.js'
 import { useAiStore } from './ai.js'
 import { aiRequest, readAiAnswer, aiCost, aiImageSize } from '../lib/ai.js'
 import { boxMask, detailWash } from '../lib/details.js'
-import { toOklabPixels } from '../lib/segment.js'
+import { toOklabPixels, SIMPLIFY_ZERO } from '../lib/segment.js'
 import { closeupSize } from '../lib/closeup.js'
 import { useProStore } from './pro.js'
 
@@ -147,7 +147,7 @@ export const useAnalysisStore = defineStore('analysis', {
       layerAccents: 3, // layer mode: accent layers at most (a strong wash on small areas, painted last)
       maxCoats: 2, // layer mode: coats of one wash an area can get
       colours: 20,
-      simplify: 0,
+      simplify: SIMPLIFY_ZERO, // shown as 0; see SIMPLIFY_ZERO
       guides: true, // sketch: guide lines for transferring it to paper (quarters and diagonals)
       details: true, // with an AI plan: show the final wash of fine dark details
       ai: false, // the colours to mix and the paints are chosen by an AI model (once asked for this picture)

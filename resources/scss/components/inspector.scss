@@ -4,13 +4,13 @@
 // it, with the way to the whole breakdown (ColourInspector.vue).
 
 .inspector {
-    // Over the picture, as wide as the window, moved up and down by its handle.
+    // Over the picture, in the middle and at most 400 px wide, moved up and down by its handle.
     position: fixed;
     z-index: 4;
     left: 50%;
     transform: translateX(-50%);
     bottom: var(--app-bottom);
-    width: calc(100vw - var(--gap-2x));
+    width: min(calc(100vw - var(--gap-2x)), #{pxtorem(400)});
     max-height: calc(100vh - var(--gap-2x));
     overflow-y: auto;
     overscroll-behavior: contain;

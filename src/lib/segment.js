@@ -98,6 +98,8 @@ const TOP_SIMPLIFY = 10
 // from 0 on (the patches, the joining, the texture, the rounding) is taken back evenly, and at
 // FINEST none of it is left: the areas follow the photo, down to SMALLEST_AREA.
 export const FINEST = -4
+// The step of Simplify that is shown as 0 and opens a picture; the steps below it are Pro.
+export const SIMPLIFY_ZERO = -2
 // The smallest area that is no detail, in pixels at Simplify 0; it grows with (Simplify + 1) ^ MIN_AREA_POWER.
 const MIN_AREA = 72
 const MIN_AREA_POWER = 1.3

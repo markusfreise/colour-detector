@@ -64,14 +64,16 @@
             </span>
           </div>
           <label class="field">
-            <span class="field__label">Simplify areas <output class="field__value">{{ analysis.settings[simplifyKey] }}</output></span>
+            <span class="field__label">Simplify areas <output class="field__value">{{ simplifyShown }}</output></span>
             <input
-              v-model.number="analysis.settings[simplifyKey]"
+              :value="analysis.settings[simplifyKey]"
               class="field__range"
               type="range"
               :min="analysis.layerMode ? 0 : FINEST"
               max="10"
-              @change="analysis.analyse()"
+              :title="analysis.layerMode || pro.active ? undefined : 'Below 0 with Pro'"
+              @input="setSimplify($event)"
+              @change="simplifyChanged"
             />
           </label>
         <div class="controls__settings">
@@ -191,7 +193,8 @@ import { useCollectionStore } from '../stores/collection.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useLayoutStore } from '../stores/layout.js'
 import PanelToggle from './PanelToggle.vue'
-import { FINEST } from '../lib/segment.js'
+import { FINEST, SIMPLIFY_ZERO } from '../lib/segment.js'
+import { useProStore } from '../stores/pro.js'
 import AiPanel from './AiPanel.vue'
 import { useFloating } from './floating.js'
 import AppIcon from './AppIcon.vue'
@@ -222,6 +225,25 @@ const methods = [
 ]
 // Layer mode keeps its own smoothing: its areas are painted several times over.
 const simplifyKey = computed(() => (analysis.layerMode ? 'layerSimplify' : 'simplify'))
+// In mix mode the scale is shown from SIMPLIFY_ZERO on, so its finer steps read -1 and -2.
+const simplifyShown = computed(() => analysis.settings[simplifyKey.value] - (analysis.layerMode ? 0 : SIMPLIFY_ZERO))
+// The steps below the shown 0 are Pro: without it the slider stops at 0 and the plans come up.
+const pro = useProStore()
+let wantedFiner = false
+function setSimplify(event) {
+  let value = Number(event.target.value)
+  wantedFiner = !analysis.layerMode && !pro.active && value < SIMPLIFY_ZERO
+  if (wantedFiner) {
+    value = SIMPLIFY_ZERO
+    event.target.value = value
+  }
+  analysis.settings[simplifyKey.value] = value
+}
+function simplifyChanged() {
+  if (wantedFiner) pro.require(false, 'make the areas finer than Simplify 0')
+  wantedFiner = false
+  analysis.analyse()
+}
 // On Auto the slider says how many paints to propose; by hand it shows how many were chosen.
 const layerCount = computed(() => (paints.activeBox.layerAuto ? analysis.settings.layerCount : paints.activeBox.layerIds.length))
 

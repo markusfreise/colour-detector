@@ -271,4 +271,21 @@
         border-radius: 0;
         padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
+
+    // Under the selected paints once a free account has as many as it may.
+    &__limit {
+        margin-top: var(--gap-05x);
+    }
+
+    // "Get pro" in the sentence in place of the libraries: a link that opens the plans.
+    &__get-pro {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--c-corporate);
+        font: inherit;
+        font-weight: 600;
+        text-decoration: underline;
+        cursor: pointer;
+    }
 }

@@ -2,7 +2,7 @@
 
 .flyout {
     left: 0;
-    background: var(--c-white);
+    background: var(--c-background-raised);
     padding: #{pxtorem(32)};
     border-radius: var(--radius);
     color: var(--c-copy);
@@ -170,7 +170,7 @@
     border-radius: var(--radius-medium);
     padding: #{pxtorem(9)} #{pxtorem(14)} #{pxtorem(5)};
     cursor: pointer;
-    background: var(--c-white);
+    background: var(--c-background-raised);
     color: var(--c-copy);
     white-space: nowrap;
     box-shadow: var(--shadow-flat);
@@ -182,14 +182,14 @@
 
     &--secondary {
         background: var(--c-corporate);
-        color: var(--c-white);
+        color: var(--c-on-corporate);
     }
     &--active {
         background: var(--c-corporate);
-        color: var(--c-white) !important;
+        color: var(--c-on-corporate) !important;
         svg {
             path {
-                fill: var(--c-white) !important;
+                fill: var(--c-on-corporate) !important;
             }
         }
     }
@@ -201,7 +201,7 @@
         }
         &:not(:has(svg)) {
             background: var(--c-corporate);
-            color: var(--c-white) !important;
+            color: var(--c-on-corporate) !important;
         }
     }
     &--ghost {
@@ -214,7 +214,7 @@
     }
     &:has(svg) {
         &:not(.button--active) {
-            background: white;
+            background: var(--c-background-raised);
         }
         width: #{pxtorem(48)};
         height: #{pxtorem(48)};

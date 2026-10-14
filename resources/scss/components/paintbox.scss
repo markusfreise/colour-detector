@@ -250,7 +250,7 @@
         // Pressed once: the next press deletes.
         &--armed {
             background: var(--c-danger);
-            color: var(--c-white);
+            color: var(--c-on-danger);
         }
     }
 

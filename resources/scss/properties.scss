@@ -4,6 +4,9 @@
 // prefers-color-scheme switches to the dark values.
 
 :root {
+    // Form controls, dialogs and scrollbars of the browser follow the scheme too.
+    color-scheme: light dark;
+
     // Colours
     --c-background: #f7f4ee;
     --c-background-raised: #ffffff;
@@ -20,6 +23,9 @@
     --c-border-light: #efece7;
     --c-chip-border: #242424;
     --c-white: #ffffff;
+    // Text and icons on the corporate colour and on danger: white in light, dark in dark.
+    --c-on-corporate: #ffffff;
+    --c-on-danger: #ffffff;
     --c-backdrop: rgba(0, 0, 0, 0.45);
 
     // Font families
@@ -70,7 +76,16 @@
         --c-copy-light: #a89f94;
         --c-corporate: #8fb6dc;
         --c-corporate-soft: #2b3642;
+        --c-success: #74b98a;
+        --c-warning: #d9a548;
+        --c-danger: #e8796d;
         --c-border: #3a3632;
+        --c-border-light: #2e2b28;
         --c-chip-border: #5a544d;
+        --c-on-corporate: #14202c;
+        --c-on-danger: #1b1a18;
+        --c-backdrop: rgba(0, 0, 0, 0.6);
+        --shadow: 0 #{pxtorem(8)} #{pxtorem(30)} rgba(0, 0, 0, 0.5);
+        --shadow-flat: 0 #{pxtorem(1)} #{pxtorem(3)} rgba(0, 0, 0, 0.5);
     }
 }

@@ -8,6 +8,13 @@ body {
     background: var(--c-background);
 }
 
+// Dialogs bring the browser's own colours; they follow the design tokens instead.
+dialog {
+    background: var(--c-background-raised);
+    color: var(--c-copy);
+    border-color: var(--c-border);
+}
+
 .wrap {
     width: min(100% - var(--gap-2x), var(--max-width));
     margin-inline: auto;

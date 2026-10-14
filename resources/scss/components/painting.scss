@@ -119,7 +119,7 @@
     &__tool--on {
         background: var(--c-corporate);
         border-color: var(--c-corporate);
-        color: var(--c-white);
+        color: var(--c-on-corporate);
 
         &:hover {
             background: var(--c-corporate);
@@ -145,7 +145,7 @@
         max-width: calc(100% - var(--gap-2x));
         padding: var(--gap) var(--gap-15x);
         border-radius: var(--radius);
-        background: var(--c-white);
+        background: var(--c-background-raised);
         box-shadow: var(--shadow);
         font-size: var(--fs-medium);
         font-weight: 600;

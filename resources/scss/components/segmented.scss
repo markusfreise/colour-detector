@@ -15,7 +15,7 @@
     box-shadow:  var(--shadow-flat);
     border: 1px solid var(--c-border);
     border-radius: var(--radius-small);
-    background: var(--c-white);
+    background: var(--c-background-raised);
     &--fill {
         display: flex;
     }
@@ -34,7 +34,7 @@
             margin: 0;
         }
         &:hover:not(.segmented__option--active) {
-            background: var(--c-border)-light;
+            background: var(--c-border-light);
             svg {
                 path {
                     fill: var(--c-corporate);
@@ -44,7 +44,7 @@
         &--active {
             box-shadow: var(--shadow-flat);
             background: var(--c-corporate);
-            color: white;
+            color: var(--c-on-corporate);
             font-weight: 600;
             box-shadow: var(--shadow-flat);
         }

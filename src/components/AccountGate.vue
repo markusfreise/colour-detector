@@ -1,7 +1,10 @@
 <template>
   <main class="gate">
     <section class="panel gate__card" aria-labelledby="gate-title">
-      <h1 id="gate-title" class="gate__title">{{ APP_NAME }}</h1>
+      <!-- The logo in the colour of the text, so it reads in light and dark. -->
+      <h1 id="gate-title" class="gate__title">
+        <span class="gate__logo" role="img" :aria-label="APP_NAME" v-html="logo"></span>
+      </h1>
       <p v-if="account.notice" class="gate__notice" :class="{ 'gate__notice--error': account.notice.kind === 'error' }">
         {{ account.notice.text }}
       </p>
@@ -67,8 +70,10 @@
 import { computed, ref } from 'vue'
 import { useAccountStore } from '../stores/account.js'
 import { APP_NAME } from '../config.js'
+import logoSvg from '../../resources/logo.svg?raw'
 
 const account = useAccountStore()
+const logo = logoSvg.replace(/fill="black"/g, 'fill="currentColor"')
 const email = ref('')
 const privacy = ref(false)
 const local = ref(false)

@@ -105,7 +105,7 @@ const buttons = computed(() => ['google', 'apple', 'meta'].filter((id) => accoun
 // the user's paints (App.vue).
 const DWELL = 6000 // a rendering on its own
 const FADE = 2500 // as long as the fades in gate.scss
-const HOLD = 1500 // the photo on its own, at the least
+const HOLD = 1240 // the photo fully there, at the least
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 const showing = ref(false)
@@ -124,6 +124,8 @@ const shuffled = (list) => {
   return copy
 }
 const pause = (ms) => new Promise((resolve) => (timer = setTimeout(resolve, ms)))
+// Until what has just changed is on screen.
+const painted = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
 // A photo is shown only once it is loaded, so that it fades in whole.
 const ready = (url) => new Promise((resolve) => {
   const img = new Image()
@@ -151,10 +153,13 @@ async function showcase() {
       await ready(picture.url)
       photo.value = picture.url
       // The new source has to be in place before the fade starts.
-      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+      await painted()
       photoShown.value = true
-      // The rendering of the new photo is made while the photo is on screen.
-      await Promise.all([pause(FADE + HOLD), analysis.loadFromSource(picture.url, picture.name)])
+      // The rendering before stays under the photo until the photo covers it completely; only
+      // then is the new one made, and the photo gives way once it is drawn, not before HOLD.
+      await pause(FADE)
+      if (!running) return
+      await Promise.all([pause(HOLD), analysis.loadFromSource(picture.url, picture.name).then(painted)])
       if (!running) return
       photoShown.value = false
       previous = picture.url

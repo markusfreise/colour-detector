@@ -6,8 +6,6 @@ import SwiftUI
 struct ColourCard: View {
     @Environment(Session.self) private var session
     @Environment(Library.self) private var library
-    /// Narrow screen: the recipe lists one paint per row.
-    var stacked = false
     let showBreakdown: () -> Void
 
     var body: some View {
@@ -16,7 +14,8 @@ struct ColourCard: View {
                 session.inspect(region: nil)
             } content: {
                 if let recipe = entry.recipe {
-                    RecipeView(recipe: recipe, paints: library.byID, stacked: stacked)
+                    // The card is narrow everywhere: one paint per row.
+                    RecipeView(recipe: recipe, paints: library.byID, stacked: true)
                 } else {
                     Text("No paints selected in the paint box.").foregroundStyle(.secondary)
                 }
@@ -77,7 +76,7 @@ struct FloatingCard<Content: View>: View {
             content
         }
         .padding(16)
-        .frame(maxWidth: 640, alignment: .leading)
+        .frame(maxWidth: 400, alignment: .leading)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
         .shadow(color: .black.opacity(0.14), radius: 16, y: 6)
         .accessibilityElement(children: .contain)

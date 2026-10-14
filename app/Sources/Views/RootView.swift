@@ -153,7 +153,7 @@ struct RootView: View {
                     if session.layerMode {
                         SpotCard()
                     } else {
-                        ColourCard(stacked: compact) { openBreakdown() }
+                        ColourCard { openBreakdown() }
                     }
                 }
                 .padding(.horizontal, 12)

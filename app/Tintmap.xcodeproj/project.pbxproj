@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		03195CA16AC483A5C01335DB /* PaintBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A264532849ADB3D5E9D7EC43 /* PaintBoxView.swift */; };
+		078F107BB4A0A7CE97158E20 /* ColourCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A266CC92F0484BF3936B71 /* ColourCard.swift */; };
 		12B70655B61330C24A3A3EDB /* sample-rooftops-dusk.webp in Resources */ = {isa = PBXBuildFile; fileRef = 00AD382FB81395697C71B3A5 /* sample-rooftops-dusk.webp */; };
 		1CFADE6DE4BBF43E2ADB9662 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A801B29219055FE67D69845 /* CollectionView.swift */; };
 		2DD230F92C26427C111A8F7C /* sample-old-town-snow.webp in Resources */ = {isa = PBXBuildFile; fileRef = 1F551F1A201E800D3EAA16F3 /* sample-old-town-snow.webp */; };
+		3992EDA8DA61444F71C1F922 /* PictureExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 195355518D1BF2A22E7C3EC7 /* PictureExport.swift */; };
 		3A9B51E258E13DDE1A84F338 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E56FBEFDA78E2F8837CEE95 /* Theme.swift */; };
 		3AAAA1A9936A5527B66A8963 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B982E51466E8DDE54DFC9EF /* Store.swift */; };
 		4534E0B00B14C410A1102E09 /* sample-winter-fields.webp in Resources */ = {isa = PBXBuildFile; fileRef = E146CB5185264552F900263F /* sample-winter-fields.webp */; };
@@ -24,6 +26,7 @@
 		81A21B5FFCD70DF3364506F1 /* PaintingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FAFE6C95A7F6FEC107EE34 /* PaintingView.swift */; };
 		81B99924D9202730F619BC56 /* TintmapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456DE57C0B14DB6899F88B6D /* TintmapApp.swift */; };
 		8FE8644EABB8F2F22032F7AB /* sample-bielefeld.webp in Resources */ = {isa = PBXBuildFile; fileRef = 86FF845D0AA38EA3A8BA4A7D /* sample-bielefeld.webp */; };
+		920FFEA1E03DF418073351D3 /* SamplesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2AEC3839BCF460BEB765CC /* SamplesView.swift */; };
 		96DF6D338ADE25932DB3329A /* DebugSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A5D9BC8A8EA0B9C9F184F5 /* DebugSnapshot.swift */; };
 		997D41B2496A58B0A8CDF28F /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E8CE5B7620FD4EFC085F78 /* RootView.swift */; };
 		A7AC78082094A5D6A8808500 /* Library.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD60AE475F8C41975C7F37 /* Library.swift */; };
@@ -43,6 +46,7 @@
 		EA87E60F8BB53B19E1AE76C8 /* CoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0AA53A5C4E23C7CBE285A4 /* CoreTests.swift */; };
 		EFB81655E9572068E8FB7BDC /* Mixing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28821C267403BAEDB114A978 /* Mixing.swift */; };
 		F6955A03B27D43D418E8420C /* Pictures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A9539EF41B0301AAE5F14D7 /* Pictures.swift */; };
+		F720B6CEB9AFD4763C897A12 /* PanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537AB134FD41A5AE0DCF877B /* PanelView.swift */; };
 		FC643AE81E06F4C389B206BF /* horadam.json in Resources */ = {isa = PBXBuildFile; fileRef = 6EB2501D0FB0E090305F162E /* horadam.json */; };
 /* End PBXBuildFile section */
 
@@ -62,13 +66,16 @@
 		1666D7EF3E8CFF24D1701111 /* PrintSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintSheet.swift; sourceTree = "<group>"; };
 		186C73725045D85988B60B3E /* PaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteView.swift; sourceTree = "<group>"; };
 		18FAFE6C95A7F6FEC107EE34 /* PaintingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaintingView.swift; sourceTree = "<group>"; };
+		195355518D1BF2A22E7C3EC7 /* PictureExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureExport.swift; sourceTree = "<group>"; };
 		1F551F1A201E800D3EAA16F3 /* sample-old-town-snow.webp */ = {isa = PBXFileReference; path = "sample-old-town-snow.webp"; sourceTree = "<group>"; };
 		28821C267403BAEDB114A978 /* Mixing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mixing.swift; sourceTree = "<group>"; };
 		34E8CE5B7620FD4EFC085F78 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		3F2AEC3839BCF460BEB765CC /* SamplesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplesView.swift; sourceTree = "<group>"; };
 		456DE57C0B14DB6899F88B6D /* TintmapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TintmapApp.swift; sourceTree = "<group>"; };
 		46A5D9BC8A8EA0B9C9F184F5 /* DebugSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSnapshot.swift; sourceTree = "<group>"; };
 		493928F89F41DF8D403B1E4D /* CameraPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPicker.swift; sourceTree = "<group>"; };
 		4D1FE3F00F616DF002146FF8 /* LayerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerViews.swift; sourceTree = "<group>"; };
+		537AB134FD41A5AE0DCF877B /* PanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelView.swift; sourceTree = "<group>"; };
 		5A9539EF41B0301AAE5F14D7 /* Pictures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pictures.swift; sourceTree = "<group>"; };
 		653FEFFB5A095F61C7DC40F5 /* Segmentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segmentation.swift; sourceTree = "<group>"; };
 		656E2370C85BD5ADA5BB4322 /* Paint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paint.swift; sourceTree = "<group>"; };
@@ -96,6 +103,7 @@
 		D4915A96F23A0DBED72F67AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E146CB5185264552F900263F /* sample-winter-fields.webp */ = {isa = PBXFileReference; path = "sample-winter-fields.webp"; sourceTree = "<group>"; };
 		E2B54A2444BDD57E1E57A8DA /* Tintmap-macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Tintmap-macOS.entitlements"; sourceTree = "<group>"; };
+		F0A266CC92F0484BF3936B71 /* ColourCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColourCard.swift; sourceTree = "<group>"; };
 		F65030AC25EDCBD92B29AB9E /* TintmapTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TintmapTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE5B4ACA60799BDDCFF4738E /* EntryEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryEditorView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -115,6 +123,7 @@
 			children = (
 				493928F89F41DF8D403B1E4D /* CameraPicker.swift */,
 				46A5D9BC8A8EA0B9C9F184F5 /* DebugSnapshot.swift */,
+				195355518D1BF2A22E7C3EC7 /* PictureExport.swift */,
 				5A9539EF41B0301AAE5F14D7 /* Pictures.swift */,
 				1666D7EF3E8CFF24D1701111 /* PrintSheet.swift */,
 			);
@@ -155,14 +164,17 @@
 			children = (
 				87296F931B6A9A109A7B4034 /* Chips.swift */,
 				6A801B29219055FE67D69845 /* CollectionView.swift */,
+				F0A266CC92F0484BF3936B71 /* ColourCard.swift */,
 				9A7B495A2BAF310A1C108D64 /* ControlsView.swift */,
 				FE5B4ACA60799BDDCFF4738E /* EntryEditorView.swift */,
 				4D1FE3F00F616DF002146FF8 /* LayerViews.swift */,
 				A264532849ADB3D5E9D7EC43 /* PaintBoxView.swift */,
 				18FAFE6C95A7F6FEC107EE34 /* PaintingView.swift */,
 				186C73725045D85988B60B3E /* PaletteView.swift */,
+				537AB134FD41A5AE0DCF877B /* PanelView.swift */,
 				674D17C69881C182E1153124 /* PaywallView.swift */,
 				34E8CE5B7620FD4EFC085F78 /* RootView.swift */,
+				3F2AEC3839BCF460BEB765CC /* SamplesView.swift */,
 				9E56FBEFDA78E2F8837CEE95 /* Theme.swift */,
 			);
 			path = Views;
@@ -334,6 +346,7 @@
 				66A7743790C685F5429FF454 /* Chips.swift in Sources */,
 				1CFADE6DE4BBF43E2ADB9662 /* CollectionView.swift in Sources */,
 				CC707CF6B2003FFE76E179D9 /* ColorMath.swift in Sources */,
+				078F107BB4A0A7CE97158E20 /* ColourCard.swift in Sources */,
 				65B833B17CD6F607CFCEDA28 /* ControlsView.swift in Sources */,
 				96DF6D338ADE25932DB3329A /* DebugSnapshot.swift in Sources */,
 				B9517969DE46139ED9BA0D34 /* EntryEditorView.swift in Sources */,
@@ -347,11 +360,14 @@
 				03195CA16AC483A5C01335DB /* PaintBoxView.swift in Sources */,
 				81A21B5FFCD70DF3364506F1 /* PaintingView.swift in Sources */,
 				B086A91592E4CF1DF042B6AB /* PaletteView.swift in Sources */,
+				F720B6CEB9AFD4763C897A12 /* PanelView.swift in Sources */,
 				B26C44827A16C1E7E91D002D /* PaywallView.swift in Sources */,
 				B08C316CC45B00C80421EA93 /* PictureCollection.swift in Sources */,
+				3992EDA8DA61444F71C1F922 /* PictureExport.swift in Sources */,
 				F6955A03B27D43D418E8420C /* Pictures.swift in Sources */,
 				71A2DDA4E6749EA358D4B798 /* PrintSheet.swift in Sources */,
 				997D41B2496A58B0A8CDF28F /* RootView.swift in Sources */,
+				920FFEA1E03DF418073351D3 /* SamplesView.swift in Sources */,
 				AAE462A709F6B286047733E1 /* Segmentation.swift in Sources */,
 				461E2BE5740FDB0B553B8B73 /* Session.swift in Sources */,
 				3AAAA1A9936A5527B66A8963 /* Store.swift in Sources */,

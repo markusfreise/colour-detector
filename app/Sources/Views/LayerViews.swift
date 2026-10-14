@@ -86,8 +86,8 @@ struct LayerListView: View {
                     Text("No base paints chosen. Open the paint box and pick up to \(Library.maxLayerPaints), or let the app choose.")
                         .fixedSize(horizontal: false, vertical: true)
                     HStack(spacing: 6) {
-                        Button("Paint box", action: showPaintBox).buttonStyle(.outlineProminent)
-                        Button("Auto") { session.proposeLayers() }.buttonStyle(.outline)
+                        Button("Paint box", action: showPaintBox).buttonStyle(.borderedProminent)
+                        Button("Auto") { session.proposeLayers() }.buttonStyle(.bordered)
                     }
                 }
             }
@@ -218,19 +218,19 @@ struct LayerStepsView: View {
                             title(plan, step, layer, index: index)
                             Spacer(minLength: 0)
                             views
-                            Button("Close") { session.goToStep(nil) }
+                            CloseButton { session.goToStep(nil) }
                         }
                         VStack(alignment: .leading, spacing: 8) {
                             title(plan, step, layer, index: index)
                             HStack(spacing: 8) {
                                 buttons(index: index, last: last)
                                 Spacer(minLength: 0)
-                                Button("Close") { session.goToStep(nil) }
+                                CloseButton { session.goToStep(nil) }
                             }
                             views
                         }
                     }
-                    .buttonStyle(.outline)
+                    .buttonStyle(.bordered)
                     HStack(alignment: .top, spacing: 12) {
                         Chip(hex: step.hex, minHeight: 54) {
                             Text(step.coat == 1 ? "One stroke on white paper" : "\(step.coat) coats on white paper")
@@ -256,7 +256,7 @@ struct LayerStepsView: View {
                     }
                 }
             } else {
-                Button("Paint step by step") { session.goToStep(0) }.buttonStyle(.outline)
+                Button("Paint step by step") { session.goToStep(0) }.buttonStyle(.bordered)
             }
         }
     }
@@ -270,8 +270,11 @@ struct LayerStepsView: View {
     }
 
     private var views: some View {
-        SegmentedButtons(options: StepView.allCases.map { ($0, $0.title) }, selection: Binding(get: { session.layerStepView }, set: { session.layerStepView = $0 }))
-            .frame(maxWidth: 330)
+        Picker("Show", selection: Binding(get: { session.layerStepView }, set: { session.layerStepView = $0 })) {
+            ForEach(StepView.allCases, id: \.self) { Text($0.title).tag($0) }
+        }
+        .pickerStyle(.segmented)
+        .frame(maxWidth: 330)
     }
 
     private func buttons(index: Int, last: Bool) -> some View {

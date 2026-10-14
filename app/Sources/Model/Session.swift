@@ -3,7 +3,8 @@ import Foundation
 import Observation
 
 enum ViewMode: String, Codable, CaseIterable, Identifiable {
-    case mixed, target, original, overlay
+    /// In the order of the web app's view switch. `template` leaves the areas empty, to print and paint into.
+    case mixed, target, overlay, original, template
 
     var id: String { rawValue }
     var title: String {
@@ -12,6 +13,7 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
         case .target: "Photo colour"
         case .original: "Photo"
         case .overlay: "Overlay"
+        case .template: "Template"
         }
     }
 
@@ -22,8 +24,23 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
         case .target: "Colour"
         case .original: "Photo"
         case .overlay: "Overlay"
+        case .template: "Template"
         }
     }
+
+    /// The SF Symbol of the view; the web app draws the same symbols from icons8.
+    var symbol: String {
+        switch self {
+        case .mixed: "paintpalette"
+        case .target: "swatchpalette"
+        case .original: "photo"
+        case .overlay: "photo.on.rectangle"
+        case .template: "printer"
+        }
+    }
+
+    /// Layer mode shows the paint or the photo.
+    static let layerCases: [ViewMode] = [.mixed, .original]
 }
 
 /// How the picture is painted: every colour mixed on the palette, or thin washes over each other.
@@ -182,8 +199,8 @@ final class Session {
     static let sourceSize = 1600 // longest side that is kept and saved
     static let renderScale = 2 // picture pixels per working pixel, keeps outlines crisp
 
-    /// Sample photos; "Sample" steps through them, the first one loads at start.
-    private static let samples = [
+    /// Sample photos, chosen from the samples sheet; the first one loads at start.
+    static let samples = [
         (file: "sample-bielefeld", name: "Bielefeld (sample)"),
         (file: "sample-llyn-idwal", name: "Llyn Idwal (sample)"),
         (file: "sample-rooftops-dusk", name: "Rooftops at dusk (sample)"),
@@ -214,8 +231,12 @@ final class Session {
     private(set) var regionEntry: [Int] = []
     /// The areas with their outlines, ready to show.
     private(set) var rendered: CGImage?
+    /// The colour shown on its own in the picture, chosen in the colour list.
     private(set) var selectedEntry: Int?
+    /// The area tapped in the picture.
     private(set) var selectedRegion: Int?
+    /// The colour of the colour card and its full breakdown. Looking at a colour leaves the picture as it is.
+    private(set) var inspectedEntry: Int?
     private(set) var busy = false
     var error: String?
 
@@ -266,6 +287,7 @@ final class Session {
     }
 
     var selected: PaletteEntry? { selectedEntry.flatMap { entries.indices.contains($0) ? entries[$0] : nil } }
+    var inspected: PaletteEntry? { inspectedEntry.flatMap { entries.indices.contains($0) ? entries[$0] : nil } }
 
     var usedPaintIDs: Set<String> {
         Set(entries.flatMap { $0.recipe?.paints.map(\.paintID) ?? [] })
@@ -277,8 +299,13 @@ final class Session {
     /// Loads the next sample photo; `restart` goes back to the first one (used at start).
     func loadSample(restart: Bool = false) {
         if restart { nextSample = 0 }
-        let sample = Self.samples[nextSample]
-        nextSample = (nextSample + 1) % Self.samples.count
+        loadSample(nextSample)
+    }
+
+    /// Opens one sample photo by its place in `samples`.
+    func loadSample(_ index: Int) {
+        let sample = Self.samples[index % Self.samples.count]
+        nextSample = (index + 1) % Self.samples.count
         guard let url = Bundle.main.url(forResource: sample.file, withExtension: "webp"), let data = try? Data(contentsOf: url) else {
             error = "The sample photo is missing."
             return
@@ -351,6 +378,7 @@ final class Session {
             regionEntry = []
             selectedEntry = nil
             selectedRegion = nil
+            inspectedEntry = nil
             recomputeAllRecipes(edits: edits)
         }
     }
@@ -431,9 +459,10 @@ final class Session {
     func setMode(_ mode: AnalysisMode) {
         guard mode != settings.mode else { return }
         settings.mode = mode
-        if mode == .layer, settings.view == .target || settings.view == .overlay { settings.view = .mixed }
+        if mode == .layer, !ViewMode.layerCases.contains(settings.view) { settings.view = .mixed }
         selectedEntry = nil
         selectedRegion = nil
+        inspectedEntry = nil
         layerStep = nil
         layerPoint = nil
         if mode == .mix, segmentation != nil, mixKey == mixKeyNow {
@@ -665,6 +694,7 @@ final class Session {
                 if entries[edit.index].recipes.indices.contains(edit.chosen) { entries[edit.index].chosen = edit.chosen }
             }
             if let selectedEntry, !entries.indices.contains(selectedEntry) { self.selectedEntry = nil }
+            if let inspectedEntry, !entries.indices.contains(inspectedEntry) { self.inspectedEntry = nil }
             relabel()
             busy = false
             render()
@@ -873,20 +903,33 @@ final class Session {
 
     // MARK: Selection and changes
 
-    func select(region: Int?) {
-        if let region, regionEntry.indices.contains(region), region != selectedRegion, isShown(regionEntry[region]) {
-            selectedRegion = region
-            selectedEntry = regionEntry[region]
-        } else {
+    /// A tap on an area: its colour goes on the colour card, the picture stays as it is.
+    /// The same area again closes the card; a tap on the blanked part brings the whole picture back.
+    func inspect(region: Int?) {
+        guard let region, regionEntry.indices.contains(region), region != selectedRegion else {
             selectedRegion = nil
-            selectedEntry = nil
+            inspectedEntry = nil
+            return
         }
-        render()
+        guard isShown(regionEntry[region]) else {
+            select(entry: nil)
+            return
+        }
+        selectedRegion = region
+        inspectedEntry = regionEntry[region]
     }
 
+    /// Puts a colour on the colour card without tapping an area.
+    func inspect(entry: Int?) {
+        inspectedEntry = entry.flatMap { entries.indices.contains($0) ? $0 : nil }
+        selectedRegion = nil
+    }
+
+    /// Shows one colour on its own in the picture, and on the colour card.
     func select(entry: Int?) {
         selectedEntry = entry
         selectedRegion = nil
+        inspectedEntry = entry
         render()
     }
 
@@ -943,7 +986,8 @@ final class Session {
         entries[from].share -= share
         regionEntry[region] = entry.id
         if let position = order.firstIndex(of: from) { order.insert(entry.id, at: position + 1) } else { order.append(entry.id) }
-        selectedEntry = entry.id
+        inspectedEntry = entry.id
+        if selectedEntry != nil { selectedEntry = entry.id }
         render()
     }
 
@@ -1000,7 +1044,8 @@ final class Session {
         if settings.view == .original {
             out = originalPixels ?? blank
         } else {
-            // Overlay: the colour areas at half strength over the photo.
+            // Overlay: the colour areas at half strength over the photo. Template: the areas stay empty.
+            let fill = settings.view != .template
             let keep = settings.view == .overlay ? 0.5 : 0
             out = settings.view == .overlay ? originalPixels ?? blank : blank
             let colours: [(UInt8, UInt8, UInt8)] = entries.enumerated().map { index, entry in
@@ -1008,7 +1053,7 @@ final class Session {
                 if let highlight, entries.indices.contains(highlight), entries[highlight].family != entry.family { c = Vec3(255, 255, 255) }
                 return (UInt8(c.x.rounded()), UInt8(c.y.rounded()), UInt8(c.z.rounded()))
             }
-            out.withUnsafeMutableBufferPointer { out in
+            if fill { out.withUnsafeMutableBufferPointer { out in
                 for y in 0..<h {
                     for x in 0..<w {
                         let c = colours[entryMap[y * w + x]]
@@ -1026,11 +1071,16 @@ final class Session {
                         }
                     }
                 }
-            }
+            } }
         }
 
-        if settings.outlines {
-            let line: (Double, Double, Double, Double) = settings.view == .original ? (255, 255, 255, 0.75) : (40, 36, 30, 0.55)
+        // The template always has its outlines, in light grey: they are what is painted into.
+        if settings.outlines || settings.view == .template {
+            let line: (Double, Double, Double, Double) = switch settings.view {
+            case .original: (255, 255, 255, 0.75)
+            case .template: (150, 150, 150, 0.8)
+            default: (40, 36, 30, 0.55)
+            }
             out.withUnsafeMutableBufferPointer { out in
                 func blend(_ x: Int, _ y: Int) {
                     let o = (y * outW + x) * 4

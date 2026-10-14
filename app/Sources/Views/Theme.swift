@@ -18,10 +18,9 @@ enum Theme {
     static let controlHeight: CGFloat = 40
     #endif
 
-    static let sidebarWidth: CGFloat = 520
     static let cardRadius: CGFloat = 14
 
-    /// Page behind the cards.
+    /// Behind the picture and the panels.
     static var page: Color {
         #if os(macOS)
         Color(nsColor: .windowBackgroundColor)
@@ -37,81 +36,6 @@ enum Theme {
         #else
         Color(uiColor: .secondarySystemGroupedBackground)
         #endif
-    }
-}
-
-/// A panel on the page: rounded, on its own surface, with a light shadow.
-struct Card<Content: View>: View {
-    var title: String?
-    var accent = false
-    @ViewBuilder var actions: () -> AnyView
-    @ViewBuilder var content: Content
-
-    init(_ title: String? = nil, accent: Bool = false, @ViewBuilder content: () -> Content) {
-        self.title = title
-        self.accent = accent
-        self.actions = { AnyView(EmptyView()) }
-        self.content = content()
-    }
-
-    init(_ title: String, accent: Bool = false, @ViewBuilder actions: @escaping () -> some View, @ViewBuilder content: () -> Content) {
-        self.title = title
-        self.accent = accent
-        self.actions = { AnyView(actions()) }
-        self.content = content()
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if let title {
-                HStack(spacing: 8) {
-                    Text(title).font(Theme.title)
-                    Spacer(minLength: 8)
-                    actions()
-                }
-            }
-            content
-        }
-        .font(Theme.body)
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.cardRadius))
-        .overlay(RoundedRectangle(cornerRadius: Theme.cardRadius).strokeBorder(accent ? Color.accentColor : Color.primary.opacity(0.06), lineWidth: accent ? 1.5 : 1))
-        .shadow(color: .black.opacity(0.07), radius: 10, y: 3)
-    }
-}
-
-/// A row of equally wide buttons of which one is selected. Larger and calmer than the system's segmented control.
-struct SegmentedButtons<Value: Hashable>: View {
-    let options: [(value: Value, title: String)]
-    @Binding var selection: Value
-
-    var body: some View {
-        HStack(spacing: 0) {
-            ForEach(Array(options.enumerated()), id: \.offset) { index, option in
-                let selected = option.value == selection
-                Button {
-                    selection = option.value
-                } label: {
-                    Text(option.title)
-                        .font(selected ? Theme.strong : Theme.body)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.75)
-                        .padding(.horizontal, 4)
-                        .frame(maxWidth: .infinity, minHeight: Theme.controlHeight)
-                        .foregroundStyle(selected ? Color.accentColor : .secondary)
-                        .background(selected ? Color.accentColor.opacity(0.14) : .clear)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(selected ? .isSelected : [])
-                if index < options.count - 1 {
-                    Rectangle().fill(Color.primary.opacity(0.12)).frame(width: 1, height: Theme.controlHeight)
-                }
-            }
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 9))
-        .overlay(RoundedRectangle(cornerRadius: 9).strokeBorder(Color.primary.opacity(0.14)))
     }
 }
 
@@ -134,26 +58,9 @@ struct CheckToggleStyle: ToggleStyle {
     }
 }
 
-/// The app's ordinary button: outlined, roomy, with the text in the body size.
-struct OutlineButtonStyle: ButtonStyle {
-    var prominent = false
-    @Environment(\.isEnabled) private var enabled
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(prominent ? Theme.strong : Theme.body)
-            .lineLimit(1)
-            .padding(.horizontal, 12)
-            .frame(minHeight: Theme.controlHeight - 2)
-            .foregroundStyle(prominent ? Color.accentColor : .primary)
-            .background(prominent ? Color.accentColor.opacity(0.14) : Theme.surface, in: RoundedRectangle(cornerRadius: 9))
-            .overlay(RoundedRectangle(cornerRadius: 9).strokeBorder(prominent ? Color.accentColor.opacity(0.4) : Color.primary.opacity(0.16)))
-            .opacity(enabled ? (configuration.isPressed ? 0.6 : 1) : 0.4)
-            .contentShape(Rectangle())
+extension View {
+    /// A system button that shows whether it is on: prominent when on, bordered when off.
+    @ViewBuilder func borderedStyle(selected: Bool) -> some View {
+        if selected { buttonStyle(.borderedProminent) } else { buttonStyle(.bordered) }
     }
-}
-
-extension ButtonStyle where Self == OutlineButtonStyle {
-    static var outline: OutlineButtonStyle { OutlineButtonStyle() }
-    static var outlineProminent: OutlineButtonStyle { OutlineButtonStyle(prominent: true) }
 }

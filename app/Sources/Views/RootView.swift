@@ -1,13 +1,16 @@
 import PhotosUI
 import SwiftUI
 
-/// The main screen: the picture, the settings, and the list of colours.
+/// The main screen, laid out as the web app: the picture fills the screen, the tools sit in the
+/// bars around it, the settings and colours share the inspector (a sheet on iPhone), and a tap on
+/// an area brings its colour up on a card over the picture.
 struct RootView: View {
     @Environment(Session.self) private var session
     @Environment(Library.self) private var library
     @Environment(PictureCollection.self) private var collection
     @Environment(Store.self) private var store
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var showingPaintBox = false
     @State private var showingCollection = false
@@ -15,29 +18,36 @@ struct RootView: View {
     @State private var showingFiles = false
     @State private var showingCamera = false
     @State private var showingPaywall = false
+    @State private var showingSamples = false
+    @State private var showingBreakdown = false
+    @State private var showingPanel = false
+    @State private var panelTab = PanelTab.colours
     @State private var photo: PhotosPickerItem?
     @State private var boxRevision = 0
 
     var body: some View {
         @Bindable var session = session
         NavigationStack {
-            GeometryReader { geometry in
-                // Two columns need room: a narrow iPad window gets the phone layout.
-                if sizeClass == .compact || geometry.size.width < 900 { compact } else { regular }
-            }
-            #if os(macOS)
-            .navigationTitle("Tintmap")
-            #else
-            .navigationTitle("")
-            #endif
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-            #endif
-            .toolbar { toolbar }
+            stage
+                .navigationTitle(session.imageName.isEmpty ? "No Picture" : session.imageName)
+                #if os(iOS)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbarRole(compact ? .automatic : .editor)
+                #endif
+                .toolbar { toolbar }
+                .inspector(isPresented: $showingPanel) {
+                    PanelView(tab: $panelTab, showPaintBox: openPaintBox)
+                        .inspectorColumnWidth(min: 340, ideal: 400, max: 520)
+                        // iPhone: half height, with the picture still usable above it.
+                        .presentationDetents([.medium, .large])
+                        .presentationBackgroundInteraction(.enabled(upThrough: .medium))
+                }
         }
         .sheet(isPresented: $showingPaintBox, onDismiss: paintBoxClosed) { PaintBoxView() }
         .sheet(isPresented: $showingCollection) { CollectionView() }
         .sheet(isPresented: $showingPaywall) { PaywallView(reason: "save more than one picture") }
+        .sheet(isPresented: $showingSamples) { SamplesView() }
+        .sheet(isPresented: $showingBreakdown) { BreakdownSheet() }
         .photosPicker(isPresented: $showingPhotos, selection: $photo, matching: .images)
         .fileImporter(isPresented: $showingFiles, allowedContentTypes: [.image]) { result in
             if case .success(let url) = result { open(url) }
@@ -49,6 +59,10 @@ struct RootView: View {
         }
         #endif
         .onChange(of: photo) { loadPhoto() }
+        // iPhone: the colour card comes up where the panel sheet was; one thing over the picture at a time.
+        .onChange(of: session.selectedRegion) { _, region in
+            if compact, region != nil { showingPanel = false }
+        }
         .alert("Something went wrong", isPresented: Binding(get: { session.error != nil }, set: { if !$0 { session.error = nil } })) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -67,8 +81,8 @@ struct RootView: View {
     }
 
     #if DEBUG
-    /// "-screen paintbox|collection|editor|paywall" opens that screen at launch, for screenshots;
-    /// "-view mixed|target|original|overlay" sets what the picture shows;
+    /// "-screen paintbox|collection|editor|breakdown|samples|settings|colours|paywall" opens that screen at
+    /// launch, for screenshots; "-view mixed|target|overlay|original|template" sets what the picture shows;
     /// "-sample" steps to the next sample photo.
     private func openScreenForScreenshot() async {
         let arguments = ProcessInfo.processInfo.arguments
@@ -92,7 +106,14 @@ struct RootView: View {
         switch screen {
         case "paintbox": showingPaintBox = true
         case "collection": showingCollection = true
-        case "editor": if !session.layerMode { session.select(entry: 2) }
+        case "editor": if !session.layerMode { session.inspect(entry: 2) }
+        case "breakdown":
+            if !session.layerMode { session.inspect(entry: 2) }
+            showingBreakdown = true
+        case "samples": showingSamples = true
+        case "settings", "colours":
+            panelTab = PanelTab(rawValue: screen) ?? .colours
+            showingPanel = true
         case "paywall": showingPaywall = true
         default: break
         }
@@ -111,162 +132,52 @@ struct RootView: View {
     }
     #endif
 
-    // MARK: Layouts
+    // MARK: Layout
 
-    /// iPhone: everything in one column; the colour editor comes up as a sheet over the picture.
-    private var compact: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                if session.layerMode { LayerStepsView() }
-                PaintingView()
-                Text(hint(tap: "Tap")).font(Theme.small).foregroundStyle(.secondary)
-                Card { ControlsView() }
-                if session.layerMode {
-                    spotCard
-                    layersCard
-                } else {
-                    coloursCard
+    /// The picture fills the screen; the colour card (in layer mode the spot card) floats over its
+    /// lower edge, the painting steps over its upper edge.
+    private var stage: some View {
+        PaintingView()
+            .background(Theme.page.ignoresSafeArea())
+            .overlay(alignment: .top) {
+                if session.layerMode, session.layers != nil {
+                    LayerStepsView()
+                        .padding(14)
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                        .padding(.horizontal, 12)
+                        .padding(.top, 4)
                 }
             }
-            .padding()
-        }
-        .background(Theme.page)
-        .sheet(isPresented: Binding(get: { !session.layerMode && session.selectedEntry != nil }, set: { if !$0 { session.select(entry: nil) } })) {
-            NavigationStack {
-                ScrollView {
-                    EntryEditorView(index: session.selectedEntry ?? 0, stacked: true).padding()
-                }
-                .navigationTitle("Colour \(session.selected?.label ?? "")")
-                #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
-                #endif
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) { Button("Done") { session.select(entry: nil) } }
-                }
-            }
-            .presentationDetents([.medium, .large])
-            .presentationBackgroundInteraction(.enabled(upThrough: .medium))
-        }
-    }
-
-    private static let editorID = "colour-editor"
-
-    /// iPad and Mac: the picture on the left, settings, editor and colours as cards in a column on the right.
-    private var regular: some View {
-        HStack(alignment: .top, spacing: 0) {
-            VStack(alignment: .leading, spacing: 10) {
-                if session.layerMode { LayerStepsView() }
-                PaintingView()
-                Text(hint(tap: "Click")).font(Theme.small).foregroundStyle(.secondary)
-                Spacer(minLength: 0)
-            }
-            .padding(20)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            ScrollViewReader { proxy in
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Card { ControlsView() }
-                        if session.layerMode {
-                            spotCard
-                            layersCard
-                        } else {
-                            if let index = session.selectedEntry {
-                                Card("Colour \(session.selected?.label ?? "")", accent: true) {
-                                    Button("Close") { session.select(entry: nil) }.buttonStyle(.outline)
-                                } content: {
-                                    EntryEditorView(index: index)
-                                }
-                                .id(Self.editorID)
-                            }
-                            coloursCard
-                        }
+            .overlay(alignment: .bottom) {
+                Group {
+                    if session.layerMode {
+                        SpotCard()
+                    } else {
+                        ColourCard(stacked: compact) { openBreakdown() }
                     }
-                    .padding([.vertical, .trailing], 20)
-                    .padding(.leading, 4)
                 }
-                // An area clicked in the picture brings its colour into view; the card may be scrolled away.
-                .onChange(of: session.selectedRegion) { _, region in
-                    guard region != nil else { return }
-                    withAnimation { proxy.scrollTo(Self.editorID, anchor: .top) }
-                }
+                .padding(.horizontal, 12)
+                .padding(.bottom, 8)
+                .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
             }
-            .frame(width: Theme.sidebarWidth)
-        }
-        .background(Theme.page)
+            .animation(reduceMotion ? nil : .snappy, value: session.inspectedEntry)
+            .animation(reduceMotion ? nil : .snappy, value: session.layerSpot != nil)
     }
 
-    private func hint(tap: String) -> String {
-        session.layerMode
-            ? "\(tap) a layer to see it alone, or a spot in the picture to see which layers it gets."
-            : "\(tap) an area to see its recipe and change its colour."
-    }
-
-    /// Layer mode: what the clicked spot gets.
-    @ViewBuilder private var spotCard: some View {
-        if let spot = session.layerSpot {
-            Card("This spot", accent: true) {
-                Button("Close") { session.selectPoint(nil) }.buttonStyle(.outline)
-            } content: {
-                LayerSpotView(spot: spot)
-            }
-        }
-    }
-
-    /// Layer mode: the layers of the plan; printing and the paint box belong to them.
-    private var layersCard: some View {
-        Card("Layers") {
-            HStack(spacing: 6) {
-                Button("All") { session.soloLayer(nil) }
-                    .disabled(session.layers == nil || (session.layerStep == nil && !session.layerView.contains(0)))
-                Button("Print") { PrintSheet.print(session: session, library: library) }
-                    .disabled(session.layers == nil)
-                ShareLink(
-                    item: SheetPDF(name: session.imageName) { PrintSheet.pdf(session: session, library: library) },
-                    preview: SharePreview("\(session.imageName) – layers")
-                ) {
-                    Text("PDF")
-                }
-                .disabled(session.layers == nil)
-                Button("Paint box") { showingPaintBox = true }
-                    .buttonStyle(.outlineProminent)
-            }
-            .buttonStyle(.outline)
-        } content: {
-            LayerListView { showingPaintBox = true }
-        }
-    }
-
-    /// The colours with their mixes; printing and the paint box belong to them.
-    private var coloursCard: some View {
-        Card("Colours") {
-            HStack(spacing: 6) {
-                Button("Print") { PrintSheet.print(session: session, library: library) }
-                ShareLink(
-                    item: SheetPDF(name: session.imageName) { PrintSheet.pdf(session: session, library: library) },
-                    preview: SharePreview("\(session.imageName) – colours and mixes")
-                ) {
-                    Text("PDF")
-                }
-                Button("Paint box") {
-                    boxRevision = library.revision
-                    showingPaintBox = true
-                }
-                .buttonStyle(.outlineProminent)
-            }
-            .buttonStyle(.outline)
-            .disabled(session.entries.isEmpty)
-        } content: {
-            PaletteView()
-        }
+    private var compact: Bool {
+        #if os(iOS)
+        sizeClass == .compact
+        #else
+        false
+        #endif
     }
 
     // MARK: Toolbar
 
     @ToolbarContentBuilder private var toolbar: some ToolbarContent {
+        // The picture as a whole: the collection and a new picture.
         ToolbarItemGroup(placement: leading) {
-            Button { showingCollection = true } label: { toolbarLabel("Library", "square.stack") }
-            Button(action: save) { toolbarLabel("Save", "square.and.arrow.down") }
-                .disabled(session.image == nil)
+            Button("Collection", systemImage: "photo.on.rectangle.angled") { showingCollection = true }
             Menu {
                 Button("From Photos", systemImage: "photo.on.rectangle") { showingPhotos = true }
                 Button("From Files", systemImage: "folder") { showingFiles = true }
@@ -276,20 +187,130 @@ struct RootView: View {
                 }
                 #endif
                 Divider()
-                Button("Sample Photo", systemImage: "sparkles.rectangle.stack") { session.loadSample() }
+                Button("Samples", systemImage: "square.inset.filled") { showingSamples = true }
             } label: {
-                toolbarLabel("New Image", "plus")
+                Label("New Picture", systemImage: "photo.badge.plus")
             }
+        }
+        #if os(iOS)
+        if compact {
+            ToolbarItemGroup(placement: .topBarTrailing) { saveButton; shareMenu }
+            // What the picture shows, then the panels: within reach of the thumb.
+            ToolbarItemGroup(placement: .bottomBar) {
+                viewMenu
+                outlinesToggle
+                numbersToggle
+                Spacer()
+                panelButton(.settings)
+                panelButton(.colours)
+                paintBoxButton
+            }
+        } else {
+            wideToolbar
+        }
+        #else
+        wideToolbar
+        #endif
+    }
+
+    /// iPad and Mac: the views in the middle, the actions and panels on the right.
+    @ToolbarContentBuilder private var wideToolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .principal) {
+            viewPicker
+            outlinesToggle
+            numbersToggle
+        }
+        ToolbarItemGroup(placement: .primaryAction) {
+            saveButton
+            shareMenu
+            paintBoxButton
+            panelButton(.settings)
+            panelButton(.colours)
         }
     }
 
-    /// Words on iPhone and iPad, where the bar would otherwise reduce a label to its symbol; symbol and word on the Mac.
-    @ViewBuilder private func toolbarLabel(_ title: String, _ symbol: String) -> some View {
-        #if os(iOS)
-        Text(title)
-        #else
-        Label(title, systemImage: symbol).labelStyle(.titleAndIcon)
-        #endif
+    private var saveButton: some View {
+        Button("Save", systemImage: "square.and.arrow.down", action: save)
+            .disabled(session.image == nil)
+    }
+
+    /// Print, PDF and the picture as a JPG.
+    private var shareMenu: some View {
+        Menu {
+            Button("Print", systemImage: "printer") { PrintSheet.print(session: session, library: library) }
+            ShareLink(
+                item: SheetPDF(name: session.imageName) { PrintSheet.pdf(session: session, library: library) },
+                preview: SharePreview("\(session.imageName) – \(session.layerMode ? "layers" : "colours and mixes")")
+            ) {
+                Label("PDF", systemImage: "doc.richtext")
+            }
+            ShareLink(
+                item: PictureJPG(name: session.imageName) { PictureJPG.data(session: session) },
+                preview: SharePreview(session.imageName)
+            ) {
+                Label("Export as JPG", systemImage: "photo")
+            }
+        } label: {
+            Label("Share", systemImage: "square.and.arrow.up")
+        }
+        .disabled(session.layerMode ? session.layers == nil : session.entries.isEmpty)
+    }
+
+    private var paintBoxButton: some View {
+        Button("Paint Box", systemImage: "circle.grid.2x2") { openPaintBox() }
+    }
+
+    /// Opens the panel on its tab; the button of the open tab closes it.
+    private func panelButton(_ tab: PanelTab) -> some View {
+        let open = showingPanel && panelTab == tab
+        let title = tab == .settings ? "Settings" : session.layerMode ? "Layers" : "Colours"
+        let symbol = tab == .settings ? "slider.vertical.3" : session.layerMode ? "square.3.layers.3d" : "swatchpalette"
+        return Toggle(isOn: Binding(get: { open }, set: { show in
+            if show { panelTab = tab }
+            showingPanel = show
+        })) {
+            Label(title, systemImage: symbol)
+        }
+        .toggleStyle(.button)
+    }
+
+    private var viewModes: [ViewMode] { session.layerMode ? ViewMode.layerCases : ViewMode.allCases }
+
+    /// iPhone: what the picture shows, in a menu under the symbol of the current view.
+    private var viewMenu: some View {
+        @Bindable var session = session
+        return Menu {
+            Picker("Show", selection: $session.settings.view) {
+                ForEach(viewModes) { Label($0.title, systemImage: $0.symbol).tag($0) }
+            }
+        } label: {
+            Label("Show: \(session.settings.view.title)", systemImage: session.settings.view.symbol)
+        }
+    }
+
+    /// iPad and Mac: the views side by side, as the web app's view switch.
+    private var viewPicker: some View {
+        @Bindable var session = session
+        return Picker("Show", selection: $session.settings.view) {
+            ForEach(viewModes) { mode in
+                Image(systemName: mode.symbol).accessibilityLabel(mode.title).help(mode.title).tag(mode)
+            }
+        }
+        .pickerStyle(.segmented)
+        .fixedSize()
+    }
+
+    private var outlinesToggle: some View {
+        @Bindable var session = session
+        return Toggle(isOn: $session.settings.outlines) { Label("Outlines", systemImage: "squareshape.split.3x3") }
+            .toggleStyle(.button)
+            .disabled(session.settings.view == .template)
+    }
+
+    private var numbersToggle: some View {
+        @Bindable var session = session
+        return Toggle(isOn: $session.settings.numbers) { Label("Numbers", systemImage: "textformat.123") }
+            .toggleStyle(.button)
     }
 
     private var leading: ToolbarItemPlacement {
@@ -301,6 +322,25 @@ struct RootView: View {
     }
 
     // MARK: Actions
+
+    private func openPaintBox() {
+        boxRevision = library.revision
+        afterPanel { showingPaintBox = true }
+    }
+
+    private func openBreakdown() {
+        afterPanel { showingBreakdown = true }
+    }
+
+    /// One sheet at a time: on iPhone the panel is a sheet too, so it goes first.
+    private func afterPanel(_ open: @escaping () -> Void) {
+        guard compact, showingPanel else { return open() }
+        showingPanel = false
+        Task {
+            try? await Task.sleep(for: .milliseconds(450))
+            open()
+        }
+    }
 
     /// The mixes follow the paint box once it is closed.
     private func paintBoxClosed() {

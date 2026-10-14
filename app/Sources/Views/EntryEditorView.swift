@@ -20,11 +20,11 @@ struct EntryEditorView: View {
                         .fixedSize()
                     Spacer()
                     if entry.overridden {
-                        Button("Reset to photo") { session.resetTarget(index) }.buttonStyle(.outline)
+                        Button("Reset to photo") { session.resetTarget(index) }.buttonStyle(.bordered)
                     }
                 }
                 if session.selectedRegion != nil, session.areaCount(of: index) > 1 {
-                    Button("Edit only the tapped area") { session.detachSelectedRegion() }.buttonStyle(.outlineProminent)
+                    Button("Edit only the tapped area") { session.detachSelectedRegion() }.buttonStyle(.borderedProminent)
                 }
                 Text("Recipes").font(Theme.strong)
                 let washes = session.washes(of: index)

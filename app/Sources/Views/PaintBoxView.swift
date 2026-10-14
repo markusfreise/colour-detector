@@ -108,7 +108,7 @@ struct PaintBoxView: View {
                 HStack(spacing: 6) {
                     ForEach(library.boxes) { box in
                         Button(box.name) { library.selectBox(box.id) }
-                            .buttonStyle(OutlineButtonStyle(prominent: box.id == library.activeBox.id))
+                            .borderedStyle(selected: box.id == library.activeBox.id)
                             .accessibilityAddTraits(box.id == library.activeBox.id ? .isSelected : [])
                     }
                     Button("New Box", systemImage: "plus", action: newBox)
@@ -120,12 +120,12 @@ struct PaintBoxView: View {
                         Button("Delete Box") { confirmingBoxDelete = true }
                     }
                 }
-                .buttonStyle(.outline)
+                .buttonStyle(.bordered)
                 .padding(1)
             }
             HStack(spacing: 6) {
                 Button("Auto", systemImage: "wand.and.stars", action: auto)
-                    .buttonStyle(OutlineButtonStyle(prominent: autoOn))
+                    .borderedStyle(selected: autoOn)
                     .fixedSize()
                     .disabled(session.image == nil)
                     .help(layerMode ? "Let the app choose the base paints for this picture" : "Let the app select the paints that suit each picture")
@@ -140,7 +140,7 @@ struct PaintBoxView: View {
                 Spacer(minLength: 8)
                 Text("\(selected.count) selected").font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
             }
-            .buttonStyle(.outline)
+            .buttonStyle(.bordered)
         }
     }
 
@@ -230,12 +230,12 @@ struct PaintBoxView: View {
                     Button("Edit") { editedPaint = paint }
                     Button("Delete") { paintToDelete = paint }
                 }
-                .buttonStyle(.outline)
+                .buttonStyle(.bordered)
             }
             Button("Add Paint", systemImage: "plus") {
                 editedPaint = Paint(id: "custom-\(UUID().uuidString.prefix(8))", vendor: "Schmincke", number: "", name: "", hex: "#c88c5f", forms: ["pan"], source: "custom", custom: true)
             }
-            .buttonStyle(.outlineProminent)
+            .buttonStyle(.borderedProminent)
         }
     }
 }

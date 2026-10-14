@@ -177,7 +177,7 @@ enum PrintSheet {
                 x: Double(region.anchorX) + 0.5,
                 y: Double(region.anchorY) + 0.5,
                 room: Double(region.anchorDist),
-                color: session.settings.view == .original ? .white : Color.ink(on: session.displayHex(session.entries[index]))
+                color: session.settings.view == .original ? .white : session.settings.view == .template ? Color(white: 0.6) : Color.ink(on: session.displayHex(session.entries[index]))
             )
         }
     }

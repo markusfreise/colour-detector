@@ -18,6 +18,14 @@
         cursor: grabbing;
     }
 
+    // Behind signing in: see-through until the first picture is drawn, the page scrolls as usual.
+    &--backdrop {
+        background: transparent;
+        touch-action: auto;
+        overscroll-behavior: auto;
+        cursor: default;
+    }
+
     &__canvas {
         position: absolute;
         top: 0;

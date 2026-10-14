@@ -51,11 +51,14 @@ export const usePaintsStore = defineStore('paints', {
       // autoOff = keys of the groups Auto does not choose from
       boxes,
       activeId,
+      // Behind signing in: a box of its own with the showcase paints, in place of the user's
+      // boxes while it is set, and never saved (startShowcase / endShowcase).
+      showcase: null,
     }
   },
   getters: {
-    all: (state) => [...stockPaints, ...state.custom],
-    activeBox: (state) => state.boxes.find((b) => b.id === state.activeId) ?? state.boxes[0],
+    all: (state) => (state.showcase ? state.showcase.paints : [...stockPaints, ...state.custom]),
+    activeBox: (state) => state.showcase?.box ?? state.boxes.find((b) => b.id === state.activeId) ?? state.boxes[0],
     // Paints Auto may choose from: the groups ticked for Auto in the paint box. A Schmincke stock paint
     // outside the default selection is held back (its colour is not checked yet).
     autoCandidates() {
@@ -72,7 +75,7 @@ export const usePaintsStore = defineStore('paints', {
     // keeps its whole selection, so nothing is lost while a plan has run out.
     enabledIds() {
       const ids = this.activeBox.paintIds
-      const limit = useProStore().paintLimit
+      const limit = this.showcase ? Infinity : useProStore().paintLimit
       return new Set(ids.length > limit ? ids.slice(0, limit) : ids)
     },
     enabled() {
@@ -188,7 +191,16 @@ export const usePaintsStore = defineStore('paints', {
       this.persist()
     },
 
+    /** Mixes with the given paints only, until endShowcase; the user's boxes stay as they are. */
+    startShowcase(paints) {
+      const ids = paints.map((p) => p.id)
+      this.showcase = { paints, box: { id: 'showcase', name: 'Showcase', paintIds: ids, auto: false, layerIds: ids, layerAuto: false, autoOff: [] } }
+    },
+    endShowcase() {
+      this.showcase = null
+    },
     persist() {
+      if (this.showcase) return // the showcase box is not the user's
       try {
         localStorage.setItem(BOXES_KEY, JSON.stringify({ boxes: this.boxes, activeId: this.activeId }))
         localStorage.setItem(CUSTOM_KEY, JSON.stringify(this.custom))

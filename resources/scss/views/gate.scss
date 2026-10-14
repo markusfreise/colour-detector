@@ -10,6 +10,8 @@
     display: grid;
     place-items: center;
     padding: var(--gap);
+    // The pointer reaches the picture behind it everywhere but on the card.
+    pointer-events: none;
 
     &__backdrop {
         position: fixed;
@@ -17,15 +19,49 @@
         z-index: -1;
         overflow: hidden;
         isolation: isolate;
+        pointer-events: auto;
 
-        // In dark mode the light watercolour is dimmed, so it does not glare around the card.
+        // In dark mode the light picture is dimmed, so it does not glare around the card.
         @media (prefers-color-scheme: dark) {
             &::after {
                 content: "";
                 position: absolute;
                 inset: 0;
+                z-index: 1;
                 background: rgba(0, 0, 0, 0.55);
+                pointer-events: none;
             }
+        }
+    }
+
+    // The app's picture over the watercolour; the recipe under the pointer comes with it. It fades
+    // in once the first rendering is there.
+    &__map {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 1.2s ease-in-out;
+
+        &--shown {
+            opacity: 1;
+        }
+    }
+
+    // The next photo, over the rendering before it, covering the window as the rendering does.
+    // While it is shown it takes the pointer, so that no recipe of the hidden rendering comes up.
+    &__photo {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 1.2s ease-in-out;
+        pointer-events: none;
+
+        &--shown {
+            opacity: 1;
+            pointer-events: auto;
         }
     }
 
@@ -56,6 +92,7 @@
 
     // A card like the settings panel, at most 400 px wide.
     &__card {
+        pointer-events: auto;
         width: min(#{pxtorem(400)}, 100%);
         padding: var(--gap-15x);
         border: 1px solid var(--c-border);

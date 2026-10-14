@@ -48,6 +48,7 @@ let layerProposal = null // "picture/box/count" the current proposal was made fo
 // The settings the mix analysis (`segmentation`) was made with, see `mixCurrent`.
 let mixKey = null
 let sketchRunning = null // the picture a sketch is being worked out for
+let loadSerial = 0 // counts the pictures asked for, see loadFromSource
 const mixKeyOf = ({ saturation, contrast, simplify, colours, geometric, values }, plan = 0) => [saturation, contrast, simplify, colours, !!geometric, plan].join('/') + (values ? '/values' : '')
 
 // A small JPEG of the picture for the AI model: enough to judge colours, cheap to send, and
@@ -287,8 +288,11 @@ export const useAnalysisStore = defineStore('analysis', {
     async loadFromSource(src, name) {
       this.error = null
       this.savedId = null
+      // Pictures asked for one after the other: the last one asked for wins, whichever loads first.
+      const serial = ++loadSerial
       try {
         const img = await loadImage(src)
+        if (serial !== loadSerial) return
         const scale = Math.min(1, Math.sqrt(WORK_PIXELS / (img.naturalWidth * img.naturalHeight)))
         const width = Math.max(1, Math.round(img.naturalWidth * scale))
         const height = Math.max(1, Math.round(img.naturalHeight * scale))
@@ -382,6 +386,33 @@ export const useAnalysisStore = defineStore('analysis', {
     async removeCloseup(id) {
       if (id === this.closeupId) await this.showBase()
       this.closeups = this.closeups.filter((c) => c.id !== id)
+    },
+
+    /**
+     * No picture at all, and nothing still on its way: what the showcase behind signing in leaves
+     * when it ends, since its colours name paints that are gone with it.
+     */
+    clearPicture() {
+      loadSerial++
+      analysisToken++
+      Object.assign(this, {
+        image: null,
+        pixels: null,
+        adjusted: null,
+        segmentation: null,
+        entries: [],
+        order: [],
+        baseEntries: 0,
+        regionEntry: null,
+        mixRecipes: {},
+        selectedEntry: null,
+        selectedRegion: null,
+        inspected: null,
+        layers: null,
+        layerShown: [],
+        busy: false,
+      })
+      this.renderVersion++
     },
 
     /**

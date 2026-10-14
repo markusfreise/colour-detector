@@ -112,6 +112,14 @@ onMounted(() => {
   account.init()
   useProStore().init()
   useCollectionStore().refresh()
-  analysis.loadSample()
 })
+// The app's own sample, once the app is open: behind the gate the showcase has the picture
+// (AccountGate.vue), and it is gone by the time this runs.
+watch(
+  () => account.ready,
+  (ready) => {
+    if (ready) analysis.loadSample()
+  },
+  { immediate: true, flush: 'post' },
+)
 </script>

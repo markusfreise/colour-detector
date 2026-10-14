@@ -3,9 +3,9 @@
   <div
     ref="root"
     class="painting"
-    :class="{ 'painting--moving': moving }"
+    :class="{ 'painting--moving': moving, 'painting--backdrop': backdrop }"
     @click="onClick"
-    @wheel.prevent="onWheel"
+    @wheel="onWheel"
     @pointerdown="onDown"
     @pointermove="onPointerMove"
     @pointerup="onUp"
@@ -16,7 +16,7 @@
     <canvas
       ref="canvas"
       class="painting__canvas"
-      :class="{ 'painting__canvas--busy': analysis.busy, 'painting__canvas--framing': framing }"
+      :class="{ 'painting__canvas--busy': analysis.busy && !backdrop, 'painting__canvas--framing': framing }"
       :style="canvasStyle"
       @mousemove="onMove"
       @mouseleave="hover = null"
@@ -27,8 +27,8 @@
     ></canvas>
     <div v-if="frame" class="painting__frame" :style="frameStyle"></div>
     <!-- The spot whose colour is being looked at, blinking under the card. -->
-    <span v-if="spot" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
-    <div class="painting__tools">
+    <span v-if="spot && !backdrop" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
+    <div v-if="!backdrop" class="painting__tools">
       <!-- Until everything is unlocked: the plans, one click away. -->
       <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(false, 'use everything')">
         Get pro
@@ -74,7 +74,7 @@
       <p v-else-if="framing && !frame" class="painting__status">Drag a frame over the part to zoom in on</p>
     </div>
     <!-- Without a paint the picture would be blank paper. One is enough: it is painted in washes. -->
-    <p v-if="noPaints" class="painting__notice">Put at least one colour in paintbox</p>
+    <p v-if="noPaints && !backdrop" class="painting__notice">Put at least one colour in paintbox</p>
     <RecipeTip v-if="hover" :index="hover.entry" :x="hover.x" :y="hover.y" />
   </div>
 </template>
@@ -99,6 +99,10 @@ const BLANK = [255, 255, 255] // paper
 // The Template view: lines and numbers light enough to disappear under the paint.
 const TEMPLATE_LINE = 196
 const TEMPLATE_NUMBER = '#a6a6a6'
+
+// As the background behind signing in: the picture covers the window and only shows the recipe
+// under the pointer; no tools, no moving, zooming or picking.
+const props = defineProps({ backdrop: { type: Boolean, default: false } })
 
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
@@ -478,7 +482,9 @@ const canvasStyle = computed(() => ({ transform: `translate(${view.x}px, ${view.
 
 function fitScale() {
   const el = root.value
-  return size.width && el?.clientWidth ? Math.min(el.clientWidth / size.width, el.clientHeight / size.height) : 1
+  if (!size.width || !el?.clientWidth) return 1
+  const fill = props.backdrop ? Math.max : Math.min // cover the window, or fit into it
+  return fill(el.clientWidth / size.width, el.clientHeight / size.height)
 }
 function fit() {
   const el = root.value
@@ -517,6 +523,8 @@ function zoomAt(cx, cy, factor) {
 
 // A pinch on a trackpad arrives as a wheel with ctrl held; two fingers moved together as a plain wheel.
 function onWheel(event) {
+  if (props.backdrop) return
+  event.preventDefault()
   hover.value = null
   if (event.ctrlKey || event.metaKey) zoomAt(event.clientX, event.clientY, Math.exp(-event.deltaY * 0.01))
   else panBy(-event.deltaX, -event.deltaY)
@@ -527,6 +535,7 @@ function onGestureStart() {
   gestureScale = 1
 }
 function onGestureChange(event) {
+  if (props.backdrop) return
   zoomAt(event.clientX, event.clientY, event.scale / gestureScale)
   gestureScale = event.scale
 }
@@ -539,7 +548,7 @@ const centre = () => {
   return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) || 1 }
 }
 function onDown(event) {
-  if (event.button || event.target.closest('button')) return
+  if (props.backdrop || event.button || event.target.closest('button')) return
   pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
   travelled = 0
   // A second finger ends a frame that the first one began.
@@ -601,7 +610,7 @@ function onMove(event) {
 }
 
 function onClick(event) {
-  if (afterDrag(event) || framing.value || event.target.closest('button')) return
+  if (props.backdrop || afterDrag(event) || framing.value || event.target.closest('button')) return
   const at = pixelAt(event)
   if (!at) return
   const { cx, cy, x, y } = at

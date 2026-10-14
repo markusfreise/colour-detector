@@ -1,10 +1,15 @@
 <template>
   <main class="gate">
-    <!-- A watercolour behind it: the picture, and the same one turned almost upside down and
-         multiplied onto it; both pulse slowly, a little apart. -->
+    <!-- Behind it the app at work: the watercolour as numbered areas mixed from three paints, then
+         the samples in turn; the recipe of a colour follows the pointer. Each photo fades in over
+         the last rendering, then gives way to its own. Until the first rendering is there, the
+         watercolour itself pulses: the picture, and the same one turned almost upside down and
+         multiplied onto it. -->
     <div class="gate__backdrop" aria-hidden="true">
       <img class="gate__layer" :src="background" alt="" />
       <img class="gate__layer gate__layer--turned" :src="background" alt="" />
+      <PaintingCanvas v-if="showing" class="gate__map" :class="{ 'gate__map--shown': mapShown }" backdrop />
+      <img v-if="photo" class="gate__photo" :class="{ 'gate__photo--shown': photoShown }" :src="photo" alt="" />
     </div>
     <section class="panel gate__card" aria-labelledby="gate-title">
       <!-- The logo in the colour of the text, so it reads in light and dark. -->
@@ -73,8 +78,12 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useAccountStore } from '../stores/account.js'
+import { useAnalysisStore, SAMPLES } from '../stores/analysis.js'
+import { usePaintsStore } from '../stores/paints.js'
+import { showcasePaints } from '../data/showcase.js'
+import PaintingCanvas from './PaintingCanvas.vue'
 import { APP_NAME } from '../config.js'
 import logoSvg from '../../resources/logo.svg?raw'
 import background from '../../resources/background.webp'
@@ -88,4 +97,84 @@ const local = ref(false)
 const NAMES = { google: 'Google', apple: 'Apple', meta: 'Facebook' }
 // The providers the server has keys for, in a fixed order.
 const buttons = computed(() => ['google', 'apple', 'meta'].filter((id) => account.providers.includes(id)).map((id) => ({ id, name: NAMES[id] })))
+
+// The showcase: a rendering, a few seconds to look at it, the next photo fading in over it, and
+// that photo giving way to its own rendering. It runs while the gate is open for somebody who is
+// not signed in or has not agreed yet; signing in ends it, and the app opens its own sample with
+// the user's paints (App.vue).
+const DWELL = 6000 // a rendering on its own
+const FADE = 1200 // as long as the fades in gate.scss
+const HOLD = 1500 // the photo on its own, at the least
+const analysis = useAnalysisStore()
+const paints = usePaintsStore()
+const showing = ref(false)
+const mapShown = ref(false)
+const photo = ref(null)
+const photoShown = ref(false)
+let running = false
+let timer = null
+
+const shuffled = (list) => {
+  const copy = [...list]
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[copy[i], copy[j]] = [copy[j], copy[i]]
+  }
+  return copy
+}
+const pause = (ms) => new Promise((resolve) => (timer = setTimeout(resolve, ms)))
+// A photo is shown only once it is loaded, so that it fades in whole.
+const ready = (url) => new Promise((resolve) => {
+  const img = new Image()
+  img.onload = img.onerror = () => resolve()
+  img.src = url
+})
+
+async function showcase() {
+  running = true
+  showing.value = true
+  paints.startShowcase(showcasePaints)
+  analysis.settings.mode = 'mix'
+  // The first rendering takes over from the pulsing watercolour.
+  await analysis.loadFromSource(background, 'Watercolour')
+  if (!running) return
+  mapShown.value = true
+  let previous = background
+  while (running) {
+    // The samples of the site in an order of their own each round, the watercolour among them again.
+    const round = shuffled([{ url: background, name: 'Watercolour' }, ...SAMPLES.filter((s) => !s.local)])
+    for (const picture of round) {
+      if (picture.url === previous) continue
+      await pause(DWELL)
+      if (!running) return
+      await ready(picture.url)
+      photo.value = picture.url
+      photoShown.value = true
+      // The rendering of the new photo is made while the photo is on screen.
+      await Promise.all([pause(FADE + HOLD), analysis.loadFromSource(picture.url, picture.name)])
+      if (!running) return
+      photoShown.value = false
+      previous = picture.url
+    }
+  }
+}
+
+function stopShowcase() {
+  running = false
+  clearTimeout(timer)
+  if (!paints.showcase) return
+  // Its colours name the showcase paints: the picture goes with them.
+  analysis.clearPicture()
+  paints.endShowcase()
+}
+
+// Only once it is known who is there: a signed-in user goes straight to the app.
+watch(
+  () => account.loaded && !account.ready,
+  (gate) => {
+    if (gate && !running) showcase()
+  },
+  { immediate: true },
+)
+onBeforeUnmount(stopShowcase)
 </script>

@@ -2,7 +2,7 @@ import SwiftUI
 
 /// The picture as numbered colour areas, or in layer mode as the paper with its layers. It fills
 /// the screen behind the bars and cards, as in the web app; pinch to zoom, drag to move a zoomed
-/// picture, double-tap to fit it again. Tap an area to look at its colour, or in layer mode a spot to
+/// picture (never past its edges, as in the web app), double-tap to fit it again. Tap an area to look at its colour, or in layer mode a spot to
 /// see its layers.
 struct PaintingView: View {
     @Environment(Session.self) private var session
@@ -15,6 +15,11 @@ struct PaintingView: View {
     /// Where the inspected area was tapped, in working pixels: the spot pulses there.
     @State private var spot: CGPoint?
     @State private var pulsing = false
+
+    /// Margin around the picture inside the padding, so its shadow stays visible.
+    private static let padding = 16.0
+    /// How far a zoomed picture may be moved past its edge: its shadow and a little more.
+    private static let edge = 20.0
 
     var body: some View {
         GeometryReader { frame in
@@ -30,7 +35,7 @@ struct PaintingView: View {
             }
             .frame(width: frame.size.width, height: frame.size.height)
             .contentShape(Rectangle())
-            .gesture(magnify)
+            .gesture(magnify(in: frame.size))
             .simultaneousGesture(pan(in: frame.size), including: zoom > 1 ? .all : .subviews)
             .onTapGesture(count: 2) { fit() }
             .overlay(alignment: .topTrailing) {
@@ -66,7 +71,7 @@ struct PaintingView: View {
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 6))
                 .shadow(color: .black.opacity(0.12), radius: 12, y: 4)
-                .padding(16)
+                .padding(Self.padding)
                 .opacity(session.busy ? 0.5 : 1)
                 .accessibilityLabel(session.layerMode ? "Picture as layers of paint" : "Picture as numbered colour areas")
                 .accessibilityHint(session.layerMode ? "Tap a spot to see which layers it gets." : "Tap an area to see its recipe.")
@@ -74,7 +79,7 @@ struct PaintingView: View {
             RoundedRectangle(cornerRadius: 6)
                 .fill(.quaternary)
                 .aspectRatio(4 / 3, contentMode: .fit)
-                .padding(16)
+                .padding(Self.padding)
         }
     }
 
@@ -117,12 +122,14 @@ struct PaintingView: View {
 
     // MARK: Zoom
 
-    private var magnify: some Gesture {
+    private func magnify(in size: CGSize) -> some Gesture {
         MagnifyGesture()
             .onChanged { value in
                 let start = zoomAtStart ?? zoom
                 zoomAtStart = start
                 zoom = min(max(start * value.magnification, 1), 8)
+                // Zooming out pulls a moved picture back so no edge comes loose.
+                offset = clamped(offset, in: size)
             }
             .onEnded { _ in
                 zoomAtStart = nil
@@ -135,14 +142,23 @@ struct PaintingView: View {
             .onChanged { value in
                 let start = offsetAtStart ?? offset
                 offsetAtStart = start
-                // The picture may move until its edge reaches the middle of the screen.
-                let limit = CGSize(width: size.width * (zoom - 1) / 2 + size.width / 4, height: size.height * (zoom - 1) / 2 + size.height / 4)
-                offset = CGSize(
-                    width: min(max(start.width + value.translation.width, -limit.width), limit.width),
-                    height: min(max(start.height + value.translation.height, -limit.height), limit.height)
-                )
+                offset = clamped(CGSize(width: start.width + value.translation.width, height: start.height + value.translation.height), in: size)
             }
             .onEnded { _ in offsetAtStart = nil }
+    }
+
+    /// The offset kept within the picture: an edge may come in from the screen's edge only as far as
+    /// `edge`, and a side that fits on the screen stays centred.
+    private func clamped(_ offset: CGSize, in size: CGSize) -> CGSize {
+        guard let working = session.workingSize, working.width > 0, working.height > 0 else { return .zero }
+        let fit = min((size.width - 2 * Self.padding) / Double(working.width), (size.height - 2 * Self.padding) / Double(working.height))
+        let width = Double(working.width) * fit * zoom
+        let height = Double(working.height) * fit * zoom
+        let limit = CGSize(width: max(0, (width - size.width) / 2 + Self.edge), height: max(0, (height - size.height) / 2 + Self.edge))
+        return CGSize(
+            width: min(max(offset.width, -limit.width), limit.width),
+            height: min(max(offset.height, -limit.height), limit.height)
+        )
     }
 
     private func fit() {

@@ -168,7 +168,7 @@ enum PrintSheet {
     }
 
     private static func pictureLabels(_ session: Session) -> [NumberedPicture.Label] {
-        guard session.settings.numbers, let segmentation = session.segmentation else { return [] }
+        guard session.settings.numbers, let segmentation = session.segmentation, session.regionEntry.count == segmentation.regions.count else { return [] }
         return segmentation.regions.compactMap { region in
             let index = session.regionEntry[region.id]
             guard session.entries.indices.contains(index) else { return nil }

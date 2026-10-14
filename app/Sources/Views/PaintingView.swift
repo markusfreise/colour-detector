@@ -179,7 +179,8 @@ extension Session {
                 )
             }
         }
-        guard let segmentation else { return [] }
+        // Between a new analysis and its mixes the areas have no colours yet: no numbers then.
+        guard let segmentation, regionEntry.count == segmentation.regions.count else { return [] }
         return segmentation.regions.compactMap { region in
             let index = regionEntry[region.id]
             guard entries.indices.contains(index), onPhoto || isShown(index) else { return nil }

@@ -218,22 +218,35 @@
 
     &__footer {
         display: flex;
-        gap: var(--gap);
+        flex-wrap: wrap;
+        gap: var(--gap-05x) var(--gap);
+        white-space: nowrap;
         margin-top: #{pxtorem(20)};
         padding-top: #{pxtorem(14)};
         border-top: 1px solid var(--c-border);
         font-size: var(--fs-small);
     }
 
-    &__footer a,
     // The sign-in link of a local test is one long word.
     &__text a[href*="#magic="] {
         word-break: break-all;
     }
 
+    &__footer a,
     &__text a,
     &__check a {
         color: var(--c-corporate);
+    }
+
+    // "Privacy settings" opens the cookie banner; it looks like the links beside it.
+    &__settings {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--c-corporate);
+        font: inherit;
+        text-decoration: underline;
+        cursor: pointer;
     }
 
     &__how {

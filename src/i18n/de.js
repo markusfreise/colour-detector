@@ -32,10 +32,6 @@ export default {
   'Show detail {n}': 'Ausschnitt {n} zeigen',
   'Remove detail {n}': 'Ausschnitt {n} entfernen',
   // Analytics consent
-  'Analytics cookies': 'Statistik-Cookies',
-  'With your permission this site uses Google Analytics to count visits. This sets cookies and sends usage data to Google. Your photos are never uploaded. You can change your choice at any time under "Privacy settings".': 'Mit deiner Erlaubnis zählt diese Seite Besuche mit Google Analytics. Dabei werden Cookies gesetzt und Nutzungsdaten an Google gesendet. Deine Fotos werden nie hochgeladen. Du kannst deine Wahl jederzeit unter „Datenschutz-Einstellungen“ ändern.',
-  'Decline': 'Ablehnen',
-  'Accept': 'Annehmen',
   // Paint box
   'colour estimated': 'Farbe geschätzt',
   'Paint box: base paints': 'Farbkasten: Grundfarben',
@@ -455,4 +451,19 @@ export default {
   '4.99 EUR per month': '4,99 EUR pro Monat',
   '29.99 EUR per year': '29,99 EUR pro Jahr',
   '79 EUR once': '79 EUR einmalig',
+  // Cookie banner (ConsentBanner)
+  'Cookies and statistics': 'Cookies und Statistik',
+  'Some cookies are needed to sign in. With your permission this site also uses Google Analytics to count visits: that sets cookies and sends usage data to Google, also to the USA. Your photos are never uploaded. You can change your choice at any time under "Privacy settings".':
+    'Einige Cookies sind für die Anmeldung nötig. Mit deiner Erlaubnis nutzt diese Seite außerdem Google Analytics, um Besuche zu zählen: Dabei werden Cookies gesetzt und Nutzungsdaten an Google übermittelt, auch in die USA. Deine Fotos werden nie hochgeladen. Du kannst deine Wahl jederzeit unter „Datenschutz-Einstellungen“ ändern.',
+  'Privacy policy': 'Datenschutzerklärung',
+  Necessary: 'Notwendig',
+  'always on': 'immer aktiv',
+  'Keep you signed in (cookie cd_session, 60 days) and protect signing in with another service (cd_state, 10 minutes). Your settings, paint boxes and pictures stay in the storage of this browser.':
+    'Halten dich angemeldet (Cookie cd_session, 60 Tage) und schützen die Anmeldung über einen anderen Dienst (cd_state, 10 Minuten). Deine Einstellungen, Farbkästen und Bilder bleiben im Speicher dieses Browsers.',
+  'Statistics (Google Analytics)': 'Statistik (Google Analytics)',
+  'Counts visits and which functions are used, without advertising. Cookies _ga and _ga_*, kept for up to two years. Provider: Google Ireland Ltd.; data can reach Google LLC in the USA (EU-US Data Privacy Framework).':
+    'Zählt Besuche und welche Funktionen genutzt werden, ohne Werbung. Cookies _ga und _ga_*, bis zu zwei Jahre gespeichert. Anbieter: Google Ireland Ltd.; Daten können an Google LLC in den USA gehen (EU-US Data Privacy Framework).',
+  'Reject all': 'Alle ablehnen',
+  'Save choice': 'Auswahl speichern',
+  'Accept all': 'Alle akzeptieren',
 }

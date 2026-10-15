@@ -54,8 +54,9 @@
     <SampleDialog ref="sampleDialog" />
     <ProDialog />
     <AccountDialog />
-    <ConsentBanner />
   </div>
+  <!-- Over the app and over the sign-in alike. -->
+  <ConsentBanner />
 </template>
 
 <script setup>

@@ -92,6 +92,7 @@
         <a :href="legalPage('privacy')">{{ t('Privacy') }}</a>
         <a :href="legalPage('terms')">{{ t('Terms') }}</a>
         <a :href="legalPage('imprint')">{{ t('Imprint') }}</a>
+        <button v-if="consent.available" class="gate__settings" type="button" @click="consent.review()">{{ t('Privacy settings') }}</button>
       </footer>
       </div>
 
@@ -123,9 +124,11 @@ import background from '../../resources/background.webp'
 import stepPhoto from '../../resources/howto/step-1-photo.svg'
 import stepPaints from '../../resources/howto/step-2-paints.svg'
 import stepMixes from '../../resources/howto/step-3-mixes.svg'
+import { useConsentStore } from '../stores/consent.js'
 import { useText } from '../i18n/index.js'
 
 const { t, legalPage } = useText()
+const consent = useConsentStore()
 const steps = [
   { title: 'Choose a reference photo', image: stepPhoto, alt: 'A photo chosen from the device opens in the app' },
   { title: 'Pick the paints you own', image: stepPaints, alt: 'The paint box with the paints you own ticked' },

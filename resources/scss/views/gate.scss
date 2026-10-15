@@ -201,6 +201,12 @@
         margin-top: #{pxtorem(6)};
     }
 
+    // "Sign up" under the button, and back.
+    &__switch {
+        align-self: center;
+        font-size: var(--fs-small);
+    }
+
     &__link {
         padding: 0;
         border: 0;

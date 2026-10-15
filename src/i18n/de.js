@@ -466,4 +466,10 @@ export default {
   'Reject all': 'Alle ablehnen',
   'Save choice': 'Auswahl speichern',
   'Accept all': 'Alle akzeptieren',
+  // Signing in and signing up (AccountGate)
+  'Sign in with e-mail': 'Anmelden mit E-Mail',
+  'Sign up with e-mail': 'Registrieren mit E-Mail',
+  'Sign up': 'Jetzt registrieren',
+  'Sign in with account': 'Jetzt anmelden',
+  'Create my account': 'Konto anlegen',
 }

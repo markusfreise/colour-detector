@@ -70,9 +70,19 @@
         <div v-if="account.sentTo" class="gate__actions">
           <button class="button" type="button" @click="account.sentTo = ''">{{ t('Use different address') }}</button>
         </div>
+        <!-- Signing in and signing up are the same link by e-mail; the second form is there for
+             people who look for one. Only signing up asks for an invitation code. -->
+        <form v-else-if="!signingUp" class="gate__form" @submit.prevent="account.sendLink(email)">
+          <label class="field gate__field">
+            <span class="field__label">{{ t('Sign in with e-mail') }}</span>
+            <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
+          </label>
+          <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Send me a sign-in link') }}</button>
+          <button class="gate__link gate__switch" type="button" @click="signingUp = true">{{ t('Sign up') }}</button>
+        </form>
         <form v-else class="gate__form" @submit.prevent="account.sendLink(email, code)">
           <label class="field gate__field">
-            <span class="field__label">{{ buttons.length ? t('Or with a link by e-mail') : t('Your e-mail address') }}</span>
+            <span class="field__label">{{ t('Sign up with e-mail') }}</span>
             <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
           </label>
           <!-- Optional: a code unlocks everything for good. Without one the account is a free one. -->
@@ -80,7 +90,8 @@
             <span class="field__label">{{ t('Invitation code (optional)') }}</span>
             <input v-model.trim="code" class="input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
           </label>
-          <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Send me a sign-in link') }}</button>
+          <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Create my account') }}</button>
+          <button class="gate__link gate__switch" type="button" @click="signingUp = false">{{ t('Sign in with account') }}</button>
         </form>
       </template>
 
@@ -139,6 +150,7 @@ const account = useAccountStore()
 const logo = logoSvg.replace(/fill="black"/g, 'fill="currentColor"')
 const email = ref('')
 const code = ref('')
+const signingUp = ref(false)
 const privacy = ref(false)
 const local = ref(false)
 

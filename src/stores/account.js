@@ -33,6 +33,7 @@ export const useAccountStore = defineStore('account', {
     error: null,
     notice: null, // { kind, text } after coming back from signing in or paying
     sentTo: '', // the address a sign-in link went to
+    testLink: '', // local test: the sign-in link, shown instead of mailed
     open: false, // account dialog
     welcome: false, // just signed in: the plans are offered once the app is open
   }),
@@ -95,7 +96,16 @@ export const useAccountStore = defineStore('account', {
       window.location.assign(`${ACCOUNT_API}/auth/${provider}/start`)
     },
     async sendLink(email) {
-      if (await this.attempt(() => call('auth/magic', { email }))) this.sentTo = email
+      let data
+      if (!(await this.attempt(async () => (data = await call('auth/magic', { email }))))) return
+      // A local test account is signed in at once.
+      if (data.signedIn) {
+        await this.refresh()
+        this.welcome = true
+        return
+      }
+      this.sentTo = email
+      this.testLink = data.link ?? ''
     },
     async agree() {
       await this.attempt(async () => {
@@ -106,6 +116,7 @@ export const useAccountStore = defineStore('account', {
       if (await this.attempt(() => call('logout', {}))) {
         this.user = null
         this.sentTo = ''
+        this.testLink = ''
         this.open = false
       }
     },

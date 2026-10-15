@@ -17,6 +17,11 @@ return [
         'transport' => 'mail',
     ],
 
+    // Only for a local run (app_url on localhost or *.test, requests from this machine): these
+    // addresses are signed in at once without a link, 'paid' with a licence without end, 'free'
+    // without one. For any other address the sign-in link is shown in the app instead of mailed.
+    // 'local_test' => ['accounts' => ['someone@example.org' => 'paid', 'other@example.org' => 'free']],
+
     'google' => ['client_id' => '', 'client_secret' => ''],
     'meta' => ['client_id' => '', 'client_secret' => ''],
     'apple' => [

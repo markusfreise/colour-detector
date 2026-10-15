@@ -53,7 +53,12 @@
             Continue with {{ p.name }}
           </button>
         </div>
-        <p v-if="account.sentTo" class="gate__text">
+        <p v-if="account.sentTo && account.testLink" class="gate__text">
+          Local test, no mail sent. The sign-in link for <strong>{{ account.sentTo }}</strong>:
+          <a :href="account.testLink">{{ account.testLink }}</a>
+          <button class="gate__link" type="button" @click="account.sentTo = ''">Use another address</button>
+        </p>
+        <p v-else-if="account.sentTo" class="gate__text">
           A sign-in link is on its way to <strong>{{ account.sentTo }}</strong>. Open it on this device; it works for 15 minutes.
           <button class="gate__link" type="button" @click="account.sentTo = ''">Use another address</button>
         </p>

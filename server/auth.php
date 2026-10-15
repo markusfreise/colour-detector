@@ -28,6 +28,31 @@ const OAUTH = [
 
 // --- Link by e-mail ---------------------------------------------------------------------------
 
+/**
+ * Test accounts for a local run, or null. Only when config.php has 'local_test', the app runs on
+ * localhost or *.test and the request comes from this machine: never on a server.
+ */
+function localTest(): ?array
+{
+    $test = config('local_test');
+    $host = (string) parse_url((string) config('app_url'), PHP_URL_HOST);
+    $local = preg_match('/^(localhost|127\.0\.0\.1)$|\.(localhost|test)$/', $host) === 1
+        && in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
+    return is_array($test) && $local ? $test : null;
+}
+
+/** Signs a test account in at once, as paid or free, with the current consent. */
+function testSignIn(string $email, string $kind): never
+{
+    $user = userByEmail($email);
+    run(
+        'UPDATE users SET consent_version = ?, consent_at = ?, lifetime = ?, sub_id = NULL, sub_status = NULL, sub_until = NULL WHERE id = ?',
+        [config('consent_version'), time(), $kind === 'paid' ? 1 : 0, $user['id']],
+    );
+    startSession((int) $user['id']);
+    send(['signedIn' => true]);
+}
+
 function tooMany(string $who, int $limit): bool
 {
     $key = hash_hmac('sha256', $who, (string) config('secret'));
@@ -47,6 +72,10 @@ function sendMagicLink(): never
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254) {
         fail(422, 'That does not look like an e-mail address.');
     }
+    $test = localTest();
+    if (isset($test['accounts'][$email])) {
+        testSignIn($email, (string) $test['accounts'][$email]);
+    }
     if (tooMany('ip:' . ($_SERVER['REMOTE_ADDR'] ?? ''), MAGIC_PER_IP) || tooMany('mail:' . $email, MAGIC_PER_EMAIL)) {
         fail(429, 'Too many links were asked for. Please try again in an hour.');
     }
@@ -56,7 +85,11 @@ function sendMagicLink(): never
 
     // The link opens the app, which hands the code over itself: a mail scanner that only
     // fetches the link does not use it up.
-    $link = config('app_url') . '#magic=' . $value;
+    // In a local test the app only asks for an account with "?login" in the address.
+    $link = config('app_url') . ($test === null ? '' : '?login') . '#magic=' . $value;
+    if ($test !== null) {
+        send(['sent' => true, 'link' => $link]);
+    }
     $text = "Open this link to sign in to Watercolourlove:\n\n$link\n\n"
         . 'It works once and for ' . MAGIC_MINUTES . " minutes. If you did not ask for it, ignore this message.\n";
     $mail = config('mail') ?? [];

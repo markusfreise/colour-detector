@@ -1170,7 +1170,7 @@ final class Session {
         if settings.outlines || settings.view == .template {
             let line: (Double, Double, Double, Double) = switch settings.view {
             case .original: (255, 255, 255, 0.75)
-            case .template: (150, 210, 255, 1)
+            case .template: (205, 230, 255, 1)
             default: (40, 36, 30, 0.55)
             }
             out.withUnsafeMutableBufferPointer { out in

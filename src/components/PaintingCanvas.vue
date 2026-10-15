@@ -110,8 +110,8 @@ const BLANK = [255, 255, 255] // paper
 // The Template view: lines and numbers light enough to disappear under the paint. Light blue with
 // full blue and so no yellow: nothing a printer could print with its black ink, which is not
 // soluble in water and would stay visible under the paint.
-const TEMPLATE_LINE = [150, 210, 255]
-const TEMPLATE_NUMBER = '#50a0ff'
+const TEMPLATE_LINE = [205, 230, 255]
+const TEMPLATE_NUMBER = '#96c3ff'
 
 // As the background behind signing in: the picture covers the window and only shows the recipe
 // under the pointer; no tools, no moving, zooming or picking.

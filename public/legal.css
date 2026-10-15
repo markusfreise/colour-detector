@@ -1,7 +1,7 @@
 /* Privacy, terms and imprint: plain reading pages in the colours of the app. */
-:root { --paper: #f7f4ee; --surface: #ffffff; --ink: #2a2622; --ink-soft: #6d655c; --line: #e4ddd2; --accent: #2f5d8a; --accent-soft: #e3ecf5; }
+:root { --paper: #f7f4ee; --surface: #ffffff; --ink: #2a2622; --ink-soft: #6d655c; --line: #e4ddd2; --accent: #242424; --accent-soft: #ebe8e3; }
 @media (prefers-color-scheme: dark) {
-  :root { --paper: #1b1a18; --surface: #252321; --ink: #eee9e1; --ink-soft: #a89f94; --line: #3a3632; --accent: #8fb6dc; --accent-soft: #2b3642; }
+  :root { --paper: #1b1a18; --surface: #252321; --ink: #eee9e1; --ink-soft: #a89f94; --line: #3a3632; --accent: #eee9e1; --accent-soft: #33302c; }
 }
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 1.0625rem/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }

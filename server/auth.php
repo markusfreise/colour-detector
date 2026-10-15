@@ -74,16 +74,16 @@ function signInMail(string $link): array
         <p style="margin:0 0 24px;">here is your link to sign in to Watercolourlove. Open it on the device and in the browser where you asked for it. It works once and for $minutes minutes.</p>
         </td></tr>
         <tr><td style="padding:0 32px 24px;">
-        <a href="$url" style="display:inline-block;padding:12px 24px;background:#2f5d8a;color:#ffffff;border-radius:8px;font:600 16px/1.2 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;text-decoration:none;">Sign in to Watercolourlove</a>
+        <a href="$url" style="display:inline-block;padding:12px 24px;background:#242424;color:#ffffff;border-radius:8px;font:600 16px/1.2 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;text-decoration:none;">Sign in to Watercolourlove</a>
         </td></tr>
         <tr><td style="padding:0 32px 24px;font:14px/1.6 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#6d655c;">
-        <p style="margin:0 0 16px;">If the button does not work, copy this address into your browser:<br><a href="$url" style="color:#2f5d8a;word-break:break-all;">$url</a></p>
+        <p style="margin:0 0 16px;">If the button does not work, copy this address into your browser:<br><a href="$url" style="color:#242424;word-break:break-all;">$url</a></p>
         <p style="margin:0 0 16px;">Why you get this message: someone entered this e-mail address to sign in at $hostHtml. If that was not you, you can ignore this message. Without the link nobody can sign in with your address.</p>
         <p style="margin:0;">Watercolourlove finds the main colours of a photo and shows how to mix each of them from your own watercolours. Your pictures stay in your browser and are never uploaded.</p>
         </td></tr>
         <tr><td style="padding:16px 32px 32px;border-top:1px solid #e4ddd2;font:13px/1.6 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#6d655c;">
-        Questions? Reply to this message or write to <a href="mailto:support@markus-freise.de" style="color:#2f5d8a;">support@markus-freise.de</a>.<br>
-        Markus Freise, Weststra&szlig;e 48, 33615 Bielefeld, Germany &middot; <a href="$home" style="color:#2f5d8a;">$hostHtml</a>
+        Questions? Reply to this message or write to <a href="mailto:support@markus-freise.de" style="color:#242424;">support@markus-freise.de</a>.<br>
+        Markus Freise, Weststra&szlig;e 48, 33615 Bielefeld, Germany &middot; <a href="$home" style="color:#242424;">$hostHtml</a>
         </td></tr>
         </table>
         </td></tr>

@@ -35,9 +35,9 @@ enum Theme {
     static let raised = Color(light: "#ffffff", dark: "#252321")
     static let copy = Color(light: "#2a2622", dark: "#eee9e1")
     static let copyLight = Color(light: "#6d655c", dark: "#a89f94")
-    static let corporate = Color(light: "#2f5d8a", dark: "#8fb6dc")
-    static let corporateSoft = Color(light: "#e3ecf5", dark: "#2b3642")
-    static let onCorporate = Color(light: "#ffffff", dark: "#14202c")
+    static let corporate = Color(light: "#242424", dark: "#eee9e1")
+    static let corporateSoft = Color(light: "#ebe8e3", dark: "#33302c")
+    static let onCorporate = Color(light: "#ffffff", dark: "#1b1a18")
     static let border = Color(light: "#e4ddd2", dark: "#3a3632")
     static let borderLight = Color(light: "#efece7", dark: "#2e2b28")
 
@@ -71,7 +71,7 @@ extension View {
     func floatShadow() -> some View { shadow(color: .black.opacity(0.18), radius: 15, y: 8) }
 }
 
-/// The web app's square icon button: white with a thin border, corporate blue when it is on.
+/// The web app's square icon button: white with a thin border, in the primary colour when it is on.
 struct IconButtonStyle: ButtonStyle {
     var active = false
     var size = Theme.iconButton
@@ -106,7 +106,7 @@ struct IconButton: View {
     }
 }
 
-/// A row of options in one frame, divided by thin lines; the chosen one in corporate blue.
+/// A row of options in one frame, divided by thin lines; the chosen one in the primary colour.
 struct SegmentedGroup<Option: Hashable>: View {
     let options: [Option]
     let selection: Option?

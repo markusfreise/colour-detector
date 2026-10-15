@@ -403,7 +403,7 @@ export default {
   'Try again': 'Noch einmal versuchen',
   'How this works': 'So funktioniert es',
   'Choose a reference photo': 'Wähl ein Vorlagenfoto',
-  'Pick the paints you own': 'Wähl die Farben, die du hast',
+  'Add the colours and paints you use': 'Füge die Farben hinzu, mit denen du malst',
   'Get a recipe for every colour': 'Hol dir ein Rezept für jede Farbe',
   'A photo chosen from the device opens in the app': 'Ein Foto vom Gerät öffnet sich in der App',
   'The paint box with the paints you own ticked': 'Der Farbkasten mit deinen Farben angehakt',

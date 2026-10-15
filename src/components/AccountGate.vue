@@ -142,7 +142,7 @@ const { t, legalPage } = useText()
 const consent = useConsentStore()
 const steps = [
   { title: 'Choose a reference photo', image: stepPhoto, alt: 'A photo chosen from the device opens in the app' },
-  { title: 'Pick the paints you own', image: stepPaints, alt: 'The paint box with the paints you own ticked' },
+  { title: 'Add the colours and paints you use', image: stepPaints, alt: 'The paint box with the paints you own ticked' },
   { title: 'Get a recipe for every colour', image: stepMixes, alt: 'The photo as numbered areas, with the recipe of one area' },
 ]
 

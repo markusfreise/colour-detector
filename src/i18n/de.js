@@ -474,4 +474,6 @@ export default {
   'Create my account': 'Konto anlegen',
   // Menu button on a phone (App)
   Menu: 'Menü',
+  // Help button (App)
+  Help: 'Hilfe',
 }

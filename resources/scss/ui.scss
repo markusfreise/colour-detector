@@ -250,65 +250,97 @@
 }
 
 
-// The label of an icon button, on hover with a mouse: slid out to the side of the columns at the
-// left and right, faded in centred under the tools at the top.
-@media (hover: hover) {
-    [data-hint]::after {
-        content: attr(data-hint);
-        position: absolute;
-        z-index: 5;
-        padding: #{pxtorem(7)} #{pxtorem(12)} #{pxtorem(5)};
-        border: 2px solid var(--c-button-border);
-        border-radius: var(--radius-medium);
-        background: var(--c-background-raised);
-        color: var(--c-copy);
-        box-shadow: var(--shadow-flat);
-        font-size: var(--fs-small);
-        font-weight: 600;
-        line-height: 1.2;
-        white-space: nowrap;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.15s, transform 0.2s ease-out;
-    }
+// The label of an icon button: beside the button in the columns at the left and right, centred
+// under the tools. Shown on hover with a mouse, and all at once with the help button.
+[data-hint]::after {
+    content: attr(data-hint);
+    position: absolute;
+    z-index: 5;
+    padding: #{pxtorem(6.5)} #{pxtorem(12)} #{pxtorem(5.5)};
+    border: 2px solid var(--c-button-border);
+    border-radius: var(--radius-medium);
+    background: var(--c-background-raised);
+    color: var(--c-copy);
+    box-shadow: var(--shadow-flat);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s, transform 0.2s ease-out;
+}
 
+.app__left [data-hint],
+.app__sidebar .toolbar [data-hint],
+.app__help {
+    position: relative;
+}
+
+.app__left [data-hint]::after {
+    left: calc(100% + var(--gap-05x));
+    top: 50%;
+    transform: translate(#{pxtorem(-8)}, -50%);
+}
+
+.app__sidebar .toolbar [data-hint]::after,
+.app__help::after {
+    right: calc(100% + var(--gap-05x));
+    top: 50%;
+    transform: translate(#{pxtorem(8)}, -50%);
+}
+
+// The buttons of the tools are not positioned, so the label sits under the whole row.
+.painting__tools [data-hint]::after {
+    left: 50%;
+    top: calc(100% + var(--gap-05x));
+    transform: translateX(-50%);
+}
+
+@media (hover: hover) {
     [data-hint]:hover::after {
         opacity: 1;
     }
 
-    .app__left [data-hint] {
+    .app__left [data-hint]:hover::after,
+    .app__sidebar .toolbar [data-hint]:hover::after,
+    .app__help:hover::after {
+        transform: translate(0, -50%);
+    }
+}
+
+// All labels at once (help button). In the tools each button gets its own, upright, under the
+// row; on a phone, where the tools are at the bottom, above it.
+.app--hints {
+    [data-hint]::after {
+        opacity: 1;
+    }
+
+    .app__left [data-hint]::after,
+    .app__sidebar .toolbar [data-hint]::after,
+    .app__help::after {
+        transform: translate(0, -50%);
+    }
+
+    .painting__tools .segmented {
+        overflow: visible;
+    }
+
+    .painting__tools [data-hint] {
         position: relative;
 
         &::after {
-            left: calc(100% + var(--gap-05x));
-            top: 50%;
-            transform: translate(#{pxtorem(-8)}, -50%);
+            padding: #{pxtorem(12)} #{pxtorem(4)};
+            writing-mode: vertical-rl;
+            transform: translateX(-50%) rotate(180deg);
         }
 
-        &:hover::after {
-            transform: translate(0, -50%);
+        @media (max-width: 760px) {
+            &::after {
+                top: auto;
+                bottom: calc(100% + var(--gap-05x));
+            }
         }
-    }
-
-    .app__sidebar .toolbar [data-hint] {
-        position: relative;
-
-        &::after {
-            right: calc(100% + var(--gap-05x));
-            top: 50%;
-            transform: translate(#{pxtorem(8)}, -50%);
-        }
-
-        &:hover::after {
-            transform: translate(0, -50%);
-        }
-    }
-
-    // The buttons of the tools are not positioned, so the label sits under the whole row.
-    .painting__tools [data-hint]::after {
-        left: 50%;
-        top: calc(100% + var(--gap-05x));
-        transform: translateX(-50%);
     }
 }
 

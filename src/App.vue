@@ -1,7 +1,7 @@
 <template>
   <!-- With accounts on, the app opens after signing in and agreeing to the two statements. -->
   <AccountGate v-if="!account.ready" />
-  <div v-else class="app" :class="{ 'app--layer': analysis.layerMode }">
+  <div v-else class="app" :class="{ 'app--layer': analysis.layerMode, 'app--hints': hints }">
     <p v-if="account.notice" class="app__notice">
       {{ account.notice.text }}
       <button class="app__footer-link" type="button" @click="account.notice = null">{{ t('Hide') }}</button>
@@ -46,6 +46,17 @@
         <template v-else>
           <PaletteList @show-paintbox="paintBox.open()" />
         </template>
+        <!-- Help: the labels of all buttons at once, for screens without a pointer to hover with. -->
+        <button
+          class="button button--ghost app__help"
+          :class="{ 'button--active': hints }"
+          type="button"
+          :aria-pressed="hints"
+          :data-hint="t('Help')"
+          @click="toggleHints"
+        >
+          <AppIcon name="help" :label="t('Help')" />
+        </button>
       </aside>
     </main>
     <LayerSheets v-if="analysis.layerMode" />
@@ -111,6 +122,12 @@ const collectionDialog = ref(null)
 const sampleDialog = ref(null)
 // Phone: the left column is shown with the menu button.
 const menuOpen = ref(false)
+// Help: every button shows its label. On a phone the left column opens with it.
+const hints = ref(false)
+function toggleHints() {
+  hints.value = !hints.value
+  if (hints.value) menuOpen.value = true
+}
 // Right after signing in (and agreeing, the first time) the plans come up once, unless they are paid for.
 const pro = useProStore()
 function getPro() {

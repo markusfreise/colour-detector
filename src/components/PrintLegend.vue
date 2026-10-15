@@ -1,8 +1,8 @@
 <template>
   <section class="legend">
-    <h2 class="legend__title">{{ analysis.imageName }} – colours and mixes</h2>
+    <h2 class="legend__title">{{ t('{name} – colours and mixes', { name: analysis.imageName }) }}</h2>
     <p v-if="rows.some((row) => row.washes.length > 1)" class="legend__key">
-      <span v-for="w in WASH_LETTERS" :key="w.letter"><strong>{{ w.letter }}</strong> {{ w.label }}</span>
+      <span v-for="w in WASH_LETTERS" :key="w.letter"><strong>{{ w.letter }}</strong> {{ t(w.label) }}</span>
     </p>
     <ol class="legend__list">
       <li v-for="row in rows" :key="row.key" class="legend__item">
@@ -19,7 +19,7 @@
             <ul class="legend__paints">
               <li v-for="paint in row.paints" :key="paint.id" class="chip chip--row legend__paint" :style="chipStyle(paint.hex)">
                 <span class="chip__strong">{{ paint.parts }} x {{ paint.forms }}</span>
-                <span class="chip__text"><span class="chip__strong">{{ paint.number }}</span> {{ paint.name }}</span>
+                <span class="chip__text"><span class="chip__strong">{{ paint.number }}</span> {{ paintName(paint.paint) }}</span>
               </li>
             </ul>
             <!-- The recipe as a bar: one segment per paint, as wide as its part of the mix. -->
@@ -34,7 +34,7 @@
               </span>
             </div>
           </template>
-          <p v-else class="legend__paper">Leave the paper white</p>
+          <p v-else class="legend__paper">{{ t('Leave the paper white') }}</p>
         </div>
         <span class="legend__share">{{ percent(row.share) }}%</span>
       </li>
@@ -49,12 +49,14 @@ import { usePaintsStore } from '../stores/paints.js'
 import { WASH_LETTERS } from '../lib/mixing.js'
 import { chipStyle, contrastText } from '../lib/color.js'
 import { paintNumber, paintForms } from '../lib/paintbox.js'
+import { useText } from '../i18n/index.js'
 
+const { t, paintName, region } = useText()
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 
 const percent = (share) => Math.round(share * 100) || '<1'
-const formatParts = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1))
+const formatParts = (n) => (Number.isInteger(n) ? String(n) : n.toLocaleString(region.value, { minimumFractionDigits: 1, maximumFractionDigits: 1 }))
 
 // One row per mix: its washes share the recipe and differ only in water, so the paints are listed once.
 const rows = computed(() => {
@@ -86,7 +88,7 @@ const rows = computed(() => {
           parts: formatParts(recipe.parts[i]),
           forms: paintForms(paint),
           number: paintNumber(paint.number),
-          name: paint.name,
+          paint,
         }
       }),
     }

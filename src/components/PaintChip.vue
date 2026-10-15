@@ -8,7 +8,7 @@
     <input class="paintbox__checkbox" type="checkbox" :checked="enabled" :disabled="disabled" @change="emit('toggle', $event.target.checked)" />
     <span v-if="showForm" class="paintbox__form">{{ paintForms(paint) }}</span>
     <span class="chip__strong">{{ paintNumber(paint.number) }}</span>
-    <span class="chip__text paintbox__name">{{ paint.name }}</span>
+    <span class="chip__text paintbox__name">{{ paintName(paint) }}</span>
   </label>
 </template>
 
@@ -16,7 +16,9 @@
 import { computed } from 'vue'
 import { chipStyle } from '../lib/color.js'
 import { paintNumber, paintForms } from '../lib/paintbox.js'
+import { useText } from '../i18n/index.js'
 
+const { t, paintName } = useText()
 const props = defineProps({
   paint: { type: Object, required: true },
   enabled: { type: Boolean, default: false },
@@ -31,8 +33,10 @@ const emit = defineEmits(['toggle'])
 // Tooltip: vendor line, German name, and the stock notes that do not fit on the chip.
 const description = computed(() => {
   const p = props.paint
-  const parts = [`${p.vendor} ${p.line}`, p.nameDe]
-  if (p.source === 'estimate') parts.push('colour estimated')
+  // The other name of the paint: the English one when German is shown, and the other way round.
+  const other = paintName(p) === p.name ? p.nameDe : p.name
+  const parts = [`${p.vendor} ${p.line}`, other]
+  if (p.source === 'estimate') parts.push(t('colour estimated'))
   if (p.note) parts.push(p.note)
   return parts.filter(Boolean).join(' · ')
 })

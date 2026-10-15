@@ -7,23 +7,23 @@
         <span class="chip editor__chip" :style="chipStyle(entry.targetHex)">
           <span class="chip__text">{{ entry.targetHex }}</span>
         </span>
-        <span class="editor__caption">Target</span>
+        <span class="editor__caption">{{ t('Target') }}</span>
       </div>
       <div class="editor__swatch">
         <span class="chip editor__chip" :style="chipStyle(recipe?.hex)">
           <span class="chip__text">{{ recipe?.hex }}</span>
         </span>
-        <span class="editor__caption">Your mix</span>
+        <span class="editor__caption">{{ t('Your mix') }}</span>
       </div>
     </div>
 
     <div class="editor__target">
       <label class="editor__picker">
         <input type="color" :value="entry.targetHex" @change="onPick" />
-        <span>Change colour</span>
+        <span>{{ t('Change colour') }}</span>
       </label>
       <button v-if="entry.overridden" class="button button--ghost" type="button" @click="analysis.resetTarget(index)">
-        Reset to photo
+        {{ t('Reset to photo') }}
       </button>
     </div>
     <button
@@ -32,12 +32,12 @@
       type="button"
       @click="analysis.detachRegion(region)"
     >
-      Edit only the clicked area
+      {{ t('Edit only the clicked area') }}
     </button>
 
-    <h3 class="editor__subtitle">Recipes</h3>
+    <h3 class="editor__subtitle">{{ t('Recipes') }}</h3>
     <p v-if="washes.length" class="editor__washes">
-      Same mix as {{ washes.join(', ') }} – only the amount of water differs.
+      {{ t('Same mix as {labels} – only the amount of water differs.', { labels: washes.join(', ') }) }}
     </p>
     <ul class="editor__recipes">
       <li
@@ -50,7 +50,7 @@
         <RecipeLine :recipe="r" />
       </li>
     </ul>
-    <p v-if="!entry.recipes.length" class="editor__empty">No paints selected in the paint box.</p>
+    <p v-if="!entry.recipes.length" class="editor__empty">{{ t('No paints selected in the paint box.') }}</p>
   </div>
 </template>
 
@@ -59,7 +59,9 @@ import { computed } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { chipStyle } from '../lib/color.js'
 import RecipeLine from './RecipeLine.vue'
+import { useText } from '../i18n/index.js'
 
+const { t } = useText()
 const analysis = useAnalysisStore()
 const index = computed(() => analysis.inspected?.entry ?? null)
 // The area that was tapped, when the colour was reached through the picture: only then can that

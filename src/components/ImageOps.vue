@@ -1,29 +1,29 @@
 <template>
   <!-- What is done with the picture as a whole: a new one, saving, the collection, printing. -->
-  <nav class="imageops" aria-label="Picture">
-    <label class="button button--secondary imageops__button" data-hint="New picture">
+  <nav class="imageops" :aria-label="t('Picture')">
+    <label class="button button--secondary imageops__button" :data-hint="t('New picture')">
       <AppIcon name="new" />
-      <input class="imageops__file" type="file" accept="image/*" aria-label="New: choose a photo" @change="onFile" />
+      <input class="imageops__file" type="file" accept="image/*" :aria-label="t('New: choose a photo')" @change="onFile" />
     </label>
-    <label v-if="hasCamera" class="button button--secondary imageops__button" data-hint="Take photo">
-      <AppIcon name="camera" label="Take photo" />
+    <label v-if="hasCamera" class="button button--secondary imageops__button" :data-hint="t('Take photo')">
+      <AppIcon name="camera" :label="t('Take photo')" />
       <input class="imageops__file" type="file" accept="image/*" capture="environment" @change="onFile" />
     </label>
-    <button class="button button--ghost imageops__button" type="button" data-hint="Samples" @click="emit('show-samples')">
-      <AppIcon name="sample" label="Samples" />
+    <button class="button button--ghost imageops__button" type="button" :data-hint="t('Samples')" @click="emit('show-samples')">
+      <AppIcon name="sample" :label="t('Samples')" />
     </button>
-    <button class="button button--ghost imageops__button" type="button" :disabled="!analysis.image" data-hint="Save" @click="collection.saveCurrent()">
-      <AppIcon name="save" label="Save" />
+    <button class="button button--ghost imageops__button" type="button" :disabled="!analysis.image" :data-hint="t('Save')" @click="collection.saveCurrent()">
+      <AppIcon name="save" :label="t('Save')" />
     </button>
-    <button class="button button--ghost imageops__button" type="button" data-hint="Collection" @click="emit('show-collection')">
-      <AppIcon name="collection" label="Collection" />
+    <button class="button button--ghost imageops__button" type="button" :data-hint="t('Collection')" @click="emit('show-collection')">
+      <AppIcon name="collection" :label="t('Collection')" />
     </button>
-    <button class="button button--ghost imageops__button" type="button" :disabled="!printable" data-hint="Print / PDF" @click="print">
-      <AppIcon name="pdf" label="Print / PDF" />
+    <button class="button button--ghost imageops__button" type="button" :disabled="!printable" :data-hint="t('Print / PDF')" @click="print">
+      <AppIcon name="pdf" :label="t('Print / PDF')" />
     </button>
     <!-- A download does not work inside the app's web view. -->
-    <button v-if="!isNative" class="button button--ghost imageops__button" type="button" :disabled="!analysis.image || analysis.busy" data-hint="Export as JPG" @click="exportPicture">
-      <AppIcon name="export" label="Export as JPG" />
+    <button v-if="!isNative" class="button button--ghost imageops__button" type="button" :disabled="!analysis.image || analysis.busy" :data-hint="t('Export as JPG')" @click="exportPicture">
+      <AppIcon name="export" :label="t('Export as JPG')" />
     </button>
   </nav>
 </template>
@@ -35,7 +35,9 @@ import { useCollectionStore } from '../stores/collection.js'
 import { useProStore } from '../stores/pro.js'
 import { isNative, sendNative } from '../lib/native.js'
 import AppIcon from './AppIcon.vue'
+import { useText } from '../i18n/index.js'
 
+const { t } = useText()
 const emit = defineEmits(['show-collection', 'show-samples', 'export-picture'])
 const analysis = useAnalysisStore()
 const collection = useCollectionStore()

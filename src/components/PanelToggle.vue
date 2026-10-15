@@ -5,10 +5,10 @@
     type="button"
     :aria-expanded="!layout.collapsed[name]"
     :data-hint="hint"
-    :aria-label="layout.collapsed[name] ? `Show ${label}` : `Hide ${label}`"
+    :aria-label="t(layout.collapsed[name] ? 'Show {what}' : 'Hide {what}', { what: t(label) })"
     @click="layout.toggle(name)"
   >
-    <AppIcon :name="icon" label="Toggle panel" />
+    <AppIcon :name="icon" :label="t('Toggle panel')" />
   </button>
 </template>
 
@@ -16,7 +16,9 @@
 import { computed } from 'vue'
 import { useLayoutStore } from '../stores/layout.js'
 import AppIcon from './AppIcon.vue';
+import { useText } from '../i18n/index.js'
 
+const { t } = useText()
 const props = defineProps({
   // The panel's key in the layout store, and what it is called in the button's labels.
   icon: { type: String, required: true, default: 'settings' },
@@ -25,5 +27,5 @@ const props = defineProps({
 })
 const layout = useLayoutStore()
 // The label shown on hover: "the settings" becomes "Settings".
-const hint = computed(() => props.label.replace(/^the /, '').replace(/^./, (c) => c.toUpperCase()))
+const hint = computed(() => t(props.label.replace(/^the /, '').replace(/^./, (c) => c.toUpperCase())))
 </script>

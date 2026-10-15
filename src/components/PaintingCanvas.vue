@@ -29,10 +29,11 @@
     <label v-if="!analysis.image && !analysis.busy && !backdrop" class="painting__welcome">
       <input class="painting__file" type="file" accept="image/*" @change="onWelcomeFile" />
       <span class="painting__welcome-text">
-        Welcome to {{ APP_NAME }}<br />
-        <strong>Load your first photo.</strong><br />
-        Click anywhere here to choose one.<br />
-        Or try one of the <button class="painting__welcome-link" type="button" @click.prevent.stop="emit('show-samples')">sample photos</button>.
+        {{ t('Welcome to {app}', { app: APP_NAME }) }}<br />
+        <strong>{{ t('Load your first photo.') }}</strong><br />
+        {{ t('Click anywhere here to choose one.') }}<br />
+        {{ t('Or try one of the') }}
+        <button class="painting__welcome-link" type="button" @click.prevent.stop="emit('show-samples')">{{ t('sample photos') }}</button>.
       </span>
     </label>
     <div v-if="frame" class="painting__frame" :style="frameStyle"></div>
@@ -41,10 +42,10 @@
     <div v-if="!backdrop" class="painting__tools">
       <!-- Until everything is unlocked: the plans, one click away. -->
       <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(false, 'use everything')">
-        Get pro
+        {{ t('Get pro') }}
       </button>
-      <button class="button button--ghost painting__tool" type="button" data-hint="Fit to window" @click="fit">
-        <AppIcon name="zoom" label="Fit the picture to the window" />
+      <button class="button button--ghost painting__tool" type="button" :data-hint="t('Fit to window')" @click="fit">
+        <AppIcon name="zoom" :label="t('Fit the picture to the window')" />
       </button>
       <!-- A frame drawn on the base picture becomes a close-up: that part, analysed on its own. -->
       <button
@@ -53,10 +54,10 @@
         :class="{ 'painting__tool--on': framing }"
         type="button"
         :aria-pressed="framing"
-        :data-hint="framing ? 'Cancel' : 'Zoom in on a part'"
+        :data-hint="framing ? t('Cancel') : t('Zoom in on a part')"
         @click="framing = !framing"
       >
-        <AppIcon name="frame" :label="framing ? 'Cancel choosing a part of the picture' : 'Zoom in on a part of the picture'" />
+        <AppIcon name="frame" :label="framing ? t('Cancel choosing a part of the picture') : t('Zoom in on a part of the picture')" />
       </button>
       <ViewSwitch />
       <!-- What is drawn over the picture. -->
@@ -65,26 +66,26 @@
         :class="{ 'button--active': analysis.settings.outlines }"
         type="button"
         :aria-pressed="analysis.settings.outlines"
-        data-hint="Outlines"
+        :data-hint="t('Outlines')"
         @click="analysis.settings.outlines = !analysis.settings.outlines"
       >
-        <AppIcon name="outlines" label="Show outlines" />
+        <AppIcon name="outlines" :label="t('Show outlines')" />
       </button>
       <button
         class="button painting__tool"
         :class="{ 'button--active': analysis.settings.numbers }"
         type="button"
         :aria-pressed="analysis.settings.numbers"
-        data-hint="Numbers"
+        :data-hint="t('Numbers')"
         @click="analysis.settings.numbers = !analysis.settings.numbers"
       >
-        <AppIcon name="numbers" label="Show numbers" />
+        <AppIcon name="numbers" :label="t('Show numbers')" />
       </button>
-      <p v-if="analysis.busy" class="painting__status">{{ analysis.layerMode ? 'Planning layers…' : 'Analysing…' }}</p>
-      <p v-else-if="framing && !frame" class="painting__status">Drag a frame over the part to zoom in on</p>
+      <p v-if="analysis.busy" class="painting__status">{{ analysis.layerMode ? t('Planning layers…') : t('Analysing…') }}</p>
+      <p v-else-if="framing && !frame" class="painting__status">{{ t('Drag a frame over the part to zoom in on') }}</p>
     </div>
     <!-- Without a paint the picture would be blank paper. One is enough: it is painted in washes. -->
-    <p v-if="noPaints && !backdrop" class="painting__notice">Put at least one colour in paintbox</p>
+    <p v-if="noPaints && !backdrop" class="painting__notice">{{ t('Put at least one colour in paintbox') }}</p>
     <RecipeTip v-if="hover" :index="hover.entry" :x="hover.x" :y="hover.y" />
   </div>
 </template>
@@ -103,7 +104,9 @@ import AppIcon from './AppIcon.vue'
 import ViewSwitch from './ViewSwitch.vue'
 import { closeupRect } from '../lib/closeup.js'
 import { APP_NAME } from '../config.js'
+import { useText } from '../i18n/index.js'
 
+const { t } = useText()
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
 const BLANK = [255, 255, 255] // paper

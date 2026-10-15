@@ -3,6 +3,7 @@ import { listImages, getImage, putImage, deleteImage, getLast, putLast } from '.
 import { usePaintsStore } from './paints.js'
 import { useAnalysisStore } from './analysis.js'
 import { useProStore, FREE_IMAGES } from './pro.js'
+import { t } from '../i18n/index.js'
 
 const STORE_SIZE = 1600 // longest side of the stored picture
 const THUMB_SIZE = 320
@@ -34,7 +35,7 @@ export const useCollectionStore = defineStore('collection', {
           .map(({ id, name, thumb, updatedAt }) => ({ id, name, thumb, updatedAt }))
           .sort((a, b) => b.updatedAt - a.updatedAt)
       } catch (e) {
-        this.error = `Could not read the collection: ${e.message}`
+        this.error = t('Could not read the collection: {reason}', { reason: t(e.message) })
       }
     },
 
@@ -61,7 +62,7 @@ export const useCollectionStore = defineStore('collection', {
         await this.refresh()
         return true
       } catch (e) {
-        this.error = `Could not save the picture: ${e.message}`
+        this.error = t('Could not save the picture: {reason}', { reason: t(e.message) })
         return false
       }
     },
@@ -113,7 +114,7 @@ export const useCollectionStore = defineStore('collection', {
         if (!record) throw new Error('picture not found')
         await useAnalysisStore().loadSaved(record)
       } catch (e) {
-        this.error = `Could not open the picture: ${e.message}`
+        this.error = t('Could not open the picture: {reason}', { reason: t(e.message) })
       }
     },
 

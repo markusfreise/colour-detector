@@ -7,8 +7,8 @@
 
         <!-- The settings float over the picture: dragged by the handle, their place is remembered. -->
         <div v-if="!collapsed" ref="panel" class="flyout flyout--floating" :class="{ 'flyout--dragging': dragging }" :style="style">
-          <div class="flyout__handle" title="Drag to move the settings" @pointerdown="startDrag"></div>
-          <button class="flyout__close" type="button" title="Close" aria-label="Close the settings" @click="layout.toggle('controls')">
+          <div class="flyout__handle" :title="t('Drag to move the settings')" @pointerdown="startDrag"></div>
+          <button class="flyout__close" type="button" :title="t('Close')" :aria-label="t('Close the settings')" @click="layout.toggle('controls')">
             <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
               <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
             </svg>
@@ -23,10 +23,10 @@
                   class="segmented__option"
                   :class="{ 'segmented__option--active': analysis.settings.mode === m.value }"
                   :aria-pressed="analysis.settings.mode === m.value"
-                  :title="m.title"
+                  :title="t(m.title)"
                   @click="analysis.setMode(m.value)"
                 >
-                  <AppIcon :name="m.icon" :label="m.label" />
+                  <AppIcon :name="m.icon" :label="t(m.label)" />
                 </button>
               </div>
         <div class="segmented segmented--fill">
@@ -37,11 +37,11 @@
             class="segmented__option"
             :class="{ 'segmented__option--active': analysis.settings.geometric === a.value }"
             :aria-pressed="analysis.settings.geometric === a.value"
-            :title="a.title"
+            :title="t(a.title)"
             @click="setGeometric(a.value)"
           >
-            <AppIcon v-if="icons[a.icon]" :name="a.icon" :label="a.label" />
-            <template v-else>{{ a.label }}</template>
+            <AppIcon v-if="icons[a.icon]" :name="a.icon" :label="t(a.label)" />
+            <template v-else>{{ t(a.label) }}</template>
           </button>
         </div>
         <!-- A value study: the picture in grey, each value painted with one colour of the paint box. -->
@@ -51,34 +51,34 @@
           :class="{ 'button--active': analysis.valueMode }"
           :aria-pressed="analysis.valueMode"
           :disabled="analysis.layerMode"
-          title="Values: the picture in grey, each value painted with one colour of the paint box"
+          :title="t('Values: the picture in grey, each value painted with one colour of the paint box')"
           @click="setValues(!analysis.settings.values)"
         >
-          <AppIcon name="contrast" label="Values" />
+          <AppIcon name="contrast" :label="t('Values')" />
         </button>
         </div>
             <span class="controls__toggles">
-                <label v-if="analysis.settings.view === 'sketch'" class="checkbox" title="Quarters and diagonals, to transfer the sketch to paper">
-                <input v-model="analysis.settings.guides" type="checkbox" /> Guides
+                <label v-if="analysis.settings.view === 'sketch'" class="checkbox" :title="t('Quarters and diagonals, to transfer the sketch to paper')">
+                <input v-model="analysis.settings.guides" type="checkbox" /> {{ t('Guides') }}
               </label>
             </span>
           </div>
           <label class="field">
-            <span class="field__label">Simplify areas <output class="field__value">{{ simplifyShown }}</output></span>
+            <span class="field__label">{{ t('Simplify areas') }} <output class="field__value">{{ simplifyShown }}</output></span>
             <input
               :value="analysis.settings[simplifyKey]"
               class="field__range"
               type="range"
               :min="analysis.layerMode ? 0 : FINEST"
               max="10"
-              :title="analysis.layerMode || pro.active ? undefined : 'Below 0 with Pro'"
+              :title="analysis.layerMode || pro.active ? undefined : t('Below 0 with Pro')"
               @input="setSimplify($event)"
               @change="simplifyChanged"
             />
           </label>
         <div class="controls__settings">
           <label v-if="!analysis.layerMode" class="field">
-            <span class="field__label">Colours <output class="field__value">{{ analysis.settings.colours }}</output></span>
+            <span class="field__label">{{ t('Colours') }} <output class="field__value">{{ analysis.settings.colours }}</output></span>
             <input
               v-model.number="analysis.settings.colours"
               class="field__range"
@@ -89,7 +89,7 @@
             />
           </label>
           <label v-else class="field">
-            <span class="field__label">Layers <output class="field__value">{{ layerCount }}</output></span>
+            <span class="field__label">{{ t('Layers') }} <output class="field__value">{{ layerCount }}</output></span>
             <input
               v-model.number="analysis.settings.layerCount"
               class="field__range"
@@ -100,12 +100,12 @@
               @change="analysis.analyse()"
             />
             <span class="field__hint">
-              {{ paints.activeBox.layerAuto ? 'Washes; accents and second coats are extra steps' : 'Chosen by hand. Auto in the paint box picks again.' }}
+              {{ paints.activeBox.layerAuto ? t('Washes; accents and second coats are extra steps') : t('Chosen by hand. Auto in the paint box picks again.') }}
             </span>
           </label>
     
           <label v-if="!analysis.layerMode" class="field">
-            <span class="field__label">Details <output class="field__value">{{ analysis.settings.variety }}</output></span>
+            <span class="field__label">{{ t('Details') }} <output class="field__value">{{ analysis.settings.variety }}</output></span>
             <input
               v-model.number="analysis.settings.variety"
               class="field__range"
@@ -116,7 +116,7 @@
             />
           </label>
           <label v-else class="field">
-            <span class="field__label">Accents <output class="field__value">{{ analysis.settings.layerAccents }}</output></span>
+            <span class="field__label">{{ t('Accents') }} <output class="field__value">{{ analysis.settings.layerAccents }}</output></span>
             <input
               v-model.number="analysis.settings.layerAccents"
               class="field__range"
@@ -128,7 +128,7 @@
           </label>
     
           <div v-if="!analysis.layerMode" class="field">
-            <span class="field__label">Max. paints<output class="field__value">{{ analysis.settings.maxPaints }}</output></span>
+            <span class="field__label">{{ t('Max. paints') }}<output class="field__value">{{ analysis.settings.maxPaints }}</output></span>
             <input
               v-model.number="analysis.settings.maxPaints"
               class="field__range"
@@ -138,8 +138,8 @@
               @change="analysis.analyse()"
             />
           </div>
-          <label v-else class="field" title="How often one wash may be painted over itself">
-            <span class="field__label">Max. coats <output class="field__value">{{ analysis.settings.maxCoats }}</output></span>
+          <label v-else class="field" :title="t('How often one wash may be painted over itself')">
+            <span class="field__label">{{ t('Max. coats') }} <output class="field__value">{{ analysis.settings.maxCoats }}</output></span>
             <input
               v-model.number="analysis.settings.maxCoats"
               class="field__range"
@@ -151,12 +151,12 @@
           </label>
         </div>
         <span v-if="analysis.layerMode" class="field__hint controls__hint">
-          Accents: small strong touches painted last, first for a colour the washes miss, then for the darks
+          {{ t('Accents: small strong touches painted last, first for a colour the washes miss, then for the darks') }}
         </span>
     
         <div class="controls__settings controls__settings_two">
           <label class="field">
-            <span class="field__label">Saturation <output class="field__value">{{ analysis.settings.saturation }}%</output></span>
+            <span class="field__label">{{ t('Saturation') }} <output class="field__value">{{ analysis.settings.saturation }}%</output></span>
             <input
               v-model.number="analysis.settings.saturation"
               class="field__range"
@@ -169,7 +169,7 @@
             />
           </label>
           <label class="field">
-            <span class="field__label">Contrast <output class="field__value">{{ analysis.settings.contrast }}%</output></span>
+            <span class="field__label">{{ t('Contrast') }} <output class="field__value">{{ analysis.settings.contrast }}%</output></span>
             <input
               v-model.number="analysis.settings.contrast"
               class="field__range"
@@ -199,7 +199,9 @@ import AiPanel from './AiPanel.vue'
 import { useFloating } from './floating.js'
 import AppIcon from './AppIcon.vue'
 import { icons } from './icons.js'
+import { useText } from '../i18n/index.js'
 
+const { t } = useText()
 const analysis = useAnalysisStore()
 const collection = useCollectionStore()
 const layout = useLayoutStore()
@@ -221,7 +223,7 @@ function setGeometric(value) {
 }
 const methods = [
   { value: 'mix', label: 'Mix', icon: 'brush', title: 'Mix: every colour is mixed on the palette and each area painted once' },
-  { value: 'layer', label: 'Layer', icon: 'layers', title: 'Layer: a few paints glazed over each other, light to dark' },
+  { value: 'layer', label: 'Layer@@mode', icon: 'layers', title: 'Layer: a few paints glazed over each other, light to dark' },
 ]
 // Layer mode keeps its own smoothing: its areas are painted several times over.
 const simplifyKey = computed(() => (analysis.layerMode ? 'layerSimplify' : 'simplify'))

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { stockPaints } from '../data/paints.js'
 import { useProStore } from './pro.js'
 import { groupPaints, sortPaints, paintGroupKeys, AUTO_OFF_DEFAULT, HOUSE_VENDOR } from '../lib/paintbox.js'
+import { t } from '../i18n/index.js'
 
 const LEGACY_KEY = 'colour-detector:enabled-paints'
 const BOXES_KEY = 'colour-detector:boxes'
@@ -136,7 +137,7 @@ export const usePaintsStore = defineStore('paints', {
     },
 
     addBox(name) {
-      const box = { id: newId('box'), name: name.trim() || `Box ${this.boxes.length + 1}`, paintIds: [], auto: false, layerIds: [], layerAuto: true, autoOff: [...AUTO_OFF_DEFAULT] }
+      const box = { id: newId('box'), name: name.trim() || t('Box {n}', { n: this.boxes.length + 1 }), paintIds: [], auto: false, layerIds: [], layerAuto: true, autoOff: [...AUTO_OFF_DEFAULT] }
       this.boxes.push(box)
       this.activeId = box.id
       this.persist()

@@ -8,10 +8,10 @@
       class="segmented__option"
       :class="{ 'segmented__option--active': analysis.settings.view === v.value }"
       :aria-pressed="analysis.settings.view === v.value"
-      :data-hint="v.hint"
+      :data-hint="t(v.hint)"
       @click="analysis.settings.view = v.value"
     >
-      <AppIcon :name="v.icon" :label="v.label" />
+      <AppIcon :name="v.icon" :label="t(v.label)" />
     </button>
   </div>
 </template>
@@ -20,7 +20,9 @@
 import { computed, watch } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import AppIcon from './AppIcon.vue'
+import { useText } from '../i18n/index.js'
 
+const { t } = useText()
 const analysis = useAnalysisStore()
 // Layer mode has no colour per area to compare with, only the layered picture and the photo.
 // The Sketch view is hidden for now (TASK-39: it is to be reworked); its drawing is still there.

@@ -2,27 +2,27 @@
   <section class="panel sidebar" :class="{ 'panel--collapsed': collapsed }">
     <div class="toolbar">
       <PanelToggle name="palette" icon="colours" label="the colours" />
-      <button class="button button--ghost" type="button" data-hint="Paint box" @click="emit('show-paintbox')">
+      <button class="button button--ghost" type="button" :data-hint="t('Paint box')" @click="emit('show-paintbox')">
         <AppIcon name="paintbox" />
       </button>
     </div>
     <!-- The colours float over the picture like the settings: dragged by the handle, their place is remembered. -->
     <div v-if="!collapsed" ref="panel" class="flyout flyout--floating flyout--low" :class="{ 'flyout--dragging': dragging }" :style="style">
-      <div class="flyout__handle" title="Drag to move the colours" @pointerdown="startDrag"></div>
-      <button class="flyout__close" type="button" title="Close" aria-label="Close the colours" @click="layout.toggle('palette')">
+      <div class="flyout__handle" :title="t('Drag to move the colours')" @pointerdown="startDrag"></div>
+      <button class="flyout__close" type="button" :title="t('Close')" :aria-label="t('Close the colours')" @click="layout.toggle('palette')">
         <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
           <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
         </svg>
       </button>
       <h2 class="panel__title">
-        Colours
+        {{ t('Colours') }}
         <span v-if="analysis.entries.length" class="palette__count">
-          {{ analysis.entries.length }} in {{ analysis.mixCount }} {{ analysis.mixCount === 1 ? 'mix' : 'mixes' }}
+          {{ t(analysis.mixCount === 1 ? '{n} in {mixes} mix' : '{n} in {mixes} mixes', { n: analysis.entries.length, mixes: analysis.mixCount }) }}
         </span>
       </h2>
     <div v-show="!collapsed" class="palette__body">
     <p v-if="analysis.mixCount < analysis.entries.length" class="palette__key">
-      <span v-for="w in WASH_LETTERS" :key="w.letter"><strong>{{ w.letter }}</strong> {{ w.label }}</span>
+      <span v-for="w in WASH_LETTERS" :key="w.letter"><strong>{{ w.letter }}</strong> {{ t(w.label) }}</span>
     </p>
     <ol class="palette__list">
       <li
@@ -42,15 +42,15 @@
               <template v-if="!mix.paints.length">{{ mix.names }}</template>
             </span>
             <span class="palette__meta">
-              <template v-if="mix.washes.length > 1">{{ mix.washes.length }} washes · </template>
+              <template v-if="mix.washes.length > 1">{{ t('{n} washes · ', { n: mix.washes.length }) }}</template>
               <template v-else-if="mix.dilution">{{ mix.dilution }} · </template>
-              {{ percent(mix.share) }}% of image
-              <template v-if="mix.changed"> · changed</template>
+              {{ t('{percent}% of image', { percent: percent(mix.share) }) }}
+              <template v-if="mix.changed">{{ t(' · changed') }}</template>
             </span>
           </span>
         </button>
         <!-- The recipe as a bar: one segment per paint, as wide as its part of the mix. -->
-        <div v-if="mix.paints.length" class="palette__bar" role="img" :aria-label="`Recipe: ${mix.recipeText}`">
+        <div v-if="mix.paints.length" class="palette__bar" role="img" :aria-label="t('Recipe: {recipe}', { recipe: mix.recipeText })">
           <span
             v-for="paint in mix.paints"
             :key="paint.id"
@@ -70,7 +70,7 @@
             :class="{ 'palette__wash--active': analysis.selectedEntry === wash.index }"
             type="button"
             :style="{ background: wash.hex, color: wash.ink }"
-            :title="`${wash.label}: ${wash.dilution}, ${percent(wash.share)}% of image`"
+            :title="t('{label}: {dilution}, {percent}% of image', { label: wash.label, dilution: wash.dilution, percent: percent(wash.share) })"
             @click="toggle(wash.index)"
           >
             {{ wash.letter }}
@@ -94,7 +94,9 @@ import AppIcon from './AppIcon.vue'
 import { useLayoutStore } from '../stores/layout.js'
 import PanelToggle from './PanelToggle.vue'
 import { useFloating } from './floating.js'
+import { useText } from '../i18n/index.js'
 
+const { t, paintName, region } = useText()
 const emit = defineEmits(['show-paintbox'])
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
@@ -103,8 +105,8 @@ const collapsed = computed(() => !!layout.collapsed.palette)
 const { panel, style, dragging, startDrag } = useFloating('colours')
 
 const percent = (share) => Math.round(share * 100) || '<1'
-const formatParts = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1))
-const shortDilution = (recipe) => recipe.dilution.replace(/ \(.*\)$/, '')
+const formatParts = (n) => (Number.isInteger(n) ? String(n) : n.toLocaleString(region.value, { minimumFractionDigits: 1, maximumFractionDigits: 1 }))
+const shortDilution = (recipe) => t(recipe.dilution).replace(/ \(.*\)$/, '')
 
 // One block per mix: its base colour, its recipe as a bar of paints, and its washes.
 const mixes = computed(() => {
@@ -129,9 +131,9 @@ const mixes = computed(() => {
         hex: paint.hex,
         ink: contrastText(paint.hex),
         parts,
-        name: paint.name,
+        name: paintName(paint),
         number: paintNumber(paint.number),
-        title: `${parts} x ${paintNumber(paint.number)} ${paint.name}`,
+        title: `${parts} x ${paintNumber(paint.number)} ${paintName(paint)}`,
       }
     })
     return {
@@ -141,9 +143,12 @@ const mixes = computed(() => {
       // One paint in several washes: the paint as it is, since no single wash is "the" colour.
       // Otherwise the mix as its recipe gives it.
       hex: used.length === 1 && members.length > 1 ? used[0].hex : (recipe?.hex ?? base.entry.targetHex),
-      hexTitle: used.length === 1 && members.length > 1 ? `Colour of the paint: ${used[0].hex}` : `Base colour of the mix: ${recipe?.hex ?? base.entry.targetHex}`,
+      hexTitle:
+        used.length === 1 && members.length > 1
+          ? t('Colour of the paint: {hex}', { hex: used[0].hex })
+          : t('Base colour of the mix: {hex}', { hex: recipe?.hex ?? base.entry.targetHex }),
       // Shown in place of the paints when there are none.
-      names: recipe ? 'Paper white' : '–',
+      names: recipe ? t('Paper white') : '–',
       recipeText: used.map((p) => p.title).join(', '),
       paints: used,
       dilution: own?.paints.length ? shortDilution(own) : '',

@@ -11,6 +11,7 @@ import { boxMask, detailWash } from '../lib/details.js'
 import { toOklabPixels, SIMPLIFY_ZERO } from '../lib/segment.js'
 import { closeupSize } from '../lib/closeup.js'
 import { useProStore } from './pro.js'
+import { t } from '../i18n/index.js'
 
 // Working resolution: the picture is scaled down to about this many pixels, whatever its shape.
 export const WORK_PIXELS = 800 * 600
@@ -243,7 +244,7 @@ export const useAnalysisStore = defineStore('analysis', {
     /** Load a sample picture by its place in the list; the first one is used at start. */
     async loadSample(index = 0) {
       const sample = SAMPLES[index] ?? SAMPLES[0]
-      await this.loadFromSource(sample.url, `${sample.name} (sample)`)
+      await this.loadFromSource(sample.url, t('{name} (sample)', { name: t(sample.name) }))
     },
     async loadFile(file) {
       const url = URL.createObjectURL(file)
@@ -312,7 +313,7 @@ export const useAnalysisStore = defineStore('analysis', {
         this.forgetPicture()
         await this.analyse()
       } catch (e) {
-        this.error = `Could not load image: ${e.message}`
+        this.error = t('Could not load image: {reason}', { reason: t(e.message) })
       }
     },
 
@@ -359,7 +360,7 @@ export const useAnalysisStore = defineStore('analysis', {
       this.savedId = null
       this.image = markRaw(canvas)
       this.pixels = markRaw({ rgba: ctx.getImageData(0, 0, cut.width, cut.height).data, width: cut.width, height: cut.height })
-      this.imageName = `${this.base.name} – detail ${closeup.number}`
+      this.imageName = t('{name} – detail {n}', { name: this.base.name, n: closeup.number })
       await this.showPicture(closeup.edits)
     },
     async showBase() {
@@ -485,7 +486,7 @@ export const useAnalysisStore = defineStore('analysis', {
         if (pending?.key === key) this.applyEdits(pending.edits)
         this.noteMatch()
       } catch (e) {
-        if (token === analysisToken) this.error = `Analysis failed: ${e.message}`
+        if (token === analysisToken) this.error = t('Analysis failed: {reason}', { reason: t(e.message) })
       } finally {
         // A superseded analysis leaves `busy` to the one that is still running.
         if (token === analysisToken) this.busy = false
@@ -545,7 +546,7 @@ export const useAnalysisStore = defineStore('analysis', {
         this.renderVersion++
         this.noteMatch()
       } catch (e) {
-        if (token === analysisToken) this.error = `Analysis failed: ${e.message}`
+        if (token === analysisToken) this.error = t('Analysis failed: {reason}', { reason: t(e.message) })
       } finally {
         if (token === analysisToken) this.busy = false
       }
@@ -733,7 +734,7 @@ export const useAnalysisStore = defineStore('analysis', {
         this.sketch = markRaw({ key, ...result })
         this.renderVersion++
       } catch (e) {
-        this.error = `Sketch failed: ${e.message}`
+        this.error = t('Sketch failed: {reason}', { reason: t(e.message) })
       } finally {
         if (sketchRunning === key) sketchRunning = null
       }

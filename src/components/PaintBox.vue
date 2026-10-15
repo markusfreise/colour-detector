@@ -2,36 +2,36 @@
   <dialog ref="dialog" class="panel paintbox" aria-labelledby="paintbox-title" @click="onBackdrop" @close="onClose">
     <div class="paintbox__body">
       <header class="paintbox__header">
-        <h2 id="paintbox-title" class="panel__title">{{ layerMode ? 'Paint box: base paints' : 'Paint box' }}</h2>
+        <h2 id="paintbox-title" class="panel__title">{{ layerMode ? t('Paint box: base paints') : t('Paint box') }}</h2>
         <div class="paintbox__actions">
           <button
             class="button"
             :class="autoOn ? 'button--active' : 'button--ghost'"
             type="button"
             :aria-pressed="autoOn"
-            :title="layerMode ? 'Auto: let the app choose the base paints for this picture' : 'Auto: let the app select the paints that suit each picture'"
+            :title="layerMode ? t('Auto: let the app choose the base paints for this picture') : t('Auto: let the app select the paints that suit each picture')"
             :disabled="!analysis.pixels"
             @click="auto"
           >
-            <AppIcon name="auto" label="Auto" />
+            <AppIcon name="auto" :label="t('Auto')" />
           </button>
-          <button v-if="!layerMode" class="button button--ghost" type="button" title="Revert: back to the standard selection" @click="reset">
-            <AppIcon name="reset" label="Revert" />
+          <button v-if="!layerMode" class="button button--ghost" type="button" :title="t('Revert: back to the standard selection')" @click="reset">
+            <AppIcon name="reset" :label="t('Revert')" />
           </button>
-          <button class="button button--ghost" type="button" title="Clear: select no paint" @click="clear">
-            <AppIcon name="clear" label="Clear" />
+          <button class="button button--ghost" type="button" :title="t('Clear: select no paint')" @click="clear">
+            <AppIcon name="clear" :label="t('Clear')" />
           </button>
           <button
             class="button"
             :class="dirty ? 'button--active' : 'button--ghost'"
             type="button"
             :disabled="!dirty"
-            :title="layerMode ? 'Update layers' : 'Update mixes'"
+            :title="layerMode ? t('Update layers') : t('Update mixes')"
             @click="apply"
           >
-            <AppIcon name="update" :label="layerMode ? 'Update layers' : 'Update mixes'" />
+            <AppIcon name="update" :label="layerMode ? t('Update layers') : t('Update mixes')" />
           </button>
-          <button class="flyout__close paintbox__close" type="button" title="Close" aria-label="Close" @click="close">
+          <button class="flyout__close paintbox__close" type="button" :title="t('Close')" :aria-label="t('Close')" @click="close">
             <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
               <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
             </svg>
@@ -49,48 +49,52 @@
             :class="{ 'segmented__option--active': box.id === paints.activeBox.id }"
             @click="selectBox(box.id)"
           >
-            {{ box.name }}
+            {{ t(box.name) }}
           </button>
         </div>
-        <button class="button button--ghost" type="button" @click="startBox('new')">New box</button>
-        <button class="button button--ghost" type="button" @click="startBox('rename')">Rename</button>
+        <button class="button button--ghost" type="button" @click="startBox('new')">{{ t('New box') }}</button>
+        <button class="button button--ghost" type="button" @click="startBox('rename')">{{ t('Rename') }}</button>
         <button v-if="paints.boxes.length > 1" class="button button--ghost" type="button" @click="deleteBox">
-          {{ confirming === 'box' ? 'Really delete?' : 'Delete box' }}
+          {{ confirming === 'box' ? t('Really delete?') : t('Delete box') }}
         </button>
       </div>
       <form v-if="boxMode" class="paintbox__edit" @submit.prevent="saveBox">
-        <input v-model="boxName" class="input" type="text" maxlength="40" placeholder="Name of the box" aria-label="Name of the box" />
-        <button class="button" type="submit">{{ boxMode === 'new' ? 'Create box' : 'Save name' }}</button>
-        <button class="button button--ghost" type="button" @click="boxMode = null">Cancel</button>
+        <input v-model="boxName" class="input" type="text" maxlength="40" :placeholder="t('Name of the box')" :aria-label="t('Name of the box')" />
+        <button class="button" type="submit">{{ boxMode === 'new' ? t('Create box') : t('Save name') }}</button>
+        <button class="button button--ghost" type="button" @click="boxMode = null">{{ t('Cancel') }}</button>
       </form>
 
       <p v-if="layerMode" class="paintbox__note">
-        Layer mode paints with a few base paints, one layer each ({{ selected.length }} of {{ MAX_LAYER_PAINTS }}). They are
-        kept apart from the paints selected for mixing.
-        <template v-if="full"> {{ MAX_LAYER_PAINTS }} layers at most: remove one before adding another.</template>
+        {{
+          t('Layer mode paints with a few base paints, one layer each ({n} of {max}). They are kept apart from the paints selected for mixing.', {
+            n: selected.length,
+            max: MAX_LAYER_PAINTS,
+          })
+        }}
+        <template v-if="full">{{ t(' {max} layers at most: remove one before adding another.', { max: MAX_LAYER_PAINTS }) }}</template>
       </p>
-      <div class="paintbox__group paintbox__group--selected" :aria-label="layerMode ? 'Base paints' : 'Selected paints'">
+      <div class="paintbox__group paintbox__group--selected" :aria-label="layerMode ? t('Base paints') : t('Selected paints')">
         <ul v-if="selected.length" class="paintbox__list">
           <li v-for="p in selected" :key="p.id">
             <PaintChip :paint="p" enabled show-form :used="!layerMode && analysis.usedPaintIds.has(p.id)" @toggle="toggle(p.id, $event)" />
           </li>
         </ul>
         <p v-else class="paintbox__empty">
-          {{ layerMode ? 'No base paints chosen. Click a paint below to add it, or press Auto.' : 'No paints selected. Click a paint below to add it.' }}
+          {{ layerMode ? t('No base paints chosen. Click a paint below to add it, or press Auto.') : t('No paints selected. Click a paint below to add it.') }}
         </p>
         <p v-if="!layerMode && selected.length >= pro.paintLimit" class="paintbox__note paintbox__limit">
-          Maximum number of colours reached.
-          <button class="paintbox__get-pro" type="button" @click="pro.require(false, `mix from more than ${FREE_PAINTS} paints`)">Get Pro</button>
-          to lift this limit.
+          {{ t('Maximum number of colours reached.') }}
+          <button class="paintbox__get-pro" type="button" @click="pro.require(false, `mix from more than ${FREE_PAINTS} paints`)">{{ t('Get Pro') }}</button>
+          {{ t('to lift this limit.') }}
         </p>
       </div>
 
       <div v-for="group in available" :key="group.key" class="paintbox__group">
         <div class="paintbox__group-header">
-          <h3 class="paintbox__group-title">{{ group.name }}</h3>
-          <label class="checkbox" :title="`Let Auto choose from ${group.name}`">
+          <h3 class="paintbox__group-title">{{ t(group.name) }}</h3>
+          <label class="checkbox" :title="t('Let Auto choose from {group}', { group: t(group.name) })">
             <input type="checkbox" :checked="!autoOff.has(group.key)" @change="setAutoGroup(group.key, $event.target.checked)" />
-            Use for Auto
+            {{ t('Use for Auto') }}
           </label>
         </div>
         <ul v-if="group.paints.length" class="paintbox__list">
@@ -98,101 +102,103 @@
             <PaintChip :paint="p" :disabled="full" @toggle="toggle(p.id, $event)" />
           </li>
         </ul>
-        <p v-else class="paintbox__empty">All of these are selected.</p>
+        <p v-else class="paintbox__empty">{{ t('All of these are selected.') }}</p>
       </div>
 
       <div class="paintbox__group">
         <div class="paintbox__own-header">
-          <h3 class="paintbox__group-title">Your own paints</h3>
-          <button v-if="!paintForm" class="button button--secondary" type="button" @click="startPaint()">Add paint</button>
+          <h3 class="paintbox__group-title">{{ t('Your own paints') }}</h3>
+          <button v-if="!paintForm" class="button button--secondary" type="button" @click="startPaint()">{{ t('Add paint') }}</button>
         </div>
         <form v-if="paintForm" class="paintbox__paint-form" @submit.prevent="savePaint">
           <!-- A paint from one of the libraries that come with the app: first the library, then the
                colour out of it, and the whole form is filled in. The libraries are Pro. -->
           <p v-if="!pro.active" class="paintbox__note paintbox__input--wide">
-            <button class="paintbox__get-pro" type="button" @click="pro.require(false, 'add colours from the catalogues of known manufacturers')">Get pro</button>
-            and easily add pre-defined colours from the catalogues of known manufacturers and brands.
+            <button class="paintbox__get-pro" type="button" @click="pro.require(false, 'add colours from the catalogues of known manufacturers')">
+              {{ t('Get pro') }}
+            </button>
+            {{ t('and easily add pre-defined colours from the catalogues of known manufacturers and brands.') }}
           </p>
           <label v-else class="paintbox__input paintbox__input--wide">
-            <span>Library</span>
+            <span>{{ t('Library') }}</span>
             <select v-model="libraryPick" class="input input--select">
-              <option value="">Add new below</option>
+              <option value="">{{ t('Add new below') }}</option>
               <option v-for="preset in PAINT_LIBRARIES" :key="preset.id" :value="preset.id">{{ preset.name }}</option>
             </select>
           </label>
           <label v-if="picked" class="paintbox__input paintbox__input--wide">
-            <span>Colour from {{ picked.name }}</span>
+            <span>{{ t('Colour from {library}', { library: picked.name }) }}</span>
             <select v-model="colourPick" class="input input--select" @change="useColour">
-              <option value="">Choose a colour</option>
+              <option value="">{{ t('Choose a colour') }}</option>
               <option v-for="colour in picked.catalogue" :key="colour.number" :value="colour.number">
                 {{ paintNumber(colour.number) }} {{ colour.name }}
               </option>
             </select>
           </label>
           <label class="paintbox__input paintbox__input--wide">
-            <span>Vendor and Series</span>
+            <span>{{ t('Vendor and Series') }}</span>
             <select v-model="seriesPick" class="input input--select">
               <option v-for="name in series" :key="name" :value="name">{{ name }}</option>
-              <option value="new">New series</option>
+              <option value="new">{{ t('New series') }}</option>
             </select>
           </label>
           <label v-if="seriesPick === 'new'" class="paintbox__input paintbox__input--wide">
-            <span>Name of the series</span>
+            <span>{{ t('Name of the series') }}</span>
             <input v-model="paintForm.vendor" class="input" type="text" maxlength="60" required @change="lookUp" />
-            <span class="paintbox__hint">New series will be created</span>
+            <span class="paintbox__hint">{{ t('New series will be created') }}</span>
           </label>
           <label class="paintbox__input">
-            <span>Number</span>
+            <span>{{ t('Number') }}</span>
             <input v-model="paintForm.number" class="input" type="text" maxlength="8" required @change="lookUp" />
           </label>
           <label class="paintbox__input">
-            <span>Form</span>
+            <span>{{ t('Form') }}</span>
             <select v-model="paintForm.form" class="input input--select">
-              <option value="pan">Pan</option>
-              <option value="tube">Tube</option>
+              <option value="pan">{{ t('Pan') }}</option>
+              <option value="tube">{{ t('Tube') }}</option>
             </select>
           </label>
           <label class="paintbox__input paintbox__input--wide">
-            <span>Name</span>
+            <span>{{ t('Name') }}</span>
             <input v-model="paintForm.name" class="input" type="text" maxlength="60" required />
           </label>
           <label class="paintbox__input paintbox__input--wide">
-            <span>Colour</span>
+            <span>{{ t('Colour') }}</span>
             <input v-model="paintForm.hex" class="input input--colour" type="color" />
           </label>
           <p class="paintbox__note">
-            Pick the colour of a medium wash on white paper, not the colour straight from the pan or tube.
-            <template v-if="library && pro.active">{{ library.name }} numbers fill in name and colour.</template>
+            {{ t('Pick the colour of a medium wash on white paper, not the colour straight from the pan or tube.') }}
+            <template v-if="library && pro.active">{{ t('{library} numbers fill in name and colour.', { library: library.name }) }}</template>
           </p>
           <div class="paintbox__form-actions">
-            <button class="button button--secondary" type="submit">{{ paintForm.id ? 'Save paint' : 'Add paint' }}</button>
-            <button class="button button--ghost" type="button" @click="paintForm = null">Cancel</button>
+            <button class="button button--secondary" type="submit">{{ paintForm.id ? t('Save paint') : t('Add paint') }}</button>
+            <button class="button button--ghost" type="button" @click="paintForm = null">{{ t('Cancel') }}</button>
           </div>
         </form>
         <ul v-if="paints.custom.length" class="paintbox__own">
           <!-- One paint per row: the colour itself carries what is done with it. -->
           <li v-for="p in paints.custom" :key="p.id" class="chip chip--row paintbox__own-chip" :style="chipStyle(p.hex)">
             <span class="paintbox__own-lines">
-              <span class="chip__text"><span class="chip__strong">{{ paintNumber(p.number) }}</span> {{ p.name }}</span>
-              <span class="chip__text paintbox__own-vendor">{{ p.vendor }} · {{ paintForms(p) === 'P' ? 'Pan' : 'Tube' }}</span>
+              <span class="chip__text"><span class="chip__strong">{{ paintNumber(p.number) }}</span> {{ paintName(p) }}</span>
+              <span class="chip__text paintbox__own-vendor">{{ p.vendor }} · {{ paintForms(p) === 'P' ? t('Pan') : t('Tube') }}</span>
             </span>
             <span class="paintbox__own-actions">
-              <button class="paintbox__own-action" type="button" title="Edit this paint" @click="startPaint(p)">
-                <AppIcon name="edit" label="Edit this paint" />
+              <button class="paintbox__own-action" type="button" :title="t('Edit this paint')" @click="startPaint(p)">
+                <AppIcon name="edit" :label="t('Edit this paint')" />
               </button>
               <button
                 class="paintbox__own-action"
                 :class="{ 'paintbox__own-action--armed': confirming === p.id }"
                 type="button"
-                :title="confirming === p.id ? 'Press again to delete this paint' : 'Delete this paint'"
+                :title="confirming === p.id ? t('Press again to delete this paint') : t('Delete this paint')"
                 @click="deletePaint(p.id)"
               >
-                <AppIcon name="trash" :label="confirming === p.id ? 'Press again to delete this paint' : 'Delete this paint'" />
+                <AppIcon name="trash" :label="confirming === p.id ? t('Press again to delete this paint') : t('Delete this paint')" />
               </button>
             </span>
           </li>
         </ul>
-        <p v-else-if="!paintForm" class="paintbox__empty">Add paints of any brand that are not in the list above.</p>
+        <p v-else-if="!paintForm" class="paintbox__empty">{{ t('Add paints of any brand that are not in the list above.') }}</p>
       </div>
     </div>
   </dialog>
@@ -208,7 +214,9 @@ import { paintNumber, paintForms, groupPaints, sortPaints, seriesNames, HOUSE_VE
 import { PAINT_LIBRARIES, libraryByName } from '../data/libraries.js'
 import PaintChip from './PaintChip.vue'
 import AppIcon from './AppIcon.vue'
+import { useText } from '../i18n/index.js'
 
+const { t, paintName } = useText()
 const paints = usePaintsStore()
 const analysis = useAnalysisStore()
 const pro = useProStore()

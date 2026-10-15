@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ACCOUNT_API } from '../config.js'
 import { accountsWanted, readReturn } from '../lib/account.js'
+import { t, currentLocale } from '../i18n/index.js'
 
 // One request to the account API. The session travels as a cookie the page cannot read.
 async function call(path, body) {
@@ -13,11 +14,18 @@ async function call(path, body) {
       body: body === undefined ? undefined : JSON.stringify(body),
     })
   } catch {
-    throw new Error('The account service cannot be reached. Please check your connection.')
+    throw new Error(t('The account service cannot be reached. Please check your connection.'))
   }
   const data = await response.json().catch(() => ({}))
-  if (!response.ok) throw new Error(data.error ?? 'The account service did not answer as expected.')
+  if (!response.ok) throw new Error(data.error ? serverText(data.error) : t('The account service did not answer as expected.'))
   return data
+}
+
+// A message of the account API in the language shown; the server writes English.
+function serverText(message) {
+  const voucher = /^This code is not valid for (.+)\. A voucher only works with the address it was made out to\.$/.exec(message)
+  if (voucher) return t('This code is not valid for {email}. A voucher only works with the address it was made out to.', { email: voucher[1] })
+  return t(message)
 }
 
 // The account: who is signed in, what they agreed to and what they paid for. No pictures, no profile.
@@ -56,7 +64,7 @@ export const useAccountStore = defineStore('account', {
       // The code or result is used once; it should not stay in the address or the history.
       if (this.loaded && !back.handled) return
       if (back.handled) window.history.replaceState(null, '', window.location.pathname + window.location.search)
-      if (back.notice) this.notice = back.notice
+      if (back.notice) this.notice = { ...back.notice, text: t(back.notice.text) }
       if (back.magic) await this.attempt(() => call('auth/magic/verify', { token: back.magic }))
       await this.refresh()
       if (back.signedIn && this.user) this.welcome = true
@@ -78,7 +86,7 @@ export const useAccountStore = defineStore('account', {
         await new Promise((resolve) => setTimeout(resolve, 2000))
         await this.refresh()
       }
-      if (this.pro) this.notice = { kind: 'info', text: 'Thank you. Everything is unlocked.' }
+      if (this.pro) this.notice = { kind: 'info', text: t('Thank you. Everything is unlocked.') }
     },
     // Runs one request with the busy flag and the error shown in the dialogs.
     async attempt(work, clear = true) {
@@ -99,7 +107,7 @@ export const useAccountStore = defineStore('account', {
     },
     async sendLink(email, code = '') {
       let data
-      if (!(await this.attempt(async () => (data = await call('auth/magic', { email, code }))))) return
+      if (!(await this.attempt(async () => (data = await call('auth/magic', { email, code, lang: currentLocale() }))))) return
       // A local test account is signed in at once.
       if (data.signedIn) {
         await this.refresh()
@@ -139,7 +147,7 @@ export const useAccountStore = defineStore('account', {
       if (await this.attempt(() => call('delete', {}))) {
         this.user = null
         this.open = false
-        this.notice = { kind: 'info', text: 'Your account is deleted. Pictures and paint boxes saved in this browser are still here.' }
+        this.notice = { kind: 'info', text: t('Your account is deleted. Pictures and paint boxes saved in this browser are still here.') }
       }
     },
   },

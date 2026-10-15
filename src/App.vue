@@ -4,7 +4,7 @@
   <div v-else class="app" :class="{ 'app--layer': analysis.layerMode }">
     <p v-if="account.notice" class="app__notice">
       {{ account.notice.text }}
-      <button class="app__footer-link" type="button" @click="account.notice = null">Hide</button>
+      <button class="app__footer-link" type="button" @click="account.notice = null">{{ t('Hide') }}</button>
     </p>
     <main class="app__main">
       <!-- The picture is the background of the window; everything else lies over it. -->
@@ -14,8 +14,8 @@
       <div class="app__left">
         <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
         <!-- The account, and the preferences (language, light or dark) with or without one. -->
-        <button class="button button--ghost" type="button" :data-hint="account.enabled ? 'Account' : 'Preferences'" @click="account.open = true">
-          <AppIcon name="user" :label="account.enabled ? 'Account' : 'Preferences'" />
+        <button class="button button--ghost" type="button" :data-hint="account.enabled ? t('Account') : t('Preferences')" @click="account.open = true">
+          <AppIcon name="user" :label="account.enabled ? t('Account') : t('Preferences')" />
         </button>
       </div>
       <div class="app__top">
@@ -42,11 +42,11 @@
     <LayerSheets v-if="analysis.layerMode" />
     <PrintLegend v-else />
     <footer v-if="!isNative" class="app__footer">
-      <a class="app__footer-link" href="manual/">Manual</a>
-      <a class="app__footer-link" href="privacy/">Privacy</a>
-      <a class="app__footer-link" href="terms/">Terms</a>
-      <a class="app__footer-link" href="imprint/">Imprint</a>
-      <button v-if="consent.available" class="app__footer-link" type="button" @click="consent.review()">Privacy settings</button>
+      <a class="app__footer-link" :href="legalPage('manual')">{{ t('Manual') }}</a>
+      <a class="app__footer-link" :href="legalPage('privacy')">{{ t('Privacy') }}</a>
+      <a class="app__footer-link" :href="legalPage('terms')">{{ t('Terms') }}</a>
+      <a class="app__footer-link" :href="legalPage('imprint')">{{ t('Imprint') }}</a>
+      <button v-if="consent.available" class="app__footer-link" type="button" @click="consent.review()">{{ t('Privacy settings') }}</button>
     </footer>
     <ColourBreakdown ref="breakdown" />
     <PaintBox ref="paintBox" />
@@ -88,7 +88,9 @@ import { useAccountStore } from './stores/account.js'
 import { isNative } from './lib/native.js'
 import { useProStore } from './stores/pro.js'
 import { useCollectionStore } from './stores/collection.js'
+import { useText } from './i18n/index.js'
 
+const { t, legalPage } = useText()
 const analysis = useAnalysisStore()
 const consent = useConsentStore()
 const account = useAccountStore()

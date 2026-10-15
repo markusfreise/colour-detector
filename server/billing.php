@@ -22,7 +22,8 @@ function startCheckout(): never
 {
     method('POST');
     $user = requireUser();
-    $name = (string) (body()['plan'] ?? '');
+    $body = body();
+    $name = (string) ($body['plan'] ?? '');
     $plan = (config('stripe')['plans'] ?? [])[$name] ?? null;
     if (!$plan || ($plan['price'] ?? '') === '') {
         fail(422, 'This plan is not offered.');
@@ -42,7 +43,15 @@ function startCheckout(): never
         'success_url' => config('app_url') . '#billing=ok',
         'cancel_url' => config('app_url') . '#billing=cancelled',
         'allow_promotion_codes' => 'true',
+        // Stripe's page in the language of the app.
+        'locale' => ($body['lang'] ?? '') === 'de' ? 'de' : 'en',
     ];
+    // Stripe sells as merchant of record (Managed Payments, on by default for the account): it
+    // charges the VAT of the buyer's country and handles the right of withdrawal on its page.
+    // A payment once gets an invoice too; subscriptions have their own.
+    if ($once) {
+        $fields['invoice_creation'] = ['enabled' => 'true'];
+    }
     if ($user['stripe_customer']) {
         $fields['customer'] = $user['stripe_customer'];
     } else {
@@ -57,12 +66,13 @@ function startCheckout(): never
 function openPortal(): never
 {
     method('POST');
-    body();
+    $body = body();
     $user = requireUser();
     if (!$user['stripe_customer']) {
         fail(409, 'There is nothing to manage yet.');
     }
-    send(['url' => stripe('POST', 'billing_portal/sessions', ['customer' => $user['stripe_customer'], 'return_url' => config('app_url')])['url']]);
+    $locale = ($body['lang'] ?? '') === 'de' ? 'de' : 'en';
+    send(['url' => stripe('POST', 'billing_portal/sessions', ['customer' => $user['stripe_customer'], 'return_url' => config('app_url'), 'locale' => $locale])['url']]);
 }
 
 /** What Stripe knows about a subscription, written to its account. */

@@ -48,7 +48,7 @@
             <strong>{{ PLAN_NAMES[plan.id] ? t(PLAN_NAMES[plan.id]) : plan.id }}</strong>
             <span class="pro__plan-note">{{ PLAN_NOTES[plan.id] ? t(PLAN_NOTES[plan.id]) : '' }}</span>
           </span>
-          <button class="button" type="button" :disabled="account.busy" @click="account.buy(plan.id)">{{ plan.label || t('Choose') }}</button>
+          <button class="button" type="button" :disabled="account.busy" @click="account.buy(plan.id)">{{ plan.label ? t(plan.label) : t('Choose') }}</button>
         </li>
       </ul>
       <p v-else class="pro__text">{{ t('No plans are on offer at the moment.') }}</p>

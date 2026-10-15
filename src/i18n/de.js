@@ -452,4 +452,8 @@ export default {
   'the file is not a picture this browser can read': 'die Datei ist kein Bild, das dieser Browser lesen kann',
   'Analysis failed: {reason}': 'Die Analyse ist fehlgeschlagen: {reason}',
   'Sketch failed: {reason}': 'Die Skizze ist fehlgeschlagen: {reason}',
+  // Plan labels as set on the server (config.php, stripe-setup.php)
+  '4.99 EUR per month': '4,99 EUR pro Monat',
+  '29.99 EUR per year': '29,99 EUR pro Jahr',
+  '79 EUR once': '79 EUR einmalig',
 }

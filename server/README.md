@@ -32,8 +32,22 @@ All redirect addresses are `<app_url>api/auth/<provider>/callback`.
 | Google | Google Cloud console, OAuth client of type "Web application", scopes `openid email` | `client_id`, `client_secret` |
 | Meta | developers.facebook.com, app with "Facebook Login", permission `email` | `client_id` (app ID), `client_secret` |
 | Apple | developer.apple.com: an App ID with Sign in with Apple, a Services ID (the `client_id`) with domain and return address, a key (.p8) | `client_id`, `team_id`, `key_id`, `key_file` |
-| Stripe | Three prices (monthly and yearly recurring, lifetime one-time); a webhook to `<app_url>api/stripe/webhook` with the events `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `charge.refunded`; the customer portal switched on | `secret_key`, `webhook_secret`, the price IDs and button texts |
+| Stripe | Run `php stripe-setup.php` in the folder of the API on the server (see below) | written by the script |
 | Mail | The host must be able to send as the `from` address (SPF, DKIM) | `mail.from` |
+
+## Stripe
+
+Stripe sells as merchant of record (Managed Payments, switched on in the Stripe dashboard): it charges the VAT of the buyer's country, issues the receipts and handles the right of withdrawal on its checkout page. The prices are gross: 4.99 EUR a month, 29.99 EUR a year, 79 EUR once.
+
+On the server, in the folder of the API:
+
+```
+php stripe-setup.php    # asks for the secret key without showing it
+```
+
+It creates the product, the three prices, the webhook to `<app_url>api/stripe/webhook` and the customer portal (cancel at the end of the period, switch between monthly and yearly, invoices, card), reuses what is already there, and writes key, webhook secret and price IDs into `config.php`. Run it again after changing a price in `PLANS`; the old price stays for its existing subscribers. With a `sk_test_` key it sets up the test mode the same way.
+
+In the Stripe dashboard, once: public details (terms and privacy URL, support address) and Managed Payments.
 
 ## Vouchers
 
@@ -54,4 +68,4 @@ The holder signs in with that address and enters the code under "Unlock everythi
 ## Limits
 
 - The lock is in the browser: the free limits are checked by the app, which runs on the user's device. Somebody who changes the code in their browser can lift them. Nothing of value is on the server to protect.
-- Sign-in with Google, Meta and Apple and the Stripe checkout are written to the providers' documentation but have not been run against the real services yet.
+- Sign-in with Google, Meta and Apple is written to the providers' documentation but has not been run against the real services yet. The Stripe checkout, the webhook and `stripe-setup.php` were run against Stripe's test mode on 2026-10-15.

@@ -67,7 +67,7 @@ struct FloatingCard<Content: View>: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(title).font(.headline)
                     if let subtitle {
-                        Text(subtitle).font(.subheadline).foregroundStyle(.secondary)
+                        Text(subtitle).font(.subheadline).foregroundStyle(Theme.copyLight)
                     }
                 }
                 Spacer(minLength: 8)
@@ -77,23 +77,23 @@ struct FloatingCard<Content: View>: View {
         }
         .padding(16)
         .frame(maxWidth: 400, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
-        .shadow(color: .black.opacity(0.14), radius: 16, y: 6)
+        .foregroundStyle(Theme.copy)
+        .background(Theme.raised, in: RoundedRectangle(cornerRadius: Theme.radius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.radius).strokeBorder(Theme.border))
+        .floatShadow()
         .accessibilityElement(children: .contain)
     }
 }
 
-/// The system's Close button: the xmark in a circle, with "Close" for VoiceOver.
+/// The cross that closes a card, as on the web, with "Close" for VoiceOver.
 struct CloseButton: View {
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             Image(systemName: "xmark")
-                .font(.body.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .frame(width: 30, height: 30)
-                .background(.quaternary, in: Circle())
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Theme.copyLight)
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }

@@ -51,12 +51,10 @@ struct PaintingView: View {
                         .allowsHitTesting(false)
                 }
             }
-            .overlay(alignment: .topTrailing) {
+            .overlay(alignment: .bottomTrailing) {
                 if zoom > 1.01 {
-                    Button("Fit Picture", systemImage: "plus.magnifyingglass", action: fit)
-                        .labelStyle(.iconOnly)
-                        .buttonStyle(.bordered)
-                        .padding(12)
+                    IconButton(title: "Fit picture", symbol: "arrow.down.right.and.arrow.up.left", action: fit)
+                        .padding(Theme.gap)
                 }
             }
         }

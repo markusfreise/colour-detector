@@ -1,9 +1,11 @@
 import PhotosUI
 import SwiftUI
 
-/// The main screen, laid out as the web app: the picture fills the screen, the tools sit in the
-/// bars around it, the settings and colours share the inspector (a sheet on iPhone), and a tap on
-/// an area brings its colour up on a card over the picture.
+/// The main screen, laid out as the web app: the picture fills the window, and everything else
+/// lies over it. The operations on the picture are a column of buttons at the top left, the panels
+/// a column at the top right whose cards float over the picture, what the picture shows a group of
+/// tools at the top centre (at the bottom on a phone), and a tap on an area brings its colour up on
+/// a card over the lower edge.
 struct RootView: View {
     @Environment(Session.self) private var session
     @Environment(Library.self) private var library
@@ -21,29 +23,28 @@ struct RootView: View {
     @State private var paywallReason = "save more than one picture"
     @State private var showingSamples = false
     @State private var showingBreakdown = false
-    @State private var showingPanel = false
-    @State private var panelTab = PanelTab.colours
+    @State private var showingSettings = false
+    @State private var showingColours = false
     @State private var photo: PhotosPickerItem?
     @State private var boxRevision = 0
 
     var body: some View {
-        @Bindable var session = session
-        NavigationStack {
-            stage
-                .navigationTitle(session.imageName.isEmpty ? "No Picture" : session.imageName)
-                #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbarRole(compact ? .automatic : .editor)
-                #endif
-                .toolbar { toolbar }
-                .inspector(isPresented: $showingPanel) {
-                    PanelView(tab: $panelTab, showPaintBox: openPaintBox)
-                        .inspectorColumnWidth(min: 340, ideal: 400, max: 520)
-                        // iPhone: half height, with the picture still usable above it.
-                        .presentationDetents([.medium, .large])
-                        .presentationBackgroundInteraction(.enabled(upThrough: .medium))
+        stage
+            .overlay(alignment: .topLeading) { pictureButtons.padding(Theme.gap) }
+            .overlay(alignment: .topTrailing) { panels }
+            .overlay(alignment: compact ? .bottom : .top) { tools.padding(Theme.gap) }
+            .overlay(alignment: .top) {
+                // A phone: one card across the window, as the web's flyout in a narrow window.
+                if compact, let tab = openTab {
+                    card(tab)
+                        .frame(maxHeight: 520)
+                        .padding(.horizontal, 8)
+                        .padding(.top, Theme.gap)
                 }
-        }
+            }
+            .background(Theme.page.ignoresSafeArea())
+            .tint(Theme.corporate)
+            .navigationTitle(session.imageName.isEmpty ? "No Picture" : session.imageName)
         .sheet(isPresented: $showingPaintBox, onDismiss: paintBoxClosed) { PaintBoxView() }
         .sheet(isPresented: $showingCollection) { CollectionView() }
         .sheet(isPresented: $showingPaywall) { PaywallView(reason: paywallReason) }
@@ -60,9 +61,9 @@ struct RootView: View {
         }
         #endif
         .onChange(of: photo) { loadPhoto() }
-        // iPhone: the colour card comes up where the panel sheet was; one thing over the picture at a time.
+        // A phone: the colour card comes up where the panel card was; one thing over the picture at a time.
         .onChange(of: session.selectedRegion) { _, region in
-            if compact, region != nil { showingPanel = false }
+            if compact, region != nil { showingSettings = false; showingColours = false }
         }
         .alert("Something went wrong", isPresented: Binding(get: { session.error != nil }, set: { if !$0 { session.error = nil } })) {
             Button("OK", role: .cancel) {}
@@ -118,9 +119,8 @@ struct RootView: View {
             if !session.layerMode { session.inspect(entry: 2) }
             showingBreakdown = true
         case "samples": showingSamples = true
-        case "settings", "colours":
-            panelTab = PanelTab(rawValue: screen) ?? .colours
-            showingPanel = true
+        case "settings": open(.settings)
+        case "colours": open(.colours)
         case "paywall": showingPaywall = true
         default: break
         }
@@ -141,24 +141,26 @@ struct RootView: View {
 
     // MARK: Layout
 
-    /// The picture fills the screen; the colour card (in layer mode the spot card) floats over its
-    /// lower edge, the painting steps over its upper edge.
+    /// The picture fills the window; the colour card (in layer mode the spot card) floats over its
+    /// lower edge, the painting steps and close-ups below the tools at its upper edge.
     private var stage: some View {
         PaintingView()
-            .background(Theme.page.ignoresSafeArea())
             .overlay(alignment: .top) {
                 VStack(spacing: 8) {
                     if session.layerMode, session.layers != nil {
                         LayerStepsView()
                             .padding(14)
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-                            .padding(.horizontal, 12)
+                            .background(Theme.raised, in: RoundedRectangle(cornerRadius: Theme.radius))
+                            .overlay(RoundedRectangle(cornerRadius: Theme.radius).strokeBorder(Theme.border))
+                            .floatShadow()
                     }
                     if !session.closeups.isEmpty {
                         CloseupStrip()
                     }
                 }
-                .padding(.top, 4)
+                // Between the two columns of buttons, below the tools.
+                .padding(.horizontal, Theme.iconButton + Theme.gap * 2)
+                .padding(.top, compact ? Theme.gap : Theme.gap * 2 + Theme.iconButton)
             }
             .overlay(alignment: .bottom) {
                 Group {
@@ -168,8 +170,9 @@ struct RootView: View {
                         ColourCard { openBreakdown() }
                     }
                 }
-                .padding(.horizontal, 12)
-                .padding(.bottom, 8)
+                .padding(.horizontal, Theme.gap)
+                // A phone: above the tools at the bottom.
+                .padding(.bottom, compact ? Theme.gap * 2 + toolSize : Theme.gap)
                 .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
             }
             .animation(reduceMotion ? nil : .snappy, value: session.inspectedEntry)
@@ -184,12 +187,12 @@ struct RootView: View {
         #endif
     }
 
-    // MARK: Toolbar
+    // MARK: Picture (top left)
 
-    @ToolbarContentBuilder private var toolbar: some ToolbarContent {
-        // The picture as a whole: the collection and a new picture.
-        ToolbarItemGroup(placement: leading) {
-            Button("Collection", systemImage: "photo.on.rectangle.angled") { showingCollection = true }
+    /// What is done with the picture as a whole: a new one, samples, saving, the collection,
+    /// printing and sharing.
+    private var pictureButtons: some View {
+        VStack(spacing: Theme.gap) {
             Menu {
                 Button("From Photos", systemImage: "photo.on.rectangle") { showingPhotos = true }
                 Button("From Files", systemImage: "folder") { showingFiles = true }
@@ -198,60 +201,26 @@ struct RootView: View {
                     Button("Take Photo", systemImage: "camera") { showingCamera = true }
                 }
                 #endif
-                Divider()
-                Button("Samples", systemImage: "square.inset.filled") { showingSamples = true }
             } label: {
-                Label("New Picture", systemImage: "photo.badge.plus")
+                Label("New: choose a photo", systemImage: "photo.badge.plus")
             }
-        }
-        #if os(iOS)
-        if compact {
-            ToolbarItemGroup(placement: .topBarTrailing) { saveButton; shareMenu }
-            // What the picture shows, then the panels: within reach of the thumb.
-            ToolbarItemGroup(placement: .bottomBar) {
-                viewMenu
-                frameToggle
-                outlinesToggle
-                numbersToggle
-                Spacer()
-                panelButton(.settings)
-                panelButton(.colours)
-                paintBoxButton
-            }
-        } else {
-            wideToolbar
-        }
-        #else
-        wideToolbar
-        #endif
-    }
-
-    /// iPad and Mac: the views in the middle, the actions and panels on the right.
-    @ToolbarContentBuilder private var wideToolbar: some ToolbarContent {
-        ToolbarItemGroup(placement: .principal) {
-            viewPicker
-            frameToggle
-            outlinesToggle
-            numbersToggle
-        }
-        ToolbarItemGroup(placement: .primaryAction) {
-            saveButton
+            .webMenu(active: true)
+            .help("New: choose a photo")
+            IconButton(title: "Samples: choose a sample picture", symbol: "square.inset.filled") { showingSamples = true }
+            IconButton(title: "Save", symbol: "square.and.arrow.down", action: save)
+                .disabled(session.image == nil)
+            IconButton(title: "Collection", symbol: "photo.on.rectangle.angled") { showingCollection = true }
+            IconButton(title: "Print", symbol: "printer") { PrintSheet.print(session: session, library: library) }
+                .disabled(!printable)
             shareMenu
-            paintBoxButton
-            panelButton(.settings)
-            panelButton(.colours)
         }
     }
 
-    private var saveButton: some View {
-        Button("Save", systemImage: "square.and.arrow.down", action: save)
-            .disabled(session.image == nil)
-    }
+    private var printable: Bool { session.layerMode ? session.layers != nil : !session.entries.isEmpty }
 
-    /// Print, PDF and the picture as a JPG.
+    /// The sheet as a PDF and the picture as a JPG.
     private var shareMenu: some View {
         Menu {
-            Button("Print", systemImage: "printer") { PrintSheet.print(session: session, library: library) }
             ShareLink(
                 item: SheetPDF(name: session.imageName) { PrintSheet.pdf(session: session, library: library) },
                 preview: SharePreview("\(session.imageName) – \(session.layerMode ? "layers" : "colours and mixes")")
@@ -265,112 +234,115 @@ struct RootView: View {
                 Label("Export as JPG", systemImage: "photo")
             }
         } label: {
-            Label("Share", systemImage: "square.and.arrow.up")
+            Label("Share: PDF or JPG", systemImage: "square.and.arrow.up")
         }
-        .disabled(session.layerMode ? session.layers == nil : session.entries.isEmpty)
+        .webMenu()
+        .help("Share: PDF or JPG")
+        .disabled(!printable)
     }
 
-    private var paintBoxButton: some View {
-        Button("Paint Box", systemImage: "circle.grid.2x2") { openPaintBox() }
+    // MARK: Panels (top right)
+
+    /// The buttons of the panels, and left of them the open panels on their cards.
+    private var panels: some View {
+        HStack(alignment: .top, spacing: Theme.gap) {
+            if !compact {
+                VStack(alignment: .trailing, spacing: Theme.gap) {
+                    if showingSettings { card(.settings).frame(width: 460) }
+                    if showingColours { card(.colours).frame(width: 480) }
+                }
+            }
+            VStack(spacing: Theme.gap) {
+                IconButton(title: "Settings", symbol: "slider.horizontal.3", active: showingSettings) { toggle(.settings) }
+                IconButton(
+                    title: session.layerMode ? "Layers" : "Colours",
+                    symbol: session.layerMode ? "square.3.layers.3d" : "swatchpalette",
+                    active: showingColours
+                ) { toggle(.colours) }
+                IconButton(title: "Paint box", symbol: "circle.grid.2x2", action: openPaintBox)
+            }
+        }
+        .padding(Theme.gap)
     }
 
-    /// Opens the panel on its tab; the button of the open tab closes it.
-    private func panelButton(_ tab: PanelTab) -> some View {
-        let open = showingPanel && panelTab == tab
-        let title = tab == .settings ? "Settings" : session.layerMode ? "Layers" : "Colours"
-        let symbol = tab == .settings ? "slider.vertical.3" : session.layerMode ? "square.3.layers.3d" : "swatchpalette"
-        return Toggle(isOn: Binding(get: { open }, set: { show in
-            if show { panelTab = tab }
-            showingPanel = show
-        })) {
-            Label(title, systemImage: symbol)
+    private func card(_ tab: PanelTab) -> some View {
+        PanelCard(close: { close(tab) }) {
+            PanelView(tab: tab, showPaintBox: openPaintBox)
         }
-        .toggleStyle(.button)
     }
+
+    /// The open card on a phone, where only one fits.
+    private var openTab: PanelTab? { showingSettings ? .settings : showingColours ? .colours : nil }
+
+    private func toggle(_ tab: PanelTab) {
+        if (tab == .settings ? showingSettings : showingColours) { close(tab) } else { open(tab) }
+    }
+
+    private func open(_ tab: PanelTab) {
+        // A phone has room for one card.
+        if compact { showingSettings = false; showingColours = false }
+        if tab == .settings { showingSettings = true } else { showingColours = true }
+    }
+
+    private func close(_ tab: PanelTab) {
+        if tab == .settings { showingSettings = false } else { showingColours = false }
+    }
+
+    // MARK: Tools (top centre)
+
+    /// What the picture shows, as the web's painting tools: a close-up, the views, outlines and
+    /// numbers. Smaller on a phone, so that they fit in one row.
+    private var tools: some View {
+        @Bindable var session = session
+        return HStack(spacing: 6) {
+            frameButton
+            SegmentedGroup(
+                options: viewModes, selection: session.settings.view,
+                title: { $0.title }, symbol: { $0.symbol },
+                choose: { session.settings.view = $0 },
+                size: toolSize
+            )
+            IconButton(title: "Outlines", symbol: "squareshape.split.3x3", active: session.settings.outlines, size: toolSize) {
+                session.settings.outlines.toggle()
+            }
+            .disabled(session.settings.view == .template)
+            IconButton(title: "Numbers", symbol: "textformat.123", active: session.settings.numbers, size: toolSize) {
+                session.settings.numbers.toggle()
+            }
+        }
+    }
+
+    private var toolSize: CGFloat { compact ? 36 : Theme.iconButton }
 
     private var viewModes: [ViewMode] { session.layerMode ? ViewMode.layerCases : ViewMode.allCases }
 
-    /// iPhone: what the picture shows, in a menu under the symbol of the current view.
-    private var viewMenu: some View {
-        @Bindable var session = session
-        return Menu {
-            Picker("Show", selection: $session.settings.view) {
-                ForEach(viewModes) { Label($0.title, systemImage: $0.symbol).tag($0) }
-            }
-        } label: {
-            Label("Show: \(session.settings.view.title)", systemImage: session.settings.view.symbol)
-        }
-    }
-
-    /// iPad and Mac: the views side by side, as the web app's view switch.
-    private var viewPicker: some View {
-        @Bindable var session = session
-        return Picker("Show", selection: $session.settings.view) {
-            ForEach(viewModes) { mode in
-                Image(systemName: mode.symbol).accessibilityLabel(mode.title).help(mode.title).tag(mode)
-            }
-        }
-        .pickerStyle(.segmented)
-        .fixedSize()
-    }
-
     /// A frame drawn on the base picture becomes a close-up: that part, analysed on its own.
-    private var frameToggle: some View {
-        Toggle(isOn: Binding(get: { session.framing }, set: { on in
-            guard !on || store.unlocked else {
+    private var frameButton: some View {
+        IconButton(
+            title: session.framing ? "Cancel choosing a part of the picture" : "Close-up: zoom in on a part of the picture",
+            symbol: "plus.magnifyingglass",
+            active: session.framing,
+            size: toolSize
+        ) {
+            guard session.framing || store.unlocked else {
                 paywallReason = "zoom in on a part of the picture"
                 showingPaywall = true
                 return
             }
-            session.framing = on
-        })) {
-            Label(session.framing ? "Cancel Close-Up" : "Close-Up", systemImage: "viewfinder")
+            session.framing.toggle()
         }
-        .toggleStyle(.button)
         .disabled(session.image == nil || session.closeupID != nil)
-        .help(session.framing ? "Cancel choosing a part of the picture" : "Zoom in on a part of the picture")
-    }
-
-    private var outlinesToggle: some View {
-        @Bindable var session = session
-        return Toggle(isOn: $session.settings.outlines) { Label("Outlines", systemImage: "squareshape.split.3x3") }
-            .toggleStyle(.button)
-            .disabled(session.settings.view == .template)
-    }
-
-    private var numbersToggle: some View {
-        @Bindable var session = session
-        return Toggle(isOn: $session.settings.numbers) { Label("Numbers", systemImage: "textformat.123") }
-            .toggleStyle(.button)
-    }
-
-    private var leading: ToolbarItemPlacement {
-        #if os(macOS)
-        .navigation
-        #else
-        .topBarLeading
-        #endif
     }
 
     // MARK: Actions
 
     private func openPaintBox() {
         boxRevision = library.revision
-        afterPanel { showingPaintBox = true }
+        showingPaintBox = true
     }
 
     private func openBreakdown() {
-        afterPanel { showingBreakdown = true }
-    }
-
-    /// One sheet at a time: on iPhone the panel is a sheet too, so it goes first.
-    private func afterPanel(_ open: @escaping () -> Void) {
-        guard compact, showingPanel else { return open() }
-        showingPanel = false
-        Task {
-            try? await Task.sleep(for: .milliseconds(450))
-            open()
-        }
+        showingBreakdown = true
     }
 
     /// The mixes follow the paint box once it is closed.
@@ -448,7 +420,7 @@ private struct CloseupStrip: View {
                                     .padding(3)
                             }
                             .overlay {
-                                RoundedRectangle(cornerRadius: 6).strokeBorder(active ? Color.accentColor : .clear, lineWidth: 2.5)
+                                RoundedRectangle(cornerRadius: 6).strokeBorder(active ? Theme.corporate : .clear, lineWidth: 2.5)
                             }
                     }
                     .buttonStyle(.plain)
@@ -472,7 +444,18 @@ private struct CloseupStrip: View {
         }
         .scrollIndicators(.hidden)
         .fixedSize(horizontal: false, vertical: true)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .padding(.horizontal, 12)
+        .background(Theme.raised, in: RoundedRectangle(cornerRadius: Theme.radius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.radius).strokeBorder(Theme.border))
+        .floatShadow()
+    }
+}
+
+private extension View {
+    /// A menu behind a square icon button, as the web's buttons that open a choice.
+    func webMenu(active: Bool = false) -> some View {
+        menuStyle(.button)
+            .buttonStyle(IconButtonStyle(active: active))
+            .menuIndicator(.hidden)
+            .fixedSize()
     }
 }

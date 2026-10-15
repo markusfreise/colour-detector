@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// The settings, in the web app's order: method and areas, then how calm the areas are, how many
-/// colours or layers, then the photo itself. What the picture shows lives in the toolbar.
+/// The settings, laid out as the web app's settings panel: method and areas as icon groups, then
+/// the sliders in rows: how calm the areas are, how many colours or layers, then the photo itself.
+/// What the picture shows lives in the tools above the picture.
 struct ControlsView: View {
     @Environment(Session.self) private var session
     @Environment(Library.self) private var library
@@ -11,37 +12,45 @@ struct ControlsView: View {
     @State private var saturation = 200.0
     @State private var contrast = 100.0
     @State private var variety = 5.0
+    @State private var maxPaints = 3.0
     @State private var layers = 5.0
     @State private var layerSimplify = 4.0
     @State private var accents = 3.0
+    @State private var maxCoats = 2.0
 
     var body: some View {
         @Bindable var session = session
         let layerMode = session.settings.mode == .layer
-        Form {
-            Section {
-                Picker("Method", selection: Binding(get: { session.settings.mode }, set: { session.setMode($0) })) {
-                    Label("Mix", systemImage: "paintbrush.pointed").tag(AnalysisMode.mix)
-                    Label("Layer", systemImage: "square.3.layers.3d").tag(AnalysisMode.layer)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: Theme.gap) {
+                SegmentedGroup(
+                    options: [AnalysisMode.mix, .layer], selection: session.settings.mode,
+                    title: { $0 == .mix ? "Mix: every colour mixed on the palette and painted once" : "Layer: a few thin washes, each painted over the dry one before" },
+                    symbol: { $0 == .mix ? "paintbrush.pointed" : "square.3.layers.3d" },
+                    choose: { session.setMode($0) }
+                )
+                SegmentedGroup(
+                    options: [false, true], selection: session.settings.geometric,
+                    title: { $0 ? "Geometric: shapes with straight edges, laid over each other from large to small" : "Organic: areas that follow the photo" },
+                    symbol: { $0 ? "triangle" : "square.grid.3x3" },
+                    choose: { session.settings.geometric = $0 }
+                )
+                Spacer(minLength: 0)
+                if session.settings.saturation != 100 || session.settings.contrast != 100 {
+                    IconButton(title: "Reset photo: saturation and contrast back to 100%", symbol: "arrow.counterclockwise") {
+                        session.settings.saturation = 100
+                        session.settings.contrast = 100
+                        session.analyse()
+                    }
                 }
-                Picker("Areas", selection: $session.settings.geometric) {
-                    Label("Organic", systemImage: "square.grid.3x3").tag(false)
-                    Label("Geometric", systemImage: "triangle").tag(true)
-                }
-            } footer: {
-                Text(layerMode
-                    ? "Layer: a few thin washes, each painted over the dry one before."
-                    : session.settings.geometric
-                        ? "Geometric: shapes with straight edges, laid over each other from large to small."
-                        : "Mix: every colour mixed on the palette and painted once.")
             }
 
-            Section {
-                if layerMode {
-                    slider("Simplify areas", value: $layerSimplify, range: 0...10, hint: "Higher = bigger, calmer shapes") {
-                        session.settings.layerSimplify = Int(layerSimplify.rounded())
-                    }
-                    let auto = library.activeBox.layerAuto
+            if layerMode {
+                slider("Simplify areas", value: $layerSimplify, range: 0...10, hint: "Higher = bigger, calmer shapes") {
+                    session.settings.layerSimplify = Int(layerSimplify.rounded())
+                }
+                let auto = library.activeBox.layerAuto
+                HStack(alignment: .top, spacing: Theme.gap) {
                     slider(
                         "Layers", value: $layers, range: 2...Double(Library.maxLayerPaints),
                         hint: auto ? "Washes; accents and second coats are extra steps" : "Chosen by hand. Auto in the paint box picks again."
@@ -52,58 +61,50 @@ struct ControlsView: View {
                     slider("Accents", value: $accents, range: 0...3, hint: "Small strong touches painted last, first for a colour the washes miss, then for the darks") {
                         session.settings.layerAccents = Int(accents.rounded())
                     }
-                    Picker("Max. coats", selection: $session.settings.maxCoats) {
-                        ForEach(1...3, id: \.self) { Text("\($0)").tag($0) }
+                    slider("Max. coats", value: $maxCoats, range: 1...3) {
+                        session.settings.maxCoats = Int(maxCoats.rounded())
                     }
-                } else {
-                    slider("Simplify areas", value: $simplify, range: 0...10, hint: "Higher = bigger, calmer shapes") {
-                        session.settings.simplify = Int(simplify.rounded())
-                    }
+                }
+            } else {
+                slider("Simplify areas", value: $simplify, range: 0...10, hint: "Higher = bigger, calmer shapes") {
+                    session.settings.simplify = Int(simplify.rounded())
+                }
+                HStack(alignment: .top, spacing: Theme.gap) {
                     slider("Colours", value: $colours, range: 2...32, hint: "More colours = more detail") {
                         session.settings.colours = Int(colours.rounded())
                     }
                     slider("Details", value: $variety, range: 0...10, hint: "Lower = closer overall, higher = small areas keep their own colour") {
                         session.settings.variety = Int(variety.rounded())
                     }
-                    Picker("Max. paints", selection: $session.settings.maxPaints) {
-                        ForEach(1...3, id: \.self) { Text("\($0)").tag($0) }
+                    slider("Max. paints", value: $maxPaints, range: 1...3, hint: "Paints in one mix at most") {
+                        session.settings.maxPaints = Int(maxPaints.rounded())
                     }
                 }
             }
 
-            Section {
-                slider("Saturation", value: $saturation, range: 0...200, unit: "%") {
+            HStack(alignment: .top, spacing: Theme.gap) {
+                slider("Saturation", value: $saturation, range: 0...200, unit: "%", hint: "Applied to the photo before its colours are found") {
                     session.settings.saturation = Int((saturation / 5).rounded()) * 5
                 }
-                slider("Contrast", value: $contrast, range: 50...200, unit: "%") {
+                slider("Contrast", value: $contrast, range: 50...200, unit: "%", hint: "Applied to the photo before its colours are found") {
                     session.settings.contrast = Int((contrast / 5).rounded()) * 5
                 }
-                if session.settings.saturation != 100 || session.settings.contrast != 100 {
-                    Button("Reset Photo", systemImage: "arrow.counterclockwise") {
-                        session.settings.saturation = 100
-                        session.settings.contrast = 100
-                        session.analyse()
-                    }
-                }
-            } header: {
-                Text("Photo")
-            } footer: {
-                Text("Applied to the photo before its colours are found.")
             }
         }
-        .pickerStyle(.segmented)
+        .tint(Theme.corporate)
         .onAppear(perform: sync)
         .onChange(of: session.settings) { sync() }
         .onChange(of: library.revision) { sync() }
     }
 
     private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, unit: String = "", hint: String? = nil, commit: @escaping () -> Void) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 2) {
             HStack {
-                Text(title)
+                Text(title).font(Theme.strong)
                 Spacer(minLength: 4)
-                Text("\(Int(value.wrappedValue.rounded()))\(unit)").foregroundStyle(.secondary).monospacedDigit()
+                Text("\(Int(value.wrappedValue.rounded()))\(unit)").foregroundStyle(Theme.copyLight).monospacedDigit()
             }
+            .lineLimit(1)
             // No step: on the Mac a stepped slider draws a tick for every value.
             Slider(value: value, in: range) { editing in
                 guard !editing else { return }
@@ -115,11 +116,10 @@ struct ControlsView: View {
             }
             .accessibilityLabel(title)
             .accessibilityValue("\(Int(value.wrappedValue.rounded()))\(unit)")
-            if let hint {
-                Text(hint).font(.footnote).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
-            }
         }
-        .padding(.vertical, 2)
+        // The explanation is a tooltip, as on the web.
+        .help(hint ?? "")
+        .frame(maxWidth: .infinity)
     }
 
     private var analysed: [Int] {
@@ -135,6 +135,8 @@ struct ControlsView: View {
         saturation = Double(session.settings.saturation)
         contrast = Double(session.settings.contrast)
         variety = Double(session.settings.variety)
+        maxPaints = Double(session.settings.maxPaints)
+        maxCoats = Double(session.settings.maxCoats)
         // By hand the number of layers is the number of chosen base paints.
         layers = library.activeBox.layerAuto ? Double(session.settings.layerCount) : Double(max(2, library.activeBox.layerIDs.count))
         layerSimplify = Double(session.settings.layerSimplify)

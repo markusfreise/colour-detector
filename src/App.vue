@@ -13,7 +13,7 @@
       </div>
       <div class="app__left">
         <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
-        <button v-if="account.enabled" class="button button--ghost" type="button" title="Account" @click="account.open = true">
+        <button v-if="account.enabled" class="button button--ghost" type="button" data-hint="Account" @click="account.open = true">
           <AppIcon name="user" label="Account" />
         </button>
       </div>

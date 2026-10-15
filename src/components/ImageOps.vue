@@ -1,28 +1,28 @@
 <template>
   <!-- What is done with the picture as a whole: a new one, saving, the collection, printing. -->
   <nav class="imageops" aria-label="Picture">
-    <label class="button button--secondary imageops__button" title="New: choose a photo">
+    <label class="button button--secondary imageops__button" data-hint="New picture">
       <AppIcon name="new" />
       <input class="imageops__file" type="file" accept="image/*" aria-label="New: choose a photo" @change="onFile" />
     </label>
-    <label v-if="hasCamera" class="button button--secondary imageops__button" title="Take photo">
+    <label v-if="hasCamera" class="button button--secondary imageops__button" data-hint="Take photo">
       <AppIcon name="camera" label="Take photo" />
       <input class="imageops__file" type="file" accept="image/*" capture="environment" @change="onFile" />
     </label>
-    <button class="button button--ghost imageops__button" type="button" title="Samples: choose a sample picture" @click="emit('show-samples')">
+    <button class="button button--ghost imageops__button" type="button" data-hint="Samples" @click="emit('show-samples')">
       <AppIcon name="sample" label="Samples" />
     </button>
-    <button class="button button--ghost imageops__button" type="button" :disabled="!analysis.image" title="Save" @click="collection.saveCurrent()">
+    <button class="button button--ghost imageops__button" type="button" :disabled="!analysis.image" data-hint="Save" @click="collection.saveCurrent()">
       <AppIcon name="save" label="Save" />
     </button>
-    <button class="button button--ghost imageops__button" type="button" title="Collection" @click="emit('show-collection')">
+    <button class="button button--ghost imageops__button" type="button" data-hint="Collection" @click="emit('show-collection')">
       <AppIcon name="collection" label="Collection" />
     </button>
-    <button class="button button--ghost imageops__button" type="button" :disabled="!printable" title="Print / PDF" @click="print">
+    <button class="button button--ghost imageops__button" type="button" :disabled="!printable" data-hint="Print / PDF" @click="print">
       <AppIcon name="pdf" label="Print / PDF" />
     </button>
     <!-- A download does not work inside the app's web view. -->
-    <button v-if="!isNative" class="button button--ghost imageops__button" type="button" :disabled="!analysis.image || analysis.busy" title="Export: save the picture as it is shown as a JPG" @click="exportPicture">
+    <button v-if="!isNative" class="button button--ghost imageops__button" type="button" :disabled="!analysis.image || analysis.busy" data-hint="Export as JPG" @click="exportPicture">
       <AppIcon name="export" label="Export as JPG" />
     </button>
   </nav>

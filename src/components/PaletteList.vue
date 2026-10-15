@@ -2,7 +2,7 @@
   <section class="panel sidebar" :class="{ 'panel--collapsed': collapsed }">
     <div class="toolbar">
       <PanelToggle name="palette" icon="colours" label="the colours" />
-      <button class="button button--ghost" type="button" @click="emit('show-paintbox')">
+      <button class="button button--ghost" type="button" data-hint="Paint box" @click="emit('show-paintbox')">
         <AppIcon name="paintbox" />
       </button>
     </div>

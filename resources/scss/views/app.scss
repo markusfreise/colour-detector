@@ -81,6 +81,14 @@
         gap: var(--gap);
         max-height: calc(100vh - var(--app-top) - var(--app-bottom));
         overflow-y: auto;
+        // Room on the left inside the scrolling column for the labels of its buttons, which a
+        // scrolling box would cut off; clicks pass through that room to the picture.
+        padding-left: #{pxtorem(160)};
+        pointer-events: none;
+
+        > * {
+            pointer-events: auto;
+        }
     }
 
     &__notice {

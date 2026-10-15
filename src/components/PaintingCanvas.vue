@@ -43,7 +43,7 @@
       <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(false, 'use everything')">
         Get pro
       </button>
-      <button class="button button--ghost painting__tool" type="button" title="Fit the picture to the window" @click="fit">
+      <button class="button button--ghost painting__tool" type="button" data-hint="Fit to window" @click="fit">
         <AppIcon name="zoom" label="Fit the picture to the window" />
       </button>
       <!-- A frame drawn on the base picture becomes a close-up: that part, analysed on its own. -->
@@ -53,7 +53,7 @@
         :class="{ 'painting__tool--on': framing }"
         type="button"
         :aria-pressed="framing"
-        :title="framing ? 'Drag a frame over the part to zoom in on. Click here to cancel.' : 'Zoom in on a part of the picture'"
+        :data-hint="framing ? 'Cancel' : 'Zoom in on a part'"
         @click="framing = !framing"
       >
         <AppIcon name="frame" :label="framing ? 'Cancel choosing a part of the picture' : 'Zoom in on a part of the picture'" />
@@ -65,7 +65,7 @@
         :class="{ 'button--active': analysis.settings.outlines }"
         type="button"
         :aria-pressed="analysis.settings.outlines"
-        title="Outlines"
+        data-hint="Outlines"
         @click="analysis.settings.outlines = !analysis.settings.outlines"
       >
         <AppIcon name="outlines" label="Show outlines" />
@@ -75,7 +75,7 @@
         :class="{ 'button--active': analysis.settings.numbers }"
         type="button"
         :aria-pressed="analysis.settings.numbers"
-        title="Numbers"
+        data-hint="Numbers"
         @click="analysis.settings.numbers = !analysis.settings.numbers"
       >
         <AppIcon name="numbers" label="Show numbers" />

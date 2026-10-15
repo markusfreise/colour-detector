@@ -110,7 +110,8 @@
         flex: none;
         justify-content: flex-start;
         align-items: stretch;
-        overflow: hidden;
+        // Clipped only in height: the labels of the buttons slide out to the left.
+        overflow-y: clip;
         &:has(.flyout) {
             max-width: calc(#{pxtorem(780)});
             overflow: visible;
@@ -237,6 +238,68 @@
     }
 }
 
+
+// The label of an icon button, on hover with a mouse: slid out to the side of the columns at the
+// left and right, faded in centred under the tools at the top.
+@media (hover: hover) {
+    [data-hint]::after {
+        content: attr(data-hint);
+        position: absolute;
+        z-index: 5;
+        padding: #{pxtorem(7)} #{pxtorem(12)} #{pxtorem(5)};
+        border: 2px solid var(--c-button-border);
+        border-radius: var(--radius-medium);
+        background: var(--c-background-raised);
+        color: var(--c-copy);
+        box-shadow: var(--shadow-flat);
+        font-size: var(--fs-small);
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s, transform 0.2s ease-out;
+    }
+
+    [data-hint]:hover::after {
+        opacity: 1;
+    }
+
+    .app__left [data-hint] {
+        position: relative;
+
+        &::after {
+            left: calc(100% + var(--gap-05x));
+            top: 50%;
+            transform: translate(#{pxtorem(-8)}, -50%);
+        }
+
+        &:hover::after {
+            transform: translate(0, -50%);
+        }
+    }
+
+    .app__sidebar .toolbar [data-hint] {
+        position: relative;
+
+        &::after {
+            right: calc(100% + var(--gap-05x));
+            top: 50%;
+            transform: translate(#{pxtorem(8)}, -50%);
+        }
+
+        &:hover::after {
+            transform: translate(0, -50%);
+        }
+    }
+
+    // The buttons of the tools are not positioned, so the label sits under the whole row.
+    .painting__tools [data-hint]::after {
+        left: 50%;
+        top: calc(100% + var(--gap-05x));
+        transform: translateX(-50%);
+    }
+}
 
 .swatch {
     display: inline-block;

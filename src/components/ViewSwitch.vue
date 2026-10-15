@@ -8,7 +8,7 @@
       class="segmented__option"
       :class="{ 'segmented__option--active': analysis.settings.view === v.value }"
       :aria-pressed="analysis.settings.view === v.value"
-      :title="v.label"
+      :data-hint="v.hint"
       @click="analysis.settings.view = v.value"
     >
       <AppIcon :name="v.icon" :label="v.label" />
@@ -27,16 +27,16 @@ const analysis = useAnalysisStore()
 const views = computed(() =>
   analysis.layerMode
     ? [
-        { value: 'mixed', label: 'Layered paint', icon: 'mixed' },
-        { value: 'overlay', label: 'Overlay: the photo at half strength over the paint', icon: 'overlay' },
-        { value: 'original', label: 'Photo', icon: 'photo' },
+        { value: 'mixed', label: 'Layered paint', hint: 'Layered paint', icon: 'mixed' },
+        { value: 'overlay', label: 'Overlay: the photo at half strength over the paint', hint: 'Overlay', icon: 'overlay' },
+        { value: 'original', label: 'Photo', hint: 'Photo', icon: 'photo' },
       ]
     : [
-        { value: 'mixed', label: 'Mixed paint', icon: 'mixed' },
-        { value: 'target', label: 'Photo colour', icon: 'colours' },
-        { value: 'overlay', label: 'Overlay: the photo at half strength over the paint', icon: 'overlay' },
-        { value: 'original', label: 'Photo', icon: 'photo' },
-        { value: 'template', label: 'Template to print: areas and numbers in light grey, nothing filled in', icon: 'print' },
+        { value: 'mixed', label: 'Mixed paint', hint: 'Mixed paint', icon: 'mixed' },
+        { value: 'target', label: 'Photo colour', hint: 'Photo colour', icon: 'colours' },
+        { value: 'overlay', label: 'Overlay: the photo at half strength over the paint', hint: 'Overlay', icon: 'overlay' },
+        { value: 'original', label: 'Photo', hint: 'Photo', icon: 'photo' },
+        { value: 'template', label: 'Template to print: areas and numbers in light blue, nothing filled in', hint: 'Template to print', icon: 'print' },
       ],
 )
 // A view that has no button (the sketch of a saved picture) falls back to the paint.

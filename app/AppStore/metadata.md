@@ -13,9 +13,10 @@ Everything App Store Connect asks for, in English (primary) and German. Characte
 | Price | Free |
 | Age rating | 4+ (no restricted content, no web access, no user-generated content shared with others) |
 | Copyright | 2026 Markus Freise |
-| Support URL | https://watercolourlove.de/app/support/ |
-| Privacy policy URL | https://watercolourlove.de/app/privacy/ |
+| Support URL | https://watercolourlove.de/app/support/ (German: https://watercolourlove.de/app/de/support/) |
+| Privacy policy URL | https://watercolourlove.de/app/privacy/ (German: https://watercolourlove.de/app/de/datenschutz/) |
 | Marketing URL | https://watercolourlove.de/app/ |
+| App languages | English and German; in the app under Preferences (person button), "Automatic" follows the device |
 
 ## English
 

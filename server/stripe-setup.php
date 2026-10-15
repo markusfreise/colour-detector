@@ -6,8 +6,9 @@
  *   php stripe-setup.php
  *
  * It asks for the secret key (sk_live_... or sk_test_...) without showing it, then creates what is
- * missing and reuses what is there: the product, the three prices (gross, VAT included; Stripe
- * sells as merchant of record with Managed Payments), the webhook and the customer portal. Running it again is safe. The webhook is made anew each time,
+ * missing and reuses what is there: the product, the three prices (gross), the German VAT rate
+ * inside them, the webhook and the customer portal. Markus Freise is the seller; Stripe only
+ * takes the payments. Running it again is safe. The webhook is made anew each time,
  * because Stripe shows its signing secret only when it is created.
  *
  * Options: --config=<file> (default: config.php next to this file).
@@ -107,10 +108,27 @@ if ($live && !($account['charges_enabled'] ?? false)) {
     $notes[] = 'Payments are not enabled yet: finish the account details in the Stripe dashboard.';
 }
 
-// --- Managed Payments -----------------------------------------------------------------------------
-// Stripe sells as merchant of record and takes care of VAT; it is switched on in the dashboard
-// (Settings > Managed Payments) and then applies to every checkout.
-$notes[] = 'Check that Managed Payments is switched on under Settings > Managed Payments: Stripe then sells as merchant of record and charges the VAT.';
+// --- German VAT ---------------------------------------------------------------------------------
+// Markus Freise sells (Managed Payments is switched off per checkout). Below 10,000 EUR a year of
+// sales to consumers in other EU countries the German VAT applies to every buyer, inside the price.
+$rate = null;
+foreach (stripe('GET', 'tax_rates', ['active' => 'true', 'limit' => 100])['data'] ?? [] as $candidate) {
+    if (($candidate['metadata']['app'] ?? '') === 'watercolourlove' && (float) $candidate['percentage'] === 19.0 && $candidate['inclusive']) {
+        $rate = $candidate;
+    }
+}
+$rate ??= stripe('POST', 'tax_rates', [
+    'display_name' => 'USt.',
+    'description' => 'German VAT 19%',
+    'percentage' => '19',
+    'inclusive' => 'true',
+    'country' => 'DE',
+    'jurisdiction' => 'DE',
+    'tax_type' => 'vat',
+    'metadata' => ['app' => 'watercolourlove'],
+]);
+say('VAT rate: ' . $rate['id'] . ' (19% included)');
+$notes[] = 'Settings > Business > Tax details (or the invoice template): enter the VAT ID DE281377646, so that it is printed on every invoice.';
 
 // --- Product and prices ---------------------------------------------------------------------------
 $products = stripe('GET', 'products/search', ['query' => "metadata['app']:'watercolourlove'"])['data'] ?? [];
@@ -194,6 +212,7 @@ say('Customer portal: ' . $portal['id'] . ($portals ? ' (updated)' : ' (created)
 $config['stripe'] = [
     'secret_key' => $key,
     'webhook_secret' => $hook['secret'],
+    'tax_rate' => $rate['id'],
     'plans' => array_map(fn (string $plan) => ['price' => $prices[$plan], 'label' => PLANS[$plan]['label']], array_combine(array_keys(PLANS), array_keys(PLANS))),
 ];
 $text = "<?php\n// Written by stripe-setup.php on " . date('Y-m-d H:i') . ".\nreturn " . var_export($config, true) . ";\n";
@@ -202,7 +221,7 @@ if (file_put_contents($configFile, $text, LOCK_EX) === false) {
     exit(1);
 }
 chmod($configFile, 0600);
-say("Written to $configFile: key, webhook secret, prices.");
+say("Written to $configFile: key, webhook secret, VAT rate, prices.");
 
 say('');
 say('In the Stripe dashboard, once:');

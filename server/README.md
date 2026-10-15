@@ -37,7 +37,7 @@ All redirect addresses are `<app_url>api/auth/<provider>/callback`.
 
 ## Stripe
 
-Stripe sells as merchant of record (Managed Payments, switched on in the Stripe dashboard): it charges the VAT of the buyer's country, issues the receipts and handles the right of withdrawal on its checkout page. The prices are gross: 4.99 EUR a month, 29.99 EUR a year, 79 EUR once.
+Markus Freise is the seller; Stripe only takes the payments. Every checkout switches off Stripe's Managed Payments (Stripe as merchant of record), which is on by default for the account. The prices are gross and include 19 % German VAT, a fixed tax rate made by the script: below 10,000 EUR a year of sales to consumers in other EU countries the German VAT applies to all. Above that, switch to the VAT of the buyer's country (Stripe Tax and the EU One-Stop Shop). At checkout the buyer ticks that the app is unlocked at once and that this ends the right of withdrawal (terms, section 6).
 
 On the server, in the folder of the API:
 
@@ -45,9 +45,9 @@ On the server, in the folder of the API:
 php stripe-setup.php    # asks for the secret key without showing it
 ```
 
-It creates the product, the three prices, the webhook to `<app_url>api/stripe/webhook` and the customer portal (cancel at the end of the period, switch between monthly and yearly, invoices, card), reuses what is already there, and writes key, webhook secret and price IDs into `config.php`. Run it again after changing a price in `PLANS`; the old price stays for its existing subscribers. With a `sk_test_` key it sets up the test mode the same way.
+It creates the product, the three prices, the 19 % VAT rate, the webhook to `<app_url>api/stripe/webhook` and the customer portal (cancel at the end of the period, switch between monthly and yearly, invoices, card), reuses what is already there, and writes key, webhook secret and price IDs into `config.php`. Run it again after changing a price in `PLANS`; the old price stays for its existing subscribers. With a `sk_test_` key it sets up the test mode the same way.
 
-In the Stripe dashboard, once: public details (terms and privacy URL, support address) and Managed Payments.
+In the Stripe dashboard, once: public details (terms and privacy URL, support address) and the VAT ID on the invoices.
 
 ## Vouchers
 

@@ -35,6 +35,9 @@ function startCheckout(): never
     if (!$once && isPro($user)) {
         fail(409, 'This account already has a subscription. Change it under "Manage subscription".');
     }
+    $german = ($body['lang'] ?? '') === 'de';
+    // German VAT, inside the gross price (a tax rate made by stripe-setup.php).
+    $vat = (string) (config('stripe')['tax_rate'] ?? '');
     $fields = [
         'mode' => $once ? 'payment' : 'subscription',
         'line_items' => [['price' => $plan['price'], 'quantity' => 1]],
@@ -44,13 +47,26 @@ function startCheckout(): never
         'cancel_url' => config('app_url') . '#billing=cancelled',
         'allow_promotion_codes' => 'true',
         // Stripe's page in the language of the app.
-        'locale' => ($body['lang'] ?? '') === 'de' ? 'de' : 'en',
+        'locale' => $german ? 'de' : 'en',
+        // Markus Freise sells, Stripe only takes the payment: not Stripe's Managed Payments, which
+        // is on by default for the account and would make Stripe the seller.
+        'managed_payments' => ['enabled' => 'false'],
+        // Digital content that starts at once: the buyer agrees to that and so gives up the right
+        // of withdrawal (Section 356 (5) BGB). Needs the terms URL in Stripe's public details.
+        'consent_collection' => ['terms_of_service' => 'required'],
+        'custom_text' => ['terms_of_service_acceptance' => ['message' => $german
+            ? 'Ich stimme den [AGB](' . config('app_url') . 'de/agb/) zu und verlange, dass Watercolourlove sofort freigeschaltet wird. Mir ist bekannt, dass ich damit mein Widerrufsrecht verliere.'
+            : 'I agree to the [terms](' . config('app_url') . 'terms/) and ask for Watercolourlove to be unlocked at once. I understand that I thereby lose my right of withdrawal.']],
     ];
-    // Stripe sells as merchant of record (Managed Payments, on by default for the account): it
-    // charges the VAT of the buyer's country and handles the right of withdrawal on its page.
-    // A payment once gets an invoice too; subscriptions have their own.
+    // A payment once gets an invoice too; subscriptions have their own. A subscription keeps the
+    // VAT as its default, so it stays when the buyer switches between monthly and yearly.
     if ($once) {
         $fields['invoice_creation'] = ['enabled' => 'true'];
+        if ($vat !== '') {
+            $fields['line_items'][0]['tax_rates'] = [$vat];
+        }
+    } elseif ($vat !== '') {
+        $fields['subscription_data'] = ['default_tax_rates' => [$vat]];
     }
     if ($user['stripe_customer']) {
         $fields['customer'] = $user['stripe_customer'];

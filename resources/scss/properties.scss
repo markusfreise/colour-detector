@@ -21,6 +21,8 @@
     --c-danger: #b2453a;
     --c-border: #e4ddd2;
     --c-border-light: #efece7;
+    // Outline of the text buttons: dark enough to read as a button on white and over the picture.
+    --c-button-border: #242424;
     --c-chip-border: #242424;
     --c-white: #ffffff;
     // Text and icons on the corporate colour and on danger: white in light, dark in dark.
@@ -81,6 +83,7 @@
         --c-danger: #e8796d;
         --c-border: #3a3632;
         --c-border-light: #2e2b28;
+        --c-button-border: var(--c-copy);
         --c-chip-border: #5a544d;
         --c-on-corporate: #14202c;
         --c-on-danger: #1b1a18;

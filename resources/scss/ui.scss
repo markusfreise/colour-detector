@@ -204,9 +204,12 @@
             color: var(--c-on-corporate) !important;
         }
     }
+    // Text buttons with a white or clear ground carry a dark outline; filled and icon buttons do not.
+    &:not(:has(svg)):not(.button--secondary):not(.button--active) {
+        border: 2px solid var(--c-button-border);
+    }
     &--ghost {
         background: transparent;
-        border-color: var(--c-border);
         color: var(--c-copy-light);
         &:hover {
             color: var(--c-copy);

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Archives Tintmap for iOS and macOS and uploads both to App Store Connect (TestFlight).
+# Archives Watercolourlove for iOS and macOS and uploads both to App Store Connect (TestFlight).
 # Usage: scripts/release.sh [--export-only]
 #   --export-only  builds the signed packages into build/release/ without uploading them.
 # Signing is automatic: Xcode needs to be signed in to the team's Apple account
@@ -34,10 +34,10 @@ PLIST
 
 for platform in iOS macOS; do
   echo "== $platform $VERSION ($BUILD)"
-  xcodebuild -project Tintmap.xcodeproj -scheme Tintmap -configuration Release \
-    -destination "generic/platform=$platform" -archivePath "$OUT/Tintmap-$platform.xcarchive" \
+  xcodebuild -project Watercolourlove.xcodeproj -scheme Watercolourlove -configuration Release \
+    -destination "generic/platform=$platform" -archivePath "$OUT/Watercolourlove-$platform.xcarchive" \
     CURRENT_PROJECT_VERSION="$BUILD" -allowProvisioningUpdates archive -quiet
-  xcodebuild -exportArchive -archivePath "$OUT/Tintmap-$platform.xcarchive" \
+  xcodebuild -exportArchive -archivePath "$OUT/Watercolourlove-$platform.xcarchive" \
     -exportOptionsPlist "$OUT/export.plist" -exportPath "$OUT/$platform" -allowProvisioningUpdates -quiet
 done
 echo "Done: version $VERSION, build $BUILD ($DESTINATION)."

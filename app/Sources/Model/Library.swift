@@ -251,10 +251,10 @@ final class Library {
 }
 
 enum Storage {
-    /// Application Support/Tintmap, created on first use.
+    /// Application Support/Watercolourlove, created on first use.
     static let directory: URL = {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        let url = base.appendingPathComponent("Tintmap", isDirectory: true)
+        let url = base.appendingPathComponent("Watercolourlove", isDirectory: true)
         try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         return url
     }()

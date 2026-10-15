@@ -5,7 +5,7 @@ import StoreKit
 @MainActor
 @Observable
 final class Store {
-    static let productID = "de.markusfreise.tintmap.pro"
+    static let productID = "de.markusfreise.watercolourlove.pro"
     /// What the free version holds.
     static let freeBoxes = 1
     static let freePictures = 1

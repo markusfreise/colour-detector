@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct TintmapApp: App {
+struct WatercolourloveApp: App {
     @State private var library: Library
     @State private var session: Session
     @State private var collection = PictureCollection()

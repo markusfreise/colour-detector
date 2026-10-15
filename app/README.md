@@ -1,11 +1,11 @@
-# Tintmap – the native app
+# Watercolourlove – the native app
 
 The iOS, iPadOS and macOS app of Watercolourlove. SwiftUI, one multiplatform target, no third-party code.
 
 | | |
 |---|---|
-| Bundle ID | `de.markusfreise.tintmap` |
-| In-app purchase | `de.markusfreise.tintmap.pro` (non-consumable, 4,99 EUR) |
+| Bundle ID | `de.markusfreise.watercolourlove` |
+| In-app purchase | `de.markusfreise.watercolourlove.pro` (non-consumable, 4,99 EUR) |
 | Minimum system | iOS 17, macOS 14 |
 | Project | generated with XcodeGen from `project.yml` |
 
@@ -15,7 +15,7 @@ The iOS, iPadOS and macOS app of Watercolourlove. SwiftUI, one multiplatform tar
 npm run app:data          # in the repo root: paint stock, colour chart and samples -> Resources/Data
 cd app
 xcodegen generate
-open Tintmap.xcodeproj
+open Watercolourlove.xcodeproj
 ```
 
 Run `npm run app:data` again whenever `src/data/` or the sample photos change.
@@ -32,10 +32,10 @@ Tests run on an iOS simulator (`xcodebuild test`, or Cmd-U in Xcode). On macOS t
 | `Sources/Platform/` | Picture decoding, camera, PDF and printing |
 | `Sources/Store.swift` | StoreKit 2 purchase |
 | `Tests/` | The web app's logic tests, in XCTest |
-| `Tintmap.storekit` | Local purchase for runs from Xcode |
+| `Watercolourlove.storekit` | Local purchase for runs from Xcode |
 | `AppStore/` | Store texts (`metadata.md`) and screenshots |
 
-Data is stored in Application Support/Tintmap: `library.json` (own paints, paint boxes) and `Collection/<id>/` (photo, thumbnail, settings).
+Data is stored in Application Support/Watercolourlove: `library.json` (own paints, paint boxes) and `Collection/<id>/` (photo, thumbnail, settings).
 
 ## Free and paid
 
@@ -46,17 +46,13 @@ Free: one saved picture, one paint box. The purchase lifts both limits (`Store.f
 Debug builds accept launch arguments: `-screen paintbox|collection|editor|breakdown|samples|settings|colours|paywall` opens that screen, `-view mixed|target|overlay|original|template` sets what the picture shows, `-sample` steps to the next sample photo, `-auto` switches the paint box to Auto, `-geometric` switches to geometric areas, `-layer` switches to layer mode (`-step n` opens that step of the walk, `-stepview paint|wash|result` sets its picture, `-spot` selects the middle of the picture). On the Mac, `-snapshot` also writes every window as a PNG into the app's temporary folder, and `-pdf` the printed sheet as `sheet.pdf`.
 
 ```bash
-xcrun simctl launch <device> de.markusfreise.tintmap -screen editor
+xcrun simctl launch <device> de.markusfreise.watercolourlove -screen editor
 xcrun simctl io <device> screenshot AppStore/screenshots/iphone-2-editor.png
 ```
 
 ## Website
 
-`AppStore/site/` is the app's page with support, privacy and imprint, at https://tintmap.markus-freise.de (Mittwald, `~/html/_sites/tintmap`). These are the URLs in `metadata.md`. To publish a change:
-
-```bash
-rsync -az --delete -e "ssh -i ~/.ssh/mittwald -o IdentitiesOnly=yes" AppStore/site/ p236891@p236891.mittwaldserver.info:html/_sites/tintmap/
-```
+The app's pages are part of the web app: `public/app/` (overview, support, privacy) at https://watercolourlove.de/app/, with the web's imprint. These are the URLs in `metadata.md`. They go online with every deploy of the web app.
 
 ## TestFlight and release
 
@@ -69,7 +65,7 @@ Signing is automatic: Xcode must be signed in to the team account (Xcode > Setti
 
 ### Once, before the first upload
 
-1. App Store Connect: create the app (iOS and macOS, bundle ID `de.markusfreise.tintmap`, SKU `tintmap`), then the in-app purchase `de.markusfreise.tintmap.pro` (non-consumable), with the texts from `AppStore/metadata.md`.
+1. App Store Connect: create the app (iOS and macOS, bundle ID `de.markusfreise.watercolourlove`, SKU `watercolourlove`), then the in-app purchase `de.markusfreise.watercolourlove.pro` (non-consumable), with the texts from `AppStore/metadata.md`.
 2. App Privacy: "Data Not Collected". Age rating questionnaire: all "None".
 3. TestFlight: internal testers need nothing more. For external testers fill in the beta description, feedback address `support@markus-freise.de` and the privacy URL; the first external build goes to Beta App Review.
 4. Run `scripts/release.sh`. Builds show up in TestFlight after Apple's processing, usually within half an hour.

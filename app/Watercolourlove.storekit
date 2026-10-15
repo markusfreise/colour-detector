@@ -9,16 +9,16 @@
       "localizations" : [
         {
           "description" : "Save any number of pictures and paint boxes.",
-          "displayName" : "Tintmap Full Version",
+          "displayName" : "Watercolourlove Full Version",
           "locale" : "en_US"
         },
         {
           "description" : "Beliebig viele Bilder und Malkästen speichern.",
-          "displayName" : "Tintmap Vollversion",
+          "displayName" : "Watercolourlove Vollversion",
           "locale" : "de"
         }
       ],
-      "productID" : "de.markusfreise.tintmap.pro",
+      "productID" : "de.markusfreise.watercolourlove.pro",
       "referenceName" : "Full Version",
       "type" : "NonConsumable"
     }

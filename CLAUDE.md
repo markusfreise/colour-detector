@@ -34,7 +34,7 @@ Vue 3 (Composition API, `<script setup>`) · Pinia · Vite 5 · Vitest · Web Wo
 - `src/stores/` – `paints` (stock + enabled set, localStorage) and `analysis` (image, settings, segmentation, palette entries).
 - `src/data/paints.js` – hard-coded stock. `hex` = colour at strength 1, and since 2026-10-12 the darkest the paint is ever used: more of one paint than strength 1 does not exist (`MAX_AMOUNT` in `lib/mixing.js`). Darker needs a second paint. The stock values come from the Horadam chart, which shows a mid-strength wash, so dark paints are recorded lighter than they are at full strength.
 - `deploy/` – `webhook.php` + `deploy.sh` for the live server.
-- `app/` – native app **Tintmap** (SwiftUI, iOS/iPadOS/macOS, bundle ID `de.markusfreise.tintmap`). `app/Sources/Core/` is a port of `src/lib/`: change both sides together. Details in `app/README.md`.
+- `app/` – native app **Watercolourlove** (SwiftUI, iOS/iPadOS/macOS, bundle ID `de.markusfreise.watercolourlove`, until 2026-10-15 named Tintmap); its support and privacy pages are `public/app/`. `app/Sources/Core/` is a port of `src/lib/`: change both sides together. Details in `app/README.md`.
 
 ## Conventions
 

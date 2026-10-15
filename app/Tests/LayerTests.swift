@@ -1,6 +1,6 @@
 import ImageIO
 import XCTest
-@testable import Tintmap
+@testable import Watercolourlove
 
 /// Layer mode against the web app: every reference value below was computed by src/lib/layers.js
 /// (in Node) on the same colours and the same pictures, so both implementations stay in step.

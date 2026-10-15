@@ -10,7 +10,7 @@ Visit statistics (Google Analytics) are optional and off by default: without a m
 
 ## Native app
 
-The iOS, iPadOS and macOS app is called **Tintmap** and lives in [`app/`](app/README.md): SwiftUI, with the colour and mixing logic ported from `src/lib/`.
+The iOS, iPadOS and macOS app is also called **Watercolourlove** and lives in [`app/`](app/README.md): SwiftUI, with the colour and mixing logic ported from `src/lib/`.
 
 ## Features
 
@@ -89,7 +89,7 @@ The build uses a relative base path, so `dist/` works from any folder on any sta
 | `resources/scss/` | SCSS, BEM: entry `site.scss`, tokens in `properties.scss`, one file per block in `components/` |
 | `src/data/paints.js` | The paint stock |
 | `deploy/` | GitHub webhook and deploy script for the server |
-| `app/` | Native app Tintmap (SwiftUI, XcodeGen) |
+| `app/` | Native app Watercolourlove (SwiftUI, XcodeGen) |
 
 Stack: Vue 3, Pinia, Vite 5, Vitest.
 

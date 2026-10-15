@@ -143,7 +143,7 @@ const consent = useConsentStore()
 const steps = [
   { title: 'Choose a reference photo', image: stepPhoto, alt: 'A photo chosen from the device opens in the app' },
   { title: 'Add the colours and paints you use', image: stepPaints, alt: 'The paint box with the paints you own ticked' },
-  { title: 'Image is analysed and mixes for colours calculated. Refine with powerful settings.', image: stepMixes, alt: 'The photo as numbered areas, with the recipe of one area' },
+  { title: 'Image is analysed and recipes for colours calculated. Refine with powerful settings.', image: stepMixes, alt: 'The photo as numbered areas, with the recipe of one area' },
 ]
 
 const account = useAccountStore()

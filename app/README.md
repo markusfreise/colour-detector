@@ -28,7 +28,7 @@ Tests run on an iOS simulator (`xcodebuild test`, or Cmd-U in Xcode). On macOS t
 |---|---|
 | `Sources/Core/` | Colour maths, mixing model, segmentation, mix planning and layer mode: ports of `src/lib/*.js`. Change both sides together; `Tests/CoreTests.swift` and `Tests/LayerTests.swift` check them against reference values from the web logic |
 | `Sources/Model/` | `Library` (paints and paint boxes), `Session` (the picture being worked on), `PictureCollection` (saved pictures) |
-| `Sources/Views/` | SwiftUI screens |
+| `Sources/Views/` | SwiftUI screens, laid out as the web app rather than after Apple's guidelines: the picture fills the window, icon buttons at the top left (picture) and top right (panels), the view tools at the top centre (bottom on a phone), panels on floating cards. Tokens and building blocks in `Theme.swift` |
 | `Sources/Platform/` | Picture decoding, camera, PDF and printing |
 | `Sources/Store.swift` | StoreKit 2 purchase |
 | `Tests/` | The web app's logic tests, in XCTest |

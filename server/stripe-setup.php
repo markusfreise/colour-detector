@@ -5,7 +5,8 @@
  *
  *   php stripe-setup.php
  *
- * It asks for the secret key (sk_live_... or sk_test_...) without showing it, then creates what is
+ * It asks for the secret key (sk_live_..., or a restricted key rk_live_... with the permissions
+ * listed in README.md) without showing it, then creates what is
  * missing and reuses what is there: the product, the three prices (gross), the German VAT rate
  * inside them, the webhook and the customer portal. Markus Freise is the seller; Stripe only
  * takes the payments. Running it again is safe. The webhook is made anew each time,
@@ -51,20 +52,20 @@ if (!str_starts_with($appUrl, 'https://')) {
 
 $key = getenv('STRIPE_SECRET_KEY') ?: '';
 if ($key === '') {
-    fwrite(STDOUT, 'Stripe secret key (sk_live_... or sk_test_..., not shown): ');
+    fwrite(STDOUT, 'Stripe secret or restricted key (sk_/rk_live_... or sk_/rk_test_..., not shown): ');
     shell_exec('stty -echo 2>/dev/null');
     $key = trim((string) fgets(STDIN));
     shell_exec('stty echo 2>/dev/null');
     fwrite(STDOUT, "\n");
 }
-if (!preg_match('/^sk_(live|test)_[A-Za-z0-9]+$/', $key, $mode)) {
-    fwrite(STDERR, "That is not a secret key (sk_live_... or sk_test_...).\n");
+if (!preg_match('/^(sk|rk)_(live|test)_[A-Za-z0-9]+$/', $key, $mode)) {
+    fwrite(STDERR, "That is not a secret or restricted key (sk_live_..., rk_live_..., or the same with _test_).\n");
     exit(1);
 }
-$live = $mode[1] === 'live';
+$live = $mode[2] === 'live';
 
-/** One request to Stripe; stops the script on an error. */
-function stripe(string $method, string $path, array $fields = []): array
+/** One request to Stripe; stops the script on an error, unless $optional (then it returns null). */
+function stripe(string $method, string $path, array $fields = [], bool $optional = false): ?array
 {
     global $key;
     $url = 'https://api.stripe.com/v1/' . $path;
@@ -85,7 +86,13 @@ function stripe(string $method, string $path, array $fields = []): array
     $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
     curl_close($curl);
     if ($status >= 400) {
+        if ($optional) {
+            return null;
+        }
         fwrite(STDERR, "Stripe $method $path: " . ($data['error']['message'] ?? "HTTP $status") . "\n");
+        if ($status === 403) {
+            fwrite(STDERR, "The key lacks a permission for this; see the list in README.md (Stripe).\n");
+        }
         exit(1);
     }
     return $data;
@@ -100,10 +107,16 @@ $notes = [];
 say(($live ? 'LIVE' : 'TEST') . ' mode.');
 
 // --- The account ----------------------------------------------------------------------------------
-$account = stripe('GET', 'account');
-say('Account: ' . ($account['settings']['dashboard']['display_name'] ?? $account['business_profile']['name'] ?? $account['id'])
+// A restricted key may not read the account; that is only for the overview.
+$account = stripe('GET', 'account', [], true);
+if ($account === null) {
+    say('Account: not readable with this key (fine for a restricted key).');
+    $account = ['charges_enabled' => true];
+} else {
+    say('Account: ' . ($account['settings']['dashboard']['display_name'] ?? $account['business_profile']['name'] ?? $account['id'])
     . ', payments ' . (($account['charges_enabled'] ?? false) ? 'enabled' : 'NOT enabled')
     . ', payouts ' . (($account['payouts_enabled'] ?? false) ? 'enabled' : 'NOT enabled') . '.');
+}
 if ($live && !($account['charges_enabled'] ?? false)) {
     $notes[] = 'Payments are not enabled yet: finish the account details in the Stripe dashboard.';
 }

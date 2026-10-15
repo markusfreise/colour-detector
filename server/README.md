@@ -45,6 +45,17 @@ On the server, in the folder of the API:
 php stripe-setup.php    # asks for the secret key without showing it
 ```
 
+A restricted key (`rk_live_...`) works, with these permissions (everything else "None"):
+
+| Resource | Permission | Used by |
+|---|---|---|
+| Products, Prices, Tax rates | Write | setup |
+| Webhook endpoints | Write | setup |
+| Customer portal (billing portal configurations and sessions) | Write | setup, "Manage subscription" |
+| Checkout Sessions | Write | buying |
+| Customers | Write | buying |
+| Subscriptions | Read | webhook |
+
 It creates the product, the three prices, the 19 % VAT rate, the webhook to `<app_url>api/stripe/webhook` and the customer portal (cancel at the end of the period, switch between monthly and yearly, invoices, card), reuses what is already there, and writes key, webhook secret and price IDs into `config.php`. Run it again after changing a price in `PLANS`; the old price stays for its existing subscribers. With a `sk_test_` key it sets up the test mode the same way.
 
 In the Stripe dashboard, once: public details (terms and privacy URL, support address) and the VAT ID on the invoices.

@@ -5,7 +5,8 @@ private func percent(_ share: Double) -> String {
     return percent == 0 ? "<1" : "\(percent)"
 }
 
-private func plural(_ n: Int, _ word: String) -> String { "\(n) \(word)\(n == 1 ? "" : "s")" }
+/// "1 coat", "3 coats" in the chosen language.
+private func coats(_ n: Int) -> String { L(count: n, "%lld coat", "%lld coats") }
 
 /// A layer as the list, the walk and the printed sheets describe it.
 struct LayerRow: Identifiable {
@@ -52,12 +53,12 @@ extension Session {
                 id: index,
                 number: number,
                 accent: accent,
-                name: paint.map { "\($0.displayNumber) \($0.name)" } ?? layer.paintID,
+                name: paint.map { "\($0.displayNumber) \($0.displayName)" } ?? layer.paintID,
                 hex: layer.hexes[1],
-                wash: layer.water >= 1 ? "1:\(layer.water.formatted()) with water, like \(layer.consistency)" : layer.guide,
+                wash: Words.shortGuide(water: layer.water, consistency: layer.consistency),
                 share: layer.coats.first?.share ?? 0,
-                role: !accent ? nil : layer.role == .dark ? "for the darks" : layer.role == .colour ? "for a colour the washes miss" : nil,
-                help: gain >= 0.05 ? "It brings the picture \(gain.formatted(.number.precision(.fractionLength(1)))) closer to the photo." : "",
+                role: !accent ? nil : layer.role == .dark ? L("for the darks") : layer.role == .colour ? L("for a colour the washes miss") : nil,
+                help: gain >= 0.05 ? L("It brings the picture %@ closer to the photo.", gain.formatted(.number.precision(.fractionLength(1)).locale(Localization.locale))) : "",
                 coats: coats.map { coat in
                     LayerRow.Coat(coats: coat.coats, hex: coat.hex, share: coat.share, only: coat.only, step: plan.steps.firstIndex { $0.layer == index && $0.coat == coat.coats })
                 }
@@ -78,7 +79,12 @@ struct LayerListView: View {
         let accents = rows.filter(\.accent)
         VStack(alignment: .leading, spacing: 8) {
             if let plan = session.layers {
-                Text("\([plural(washes.count, "layer"), accents.isEmpty ? nil : plural(accents.count, "accent"), plural(plan.steps.count, "step")].compactMap { $0 }.joined(separator: ", ")) · match: \(Mixing.matchQuality(plan.deltaE.mean))")
+                let counts = [
+                    L(count: washes.count, "%lld layer", "%lld layers"),
+                    accents.isEmpty ? nil : L(count: accents.count, "%lld accent", "%lld accents"),
+                    L(count: plan.steps.count, "%lld step", "%lld steps"),
+                ].compactMap { $0 }.joined(separator: ", ")
+                Text(L("%@ · match: %@", counts, Words.term(Mixing.matchQuality(plan.deltaE.mean))))
                     .font(Theme.small)
                     .foregroundStyle(.secondary)
             } else if !session.busy {
@@ -101,19 +107,20 @@ struct LayerListView: View {
                 }
             }
             if let plan = session.layers {
-                let unused = plan.layers.filter { $0.top <= 0 }.map { layer in library.byID[layer.paintID].map { "\($0.displayNumber) \($0.name)" } ?? layer.paintID }
+                let unused = plan.layers.filter { $0.top <= 0 }.map { layer in library.byID[layer.paintID].map { "\($0.displayNumber) \($0.displayName)" } ?? layer.paintID }
                 if !unused.isEmpty {
+                    let list = unused.joined(separator: ", ")
                     note(library.activeBox.layerAuto
-                        ? "Not needed for this picture: \(unused.joined(separator: ", "))."
-                        : "No layer for \(unused.joined(separator: ", ")): \(unused.count == 1 ? "it adds" : "they add") too little here. Swap \(unused.count == 1 ? "it" : "them") in the paint box.")
+                        ? L("Not needed for this picture: %@.", list)
+                        : L(unused.count == 1 ? "No layer for %@: it adds too little here. Swap it in the paint box." : "No layer for %@: they add too little here. Swap them in the paint box.", list))
                 }
                 if plan.deltaE.rough >= 0.1 {
-                    Text("\(percent(plan.deltaE.rough))% of the picture is out of reach of these paints. Compare with Photo, or swap a paint.")
+                    Text(L("%@%% of the picture is out of reach of these paints. Compare with Photo, or swap a paint.", percent(plan.deltaE.rough)))
                         .font(Theme.small)
                         .foregroundStyle(.orange)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                note("Ticks only change what the picture shows. Change the paints in the paint box.")
+                note(L("Ticks only change what the picture shows. Change the paints in the paint box."))
             }
         }
     }
@@ -143,7 +150,7 @@ struct LayerListView: View {
                             .frame(width: 36, height: 34)
                         VStack(alignment: .leading, spacing: 1) {
                             Text(row.name).font(Theme.body).lineLimit(1)
-                            Text([row.wash, row.accent || row.coats.count < 2 ? nil : "\(row.coats.count) coats", "\(percent(row.share))%", row.role].compactMap { $0 }.joined(separator: " · "))
+                            Text([row.wash, row.accent || row.coats.count < 2 ? nil : coats(row.coats.count), "\(percent(row.share))%", row.role].compactMap { $0 }.joined(separator: " · "))
                                 .font(Theme.small)
                                 .foregroundStyle(.secondary)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -153,7 +160,7 @@ struct LayerListView: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .help("\(solo ? "Show all layers." : "Show only this layer.") \(row.help)")
+                .help(L(solo ? "Show all layers." : "Show only this layer.") + (row.help.isEmpty ? "" : " " + row.help))
             }
             if row.coats.count > 1 {
                 // One segment per coat, in the colour that many coats give on white paper, as wide as
@@ -167,7 +174,7 @@ struct LayerListView: View {
                         Button {
                             session.goToStep(coat.step)
                         } label: {
-                            Text(plural(coat.coats, "coat"))
+                            Text(coats(coat.coats))
                                 .font(.system(size: 11, weight: .bold))
                                 .lineLimit(1)
                                 .frame(width: least + free * coat.only / total)
@@ -181,7 +188,7 @@ struct LayerListView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("Coat \(coat.coats) of layer \(row.number): show this step")
-                        .help("\(plural(coat.coats, "coat")) on \(percent(coat.only))% of the image. Click to see the step that paints coat \(coat.coats).")
+                        .help(L("%@ on %@%% of the image. Click to see the step that paints coat %lld.", coats(coat.coats), percent(coat.only), coat.coats))
                     }
                 }
                 }
@@ -233,23 +240,23 @@ struct LayerStepsView: View {
                     .buttonStyle(.bordered)
                     HStack(alignment: .top, spacing: 12) {
                         Chip(hex: step.hex, minHeight: 54) {
-                            Text(step.coat == 1 ? "One stroke on white paper" : "\(step.coat) coats on white paper")
+                            Text(step.coat == 1 ? L("One stroke on white paper") : L("%lld coats on white paper", step.coat))
                                 .lineLimit(2)
                         }
                         .frame(width: 170)
                         .help("An estimate from one swatch: test the wash on a scrap first")
                         VStack(alignment: .leading, spacing: 2) {
-                            line("Mix", step.coat > 1 ? "the same wash again." : "\(layer.guide).")
-                            line("Paint", accent
-                                ? "\(step.shapes) small \(step.shapes == 1 ? "shape" : "shapes")\(session.layerStepView == .paint ? " in full colour" : "")."
-                                : "\(areas), \(percent(step.share))% of the picture.")
-                            line("Then", last ? "you are done." : "let it dry completely.")
+                            line(L("Mix"), step.coat > 1 ? L("the same wash again.") : Words.guide(water: layer.water, consistency: layer.consistency) + ".")
+                            line(L("Paint"), accent
+                                ? L(count: step.shapes, session.layerStepView == .paint ? "%lld small shape in full colour." : "%lld small shape.", session.layerStepView == .paint ? "%lld small shapes in full colour." : "%lld small shapes.")
+                                : L("%@, %@%% of the picture.", areas, percent(step.share)))
+                            line(L("Then"), last ? L("you are done.") : L("let it dry completely."))
                         }
                         .font(Theme.small)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     if step.shapes > manyShapes {
-                        Text("\(step.shapes) separate shapes in this step. A higher \"Simplify areas\" gives fewer and bigger ones.")
+                        Text(L("%lld separate shapes in this step. A higher “Simplify areas” gives fewer and bigger ones.", step.shapes))
                             .font(Theme.small)
                             .foregroundStyle(.orange)
                             .fixedSize(horizontal: false, vertical: true)
@@ -263,9 +270,9 @@ struct LayerStepsView: View {
 
     private var areas: String {
         switch session.layerStepView {
-        case .paint: "the areas in full colour"
-        case .wash: "the filled areas"
-        case .result: "the areas of this step"
+        case .paint: L("the areas in full colour")
+        case .wash: L("the filled areas")
+        case .result: L("the areas of this step")
         }
     }
 
@@ -290,9 +297,9 @@ struct LayerStepsView: View {
         let accent = step.kind == .accent
         let number = (session.layerNumbers[step.layer] ?? "").replacingOccurrences(of: "A", with: "")
         let same = plan.layers.filter { $0.top > 0 && ($0.kind == .accent) == accent }.count
-        let name = library.byID[step.paintID]?.name ?? step.paintID
-        let coats = layer.top > 1 ? ", coat \(step.coat) of \(layer.top)" : ""
-        return Text("\(Text("Step \(index + 1) of \(plan.steps.count):").bold()) \(accent ? "Accent" : "Layer") \(number) of \(same), \(name)\(coats)")
+        let name = library.byID[step.paintID]?.displayName ?? step.paintID
+        let coats = layer.top > 1 ? L(", coat %lld of %lld", step.coat, layer.top) : ""
+        return (Text(L("Step %lld of %lld:", index + 1, plan.steps.count)).bold() + Text(" " + L(accent ? "Accent %@ of %lld, %@" : "Layer %@ of %lld, %@", number, same, name) + coats))
             .font(Theme.body)
             .fixedSize(horizontal: false, vertical: true)
     }
@@ -311,6 +318,8 @@ struct LayerSpotView: View {
     @Environment(Library.self) private var library
     let spot: LayerSpot
 
+    fileprivate static func coatCount(_ n: Int) -> String { coats(n) }
+
     var body: some View {
         if let plan = session.layers, spot.coats.count == plan.layers.count {
             let numbers = session.layerNumbers
@@ -323,8 +332,8 @@ struct LayerSpotView: View {
                         Text("Photo").font(Theme.small).foregroundStyle(.secondary)
                     }
                     VStack(alignment: .leading, spacing: 3) {
-                        Chip(hex: spot.layered) { Text("Match: \(Mixing.matchQuality(spot.deltaE))") }
-                            .help("Distance to the photo: \(spot.deltaE.formatted(.number.precision(.fractionLength(1))))")
+                        Chip(hex: spot.layered) { Text(L("Match: %@", Words.term(Mixing.matchQuality(spot.deltaE)))) }
+                            .help(L("Distance to the photo: %@", spot.deltaE.formatted(.number.precision(.fractionLength(1)).locale(Localization.locale))))
                         Text("Layered").font(Theme.small).foregroundStyle(.secondary)
                     }
                 }
@@ -343,9 +352,9 @@ struct LayerSpotView: View {
                             Text(numbers[k] ?? "").font(Theme.strong).foregroundStyle(.secondary).frame(width: 26, alignment: .trailing)
                             RoundedRectangle(cornerRadius: 4).fill(Color(hex: layer.hexes[coats])).frame(width: 22, height: 22)
                                 .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(.primary.opacity(0.15)))
-                            Text("\(library.byID[layer.paintID]?.name ?? layer.paintID)\(layer.kind == .accent ? " (accent)" : "")").lineLimit(1)
+                            Text((library.byID[layer.paintID]?.displayName ?? layer.paintID) + (layer.kind == .accent ? L(" (accent)") : "")).lineLimit(1)
                             Spacer(minLength: 0)
-                            Text(plural(coats, "coat")).foregroundStyle(.secondary)
+                            Text(LayerSpotView.coatCount(coats)).foregroundStyle(.secondary)
                         }
                         .contentShape(Rectangle())
                     }
@@ -353,7 +362,7 @@ struct LayerSpotView: View {
                     .help("Show the step that paints this")
                 }
                 if !painted.isEmpty, !skipped.isEmpty {
-                    Text("Not painted here: \(skipped.joined(separator: ", ")).").font(Theme.small).foregroundStyle(.secondary)
+                    Text(L("Not painted here: %@.", skipped.joined(separator: ", "))).font(Theme.small).foregroundStyle(.secondary)
                 }
             }
         }

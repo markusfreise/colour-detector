@@ -29,7 +29,7 @@ Tests run on an iOS simulator (`xcodebuild test`, or Cmd-U in Xcode). On macOS t
 | `Sources/Core/` | Colour maths, mixing model, segmentation, mix planning and layer mode: ports of `src/lib/*.js`. Change both sides together; `Tests/CoreTests.swift` and `Tests/LayerTests.swift` check them against reference values from the web logic |
 | `Sources/Model/` | `Library` (paints and paint boxes), `Session` (the picture being worked on), `PictureCollection` (saved pictures) |
 | `Sources/Views/` | SwiftUI screens, laid out as the web app rather than after Apple's guidelines: the picture fills the window, icon buttons at the top left (picture) and top right (panels), the view tools at the top centre (bottom on a phone), panels on floating cards. Tokens and building blocks in `Theme.swift` |
-| `Sources/Platform/` | Picture decoding, camera, PDF and printing |
+| `Sources/Platform/` | Picture decoding, camera, PDF and printing, the chosen language (`Localization.swift`) |
 | `Sources/Store.swift` | StoreKit 2 purchase |
 | `Tests/` | The web app's logic tests, in XCTest |
 | `Watercolourlove.storekit` | Local purchase for runs from Xcode |
@@ -37,13 +37,21 @@ Tests run on an iOS simulator (`xcodebuild test`, or Cmd-U in Xcode). On macOS t
 
 Data is stored in Application Support/Watercolourlove: `library.json` (own paints, paint boxes) and `Collection/<id>/` (photo, thumbnail, settings).
 
+## Languages and look
+
+English and German. Every text is in `Resources/Localizable.xcstrings` (the camera prompt in `InfoPlist.xcstrings`): the key is the English text, German is the translation. Literals in `Text`, `Button`, `Label` and so on are collected by the compiler; texts built as a `String` go through `L("...")` (`Platform/Localization.swift`), with plurals as two keys (`L(count: n, "%lld coat", "%lld coats")`). The colour logic in `Sources/Core/` stays English, because its tests compare it with the web; `Views/Words.swift` turns its words (dilution, match, consistency, the wash recipe) into the chosen language. In German the paints show their German chart name (`Paint.displayName`).
+
+The person button at the bottom of the left column opens Preferences, as on the web: language (Automatic, English, Deutsch) and look (Automatic, Light, Dark), kept in UserDefaults. Both switch at once, without a restart: `Localization.apply` points `Bundle.main` at the chosen `.lproj`, the screen is drawn again (`.id(language)`), and the open cards stay open (`@SceneStorage`).
+
+A new text: write it in English in the code, build once, then add its German in `Localizable.xcstrings` (Xcode shows it as new).
+
 ## Free and paid
 
 Free: one saved picture, one paint box. The purchase lifts both limits (`Store.freePictures`, `Store.freeBoxes`). Everything else is free.
 
 ## Screenshots
 
-Debug builds accept launch arguments: `-screen paintbox|collection|editor|breakdown|samples|settings|colours|paywall` opens that screen, `-view mixed|target|overlay|original|template` sets what the picture shows, `-sample` steps to the next sample photo, `-auto` switches the paint box to Auto, `-geometric` switches to geometric areas, `-layer` switches to layer mode (`-step n` opens that step of the walk, `-stepview paint|wash|result` sets its picture, `-spot` selects the middle of the picture). On the Mac, `-snapshot` also writes every window as a PNG into the app's temporary folder, and `-pdf` the printed sheet as `sheet.pdf`.
+Debug builds accept launch arguments: `-screen paintbox|collection|editor|breakdown|samples|settings|colours|paywall|preferences` opens that screen, `-language de` and `-theme dark` set the preferences for that launch, `-switch de,theme:dark,en,auto` changes them while the app runs, one step every 4 seconds (with `-snapshot` on the Mac a PNG after each step), `-view mixed|target|overlay|original|template` sets what the picture shows, `-sample` steps to the next sample photo, `-auto` switches the paint box to Auto, `-geometric` switches to geometric areas, `-layer` switches to layer mode (`-step n` opens that step of the walk, `-stepview paint|wash|result` sets its picture, `-spot` selects the middle of the picture). On the Mac, `-snapshot` also writes every window as a PNG into the app's temporary folder, and `-pdf` the printed sheet as `sheet.pdf`.
 
 ```bash
 xcrun simctl launch <device> de.markusfreise.watercolourlove -screen editor

@@ -28,14 +28,15 @@ struct PaintBoxView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     boxBar
                     if layerMode {
-                        Text("Layer mode paints with a few base paints, one layer each (\(selected.count) of \(Library.maxLayerPaints)). They are kept apart from the paints selected for mixing.\(full ? " \(Library.maxLayerPaints) layers at most: remove one before adding another." : "")")
+                        Text(L("Layer mode paints with a few base paints, one layer each (%lld of %lld). They are kept apart from the paints selected for mixing.", selected.count, Library.maxLayerPaints)
+                            + (full ? " " + L("%lld layers at most: remove one before adding another.", Library.maxLayerPaints) : ""))
                             .font(Theme.small)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     group(title: nil, highlighted: true) {
                         if selected.isEmpty {
-                            Text(layerMode ? "No base paints chosen. Tap a paint below to add it, or press Auto." : "No paints selected. Tap a paint below to add it.").foregroundStyle(.secondary)
+                            Text(L(layerMode ? "No base paints chosen. Tap a paint below to add it, or press Auto." : "No paints selected. Tap a paint below to add it.")).foregroundStyle(.secondary)
                         } else {
                             grid(selected, selected: true)
                         }
@@ -54,7 +55,7 @@ struct PaintBoxView: View {
                 .padding()
             }
             .background(Theme.page)
-            .navigationTitle(layerMode ? "Paint Box: Base Paints" : "Paint Box")
+            .navigationTitle(L(layerMode ? "Paint Box: Base Paints" : "Paint Box"))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -65,20 +66,20 @@ struct PaintBoxView: View {
             }
             .sheet(item: $editedPaint) { PaintEditorView(paint: $0) }
             .sheet(isPresented: $showingPaywall) { PaywallView(reason: "keep more than one paint box") }
-            .alert(namingBox == .new ? "New Paint Box" : "Rename Paint Box", isPresented: Binding(get: { namingBox != nil }, set: { if !$0 { namingBox = nil } })) {
+            .alert(L(namingBox == .new ? "New Paint Box" : "Rename Paint Box"), isPresented: Binding(get: { namingBox != nil }, set: { if !$0 { namingBox = nil } })) {
                 TextField("Name", text: $boxName)
                 Button("Cancel", role: .cancel) {}
-                Button(namingBox == .new ? "Create" : "Save") {
+                Button(L(namingBox == .new ? "Create" : "Save")) {
                     if namingBox == .new { library.addBox(named: boxName) } else { library.renameBox(library.activeBox.id, to: boxName) }
                 }
             }
-            .confirmationDialog("Delete the box \"\(library.activeBox.name)\"?", isPresented: $confirmingBoxDelete, titleVisibility: .visible) {
+            .confirmationDialog(L("Delete the box “%@”?", library.activeBox.name), isPresented: $confirmingBoxDelete, titleVisibility: .visible) {
                 Button("Delete Box", role: .destructive) { library.deleteBox(library.activeBox.id) }
             } message: {
                 Text("The paints stay in your library.")
             }
             .confirmationDialog("Delete this paint?", isPresented: Binding(get: { paintToDelete != nil }, set: { if !$0 { paintToDelete = nil } }), titleVisibility: .visible, presenting: paintToDelete) { paint in
-                Button("Delete \(paint.name)", role: .destructive) { library.deletePaint(paint.id) }
+                Button(L("Delete %@", paint.displayName), role: .destructive) { library.deletePaint(paint.id) }
             } message: { _ in
                 Text("It is removed from every paint box.")
             }
@@ -128,7 +129,7 @@ struct PaintBoxView: View {
                     .borderedStyle(selected: autoOn)
                     .fixedSize()
                     .disabled(session.image == nil)
-                    .help(layerMode ? "Let the app choose the base paints for this picture" : "Let the app select the paints that suit each picture")
+                    .help(L(layerMode ? "Let the app choose the base paints for this picture" : "Let the app select the paints that suit each picture"))
                     .accessibilityAddTraits(autoOn ? .isSelected : [])
                 if !layerMode {
                     Button("Revert") { library.revert() }
@@ -138,7 +139,7 @@ struct PaintBoxView: View {
                     if layerMode { library.setLayerPaints([]) } else { library.clear() }
                 }
                 Spacer(minLength: 8)
-                Text("\(selected.count) selected").font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
+                Text(L("%lld selected", selected.count)).font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
             }
             .buttonStyle(.bordered)
         }
@@ -185,7 +186,7 @@ struct PaintBoxView: View {
                             .toggleStyle(.checkbox)
                             #endif
                             .fixedSize()
-                            .help("Let Auto choose from \(title)")
+                            .help(L("Let Auto choose from %@", title))
                     }
                 }
             }
@@ -212,13 +213,13 @@ struct PaintBoxView: View {
                 // A full set of base paints takes no more; the note above says why.
                 .disabled(!selected && full)
                 .opacity(!selected && full ? 0.45 : 1)
-                .accessibilityHint(selected ? "Removes the paint from the box" : "Adds the paint to the box")
+                .accessibilityHint(L(selected ? "Removes the paint from the box" : "Adds the paint to the box"))
             }
         }
     }
 
     private var ownPaints: some View {
-        group(title: "Your own paints") {
+        group(title: L("Your own paints")) {
             if library.custom.isEmpty {
                 Text("Add paints of any brand that are not in the lists above.").foregroundStyle(.secondary)
             }
@@ -268,7 +269,7 @@ struct PaintEditorView: View {
                 }
             }
             .formStyle(.grouped)
-            .navigationTitle(isNew ? "Add Paint" : "Edit Paint")
+            .navigationTitle(L(isNew ? "Add Paint" : "Edit Paint"))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif

@@ -91,7 +91,8 @@ struct IconButtonStyle: ButtonStyle {
     }
 }
 
-/// The square icon button with its tooltip, for a menu as well as for an action.
+/// The square icon button with its tooltip, for a menu as well as for an action. The title is
+/// the English text; it is shown in the chosen language.
 struct IconButton: View {
     let title: String
     let symbol: String
@@ -100,9 +101,9 @@ struct IconButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(title, systemImage: symbol, action: action)
+        Button(L(title), systemImage: symbol, action: action)
             .buttonStyle(IconButtonStyle(active: active, size: size))
-            .help(title)
+            .help(L(title))
     }
 }
 
@@ -129,8 +130,8 @@ struct SegmentedGroup<Option: Hashable>: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .help(title(option))
-                .accessibilityLabel(title(option))
+                .help(L(title(option)))
+                .accessibilityLabel(L(title(option)))
                 .accessibilityAddTraits(active ? .isSelected : [])
             }
         }

@@ -22,6 +22,9 @@ struct Paint: Codable, Identifiable, Hashable, Sendable {
     static let houseVendor = "Schmincke"
 
     var isCustom: Bool { custom ?? false }
+
+    /// The name in the chosen language: the German one where the chart has it.
+    var displayName: String { Localization.current == "de" && !nameDe.isEmpty ? nameDe : name }
     var mixPaint: MixPaint { MixPaint(id: id, hex: hex) }
 
     func comes(as form: PaintForm) -> Bool {
@@ -57,23 +60,24 @@ enum PaintForm: String, CaseIterable, Identifiable, Sendable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .pan: "\(Paint.houseVendor) Pans"
-        case .tube: "\(Paint.houseVendor) Tubes"
-        case .travelbox: "Travelbox"
+        case .pan: L("%@ Pans", Paint.houseVendor)
+        case .tube: L("%@ Tubes", Paint.houseVendor)
+        case .travelbox: L("Travelbox")
         }
     }
     var singular: String {
         switch self {
-        case .pan: "Pan"
-        case .tube: "Tube"
-        case .travelbox: "Travelbox"
+        case .pan: L("Pan")
+        case .tube: L("Tube")
+        case .travelbox: L("Travelbox")
         }
     }
+    /// One letter, in the chosen language: P for pan (N for Näpfchen in German), T for tube.
     var label: String {
         switch self {
-        case .pan: "P"
-        case .tube: "T"
-        case .travelbox: "S"
+        case .pan: L("P (pan)")
+        case .tube: L("T (tube)")
+        case .travelbox: L("S (travel box)")
         }
     }
 }

@@ -6,6 +6,8 @@ options:
     macOS: "14.0"
   createIntermediateGroups: true
   developmentLanguage: en
+  # English and German; the texts are in Resources/Localizable.xcstrings and InfoPlist.xcstrings.
+  knownRegions: [en, de]
 
 settings:
   base:
@@ -24,6 +26,9 @@ targets:
       - Resources/Assets.xcassets
       # What the app collects (nothing), for the App Store.
       - Resources/PrivacyInfo.xcprivacy
+      # Every text of the app, in English and German.
+      - Resources/Localizable.xcstrings
+      - Resources/InfoPlist.xcstrings
       # Paint stock, colour chart and sample photos, exported from the web app's data (npm run app:data).
       - path: Resources/Data
         buildPhase: resources
@@ -33,6 +38,9 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_HARDENED_RUNTIME: YES
+        # The texts of Text(), Button() and String(localized:) are collected for Localizable.xcstrings.
+        SWIFT_EMIT_LOC_STRINGS: YES
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES
         # The analysis is number crunching; without optimisation a debug build takes seconds per picture.
         SWIFT_OPTIMIZATION_LEVEL: -O
         "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]": Sources/Watercolourlove-macOS.entitlements

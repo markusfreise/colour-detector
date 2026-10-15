@@ -168,9 +168,9 @@ enum StepView: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .paint: "Where to paint"
-        case .wash: "This wash"
-        case .result: "So far"
+        case .paint: L("Where to paint")
+        case .wash: L("This wash")
+        case .result: L("So far")
         }
     }
 }
@@ -322,23 +322,23 @@ final class Session {
         let sample = Self.samples[index % Self.samples.count]
         nextSample = (index + 1) % Self.samples.count
         guard let url = Bundle.main.url(forResource: sample.file, withExtension: "webp"), let data = try? Data(contentsOf: url) else {
-            error = "The sample photo is missing."
+            error = L("The sample photo is missing.")
             return
         }
-        load(data, name: sample.name)
+        load(data, name: L(sample.name))
     }
 
     /// Opens a new photo. Returns false when the data is not a picture.
     @discardableResult
     func load(_ data: Data, name: String, settings: AnalysisSettings? = nil, edits: [EntryEdit] = []) -> Bool {
         guard let decoded = Pictures.decode(data, maxSide: Self.sourceSize) else {
-            error = "Could not open this picture."
+            error = L("Could not open this picture.")
             return false
         }
         let scale = min(1, (Double(Self.workPixels) / Double(decoded.width * decoded.height)).squareRoot())
         let side = Int((Double(max(decoded.width, decoded.height)) * scale).rounded())
         guard let work = Pictures.pixels(of: decoded, maxSide: max(1, side)) else {
-            error = "Could not open this picture."
+            error = L("Could not open this picture.")
             return false
         }
         error = nil
@@ -399,12 +399,12 @@ final class Session {
         let cut = Closeups.size(sourceWidth: source.width, sourceHeight: source.height, rect: closeup.rect, workPixels: Self.workPixels)
         guard let part = source.cropping(to: CGRect(x: cut.sx, y: cut.sy, width: cut.sw, height: cut.sh)),
               let rgba = Pictures.pixels(of: part, width: cut.width, height: cut.height) else {
-            error = "Could not cut out this part of the picture."
+            error = L("Could not cut out this part of the picture.")
             return
         }
         framing = false
         closeupID = id
-        show(image: part, pixels: (rgba, cut.width, cut.height), name: "\(base.name) – detail \(id)", savedID: nil, edits: closeup.edits)
+        show(image: part, pixels: (rgba, cut.width, cut.height), name: L("%@ – detail %lld", base.name, id), savedID: nil, edits: closeup.edits)
     }
 
     func showBase() {
@@ -950,7 +950,7 @@ final class Session {
     var mixBlocks: [MixBlock] {
         let paints = library.byID
         func short(_ recipe: Recipe) -> String { recipe.dilution.replacingOccurrences(of: " (layer/glaze)", with: "") }
-        func parts(_ n: Double) -> String { n.formatted(.number.precision(.fractionLength(n == n.rounded() ? 0 : 1))) }
+        func parts(_ n: Double) -> String { Words.number(n) }
         var families: [String] = []
         var members: [String: [Int]] = [:]
         for index in order {
@@ -973,7 +973,7 @@ final class Session {
                 number: String(entry.label.prefix { $0.isNumber }),
                 base: base,
                 hex: recipe?.hex ?? entry.targetHex,
-                names: recipe == nil ? "No paints selected" : used.isEmpty ? "Paper white" : used.map(\.paint.name).joined(separator: " + "),
+                names: recipe == nil ? L("No paints selected") : used.isEmpty ? L("Paper white") : used.map(\.paint.displayName).joined(separator: " + "),
                 paints: used,
                 dilution: entry.recipe.map { $0.paints.isEmpty ? "" : short($0) } ?? "",
                 share: indices.reduce(0) { $0 + entries[$1].share },

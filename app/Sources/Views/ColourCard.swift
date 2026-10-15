@@ -10,7 +10,7 @@ struct ColourCard: View {
 
     var body: some View {
         if let entry = session.inspected {
-            FloatingCard(title: "Colour \(entry.label)", subtitle: "\(percent(entry.share))% of image", hex: entry.recipe?.hex ?? entry.targetHex) {
+            FloatingCard(title: L("Colour %@", entry.label), subtitle: L("%@%% of image", percent(entry.share)), hex: entry.recipe?.hex ?? entry.targetHex) {
                 session.inspect(region: nil)
             } content: {
                 if let recipe = entry.recipe {
@@ -37,7 +37,7 @@ struct SpotCard: View {
 
     var body: some View {
         if let spot = session.layerSpot {
-            FloatingCard(title: "This Spot", subtitle: nil, hex: nil) {
+            FloatingCard(title: L("This Spot"), subtitle: nil, hex: nil) {
                 session.selectPoint(nil)
             } content: {
                 LayerSpotView(spot: spot)
@@ -115,7 +115,7 @@ struct BreakdownSheet: View {
                     EntryEditorView(index: index, stacked: sizeClass == .compact).padding()
                 }
             }
-            .navigationTitle("Colour \(session.inspected?.label ?? "")")
+            .navigationTitle(L("Colour %@", session.inspected?.label ?? ""))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif

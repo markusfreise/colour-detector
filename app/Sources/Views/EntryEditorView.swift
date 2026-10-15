@@ -29,7 +29,7 @@ struct EntryEditorView: View {
                 Text("Recipes").font(Theme.strong)
                 let washes = session.washes(of: index)
                 if !washes.isEmpty {
-                    Text("Same mix as \(washes.joined(separator: ", ")) – only the amount of water differs.")
+                    Text(L("Same mix as %@ – only the amount of water differs.", washes.joined(separator: ", ")))
                         .font(Theme.small)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -58,7 +58,7 @@ struct EntryEditorView: View {
     private func swatch(_ hex: String, caption: String) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             Chip(hex: hex, minHeight: 60) { Text(hex) }
-            Text(caption).font(Theme.small).foregroundStyle(.secondary)
+            Text(L(caption)).font(Theme.small).foregroundStyle(.secondary)
         }
     }
 

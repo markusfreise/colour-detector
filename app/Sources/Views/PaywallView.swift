@@ -10,7 +10,7 @@ struct PaywallView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Unlock Everything").font(.title.bold())
-            Text("The free version holds one saved picture and one paint box, without close-ups. To \(reason), unlock the full version with a single purchase. No subscription.")
+            Text(L("The free version holds one saved picture and one paint box, without close-ups. To %@, unlock the full version with a single purchase. No subscription.", L(reason)))
                 .foregroundStyle(.secondary)
             VStack(alignment: .leading, spacing: 8) {
                 Label("Save as many pictures as you like", systemImage: "photo.on.rectangle")
@@ -25,7 +25,7 @@ struct PaywallView: View {
                 Button {
                     Task { await store.purchase() }
                 } label: {
-                    Text(store.price.map { "Unlock for \($0)" } ?? "Unlock").frame(maxWidth: .infinity)
+                    Text(store.price.map { L("Unlock for %@", $0) } ?? L("Unlock")).frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)

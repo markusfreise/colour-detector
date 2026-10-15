@@ -90,7 +90,7 @@ final class Library {
                 boxes[index].auto = Set(boxes[index].paintIDs) == defaults
             }
         } else {
-            let box = PaintBox(id: "box-1", name: "My paint box", paintIDs: defaultIDs, auto: true)
+            let box = PaintBox(id: "box-1", name: L("My paint box"), paintIDs: defaultIDs, auto: true)
             boxes = [box]
             activeID = box.id
         }
@@ -186,7 +186,7 @@ final class Library {
 
     func addBox(named name: String) {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        let box = PaintBox(id: "box-\(UUID().uuidString.prefix(8))", name: trimmed.isEmpty ? "Box \(boxes.count + 1)" : trimmed, paintIDs: [])
+        let box = PaintBox(id: "box-\(UUID().uuidString.prefix(8))", name: trimmed.isEmpty ? L("Box %lld", boxes.count + 1) : trimmed, paintIDs: [])
         boxes.append(box)
         activeID = box.id
         changed()

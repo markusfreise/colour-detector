@@ -63,7 +63,7 @@ function mayJoin(string $email, string $code): bool
     return false;
 }
 
-/** Signs a test account in at once, as paid or free, with the current consent. */
+/** Signs an account in at once (local test, personal key), as paid or free, with the current consent. */
 function testSignIn(string $email, string $kind): never
 {
     $user = userByEmail($email);
@@ -101,7 +101,12 @@ function sendMagicLink(): never
     if (tooMany('ip:' . ($_SERVER['REMOTE_ADDR'] ?? ''), MAGIC_PER_IP) || tooMany('mail:' . $email, MAGIC_PER_EMAIL)) {
         fail(429, 'Too many links were asked for. Please try again in an hour.');
     }
-    // After the rate limit, so that guessed codes count as attempts.
+    // A personal key ('keys' in config.php) signs its address in at once, as paid, without a link.
+    // After the rate limit, so that guessed keys and codes count as attempts.
+    $key = (string) (config('keys')[$email] ?? '');
+    if ($key !== '' && hash_equals(strtolower($key), strtolower(trim((string) (body()['code'] ?? ''))))) {
+        testSignIn($email, 'paid');
+    }
     if (!mayJoin($email, (string) (body()['code'] ?? ''))) {
         fail(403, 'Watercolourlove is open by invitation for now. Please enter your invitation code.');
     }

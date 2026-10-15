@@ -21,6 +21,10 @@ return [
     // (case does not matter). Existing accounts sign in as before. Leave it out to let everybody in.
     // 'invitation' => ['allow' => ['someone@example.org'], 'codes' => ['SPRING-PAINTERS']],
 
+    // A personal key per address: entered in the code field, it signs that address in at once, as
+    // paid, without a link by e-mail. Anybody who knows address and key is in that account.
+    // 'keys' => ['someone@example.org' => 'secret'],
+
     // Only for a local run (app_url on localhost or *.test, requests from this machine): these
     // addresses are signed in at once without a link, 'paid' with a licence without end, 'free'
     // without one. For any other address the sign-in link is shown in the app instead of mailed.

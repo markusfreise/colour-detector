@@ -396,7 +396,7 @@ export default {
   'Sign in to use the app. Your account is only your e-mail address; your pictures stay in this browser and are never uploaded.': 'Melde dich an, um die App zu nutzen. Dein Konto ist nur deine E-Mail-Adresse; deine Bilder bleiben in diesem Browser und werden nie hochgeladen.',
   'Continue with {name}': 'Weiter mit {name}',
   'Local test, no mail sent. The sign-in link for': 'Lokaler Test, keine Mail verschickt. Der Anmeldelink für',
-  'Use another address': 'Andere Adresse nutzen',
+  'Use different address': 'Andere Adresse verwenden',
   'A sign-in link is on its way to': 'Ein Anmeldelink ist unterwegs an',
   '. Open it on this device; it works for 15 minutes.': '. Öffne ihn auf diesem Gerät; er gilt 15 Minuten.',
   'Or with a link by e-mail': 'Oder mit einem Link per E-Mail',

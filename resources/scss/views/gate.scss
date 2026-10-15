@@ -104,6 +104,12 @@
             grid-template-columns: minmax(0, 1fr);
             width: min(#{pxtorem(400)}, 100%);
         }
+
+        // The link is sent: one column, as wide as the left one.
+        &--sent {
+            grid-template-columns: minmax(0, 1fr);
+            width: min(#{pxtorem(352)} + var(--gap-15x) * 2, 100%);
+        }
         padding: var(--gap-15x);
         border: 1px solid var(--c-border);
         border-radius: var(--radius);
@@ -222,6 +228,11 @@
     }
 
     &__footer a,
+    // The sign-in link of a local test is one long word.
+    &__text a[href*="#magic="] {
+        word-break: break-all;
+    }
+
     &__text a,
     &__check a {
         color: var(--c-corporate);

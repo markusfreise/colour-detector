@@ -12,7 +12,8 @@
       <!-- Always in the page, so that every photo fades in, the first one too. -->
       <img class="gate__photo" :class="{ 'gate__photo--shown': photoShown }" :src="photo ?? undefined" alt="" />
     </div>
-    <section class="panel gate__card" aria-labelledby="gate-title">
+    <!-- Once the link is sent, the card is only the logo, the message and the links at the bottom. -->
+    <section class="panel gate__card" :class="{ 'gate__card--sent': account.sentTo && !account.user }" aria-labelledby="gate-title">
       <div class="gate__main">
       <!-- The logo in the colour of the text, so it reads in light and dark. -->
       <h1 id="gate-title" class="gate__title">
@@ -51,10 +52,10 @@
       </template>
 
       <template v-else>
-        <p class="gate__text">
+        <p v-if="!account.sentTo" class="gate__text">
           {{ t('Sign in to use the app. Your account is only your e-mail address; your pictures stay in this browser and are never uploaded.') }}
         </p>
-        <div v-if="buttons.length" class="gate__providers">
+        <div v-if="buttons.length && !account.sentTo" class="gate__providers">
           <button v-for="p in buttons" :key="p.id" class="button button--secondary gate__provider" type="button" @click="account.signInWith(p.id)">
             {{ t('Continue with {name}', { name: p.name }) }}
           </button>
@@ -62,12 +63,13 @@
         <p v-if="account.sentTo && account.testLink" class="gate__text">
           {{ t('Local test, no mail sent. The sign-in link for') }} <strong>{{ account.sentTo }}</strong>:
           <a :href="account.testLink">{{ account.testLink }}</a>
-          <button class="gate__link" type="button" @click="account.sentTo = ''">{{ t('Use another address') }}</button>
         </p>
         <p v-else-if="account.sentTo" class="gate__text">
           {{ t('A sign-in link is on its way to') }} <strong>{{ account.sentTo }}</strong>{{ t('. Open it on this device; it works for 15 minutes.') }}
-          <button class="gate__link" type="button" @click="account.sentTo = ''">{{ t('Use another address') }}</button>
         </p>
+        <div v-if="account.sentTo" class="gate__actions">
+          <button class="button" type="button" @click="account.sentTo = ''">{{ t('Use different address') }}</button>
+        </div>
         <form v-else class="gate__form" @submit.prevent="account.sendLink(email, code)">
           <label class="field gate__field">
             <span class="field__label">{{ buttons.length ? t('Or with a link by e-mail') : t('Your e-mail address') }}</span>
@@ -95,7 +97,7 @@
 
       <!-- What the app does, in three steps. The pictures are hand-drawn sketches for now, to be
            replaced by screenshots taken after them. -->
-      <aside class="gate__how" aria-labelledby="how-title">
+      <aside v-if="!account.sentTo || account.user" class="gate__how" aria-labelledby="how-title">
         <h2 id="how-title" class="gate__how-title">{{ t('How this works') }}</h2>
         <ol class="gate__steps">
           <li v-for="step in steps" :key="step.title" class="gate__step">

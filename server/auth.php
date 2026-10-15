@@ -137,9 +137,22 @@ function localTest(): ?array
     return is_array($test) && $local ? $test : null;
 }
 
+/** The invitation code as listed in config.php, if the code given is one and not used yet. */
+function invitationCode(string $code): ?string
+{
+    $code = strtoupper(trim($code));
+    foreach (config('invitation')['codes'] ?? [] as $valid) {
+        $valid = strtoupper((string) $valid);
+        if ($code !== '' && hash_equals($valid, $code)) {
+            return row('SELECT code FROM invitations WHERE code = ? AND used_at IS NOT NULL', [$valid]) ? null : $valid;
+        }
+    }
+    return null;
+}
+
 /**
  * Whether an address may sign in while new accounts need an invitation ('invitation' in
- * config.php): it has an account already, it is on the list, or it brings one of the codes.
+ * config.php): it has an account already, it is on the list, or it brings an unused code.
  */
 function mayJoin(string $email, string $code): bool
 {
@@ -150,13 +163,7 @@ function mayJoin(string $email, string $code): bool
     if (in_array($email, array_map('strtolower', $invitation['allow'] ?? []), true)) {
         return true;
     }
-    $code = strtoupper(trim($code));
-    foreach ($invitation['codes'] ?? [] as $valid) {
-        if ($code !== '' && hash_equals(strtoupper((string) $valid), $code)) {
-            return true;
-        }
-    }
-    return false;
+    return invitationCode($code) !== null;
 }
 
 /** Signs an account in at once (local test, personal key), as paid or free, with the current consent. */
@@ -203,8 +210,14 @@ function sendMagicLink(): never
     if ($key !== '' && hash_equals(strtolower($key), strtolower(trim((string) (body()['code'] ?? ''))))) {
         testSignIn($email, 'paid');
     }
-    if (!mayJoin($email, (string) (body()['code'] ?? ''))) {
-        fail(403, 'Watercolourlove is open by invitation for now. Please enter your invitation code.');
+    $code = (string) (body()['code'] ?? '');
+    if (!mayJoin($email, $code)) {
+        fail(403, 'Watercolourlove is open by invitation for now. Please enter your invitation code. Each code works once.');
+    }
+    // The code becomes a lifetime licence when the link is opened.
+    $invited = invitationCode($code);
+    if ($invited !== null) {
+        run('INSERT OR REPLACE INTO invitations (code, email, asked_at) VALUES (?, ?, ?)', [$invited, $email, time()]);
     }
     $value = token();
     run('DELETE FROM magic_links WHERE expires_at < ?', [time()]);
@@ -232,7 +245,16 @@ function verifyMagicLink(): never
         fail(410, 'This link has expired or was already used. Please ask for a new one.');
     }
     run('DELETE FROM magic_links WHERE hash = ?', [$hash]);
-    startSession((int) userByEmail($link['email'])['id']);
+    $user = userByEmail($link['email']);
+    // An invitation code asked for with this address: the first to use it gets a lifetime licence.
+    foreach (run('SELECT code FROM invitations WHERE email = ? AND used_at IS NULL', [$link['email']])->fetchAll() as $pending) {
+        if (!row('SELECT code FROM invitations WHERE code = ? AND used_at IS NOT NULL', [$pending['code']])) {
+            run('UPDATE invitations SET used_at = ? WHERE code = ? AND email = ?', [time(), $pending['code'], $link['email']]);
+            run('UPDATE users SET lifetime = 1 WHERE id = ?', [$user['id']]);
+            break;
+        }
+    }
+    startSession((int) $user['id']);
     send(['ok' => true]);
 }
 

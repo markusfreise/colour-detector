@@ -18,7 +18,8 @@ return [
     ],
 
     // New accounts only by invitation: addresses on 'allow', or anybody who enters one of 'codes'
-    // (case does not matter). Existing accounts sign in as before. Leave it out to let everybody in.
+    // (case does not matter). Each code works once and gives a lifetime licence. Existing accounts
+    // sign in as before. Leave it out to let everybody in.
     // 'invitation' => ['allow' => ['someone@example.org'], 'codes' => ['SPRING-PAINTERS']],
 
     // A personal key per address: entered in the code field, it signs that address in at once, as

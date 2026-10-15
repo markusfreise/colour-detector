@@ -8,6 +8,8 @@ struct SavedPicture: Codable, Identifiable {
     var updatedAt: Date
     var settings: AnalysisSettings
     var edits: [EntryEdit]
+    /// Nil in pictures saved before the palette belonged to the picture: they keep the one on screen.
+    var palette: Palette?
 }
 
 /// Pictures the user saved, each in its own folder: the photo, a thumbnail and the settings.
@@ -51,15 +53,20 @@ final class PictureCollection {
             try photo.write(to: folder.appendingPathComponent("image.jpg"), options: .atomic)
             try small.write(to: folder.appendingPathComponent("thumb.jpg"), options: .atomic)
         }
-        let record = SavedPicture(id: id, name: session.imageName, updatedAt: Date(), settings: session.settings, edits: session.exportEdits())
+        let record = SavedPicture(id: id, name: session.imageName, updatedAt: Date(), settings: session.settings, edits: session.exportEdits(), palette: session.palette)
         try write(record)
         session.savedID = id
     }
 
     func open(_ id: String, in session: Session) {
         guard let record = items.first(where: { $0.id == id }),
-              let data = try? Data(contentsOf: folder(id).appendingPathComponent("image.jpg")),
-              session.load(data, name: record.name, settings: record.settings, edits: record.edits) else {
+              let data = try? Data(contentsOf: folder(id).appendingPathComponent("image.jpg")) else {
+            session.error = L("Could not open the saved picture.")
+            return
+        }
+        // The palette first: the picture is analysed with it.
+        if let palette = record.palette { session.palette = palette }
+        guard session.load(data, name: record.name, settings: record.settings, edits: record.edits) else {
             session.error = L("Could not open the saved picture.")
             return
         }

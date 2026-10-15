@@ -1,13 +1,12 @@
 import Observation
 import StoreKit
 
-/// The one-time purchase that lifts the limits on saved pictures and paint boxes.
+/// The one-time purchase that lifts the limit on saved pictures and adds paint boxes of one's own.
 @MainActor
 @Observable
 final class Store {
     static let productID = "de.markusfreise.watercolourlove.pro"
     /// What the free version holds.
-    static let freeBoxes = 1
     static let freePictures = 1
 
     private(set) var unlocked = false

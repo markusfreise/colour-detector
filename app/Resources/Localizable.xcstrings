@@ -3088,6 +3088,207 @@
           }
         }
       }
+    },
+    "Pans": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Näpfchen"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Tubes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tuben"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Palette": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Palette"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Base paints": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grundfarben"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "The palette is saved with the picture.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Palette wird mit dem Bild gesichert."
+          }
+        }
+      }
+    },
+    "Import Paint Box": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Farbkasten importieren"
+          }
+        }
+      }
+    },
+    "Tap a colour to take it out of this box.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe eine Farbe an, um sie aus diesem Kasten zu nehmen."
+          }
+        }
+      }
+    },
+    "Takes the colour out of this box": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimmt die Farbe aus diesem Kasten"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Adds the paint to the palette": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimmt die Farbe in die Palette auf"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Removes the paint from the palette": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimmt die Farbe aus der Palette"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Add a colour to %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eine Farbe zu %@ hinzufügen"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Series, number or name": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serie, Nummer oder Name"
+          }
+        }
+      }
+    },
+    "Colour chart": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Farbkarte"
+          }
+        }
+      }
+    },
+    "No colour found": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Farbe gefunden"
+          }
+        }
+      }
+    },
+    "Or enter a colour of your own": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oder eine eigene Farbe eingeben"
+          }
+        }
+      }
+    },
+    "Remove Colours": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Farben entfernen"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Export": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exportieren"
+          }
+        }
+      }
+    },
+    "add paint boxes of your own": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "eigene Farbkästen anzulegen"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "This is not a paint box file.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das ist keine Farbkasten-Datei."
+          }
+        }
+      },
+      "extractionState": "manual"
     }
   },
   "version": "1.0"

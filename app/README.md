@@ -27,7 +27,7 @@ Tests run on an iOS simulator (`xcodebuild test`, or Cmd-U in Xcode). On macOS t
 | Path | Contents |
 |---|---|
 | `Sources/Core/` | Colour maths, mixing model, segmentation, mix planning and layer mode: ports of `src/lib/*.js`. Change both sides together; `Tests/CoreTests.swift` and `Tests/LayerTests.swift` check them against reference values from the web logic |
-| `Sources/Model/` | `Library` (paints and paint boxes), `Session` (the picture being worked on), `PictureCollection` (saved pictures) |
+| `Sources/Model/` | `Library` (paints, paint boxes, the palette of the picture), `Session` (the picture being worked on), `PictureCollection` (saved pictures) |
 | `Sources/Views/` | SwiftUI screens, laid out as the web app rather than after Apple's guidelines: the picture fills the window, icon buttons at the top left (picture) and top right (panels), the view tools at the top centre (bottom on a phone), panels on floating cards. Tokens and building blocks in `Theme.swift` |
 | `Sources/Platform/` | Picture decoding, camera, PDF and printing, the chosen language (`Localization.swift`) |
 | `Sources/Store.swift` | StoreKit 2 purchase |
@@ -35,7 +35,7 @@ Tests run on an iOS simulator (`xcodebuild test`, or Cmd-U in Xcode). On macOS t
 | `Watercolourlove.storekit` | Local purchase for runs from Xcode |
 | `AppStore/` | Store texts (`metadata.md`) and screenshots |
 
-Data is stored in Application Support/Watercolourlove: `library.json` (own paints, paint boxes) and `Collection/<id>/` (photo, thumbnail, settings).
+Data is stored in Application Support/Watercolourlove: `library.json` (own paints, paint boxes, the palette on screen) and `Collection/<id>/` (photo, thumbnail, settings with the palette of the picture). A paint box exports to a JSON file of the same format as the web app's, and imports from one.
 
 ## Languages and look
 
@@ -47,7 +47,7 @@ A new text: write it in English in the code, build once, then add its German in 
 
 ## Free and paid
 
-Free: one saved picture, one paint box. The purchase lifts both limits (`Store.freePictures`, `Store.freeBoxes`). Everything else is free.
+Free: one saved picture and the paint boxes the app starts with. The purchase lifts the picture limit (`Store.freePictures`) and adds new and imported paint boxes. Everything else is free.
 
 ## Screenshots
 

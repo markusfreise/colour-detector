@@ -110,7 +110,7 @@ struct LayerListView: View {
                 let unused = plan.layers.filter { $0.top <= 0 }.map { layer in library.byID[layer.paintID].map { "\($0.displayNumber) \($0.displayName)" } ?? layer.paintID }
                 if !unused.isEmpty {
                     let list = unused.joined(separator: ", ")
-                    note(library.activeBox.layerAuto
+                    note(library.palette.layerAuto
                         ? L("Not needed for this picture: %@.", list)
                         : L(unused.count == 1 ? "No layer for %@: it adds too little here. Swap it in the paint box." : "No layer for %@: they add too little here. Swap them in the paint box.", list))
                 }

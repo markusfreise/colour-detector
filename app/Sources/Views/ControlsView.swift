@@ -49,7 +49,7 @@ struct ControlsView: View {
                 slider("Simplify areas", value: $layerSimplify, range: 0...10, hint: "Higher = bigger, calmer shapes") {
                     session.settings.layerSimplify = Int(layerSimplify.rounded())
                 }
-                let auto = library.activeBox.layerAuto
+                let auto = library.palette.layerAuto
                 HStack(alignment: .top, spacing: Theme.gap) {
                     slider(
                         "Layers", value: $layers, range: 2...Double(Library.maxLayerPaints),
@@ -138,7 +138,7 @@ struct ControlsView: View {
         maxPaints = Double(session.settings.maxPaints)
         maxCoats = Double(session.settings.maxCoats)
         // By hand the number of layers is the number of chosen base paints.
-        layers = library.activeBox.layerAuto ? Double(session.settings.layerCount) : Double(max(2, library.activeBox.layerIDs.count))
+        layers = library.palette.layerAuto ? Double(session.settings.layerCount) : Double(max(2, library.palette.layerIDs.count))
         layerSimplify = Double(session.settings.layerSimplify)
         accents = Double(session.settings.layerAccents)
     }

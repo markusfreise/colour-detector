@@ -220,6 +220,11 @@ final class Session {
     var imageName = ""
     /// Id in the collection when the picture was saved or opened from it.
     var savedID: String?
+    /// The paints chosen for this picture, saved with it (PictureCollection).
+    var palette: Palette {
+        get { library.palette }
+        set { library.setPalette(newValue) }
+    }
     private(set) var image: CGImage?
     private(set) var segmentation: Segmentation?
     private(set) var entries: [PaletteEntry] = []
@@ -482,21 +487,21 @@ final class Session {
         "\(pictureSerial)/\(settings.colours)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)/\(settings.geometric)"
     }
 
-    /// Glazes of the base paints. On Auto the app proposes the paints from the paint box's Auto
+    /// Glazes of the base paints. On Auto the app proposes the paints from the palette's Auto
     /// pool, otherwise the ones chosen in the paint box are fitted.
     private func analyseLayers() {
         guard let pixels else { return }
         analysisRun += 1
         let run = analysisRun
-        let box = library.activeBox
+        let chosen = library.palette
         let s = settings
         let serial = pictureSerial
-        let proposalKey = "\(serial)/\(box.id)/\(s.layerCount)/\(s.maxCoats)/\(s.layerAccents)"
-        // Propose only when there is nothing to keep: a new picture or box, another number of layers,
+        let proposalKey = "\(serial)/\(s.layerCount)/\(s.maxCoats)/\(s.layerAccents)"
+        // Propose only when there is nothing to keep: a new picture, another number of layers,
         // coats or accents (the best paints depend on those), or Auto pressed.
-        let propose = box.layerAuto && !(layerProposal == proposalKey && !box.layerIDs.isEmpty)
+        let propose = chosen.layerAuto && !(layerProposal == proposalKey && !chosen.layerIDs.isEmpty)
         let pool = (propose ? library.autoCandidates : library.layerPaints).map(\.mixPaint)
-        let paintIDs = propose ? nil : box.layerIDs
+        let paintIDs = propose ? nil : chosen.layerIDs
         layerStep = nil
         layerPoint = nil
         guard !pool.isEmpty else {
@@ -513,15 +518,15 @@ final class Session {
                 let plan = Layers.layerImage(
                     rgba: adjusted, width: pixels.width, height: pixels.height, paints: pool,
                     // Auto: the number of wash layers (accent paints come on top). By hand: every chosen paint may be one.
-                    count: box.layerAuto ? s.layerCount : nil,
+                    count: chosen.layerAuto ? s.layerCount : nil,
                     paintIDs: paintIDs, maxCoats: s.maxCoats, simplify: s.layerSimplify, accents: s.layerAccents, geometric: s.geometric
                 )
                 return (plan, adjusted)
             }.value
             guard run == analysisRun, layerMode else { return } // superseded
-            // The proposal goes to the box it was made for, also when another box was opened meanwhile.
+            // A newer picture would have superseded the run above, so the palette is still the picture's.
             if propose {
-                library.setLayerPaints(plan.paintIDs, auto: true, box: box.id)
+                library.setLayerPaints(plan.paintIDs, auto: true)
                 layerProposal = proposalKey
             }
             layers = plan
@@ -537,14 +542,14 @@ final class Session {
     /// Lets the app choose the base paints for this picture (again).
     func proposeLayers() {
         layerProposal = nil
-        library.setLayerPaints(library.activeBox.layerIDs, auto: true)
+        library.setLayerPaints(library.palette.layerIDs, auto: true)
         if layerMode { analyse() }
     }
 
     /// The paint box was closed: the layers follow its base paints.
     func layerPaintsChanged() {
         guard layerMode, !busy else { return }
-        if (layers?.paintIDs ?? []) != library.activeBox.layerIDs || library.activeBox.layerAuto && layerProposal == nil { analyse() }
+        if (layers?.paintIDs ?? []) != library.palette.layerIDs || library.palette.layerAuto && layerProposal == nil { analyse() }
     }
 
     func setMode(_ mode: AnalysisMode) {
@@ -762,7 +767,7 @@ final class Session {
         recipeRun += 1
         let run = recipeRun
         let paints = library.enabled.map(\.mixPaint)
-        let candidates = library.activeBox.auto ? library.autoCandidates.map(\.mixPaint) : nil
+        let candidates = library.palette.auto ? library.autoCandidates.map(\.mixPaint) : nil
         let maxPaints = settings.maxPaints
         let wanted = settings.colours
         let variety = settings.variety
@@ -775,7 +780,7 @@ final class Session {
                 Self.buildPalette(seg: seg, paints: paints, candidates: candidates, maxPaints: maxPaints, wanted: wanted, variety: variety, old: old, oldBase: oldBase, oldRegionEntry: oldRegionEntry)
             }.value
             guard run == recipeRun, seg.regions.count == segmentation?.regions.count else { return }
-            if let ids = palette.paintIDs, Set(ids) != library.enabledIDs || !library.activeBox.auto { library.setEnabled(ids, auto: true) }
+            if let ids = palette.paintIDs, Set(ids) != library.enabledIDs || !library.palette.auto { library.setEnabled(ids, auto: true) }
             mixRecipes = palette.mixRecipes
             entries = palette.entries
             baseEntries = palette.baseEntries

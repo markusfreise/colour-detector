@@ -21,6 +21,18 @@
         </div>
         <div class="app__left-buttons" @click="menuOpen = false">
           <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
+          <!-- Phone: the template to print is here instead of in the tools at the bottom. -->
+          <button
+            v-if="!analysis.layerMode"
+            class="button button--ghost app__template"
+            :class="{ 'button--active': analysis.settings.view === 'template' }"
+            type="button"
+            :aria-pressed="analysis.settings.view === 'template'"
+            :data-hint="t('Template to print')"
+            @click="analysis.settings.view = analysis.settings.view === 'template' ? 'mixed' : 'template'"
+          >
+            <AppIcon name="template" :label="t('Template to print')" />
+          </button>
           <!-- The account, and the preferences (language, light or dark) with or without one. -->
           <button class="button button--ghost" type="button" :data-hint="account.enabled ? t('Account') : t('Preferences')" @click="account.open = true">
             <AppIcon name="user" :label="account.enabled ? t('Account') : t('Preferences')" />

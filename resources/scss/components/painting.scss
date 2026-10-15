@@ -245,3 +245,15 @@
         }
     }
 }
+
+// Phone: the template to print is in the menu at the left, not among the views.
+@media (max-width: 760px) {
+    .painting__tools .viewswitch__template {
+        display: none;
+    }
+
+    // The view before it is the last one then: no dividing line on its right.
+    .painting__tools .segmented__option:has(+ .viewswitch__template) {
+        border-right: 0;
+    }
+}

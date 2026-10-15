@@ -6,7 +6,7 @@
       :key="v.value"
       type="button"
       class="segmented__option"
-      :class="{ 'segmented__option--active': analysis.settings.view === v.value }"
+      :class="{ 'segmented__option--active': analysis.settings.view === v.value, 'viewswitch__template': v.value === 'template' }"
       :aria-pressed="analysis.settings.view === v.value"
       :data-hint="t(v.hint)"
       @click="analysis.settings.view = v.value"
@@ -38,7 +38,7 @@ const views = computed(() =>
         { value: 'target', label: 'Photo colour', hint: 'Photo colour', icon: 'colours' },
         { value: 'overlay', label: 'Overlay: the photo at half strength over the paint', hint: 'Overlay', icon: 'overlay' },
         { value: 'original', label: 'Photo', hint: 'Photo', icon: 'photo' },
-        { value: 'template', label: 'Template to print: areas and numbers in light blue, nothing filled in', hint: 'Template to print', icon: 'print' },
+        { value: 'template', label: 'Template to print: areas and numbers in light blue, nothing filled in', hint: 'Template to print', icon: 'template' },
       ],
 )
 // A view that has no button (the sketch of a saved picture) falls back to the paint.

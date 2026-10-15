@@ -21,7 +21,7 @@ import { useText } from '../i18n/index.js'
 const { t } = useText()
 const props = defineProps({
   // The panel's key in the layout store, and what it is called in the button's labels.
-  icon: { type: String, required: true, default: 'settings' },
+  icon: { type: String, default: 'settings' },
   name: { type: String, required: true },
   label: { type: String, required: true },
 })

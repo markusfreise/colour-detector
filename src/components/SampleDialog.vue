@@ -1,5 +1,5 @@
 <template>
-  <dialog ref="dialog" class="panel samples" aria-labelledby="samples-title" @click="onBackdrop">
+  <dialog ref="dialog" class="card panel samples" aria-labelledby="samples-title" @click="onBackdrop">
     <div class="samples__body">
       <header class="samples__header">
         <h2 id="samples-title" class="panel__title">{{ t('Samples') }}</h2>

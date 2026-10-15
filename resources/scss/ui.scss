@@ -1,15 +1,21 @@
 @use "functions" as *;
 
+// A card: the raised surface with rounded corners and a shadow. The floating panels and the
+// dialogs are cards.
+.card {
+    background: var(--c-background-raised);
+    color: var(--c-copy);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
 .flyout {
     left: 0;
-    background: var(--c-background-raised);
     padding: #{pxtorem(32)};
-    border-radius: var(--radius);
-    color: var(--c-copy);
     // Never wider than a narrow window.
     min-width: min(#{pxtorem(480)}, 95vw);
     max-width: 95vw;
-    border: 1px solid var(--c-border);
 
     // A flyout that floats over the picture (floating.js): it starts left of the buttons at the
     // top right, is dragged by its handle and scrolls inside when it is taller than the window.
@@ -21,7 +27,6 @@
         left: auto;
         max-height: calc(100vh - var(--app-top) - var(--app-bottom));
         overflow-y: auto;
-        box-shadow: var(--shadow);
 
         // In a narrow window it starts across the window instead of beside the buttons.
         @media (max-width: 524px) {
@@ -169,7 +174,10 @@
     gap: #{pxtorem(6)};
     border: 1px solid transparent;
     border-radius: var(--radius-medium);
-    padding: #{pxtorem(9)} #{pxtorem(14)} #{pxtorem(5)};
+    // The system font sits in the middle of its line box: the same space above and below, and
+    // more at the sides.
+    padding: #{pxtorem(10)} #{pxtorem(20)};
+    line-height: 1.25;
     cursor: pointer;
     background: var(--c-background-raised);
     color: var(--c-copy);

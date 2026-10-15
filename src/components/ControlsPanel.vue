@@ -6,7 +6,7 @@
   </div>
 
         <!-- The settings float over the picture: dragged by the handle, their place is remembered. -->
-        <div v-if="!collapsed" ref="panel" class="flyout flyout--floating" :class="{ 'flyout--dragging': dragging }" :style="style">
+        <div v-if="!collapsed" ref="panel" class="card flyout flyout--floating" :class="{ 'flyout--dragging': dragging }" :style="style">
           <div class="flyout__handle" :title="t('Drag to move the settings')" @pointerdown="startDrag"></div>
           <button class="flyout__close" type="button" :title="t('Close')" :aria-label="t('Close the settings')" @click="layout.toggle('controls')">
             <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">

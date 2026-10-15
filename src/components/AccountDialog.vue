@@ -1,5 +1,5 @@
 <template>
-  <dialog ref="dialog" class="panel account" aria-labelledby="account-title" @close="close">
+  <dialog ref="dialog" class="card panel account" aria-labelledby="account-title" @close="close">
     <template v-if="account.user">
       <h2 id="account-title" class="account__title">{{ t('Account') }}</h2>
       <p class="account__line">{{ account.user.email }}</p>

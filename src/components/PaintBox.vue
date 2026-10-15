@@ -1,5 +1,5 @@
 <template>
-  <dialog ref="dialog" class="panel paintbox" aria-labelledby="paintbox-title" @click="onBackdrop" @close="onClose">
+  <dialog ref="dialog" class="card panel paintbox" aria-labelledby="paintbox-title" @click="onBackdrop" @close="onClose">
     <div class="paintbox__body">
       <header class="paintbox__header">
         <h2 id="paintbox-title" class="panel__title">{{ layerMode ? t('Paint box: base paints') : t('Paint box') }}</h2>

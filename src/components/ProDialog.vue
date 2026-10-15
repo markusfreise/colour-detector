@@ -1,5 +1,5 @@
 <template>
-  <dialog ref="dialog" class="panel pro" aria-labelledby="pro-title" @close="pro.dismiss()">
+  <dialog ref="dialog" class="card panel pro" aria-labelledby="pro-title" @close="pro.dismiss()">
     <h2 id="pro-title" class="pro__title">{{ t('Unlock everything') }}</h2>
     <!-- In the app: one purchase through the App Store. -->
     <template v-if="isNative">

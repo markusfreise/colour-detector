@@ -29,61 +29,90 @@ const OAUTH = [
 // --- Link by e-mail ---------------------------------------------------------------------------
 
 /**
- * The sign-in mail as plain text and HTML. A full letter with sender and reason reads less like
- * spam to filters and people than a bare link.
- * @return array{0: string, 1: string}
+ * The sign-in mail as subject, plain text and HTML, in English or German ($lang as the app sent
+ * it). A full letter with sender and reason reads less like spam to filters and people than a
+ * bare link.
+ * @return array{0: string, 1: string, 2: string}
  */
-function signInMail(string $link): array
+function signInMail(string $link, string $lang = 'en'): array
 {
     $minutes = MAGIC_MINUTES;
     $host = (string) parse_url((string) config('app_url'), PHP_URL_HOST);
+    $w = $lang === 'de' ? [
+        'lang' => 'de',
+        'subject' => 'Dein Anmeldelink für Watercolourlove',
+        'hello' => 'Hallo,',
+        'intro' => 'hier ist dein Link, um dich bei Watercolourlove anzumelden',
+        'open' => "Öffne ihn auf dem Gerät und in dem Browser, in dem du ihn angefordert hast. Er gilt einmal und $minutes Minuten lang.",
+        'why' => "Warum du diese Nachricht bekommst: Jemand hat diese E-Mail-Adresse eingegeben, um sich bei $host anzumelden. Wenn du das nicht warst, kannst du diese Nachricht ignorieren. Ohne den Link kann sich niemand mit deiner Adresse anmelden.",
+        'about' => 'Watercolourlove findet die Hauptfarben eines Fotos und zeigt, wie du jede davon aus deinen eigenen Aquarellfarben mischst. Deine Bilder bleiben in deinem Browser und werden nie hochgeladen.',
+        'questions' => 'Fragen? Antworte auf diese Nachricht oder schreib an',
+        'address' => 'Markus Freise, Weststraße 48, 33615 Bielefeld, Deutschland',
+        'addressHtml' => 'Markus Freise, Weststra&szlig;e 48, 33615 Bielefeld, Deutschland',
+        'button' => 'Bei Watercolourlove anmelden',
+        'fallback' => 'Wenn der Button nicht funktioniert, kopier diese Adresse in deinen Browser:',
+    ] : [
+        'lang' => 'en',
+        'subject' => 'Your sign-in link for Watercolourlove',
+        'hello' => 'Hello,',
+        'intro' => 'here is your link to sign in to Watercolourlove',
+        'open' => "Open it on the device and in the browser where you asked for it. It works once and for $minutes minutes.",
+        'why' => "Why you get this message: someone entered this e-mail address to sign in at $host. If that was not you, you can ignore this message. Without the link nobody can sign in with your address.",
+        'about' => 'Watercolourlove finds the main colours of a photo and shows how to mix each of them from your own watercolours. Your pictures stay in your browser and are never uploaded.',
+        'questions' => 'Questions? Reply to this message or write to',
+        'address' => 'Markus Freise, Weststrasse 48, 33615 Bielefeld, Germany',
+        'addressHtml' => 'Markus Freise, Weststra&szlig;e 48, 33615 Bielefeld, Germany',
+        'button' => 'Sign in to Watercolourlove',
+        'fallback' => 'If the button does not work, copy this address into your browser:',
+    ];
     $text = <<<TEXT
-        Hello,
+        {$w['hello']}
 
-        here is your link to sign in to Watercolourlove:
+        {$w['intro']}:
 
         $link
 
-        Open it on the device and in the browser where you asked for it. It works once and for $minutes minutes.
+        {$w['open']}
 
-        Why you get this message: someone entered this e-mail address to sign in at $host. If that was not you, you can ignore this message. Without the link nobody can sign in with your address.
+        {$w['why']}
 
-        Watercolourlove finds the main colours of a photo and shows how to mix each of them from your own watercolours. Your pictures stay in your browser and are never uploaded.
+        {$w['about']}
 
-        Questions? Reply to this message or write to support@markus-freise.de.
+        {$w['questions']} support@markus-freise.de.
 
         --
         Watercolourlove
-        Markus Freise, Weststrasse 48, 33615 Bielefeld, Germany
+        {$w['address']}
         https://$host/
         TEXT;
+    $h = array_map(fn (string $s) => htmlspecialchars($s, ENT_QUOTES), $w);
     $url = htmlspecialchars($link, ENT_QUOTES);
     $home = htmlspecialchars("https://$host/", ENT_QUOTES);
     $hostHtml = htmlspecialchars($host, ENT_QUOTES);
     $html = <<<HTML
         <!doctype html>
-        <html lang="en">
-        <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Sign in to Watercolourlove</title></head>
+        <html lang="{$h['lang']}">
+        <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{$h['button']}</title></head>
         <body style="margin:0;padding:0;background:#f7f4ee;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f4ee;">
         <tr><td align="center" style="padding:32px 16px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border:1px solid #e4ddd2;border-radius:12px;">
         <tr><td style="padding:32px 32px 8px;font:600 22px/1.3 Georgia,'Times New Roman',serif;color:#2a2622;">Watercolourlove</td></tr>
         <tr><td style="padding:8px 32px 0;font:16px/1.6 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#2a2622;">
-        <p style="margin:0 0 16px;">Hello,</p>
-        <p style="margin:0 0 24px;">here is your link to sign in to Watercolourlove. Open it on the device and in the browser where you asked for it. It works once and for $minutes minutes.</p>
+        <p style="margin:0 0 16px;">{$h['hello']}</p>
+        <p style="margin:0 0 24px;">{$h['intro']}. {$h['open']}</p>
         </td></tr>
         <tr><td style="padding:0 32px 24px;">
-        <a href="$url" style="display:inline-block;padding:12px 24px;background:#242424;color:#ffffff;border-radius:8px;font:600 16px/1.2 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;text-decoration:none;">Sign in to Watercolourlove</a>
+        <a href="$url" style="display:inline-block;padding:12px 24px;background:#242424;color:#ffffff;border-radius:8px;font:600 16px/1.2 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;text-decoration:none;">{$h['button']}</a>
         </td></tr>
         <tr><td style="padding:0 32px 24px;font:14px/1.6 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#6d655c;">
-        <p style="margin:0 0 16px;">If the button does not work, copy this address into your browser:<br><a href="$url" style="color:#242424;word-break:break-all;">$url</a></p>
-        <p style="margin:0 0 16px;">Why you get this message: someone entered this e-mail address to sign in at $hostHtml. If that was not you, you can ignore this message. Without the link nobody can sign in with your address.</p>
-        <p style="margin:0;">Watercolourlove finds the main colours of a photo and shows how to mix each of them from your own watercolours. Your pictures stay in your browser and are never uploaded.</p>
+        <p style="margin:0 0 16px;">{$h['fallback']}<br><a href="$url" style="color:#242424;word-break:break-all;">$url</a></p>
+        <p style="margin:0 0 16px;">{$h['why']}</p>
+        <p style="margin:0;">{$h['about']}</p>
         </td></tr>
         <tr><td style="padding:16px 32px 32px;border-top:1px solid #e4ddd2;font:13px/1.6 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#6d655c;">
-        Questions? Reply to this message or write to <a href="mailto:support@markus-freise.de" style="color:#242424;">support@markus-freise.de</a>.<br>
-        Markus Freise, Weststra&szlig;e 48, 33615 Bielefeld, Germany &middot; <a href="$home" style="color:#242424;">$hostHtml</a>
+        {$h['questions']} <a href="mailto:support@markus-freise.de" style="color:#242424;">support@markus-freise.de</a>.<br>
+        {$w['addressHtml']} &middot; <a href="$home" style="color:#242424;">$hostHtml</a>
         </td></tr>
         </table>
         </td></tr>
@@ -91,7 +120,7 @@ function signInMail(string $link): array
         </body>
         </html>
         HTML;
-    return [$text, $html];
+    return [$w['subject'], $text, $html];
 }
 
 /** Sends a message as text and HTML, with the headers mail filters look for. */
@@ -230,7 +259,9 @@ function sendMagicLink(): never
     if ($test !== null) {
         send(['sent' => true, 'link' => $link]);
     }
-    sendMail($email, 'Your sign-in link for Watercolourlove', ...signInMail($link));
+    // The language the app is shown in; English for anything else.
+    $lang = (body()['lang'] ?? '') === 'de' ? 'de' : 'en';
+    sendMail($email, ...signInMail($link, $lang));
     // The same answer whether or not the address has an account.
     send(['sent' => true]);
 }

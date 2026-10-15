@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none" stroke="#3a3530" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" font-family="'Bradley Hand', 'Segoe Print', 'Comic Sans MS', cursive">
+  <!-- Shot reference, hand-drawn: the paint box, a few paints ticked as the ones you own. -->
+  <defs>
+    <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9"/><feDisplacementMap in="SourceGraphic" scale="4"/></filter>
+  </defs>
+  <rect x="0" y="0" width="600" height="400" rx="18" fill="#fbf8f2" stroke="none"/>
+  <g filter="url(#rough)">
+    <rect x="30" y="28" width="540" height="344" rx="14"/>
+    <!-- selected paints, ticked -->
+    <rect x="60" y="62" width="480" height="96" rx="10" stroke-width="2.5"/>
+    <rect x="78" y="80" width="96" height="58" rx="7" fill="#fae98a"/>
+    <rect x="190" y="80" width="96" height="58" rx="7" fill="#f2a6cb"/>
+    <rect x="302" y="80" width="96" height="58" rx="7" fill="#9ccfee"/>
+    <path d="M98 110 l10 10 l20 -22 M210 110 l10 10 l20 -22 M322 110 l10 10 l20 -22" stroke-width="4"/>
+    <!-- the rest of the box, not ticked -->
+    <rect x="60" y="186" width="96" height="58" rx="7" fill="#f6c58a" fill-opacity="0.6"/>
+    <rect x="172" y="186" width="96" height="58" rx="7" fill="#c3a3d6" fill-opacity="0.6"/>
+    <rect x="284" y="186" width="96" height="58" rx="7" fill="#a6d39a" fill-opacity="0.6"/>
+    <rect x="396" y="186" width="96" height="58" rx="7" fill="#c9a07c" fill-opacity="0.6"/>
+    <rect x="60" y="260" width="96" height="58" rx="7" fill="#e88e7c" fill-opacity="0.6"/>
+    <rect x="172" y="260" width="96" height="58" rx="7" fill="#7f97c9" fill-opacity="0.6"/>
+    <rect x="284" y="260" width="96" height="58" rx="7" fill="#9d9790" fill-opacity="0.6"/>
+    <!-- pointer ticking one more -->
+    <path d="M430 270 l0 44 l11 -11 l9 20 l9 -4 l-9 -20 l15 0 z" fill="#fff" stroke-width="2.5"/>
+  </g>
+  <g font-size="19" fill="#3a3530" stroke="none">
+    <text x="88" y="102">112</text><text x="200" y="102">377</text><text x="312" y="102">466</text>
+  </g>
+  <text x="300" y="352" font-size="25" fill="#3a3530" stroke="none" text-anchor="middle">tick the paints in your box</text>
+</svg>

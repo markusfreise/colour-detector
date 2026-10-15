@@ -90,10 +90,19 @@
         }
     }
 
-    // A card like the settings panel, at most 400 px wide.
+    // A card like the settings panel: signing in on the left (at most 400 px of it, as before),
+    // how the app works on the right; one above the other in a narrow window.
     &__card {
         pointer-events: auto;
-        width: min(#{pxtorem(400)}, 100%);
+        display: grid;
+        grid-template-columns: minmax(0, #{pxtorem(352)}) minmax(0, 1fr);
+        gap: var(--gap-2x);
+        width: min(#{pxtorem(880)}, 100%);
+
+        @media (max-width: 760px) {
+            grid-template-columns: minmax(0, 1fr);
+            width: min(#{pxtorem(400)}, 100%);
+        }
         padding: var(--gap-15x);
         border: 1px solid var(--c-border);
         border-radius: var(--radius);
@@ -215,5 +224,55 @@
     &__text a,
     &__check a {
         color: var(--c-corporate);
+    }
+
+    &__how {
+        @media (max-width: 760px) {
+            padding-top: var(--gap-15x);
+            border-top: 1px solid var(--c-border);
+        }
+    }
+
+    &__how-title {
+        margin-bottom: var(--gap);
+        color: var(--c-head);
+        font-size: var(--fs-hl-small);
+        font-weight: 700;
+    }
+
+    &__steps {
+        display: grid;
+        gap: var(--gap);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: step;
+    }
+
+    // One row per step: the picture, and the headline beside it.
+    &__step {
+        counter-increment: step;
+        display: grid;
+        grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+        align-items: center;
+        gap: var(--gap);
+    }
+
+    &__step-title {
+        order: 2;
+        color: var(--c-head);
+        font-size: var(--fs-copy);
+        font-weight: 600;
+
+        &::before {
+            content: counter(step) ". ";
+        }
+    }
+
+    &__step-image {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: var(--radius-medium);
     }
 }

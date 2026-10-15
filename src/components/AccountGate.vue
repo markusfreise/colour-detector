@@ -13,6 +13,7 @@
       <img class="gate__photo" :class="{ 'gate__photo--shown': photoShown }" :src="photo ?? undefined" alt="" />
     </div>
     <section class="panel gate__card" aria-labelledby="gate-title">
+      <div class="gate__main">
       <!-- The logo in the colour of the text, so it reads in light and dark. -->
       <h1 id="gate-title" class="gate__title">
         <span class="gate__logo" role="img" :aria-label="APP_NAME" v-html="logo"></span>
@@ -74,6 +75,19 @@
         <a href="terms/">Terms</a>
         <a href="imprint/">Imprint</a>
       </footer>
+      </div>
+
+      <!-- What the app does, in three steps. The pictures are hand-drawn sketches for now, to be
+           replaced by screenshots taken after them. -->
+      <aside class="gate__how" aria-labelledby="how-title">
+        <h2 id="how-title" class="gate__how-title">How this works</h2>
+        <ol class="gate__steps">
+          <li v-for="step in steps" :key="step.title" class="gate__step">
+            <h3 class="gate__step-title">{{ step.title }}</h3>
+            <img class="gate__step-image" :src="step.image" :alt="step.alt" loading="lazy" />
+          </li>
+        </ol>
+      </aside>
     </section>
   </main>
 </template>
@@ -88,6 +102,15 @@ import PaintingCanvas from './PaintingCanvas.vue'
 import { APP_NAME } from '../config.js'
 import logoSvg from '../../resources/logo.svg?raw'
 import background from '../../resources/background.webp'
+import stepPhoto from '../../resources/howto/step-1-photo.svg'
+import stepPaints from '../../resources/howto/step-2-paints.svg'
+import stepMixes from '../../resources/howto/step-3-mixes.svg'
+
+const steps = [
+  { title: 'Choose a reference photo', image: stepPhoto, alt: 'A photo chosen from the device opens in the app' },
+  { title: 'Pick the paints you own', image: stepPaints, alt: 'The paint box with the paints you own ticked' },
+  { title: 'Get a recipe for every colour', image: stepMixes, alt: 'The photo as numbered areas, with the recipe of one area' },
+]
 
 const account = useAccountStore()
 const logo = logoSvg.replace(/fill="black"/g, 'fill="currentColor"')

@@ -130,6 +130,13 @@
         font-weight: 600;
     }
 
+    // "Fit" and "Detail" are written out, as tall as the icon buttons beside them.
+    &__tool--text {
+        height: #{pxtorem(48)};
+        padding-block: 0;
+        font-weight: 600;
+    }
+
     // The view buttons are as large as the buttons beside them (48 px, as .button with an icon).
     &__tools .segmented {
         display: flex;
@@ -176,7 +183,8 @@
             height: #{pxtorem(30)};
         }
 
-        &__tools .painting__pro {
+        &__tools .painting__pro,
+        &__tools .painting__tool--text {
             width: auto;
             padding-inline: #{pxtorem(10)};
         }

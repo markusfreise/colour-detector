@@ -44,20 +44,20 @@
       <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(false, 'use everything')">
         {{ t('Get pro') }}
       </button>
-      <button class="button button--ghost painting__tool" type="button" :data-hint="t('Fit to window')" @click="fit">
-        <AppIcon name="zoom" :label="t('Fit the picture to the window')" />
+      <button class="button button--ghost painting__tool painting__tool--text" type="button" :aria-label="t('Fit the picture to the window')" @click="fit">
+        {{ t('Fit') }}
       </button>
       <!-- A frame drawn on the base picture becomes a close-up: that part, analysed on its own. -->
       <button
         v-if="analysis.image && analysis.closeupId == null"
-        class="button button--ghost painting__tool"
+        class="button button--ghost painting__tool painting__tool--text"
         :class="{ 'painting__tool--on': framing }"
         type="button"
         :aria-pressed="framing"
-        :data-hint="framing ? t('Cancel') : t('Zoom in on a part')"
+        :aria-label="framing ? t('Cancel choosing a part of the picture') : t('Zoom in on a part of the picture')"
         @click="framing = !framing"
       >
-        <AppIcon name="frame" :label="framing ? t('Cancel choosing a part of the picture') : t('Zoom in on a part of the picture')" />
+        {{ t('Detail') }}
       </button>
       <ViewSwitch />
       <!-- What is drawn over the picture. -->

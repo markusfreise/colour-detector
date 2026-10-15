@@ -5,10 +5,6 @@
       <AppIcon name="new" />
       <input class="imageops__file" type="file" accept="image/*" :aria-label="t('New: choose a photo')" @change="onFile" />
     </label>
-    <label v-if="hasCamera" class="button button--secondary imageops__button" :data-hint="t('Take photo')">
-      <AppIcon name="camera" :label="t('Take photo')" />
-      <input class="imageops__file" type="file" accept="image/*" capture="environment" @change="onFile" />
-    </label>
     <button class="button button--ghost imageops__button" type="button" :data-hint="t('Samples')" @click="emit('show-samples')">
       <AppIcon name="sample" :label="t('Samples')" />
     </button>
@@ -42,8 +38,6 @@ const emit = defineEmits(['show-collection', 'show-samples', 'export-picture'])
 const analysis = useAnalysisStore()
 const collection = useCollectionStore()
 const usePro = useProStore()
-// "Take photo" opens the camera directly; that only exists on phones and tablets.
-const hasCamera = window.matchMedia?.('(pointer: coarse)').matches ?? false
 
 // Something to print: colours in mix mode, a plan of layers in layer mode.
 const printable = computed(() => (analysis.layerMode ? !!analysis.layers : analysis.entries.length > 0))

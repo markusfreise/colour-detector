@@ -22,6 +22,7 @@
 		65463BE553374D6DF4E6A6C6 /* paints.json in Resources */ = {isa = PBXBuildFile; fileRef = 8788D8484C64CC1D8903CEB9 /* paints.json */; };
 		65B833B17CD6F607CFCEDA28 /* ControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7B495A2BAF310A1C108D64 /* ControlsView.swift */; };
 		66A7743790C685F5429FF454 /* Chips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87296F931B6A9A109A7B4034 /* Chips.swift */; };
+		67ECE1998F4F1FEBDA7F81A4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = C7411F82982E30BD872CFA1D /* PrivacyInfo.xcprivacy */; };
 		71A2DDA4E6749EA358D4B798 /* PrintSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1666D7EF3E8CFF24D1701111 /* PrintSheet.swift */; };
 		81A21B5FFCD70DF3364506F1 /* PaintingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FAFE6C95A7F6FEC107EE34 /* PaintingView.swift */; };
 		81B99924D9202730F619BC56 /* TintmapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456DE57C0B14DB6899F88B6D /* TintmapApp.swift */; };
@@ -101,6 +102,7 @@
 		AB0AA53A5C4E23C7CBE285A4 /* CoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreTests.swift; sourceTree = "<group>"; };
 		B109472B40B4521D32321613 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		BBE0247E9C5E76434A1C38F2 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
+		C7411F82982E30BD872CFA1D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C7702DDF72F030A5B9C77A00 /* Layers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layers.swift; sourceTree = "<group>"; };
 		D4915A96F23A0DBED72F67AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E146CB5185264552F900263F /* sample-winter-fields.webp */ = {isa = PBXFileReference; path = "sample-winter-fields.webp"; sourceTree = "<group>"; };
@@ -211,6 +213,7 @@
 			isa = PBXGroup;
 			children = (
 				D4915A96F23A0DBED72F67AF /* Assets.xcassets */,
+				C7411F82982E30BD872CFA1D /* PrivacyInfo.xcprivacy */,
 				3DFFC95256435BC899577D89 /* Data */,
 			);
 			path = Resources;
@@ -319,6 +322,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52512884CA5ADE64FB762589 /* Assets.xcassets in Resources */,
+				67ECE1998F4F1FEBDA7F81A4 /* PrivacyInfo.xcprivacy in Resources */,
 				FC643AE81E06F4C389B206BF /* horadam.json in Resources */,
 				65463BE553374D6DF4E6A6C6 /* paints.json in Resources */,
 				8FE8644EABB8F2F22032F7AB /* sample-bielefeld.webp in Resources */,

@@ -472,4 +472,6 @@ export default {
   'Sign up': 'Jetzt registrieren',
   'Sign in with account': 'Jetzt anmelden',
   'Create my account': 'Konto anlegen',
+  // Menu button on a phone (App)
+  Menu: 'Menü',
 }

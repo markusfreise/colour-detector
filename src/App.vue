@@ -11,12 +11,21 @@
       <div class="app__stage">
         <PaintingCanvas ref="painting" @show-samples="sampleDialog.open()" />
       </div>
-      <div class="app__left">
-        <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
-        <!-- The account, and the preferences (language, light or dark) with or without one. -->
-        <button class="button button--ghost" type="button" :data-hint="account.enabled ? t('Account') : t('Preferences')" @click="account.open = true">
-          <AppIcon name="user" :label="account.enabled ? t('Account') : t('Preferences')" />
-        </button>
+      <!-- On a phone the column is folded away behind a menu button; "Get pro" comes with it. -->
+      <div class="app__left" :class="{ 'app__left--open': menuOpen }">
+        <div class="app__menu">
+          <button class="button button--ghost app__burger" type="button" :aria-expanded="menuOpen" :data-hint="t('Menu')" @click="menuOpen = !menuOpen">
+            <AppIcon name="menu" :label="t('Menu')" />
+          </button>
+          <button v-if="!pro.active" class="button button--secondary app__menu-pro" type="button" @click="getPro">{{ t('Get pro') }}</button>
+        </div>
+        <div class="app__left-buttons" @click="menuOpen = false">
+          <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
+          <!-- The account, and the preferences (language, light or dark) with or without one. -->
+          <button class="button button--ghost" type="button" :data-hint="account.enabled ? t('Account') : t('Preferences')" @click="account.open = true">
+            <AppIcon name="user" :label="account.enabled ? t('Account') : t('Preferences')" />
+          </button>
+        </div>
       </div>
       <div class="app__top">
         <LayerSteps />
@@ -100,8 +109,14 @@ const painting = ref(null)
 const breakdown = ref(null)
 const collectionDialog = ref(null)
 const sampleDialog = ref(null)
+// Phone: the left column is shown with the menu button.
+const menuOpen = ref(false)
 // Right after signing in (and agreeing, the first time) the plans come up once, unless they are paid for.
 const pro = useProStore()
+function getPro() {
+  menuOpen.value = false
+  pro.require(false, 'use everything')
+}
 watch(
   () => account.ready && account.welcome && account.loaded,
   (show) => {

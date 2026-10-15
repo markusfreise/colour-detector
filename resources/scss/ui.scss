@@ -115,8 +115,11 @@
         flex: none;
         justify-content: flex-start;
         align-items: stretch;
-        // Clipped only in height: the labels of the buttons slide out to the left.
+        // Clipped only in height: the labels of the buttons slide out to the left. A little room
+        // above and below, taken back by the margin, keeps the edges and shadows of the buttons.
         overflow-y: clip;
+        padding-block: #{pxtorem(4)};
+        margin-block: #{pxtorem(-4)};
         &:has(.flyout) {
             max-width: calc(#{pxtorem(780)});
             overflow: visible;

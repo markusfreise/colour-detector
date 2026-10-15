@@ -119,8 +119,12 @@
         cursor: default;
     }
 
-    // As tall as the icon buttons beside it.
+    // As tall as the icon buttons beside it. On a phone it sits beside the menu button instead.
     &__pro {
+        @media (max-width: 760px) {
+            display: none;
+        }
+
         height: #{pxtorem(48)};
         padding-block: 0;
         font-weight: 600;

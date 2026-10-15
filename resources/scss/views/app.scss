@@ -62,8 +62,48 @@
 
     // A narrow window: the buttons of the picture are at the bottom (painting.scss), so nothing
     // is kept free for them at the top, and what is centred at the bottom lies above them.
+    // The menu button and "Get pro" beside it: only on a phone.
+    &__menu {
+        display: none;
+        align-items: center;
+        gap: var(--gap-05x);
+    }
+
+    &__left-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap);
+    }
+
     @media (max-width: 760px) {
         --app-tools: 0rem;
+
+        &__menu {
+            display: flex;
+        }
+
+        // Folded: the buttons slide out to the left, and come back with the menu button.
+        &__left-buttons {
+            transform: translateX(calc(-100% - var(--app-left) - var(--gap)));
+            visibility: hidden;
+            transition: transform 0.25s ease, visibility 0s linear 0.25s;
+        }
+
+        &__left--open &__left-buttons {
+            transform: none;
+            visibility: visible;
+            transition: transform 0.25s ease, visibility 0s;
+        }
+
+        &__menu-pro {
+            display: none;
+            height: #{pxtorem(48)};
+            font-weight: 600;
+        }
+
+        &__left--open &__menu-pro {
+            display: inline-flex;
+        }
 
         &__bottom {
             bottom: calc(var(--app-bottom) + #{pxtorem(28 + 48)} + var(--gap-05x));

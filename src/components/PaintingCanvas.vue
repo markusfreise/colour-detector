@@ -107,9 +107,11 @@ import { APP_NAME } from '../config.js'
 const SCALE = 2 // canvas pixels per working pixel – keeps outlines and numbers crisp
 const MIN_LABEL_DIST = 5 // only number areas with enough room for a label
 const BLANK = [255, 255, 255] // paper
-// The Template view: lines and numbers light enough to disappear under the paint.
-const TEMPLATE_LINE = 196
-const TEMPLATE_NUMBER = '#a6a6a6'
+// The Template view: lines and numbers light enough to disappear under the paint. Light blue with
+// full blue and so no yellow: nothing a printer could print with its black ink, which is not
+// soluble in water and would stay visible under the paint.
+const TEMPLATE_LINE = [150, 210, 255]
+const TEMPLATE_NUMBER = '#50a0ff'
 
 // As the background behind signing in: the picture covers the window and only shows the recipe
 // under the pointer; no tools, no moving, zooming or picking.
@@ -324,7 +326,7 @@ function drawMixes(el) {
   const ctx = el.getContext('2d')
   const { view, outlines, numbers } = analysis.settings
   const original = view === 'original'
-  // Nothing filled in: the paper with the areas and their numbers in light grey, to print and paint on.
+  // Nothing filled in: the paper with the areas and their numbers in light blue, to print and paint on.
   const template = view === 'template'
   // An outline runs through the canvas pixels that have another area to their right or below.
   const onOutline = (p, x, y) => (x < w - 1 && entryOf[p] !== entryOf[p + 1]) || (y < h - 1 && entryOf[p] !== entryOf[p + w])
@@ -349,7 +351,7 @@ function drawMixes(el) {
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
         const p = y * w + x
-        if (onOutline(p, x, y)) img[p * 4] = img[p * 4 + 1] = img[p * 4 + 2] = TEMPLATE_LINE
+        if (onOutline(p, x, y)) img.set(TEMPLATE_LINE, p * 4)
       }
     }
     ctx.putImageData(new ImageData(img, w, h), 0, 0)

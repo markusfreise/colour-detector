@@ -10,6 +10,9 @@ extension Color {
     static func ink(on hex: String) -> Color {
         ColorMath.prefersDarkText(on: hex) ? Color(hex: "#1d1b18") : .white
     }
+
+    /// Numbers of the template: light blue without yellow, so a printer uses no black ink.
+    static let templateNumber = Color(hex: "#50a0ff")
 }
 
 extension CGColor {

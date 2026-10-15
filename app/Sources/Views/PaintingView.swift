@@ -258,7 +258,7 @@ extension Session {
             guard entries.indices.contains(index), onPhoto || isShown(index) else { return nil }
             let color: Color = switch settings.view {
             case .original: .white
-            case .template: Color(white: 0.6)
+            case .template: Color.templateNumber
             default: Color.ink(on: displayHex(entries[index]))
             }
             return NumberedPicture.Label(

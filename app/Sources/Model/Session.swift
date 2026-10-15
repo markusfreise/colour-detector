@@ -1165,11 +1165,12 @@ final class Session {
             } }
         }
 
-        // The template always has its outlines, in light grey: they are what is painted into.
+        // The template always has its outlines, in light blue: they are what is painted into. Full
+        // blue and no yellow, so a printer uses no black ink, which water does not dissolve.
         if settings.outlines || settings.view == .template {
             let line: (Double, Double, Double, Double) = switch settings.view {
             case .original: (255, 255, 255, 0.75)
-            case .template: (150, 150, 150, 0.8)
+            case .template: (150, 210, 255, 1)
             default: (40, 36, 30, 0.55)
             }
             out.withUnsafeMutableBufferPointer { out in

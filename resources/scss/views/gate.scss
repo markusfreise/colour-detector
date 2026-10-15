@@ -1,4 +1,5 @@
 @use "../functions" as *;
+@use "../mixins" as *;
 
 // Signing in and the two statements, before the app opens.
 
@@ -22,7 +23,7 @@
         pointer-events: auto;
 
         // In dark mode the light picture is dimmed, so it does not glare around the card.
-        @media (prefers-color-scheme: dark) {
+        @include dark {
             &::after {
                 content: "";
                 position: absolute;

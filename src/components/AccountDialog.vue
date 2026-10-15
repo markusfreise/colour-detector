@@ -36,6 +36,41 @@
         <button v-else class="account__link" type="button" @click="confirming = true">Delete account</button>
       </div>
     </template>
+    <h2 v-else id="account-title" class="account__title">{{ t('Preferences') }}</h2>
+
+    <!-- Kept in this browser, with or without an account. -->
+    <section class="account__preferences" :aria-label="t('Preferences')">
+      <h3 v-if="account.user" class="account__preferences-title">{{ t('Preferences') }}</h3>
+      <span id="pref-language">{{ t('Language') }}</span>
+      <div class="segmented segmented--text" role="group" aria-labelledby="pref-language">
+        <button
+          v-for="option in languages"
+          :key="option.value"
+          type="button"
+          class="segmented__option"
+          :class="{ 'segmented__option--active': preferences.language === option.value }"
+          :aria-pressed="preferences.language === option.value"
+          @click="preferences.set({ language: option.value })"
+        >
+          {{ option.label }}
+        </button>
+      </div>
+      <span id="pref-theme">{{ t('Appearance') }}</span>
+      <div class="segmented segmented--text" role="group" aria-labelledby="pref-theme">
+        <button
+          v-for="option in themes"
+          :key="option.value"
+          type="button"
+          class="segmented__option"
+          :class="{ 'segmented__option--active': preferences.theme === option.value }"
+          :aria-pressed="preferences.theme === option.value"
+          @click="preferences.set({ theme: option.value })"
+        >
+          {{ option.label }}
+        </button>
+      </div>
+    </section>
+
     <div class="account__actions account__actions--end">
       <button class="button button--ghost" type="button" @click="dialog.close()">Close</button>
     </div>
@@ -47,11 +82,26 @@ import { computed, ref, watch } from 'vue'
 import { useAccountStore } from '../stores/account.js'
 import { useProStore, FREE_PAINTS } from '../stores/pro.js'
 import { paidUntil } from '../lib/account.js'
+import { usePreferencesStore } from '../stores/preferences.js'
+import { useText } from '../i18n/index.js'
 
 const account = useAccountStore()
 const pro = useProStore()
 const dialog = ref(null)
 const confirming = ref(false)
+const preferences = usePreferencesStore()
+const { t } = useText()
+// Each language under its own name, so that it is found whichever one is set.
+const languages = computed(() => [
+  { value: 'auto', label: t('Automatic') },
+  { value: 'en', label: 'English' },
+  { value: 'de', label: 'Deutsch' },
+])
+const themes = computed(() => [
+  { value: 'auto', label: t('Automatic') },
+  { value: 'light', label: t('Light') },
+  { value: 'dark', label: t('Dark') },
+])
 
 const lifetime = computed(() => account.plans.some((plan) => plan.id === 'lifetime'))
 const planText = computed(() => {

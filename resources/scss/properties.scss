@@ -1,7 +1,7 @@
 @use "functions" as *;
 
-// Design tokens as CSS custom properties. Light is the default,
-// prefers-color-scheme switches to the dark values.
+// Design tokens as CSS custom properties. Light is the default; dark follows the system, or the
+// choice in the preferences.
 
 :root {
     // Form controls, dialogs and scrollbars of the browser follow the scheme too.
@@ -71,25 +71,39 @@
     --shadow-flat: 0 #{pxtorem(1)} #{pxtorem(3)} rgba(0, 0, 0, 0.18);
 }
 
+// The dark values, from the system or chosen in the preferences ("data-theme" on <html>).
+@mixin dark-tokens {
+    --c-background: #1b1a18;
+    --c-background-raised: #252321;
+    --c-copy: #eee9e1;
+    --c-copy-light: #a89f94;
+    --c-corporate: #eee9e1;
+    --c-corporate-soft: #33302c;
+    --c-success: #74b98a;
+    --c-warning: #d9a548;
+    --c-danger: #e8796d;
+    --c-border: #3a3632;
+    --c-border-light: #2e2b28;
+    --c-button-border: var(--c-copy);
+    --c-chip-border: #5a544d;
+    --c-on-corporate: #1b1a18;
+    --c-on-danger: #1b1a18;
+    --c-backdrop: rgba(0, 0, 0, 0.6);
+    --shadow: 0 #{pxtorem(8)} #{pxtorem(30)} rgba(0, 0, 0, 0.5);
+    --shadow-flat: 0 #{pxtorem(1)} #{pxtorem(3)} rgba(0, 0, 0, 0.5);
+}
+
 @media (prefers-color-scheme: dark) {
-    :root {
-        --c-background: #1b1a18;
-        --c-background-raised: #252321;
-        --c-copy: #eee9e1;
-        --c-copy-light: #a89f94;
-        --c-corporate: #eee9e1;
-        --c-corporate-soft: #33302c;
-        --c-success: #74b98a;
-        --c-warning: #d9a548;
-        --c-danger: #e8796d;
-        --c-border: #3a3632;
-        --c-border-light: #2e2b28;
-        --c-button-border: var(--c-copy);
-        --c-chip-border: #5a544d;
-        --c-on-corporate: #1b1a18;
-        --c-on-danger: #1b1a18;
-        --c-backdrop: rgba(0, 0, 0, 0.6);
-        --shadow: 0 #{pxtorem(8)} #{pxtorem(30)} rgba(0, 0, 0, 0.5);
-        --shadow-flat: 0 #{pxtorem(1)} #{pxtorem(3)} rgba(0, 0, 0, 0.5);
+    :root:not([data-theme="light"]) {
+        @include dark-tokens;
     }
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    @include dark-tokens;
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
 }

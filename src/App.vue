@@ -13,8 +13,9 @@
       </div>
       <div class="app__left">
         <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
-        <button v-if="account.enabled" class="button button--ghost" type="button" data-hint="Account" @click="account.open = true">
-          <AppIcon name="user" label="Account" />
+        <!-- The account, and the preferences (language, light or dark) with or without one. -->
+        <button class="button button--ghost" type="button" :data-hint="account.enabled ? 'Account' : 'Preferences'" @click="account.open = true">
+          <AppIcon name="user" :label="account.enabled ? 'Account' : 'Preferences'" />
         </button>
       </div>
       <div class="app__top">
@@ -52,7 +53,7 @@
     <CollectionDialog ref="collectionDialog" />
     <SampleDialog ref="sampleDialog" />
     <ProDialog />
-    <AccountDialog v-if="account.enabled" />
+    <AccountDialog />
     <ConsentBanner />
   </div>
 </template>

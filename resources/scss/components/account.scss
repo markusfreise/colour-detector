@@ -45,6 +45,25 @@
         }
     }
 
+    &__preferences {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        align-items: center;
+        gap: #{pxtorem(10)} var(--gap);
+        margin-top: var(--gap);
+        padding-top: #{pxtorem(12)};
+        border-top: 1px solid var(--c-border);
+    }
+
+    &__preferences .segmented {
+        justify-self: start;
+    }
+
+    &__preferences-title {
+        grid-column: 1 / -1;
+        font-weight: 650;
+    }
+
     &__danger {
         margin-top: var(--gap);
         padding-top: #{pxtorem(12)};

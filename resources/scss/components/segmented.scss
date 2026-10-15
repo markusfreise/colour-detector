@@ -53,6 +53,16 @@
         }
     }
 
+    // Words instead of icons: as wide as the word.
+    &--text {
+        display: inline-flex;
+    }
+    &--text &__option {
+        aspect-ratio: auto;
+        padding: #{pxtorem(8)} #{pxtorem(14)} #{pxtorem(5)};
+        font: inherit;
+    }
+
     &--fill &__option {
         flex: 1 1 0;
         min-width: 0;

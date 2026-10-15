@@ -31,13 +31,14 @@ struct RootView: View {
     var body: some View {
         stage
             .overlay(alignment: .topLeading) { pictureButtons.padding(Theme.gap) }
-            .overlay(alignment: .topTrailing) { panels }
             .overlay(alignment: compact ? .bottom : .top) { tools.padding(Theme.gap) }
+            // Above the rest that lies over the picture: the cards float over the whole window.
+            .overlay(alignment: .topTrailing) { panels }
             .overlay(alignment: .top) {
                 // A phone: one card across the window, as the web's flyout in a narrow window.
                 if compact, let tab = openTab {
                     card(tab)
-                        .frame(maxHeight: 520)
+                        .frame(maxHeight: 520, alignment: .top)
                         .padding(.horizontal, 8)
                         .padding(.top, Theme.gap)
                 }

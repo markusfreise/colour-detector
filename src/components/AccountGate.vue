@@ -13,7 +13,23 @@
       <img class="gate__photo" :class="{ 'gate__photo--shown': photoShown }" :src="photo ?? undefined" alt="" />
     </div>
     <!-- Once the link is sent, the card is only the logo, the message and the links at the bottom. -->
-    <section class="panel gate__card" :class="{ 'gate__card--sent': account.sentTo && !account.user }" aria-labelledby="gate-title">
+    <section class="card panel gate__card" :class="{ 'gate__card--sent': account.sentTo && !account.user }" aria-labelledby="gate-title">
+      <!-- The language, before anything else is read. Each under its own name. -->
+      <div class="gate__languages" role="group" :aria-label="t('Language')">
+        <button
+          v-for="language in ['en', 'de']"
+          :key="language"
+          class="gate__language"
+          :class="{ 'gate__language--active': preferences.locale === language }"
+          type="button"
+          :lang="language"
+          :aria-pressed="preferences.locale === language"
+          :title="language === 'de' ? 'Deutsch' : 'English'"
+          @click="preferences.set({ language })"
+        >
+          {{ language.toUpperCase() }}
+        </button>
+      </div>
       <div class="gate__main">
       <!-- The logo in the colour of the text, so it reads in light and dark. -->
       <h1 id="gate-title" class="gate__title">
@@ -136,10 +152,12 @@ import stepPhoto from '../../resources/howto/step-1-photo.svg'
 import stepPaints from '../../resources/howto/step-2-paints.svg'
 import stepMixes from '../../resources/howto/step-3-mixes.svg'
 import { useConsentStore } from '../stores/consent.js'
+import { usePreferencesStore } from '../stores/preferences.js'
 import { useText } from '../i18n/index.js'
 
 const { t, legalPage } = useText()
 const consent = useConsentStore()
+const preferences = usePreferencesStore()
 const steps = [
   { title: 'Choose a reference photo', image: stepPhoto, alt: 'A photo chosen from the device opens in the app' },
   { title: 'Add the colours and paints you use', image: stepPaints, alt: 'The paint box with the paints you own ticked' },

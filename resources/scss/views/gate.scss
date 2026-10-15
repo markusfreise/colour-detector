@@ -103,6 +103,8 @@
         @media (max-width: 760px) {
             grid-template-columns: minmax(0, 1fr);
             width: min(#{pxtorem(400)}, 100%);
+            // Room above the logo for the language switch.
+            padding-top: calc(var(--gap-15x) + #{pxtorem(20)});
         }
 
         // The link is sent: one column, as wide as the left one.
@@ -111,11 +113,42 @@
             width: min(#{pxtorem(352)} + var(--gap-15x) * 2, 100%);
         }
         padding: var(--gap-15x);
-        border: 1px solid var(--c-border);
-        border-radius: var(--radius);
-        background: var(--c-background-raised);
-        color: var(--c-copy);
-        box-shadow: var(--shadow);
+    }
+
+    // EN | DE in the top right corner of the card.
+    &__languages {
+        position: absolute;
+        top: var(--gap-05x);
+        right: var(--gap-05x);
+        display: flex;
+        gap: #{pxtorem(2)};
+    }
+
+    &__language {
+        padding: #{pxtorem(5)} #{pxtorem(8)};
+        line-height: 1.25;
+        border: 0;
+        border-radius: var(--radius-small);
+        background: none;
+        color: var(--c-copy-light);
+        font: inherit;
+        font-size: var(--fs-small);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+
+        &:hover {
+            color: var(--c-copy);
+        }
+
+        &--active {
+            background: var(--c-corporate);
+            color: var(--c-on-corporate);
+
+            &:hover {
+                color: var(--c-on-corporate);
+            }
+        }
     }
 
     &__title {

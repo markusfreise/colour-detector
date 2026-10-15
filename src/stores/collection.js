@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { toRaw } from 'vue'
 import { listImages, getImage, putImage, deleteImage, getLast, putLast } from '../lib/collectionDb.js'
 import { usePaintsStore } from './paints.js'
 import { useAnalysisStore } from './analysis.js'
@@ -56,6 +57,7 @@ export const useCollectionStore = defineStore('collection', {
           thumb: existing?.thumb ?? scaled(analysis.image, THUMB_SIZE, 'dataUrl', 0.8),
           settings: { ...analysis.settings },
           edits: analysis.exportEdits(),
+          palette: structuredClone(toRaw(usePaintsStore().palette)),
           updatedAt: Date.now(),
         })
         analysis.savedId = id
@@ -85,6 +87,7 @@ export const useCollectionStore = defineStore('collection', {
           blob: lastBlob,
           settings: { ...analysis.settings },
           edits: analysis.exportEdits(),
+          palette: structuredClone(toRaw(usePaintsStore().palette)),
           savedId: analysis.savedId ?? null,
           updatedAt: Date.now(),
         })

@@ -76,3 +76,24 @@ export function groupPaints(paints, shown = null) {
     })
     .filter((group) => group.size)
 }
+
+/** The paints of a paint box in their order: the travel box by its places, every other by colour. */
+export function sortBoxPaints(box, paints) {
+  if (box.id !== 'travelbox') return sortPaints(paints)
+  return [...paints].sort((a, b) => String(a.number).localeCompare(String(b.number), undefined, { numeric: true }))
+}
+
+/**
+ * The colours that match what is typed, for the colour search of a paint box: every word must be
+ * in the label (series, number, names). `options` are { label, ... }; at most `limit` come back.
+ */
+export function searchColours(options, query, limit = 40) {
+  const words = String(query).toLowerCase().split(/\s+/).filter(Boolean)
+  const found = []
+  for (const option of options) {
+    const text = option.search ?? option.label.toLowerCase()
+    if (words.every((w) => text.includes(w))) found.push(option)
+    if (found.length >= limit) break
+  }
+  return found
+}

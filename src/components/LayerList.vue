@@ -151,7 +151,7 @@ const countText = computed(() => {
 // Paints that got no layer because they would add too little to this picture.
 const unused = computed(() => result.value.layers.filter((l) => !(l.top > 0)).map((l) => paintLabel(l.paintId)))
 const unusedText = computed(() =>
-  paints.activeBox.layerAuto
+  paints.palette.layerAuto
     ? t('Not needed for this picture: {paints}.', { paints: unused.value.join(', ') })
     : t(
         unused.value.length === 1

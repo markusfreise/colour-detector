@@ -159,7 +159,7 @@ const size = computed(() => aiImageSize(analysis.pixels?.width ?? 800, analysis.
 const cents = (dollars) => `${(dollars * 100).toFixed(dollars < 0.001 ? 2 : 1)} US cents`
 const estimateText = computed(() => {
   if (!analysis.pixels) return ''
-  const pool = paints.activeBox.auto ? paints.autoCandidates : paints.enabled
+  const pool = paints.palette.auto ? paints.autoCandidates : paints.enabled
   const { usage, cost } = aiEstimate(ai.provider, ai.model, { width: analysis.pixels.width, height: analysis.pixels.height, paints: pool })
   const tokens = `about ${Math.round((usage.input + usage.output) / 100) * 100} tokens`
   return cost == null ? `${tokens}; the price depends on the model` : `${tokens}, about ${cents(cost)} on your account`

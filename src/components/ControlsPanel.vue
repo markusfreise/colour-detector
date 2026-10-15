@@ -96,11 +96,11 @@
               type="range"
               min="2"
               :max="MAX_LAYER_PAINTS"
-              :disabled="!paints.activeBox.layerAuto"
+              :disabled="!paints.palette.layerAuto"
               @change="analysis.analyse()"
             />
             <span class="field__hint">
-              {{ paints.activeBox.layerAuto ? t('Washes; accents and second coats are extra steps') : t('Chosen by hand. Auto in the paint box picks again.') }}
+              {{ paints.palette.layerAuto ? t('Washes; accents and second coats are extra steps') : t('Chosen by hand. Auto in the paint box picks again.') }}
             </span>
           </label>
     
@@ -247,7 +247,7 @@ function simplifyChanged() {
   analysis.analyse()
 }
 // On Auto the slider says how many paints to propose; by hand it shows how many were chosen.
-const layerCount = computed(() => (paints.activeBox.layerAuto ? analysis.settings.layerCount : paints.activeBox.layerIds.length))
+const layerCount = computed(() => (paints.palette.layerAuto ? analysis.settings.layerCount : paints.palette.layerIds.length))
 
 // Saturation and contrast back to the photo as it is.
 function resetAdjustment(...keys) {

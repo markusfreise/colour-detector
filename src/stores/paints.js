@@ -1,12 +1,17 @@
 import { defineStore } from 'pinia'
 import { stockPaints } from '../data/paints.js'
 import { useProStore } from './pro.js'
-import { groupPaints, sortPaints, paintGroupKeys, AUTO_OFF_DEFAULT, HOUSE_VENDOR } from '../lib/paintbox.js'
+import { groupPaints, sortPaints, AUTO_OFF_DEFAULT, HOUSE_VENDOR } from '../lib/paintbox.js'
 import { t } from '../i18n/index.js'
 
 const LEGACY_KEY = 'colour-detector:enabled-paints'
-const BOXES_KEY = 'colour-detector:boxes'
+// Before paint boxes held paints, "boxes" were named selections; the active one became the palette.
+const OLD_BOXES_KEY = 'colour-detector:boxes'
+const PALETTE_KEY = 'colour-detector:palette'
+const PAINTBOXES_KEY = 'colour-detector:paintboxes'
 const CUSTOM_KEY = 'colour-detector:custom-paints'
+// The format of an exported paint box file.
+export const BOX_FILE_FORMAT = 'watercolourlove-paintbox'
 
 // Layer mode takes at most this many base paints: every one is a layer to paint and to let dry.
 export const MAX_LAYER_PAINTS = 6
@@ -23,59 +28,76 @@ function read(key) {
   }
 }
 
-function loadBoxes() {
-  const saved = read(BOXES_KEY)
-  if (saved?.boxes?.length) {
-    // Boxes saved before Auto existed: an untouched default selection counts as Auto.
-    const defaults = defaultIds().sort().join()
-    for (const box of saved.boxes) {
-      box.auto ??= [...box.paintIds].sort().join() === defaults
-      box.layerIds ??= []
-      box.layerAuto ??= true
-      box.autoOff ??= [...AUTO_OFF_DEFAULT]
-    }
-    return saved
-  }
+/**
+ * A palette: the paints chosen for one picture. auto = the app picks them; layerIds = the base
+ * paints of layer mode, kept apart from the mix selection; autoOff = ids of the paint boxes Auto
+ * does not choose from. Fills in what older palettes lack.
+ */
+export function normalizePalette(palette) {
+  const p = { paintIds: [], layerIds: [], layerAuto: true, autoOff: [...AUTO_OFF_DEFAULT], ...palette }
+  // Palettes saved before Auto existed: an untouched default selection counts as Auto.
+  p.auto ??= [...p.paintIds].sort().join() === defaultIds().sort().join()
+  return { paintIds: [...p.paintIds], auto: p.auto, layerIds: [...p.layerIds], layerAuto: p.layerAuto, autoOff: [...p.autoOff] }
+}
+
+function loadPalette() {
+  const saved = read(PALETTE_KEY)
+  if (saved) return normalizePalette(saved)
+  const old = read(OLD_BOXES_KEY)
+  if (old?.boxes?.length) return normalizePalette(old.boxes.find((b) => b.id === old.activeId) ?? old.boxes[0])
   // First start, or a selection saved before boxes existed.
   const legacy = read(LEGACY_KEY)
-  const box = { id: 'box-1', name: 'My paint box', paintIds: legacy ?? defaultIds(), auto: !legacy, layerIds: [], layerAuto: true, autoOff: [...AUTO_OFF_DEFAULT] }
-  return { boxes: [box], activeId: box.id }
+  return normalizePalette({ paintIds: legacy ?? defaultIds(), auto: !legacy })
 }
+
+// The first paint boxes are the groups the paints used to be listed in: their ids are the keys of
+// those groups, so that the groups switched off for Auto stay off.
+const SEED_NAMES = { pan: 'Pans', tube: 'Tubes', travelbox: 'Travelbox' }
+
+function loadBoxes(paints) {
+  const saved = read(PAINTBOXES_KEY)
+  if (saved?.length) return saved
+  return groupPaints(paints).map((g) => ({ id: g.key, name: SEED_NAMES[g.key] ?? g.name, paintIds: g.paints.map((p) => p.id) }))
+}
+
+const sameNumber = (a, b) => String(a).trim().toLowerCase() === String(b).trim().toLowerCase()
+const sameVendor = (a, b) => String(a ?? '').trim().toLowerCase() === String(b ?? '').trim().toLowerCase()
 
 export const usePaintsStore = defineStore('paints', {
   state: () => {
-    const { boxes, activeId } = loadBoxes()
+    const custom = read(CUSTOM_KEY) ?? [] // paints added by the user
     return {
-      custom: read(CUSTOM_KEY) ?? [], // paints added by the user
-      // [{ id, name, paintIds, auto, layerIds, layerAuto, autoOff }] auto = the app picks the paints for each
-      // picture; layerIds = the base paints of layer mode, kept apart from the mix selection;
-      // autoOff = keys of the groups Auto does not choose from
-      boxes,
-      activeId,
-      // Behind signing in: a box of its own with the showcase paints, in place of the user's
-      // boxes while it is set, and never saved (startShowcase / endShowcase).
+      custom,
+      // The paint boxes: [{ id, name, paintIds }], the paints one owns, in sets. At least one.
+      boxes: loadBoxes([...stockPaints, ...custom]),
+      // The palette of the picture on screen (normalizePalette); saved with the picture.
+      selection: loadPalette(),
+      // Behind signing in: a palette of its own with the showcase paints, in place of the user's
+      // while it is set, and never saved (startShowcase / endShowcase).
       showcase: null,
     }
   },
   getters: {
     all: (state) => (state.showcase ? state.showcase.paints : [...stockPaints, ...state.custom]),
-    activeBox: (state) => state.showcase?.box ?? state.boxes.find((b) => b.id === state.activeId) ?? state.boxes[0],
-    // Paints Auto may choose from: the groups ticked for Auto in the paint box. A Schmincke stock paint
+    palette: (state) => state.showcase?.palette ?? state.selection,
+    // Paints Auto may choose from: those in the paint boxes ticked for Auto. A Schmincke stock paint
     // outside the default selection is held back (its colour is not checked yet).
     autoCandidates() {
-      const off = new Set(this.activeBox.autoOff)
       const held = (p) => !p.enabled && !p.custom && p.vendor === HOUSE_VENDOR
-      return this.all.filter((p) => !held(p) && paintGroupKeys(p).some((key) => !off.has(key)))
+      if (this.showcase) return this.all.filter((p) => !held(p))
+      const off = new Set(this.palette.autoOff)
+      const ids = new Set(this.boxes.filter((b) => !off.has(b.id)).flatMap((b) => b.paintIds))
+      return this.all.filter((p) => ids.has(p.id) && !held(p))
     },
     // Layer mode: the base paints, one layer each.
     layerPaints() {
       const byId = this.byId
-      return this.activeBox.layerIds.map((id) => byId[id]).filter(Boolean)
+      return this.palette.layerIds.map((id) => byId[id]).filter(Boolean)
     },
     // The paints mixed with: what the box holds, cut to what the account may use. The box itself
     // keeps its whole selection, so nothing is lost while a plan has run out.
     enabledIds() {
-      const ids = this.activeBox.paintIds
+      const ids = this.palette.paintIds
       const limit = this.showcase ? Infinity : useProStore().paintLimit
       return new Set(ids.length > limit ? ids.slice(0, limit) : ids)
     },
@@ -89,13 +111,10 @@ export const usePaintsStore = defineStore('paints', {
     selected() {
       return sortPaints(this.enabled)
     },
-    available() {
-      return groupPaints(this.all, (p) => !this.enabledIds.has(p.id))
-    },
   },
   actions: {
     toggle(id, on) {
-      const next = new Set(this.activeBox.paintIds)
+      const next = new Set(this.palette.paintIds)
       if (on ?? !next.has(id)) next.add(id)
       else next.delete(id)
       this.setEnabled([...next])
@@ -106,61 +125,113 @@ export const usePaintsStore = defineStore('paints', {
     /** Any selection made by hand switches Auto off for the box. */
     setEnabled(ids, auto = false) {
       // A proposal lists the paints for the largest areas first: those stay when the account has a limit.
-      this.activeBox.paintIds = auto ? [...ids].slice(0, useProStore().paintLimit) : [...ids]
-      this.activeBox.auto = auto
+      this.palette.paintIds = auto ? [...ids].slice(0, useProStore().paintLimit) : [...ids]
+      this.palette.auto = auto
       this.persist()
     },
     reset() {
       this.setEnabled(defaultIds())
     },
-    /** Whether Auto may choose from the paints of a group (`key` as in the paint box groups). */
-    setAutoGroup(key, on) {
-      const off = new Set(this.activeBox.autoOff)
-      if (on) off.delete(key)
-      else off.add(key)
-      this.activeBox.autoOff = [...off]
+    /** Whether Auto may choose from the paints of a paint box. */
+    setAutoBox(id, on) {
+      const off = new Set(this.palette.autoOff)
+      if (on) off.delete(id)
+      else off.add(id)
+      this.palette.autoOff = [...off]
       this.persist()
     },
     /**
      * The base paints of layer mode. Choosing them by hand switches their Auto off and is limited
      * to MAX_LAYER_PAINTS; a proposal may add a paint or two for its accents.
      */
-    setLayerPaints(ids, auto = false, box = this.activeBox) {
-      box.layerIds = auto ? [...ids] : [...ids].slice(0, MAX_LAYER_PAINTS)
-      box.layerAuto = auto
+    setLayerPaints(ids, auto = false, palette = this.palette) {
+      palette.layerIds = auto ? [...ids] : [...ids].slice(0, MAX_LAYER_PAINTS)
+      palette.layerAuto = auto
       this.persist()
     },
     toggleLayerPaint(id, on) {
-      const ids = this.activeBox.layerIds.filter((p) => p !== id)
-      if (on ?? ids.length === this.activeBox.layerIds.length) ids.push(id)
+      const ids = this.palette.layerIds.filter((p) => p !== id)
+      if (on ?? ids.length === this.palette.layerIds.length) ids.push(id)
       this.setLayerPaints(ids)
     },
 
-    addBox(name) {
-      const box = { id: newId('box'), name: name.trim() || t('Box {n}', { n: this.boxes.length + 1 }), paintIds: [], auto: false, layerIds: [], layerAuto: true, autoOff: [...AUTO_OFF_DEFAULT] }
-      this.boxes.push(box)
-      this.activeId = box.id
+    /** The palette of a saved picture takes the place of the one on screen. */
+    setPalette(palette) {
+      if (this.showcase || !palette) return
+      this.selection = normalizePalette(palette)
       this.persist()
     },
-    selectBox(id) {
-      this.activeId = id
+
+    addBox(name) {
+      const box = { id: newId('box'), name: name.trim() || t('Box {n}', { n: this.boxes.length + 1 }), paintIds: [] }
+      this.boxes.push(box)
       this.persist()
+      return box
     },
     renameBox(id, name) {
       const box = this.boxes.find((b) => b.id === id)
       if (box && name.trim()) box.name = name.trim()
       this.persist()
     },
-    /** The last box cannot be deleted. */
+    /** The last box cannot be deleted. Its paints stay in the palette and in one's own paints. */
     deleteBox(id) {
       if (this.boxes.length < 2) return
       this.boxes = this.boxes.filter((b) => b.id !== id)
-      if (this.activeId === id) this.activeId = this.boxes[0].id
+      this.selection.autoOff = this.selection.autoOff.filter((key) => key !== id)
       this.persist()
     },
+    addToBox(boxId, paintId) {
+      const box = this.boxes.find((b) => b.id === boxId)
+      if (box && !box.paintIds.includes(paintId)) box.paintIds.push(paintId)
+      this.persist()
+    },
+    removeFromBox(boxId, paintId) {
+      const box = this.boxes.find((b) => b.id === boxId)
+      if (box) box.paintIds = box.paintIds.filter((id) => id !== paintId)
+      this.persist()
+    },
+    /**
+     * A colour of a series, as a library or a box file has it: the paint already known with that
+     * series and number, or a new paint of one's own. Returns its id.
+     */
+    paintFor({ vendor, number, name, hex, form = 'pan' }) {
+      const known = this.all.find((p) => sameVendor(p.vendor, vendor) && sameNumber(p.number, number))
+      if (known) return known.id
+      const id = newId('custom')
+      this.custom.push({ id, vendor: vendor.trim(), line: '', number: String(number).trim(), name: name.trim(), nameDe: '', hex, forms: [form], source: 'custom', enabled: false, custom: true })
+      return id
+    },
+    /** A colour from a library into a box. */
+    addColourToBox(boxId, colour) {
+      this.addToBox(boxId, this.paintFor({ ...colour, form: boxId === 'tube' ? 'tube' : 'pan' }))
+    },
 
-    /** Add a paint to the library, or update it when `paint.id` exists. New paints go into the active box. */
-    savePaint(paint) {
+    /** A box as a file to keep: its name and its colours, each with series, number, name and colour. */
+    exportBox(id) {
+      const box = this.boxes.find((b) => b.id === id)
+      if (!box) return null
+      const byId = this.byId
+      const paints = box.paintIds
+        .map((pid) => byId[pid])
+        .filter(Boolean)
+        .map((p) => ({ vendor: p.vendor, number: String(p.number), name: p.name, hex: p.hex, form: p.forms[0] ?? 'pan' }))
+      return { format: BOX_FILE_FORMAT, version: 1, name: t(box.name), paints }
+    },
+    /** A box file read back: a new box. Throws when the file is not one. */
+    importBox(data) {
+      if (data?.format !== BOX_FILE_FORMAT || !Array.isArray(data.paints)) throw new Error('This is not a paint box file.')
+      const box = this.addBox(String(data.name ?? ''))
+      for (const p of data.paints) {
+        if (!p?.vendor || p.number == null || !p.name || !/^#[0-9a-f]{6}$/i.test(p.hex ?? '')) continue
+        const id = this.paintFor({ vendor: String(p.vendor), number: String(p.number), name: String(p.name), hex: p.hex, form: p.form === 'tube' ? 'tube' : 'pan' })
+        if (!box.paintIds.includes(id)) box.paintIds.push(id)
+      }
+      this.persist()
+      return box
+    },
+
+    /** Add a paint to the library, or update it when `paint.id` exists. New paints go into the box `boxId`. */
+    savePaint(paint, boxId = null) {
       const data = {
         vendor: paint.vendor.trim(),
         line: '',
@@ -179,31 +250,31 @@ export const usePaintsStore = defineStore('paints', {
       } else {
         const id = newId('custom')
         this.custom.push({ ...data, id })
-        this.activeBox.paintIds.push(id)
+        if (boxId) this.addToBox(boxId, id)
       }
       this.persist()
     },
     deletePaint(id) {
       this.custom = this.custom.filter((p) => p.id !== id)
-      for (const box of this.boxes) {
-        box.paintIds = box.paintIds.filter((p) => p !== id)
-        box.layerIds = box.layerIds.filter((p) => p !== id)
-      }
+      for (const box of this.boxes) box.paintIds = box.paintIds.filter((p) => p !== id)
+      this.selection.paintIds = this.selection.paintIds.filter((p) => p !== id)
+      this.selection.layerIds = this.selection.layerIds.filter((p) => p !== id)
       this.persist()
     },
 
-    /** Mixes with the given paints only, until endShowcase; the user's boxes stay as they are. */
+    /** Mixes with the given paints only, until endShowcase; the user's palette stays as it is. */
     startShowcase(paints) {
       const ids = paints.map((p) => p.id)
-      this.showcase = { paints, box: { id: 'showcase', name: 'Showcase', paintIds: ids, auto: false, layerIds: ids, layerAuto: false, autoOff: [] } }
+      this.showcase = { paints, palette: { paintIds: ids, auto: false, layerIds: ids, layerAuto: false, autoOff: [] } }
     },
     endShowcase() {
       this.showcase = null
     },
     persist() {
-      if (this.showcase) return // the showcase box is not the user's
+      if (this.showcase) return // the showcase palette is not the user's
       try {
-        localStorage.setItem(BOXES_KEY, JSON.stringify({ boxes: this.boxes, activeId: this.activeId }))
+        localStorage.setItem(PAINTBOXES_KEY, JSON.stringify(this.boxes))
+        localStorage.setItem(PALETTE_KEY, JSON.stringify(this.selection))
         localStorage.setItem(CUSTOM_KEY, JSON.stringify(this.custom))
       } catch {
         // ignore – the boxes just won't survive a reload

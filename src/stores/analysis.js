@@ -45,7 +45,7 @@ let analysisToken = 0
 // Layer mode on Auto: the base paints are proposed once per picture and then kept, so that moving
 // an unrelated slider does not swap the paints under the painter's hands.
 let pictureSerial = 0
-let layerProposal = null // "picture/box/count" the current proposal was made for
+let layerProposal = null // "picture/count" the current proposal was made for
 // The settings the mix analysis (`segmentation`) was made with, see `mixCurrent`.
 let mixKey = null
 let sketchRunning = null // the picture a sketch is being worked out for
@@ -254,6 +254,8 @@ export const useAnalysisStore = defineStore('analysis', {
     async loadSaved(record) {
       // Pictures saved before layer mode existed are mix pictures.
       Object.assign(this.settings, { mode: 'mix', geometric: false, values: false }, record.settings, { ai: false })
+      // The palette belongs to the picture. Pictures saved before it did keep the one on screen.
+      if (record.palette) usePaintsStore().setPalette(record.palette)
       const url = URL.createObjectURL(record.blob)
       await this.loadFromSource(url, record.name)
       URL.revokeObjectURL(url)
@@ -495,18 +497,18 @@ export const useAnalysisStore = defineStore('analysis', {
 
     /**
      * Layer mode: glazes of the base paints. On Auto the app proposes the paints from the paint
-     * box's Auto pool, otherwise the ones chosen in the paint box are fitted.
+     * palette's Auto pool, otherwise the ones chosen in the paint box are fitted.
      */
     async analyseLayers(rgba, width, height, token = ++analysisToken) {
       const paints = usePaintsStore()
-      const box = paints.activeBox
+      const palette = paints.palette
       const { layerCount, maxCoats, layerAccents } = this.settings
-      const proposalKey = [pictureSerial, box.id, layerCount, maxCoats, layerAccents].join('/')
-      // Propose only when there is nothing to keep: a new picture or box, another number of layers or
+      const proposalKey = [pictureSerial, layerCount, maxCoats, layerAccents].join('/')
+      // Propose only when there is nothing to keep: a new picture, another number of layers or
       // coats or accents (the best paints depend on those), or Auto pressed.
       // With an AI plan its paints are the layers, in its order; the paint box is left alone.
       const chosen = (this.aiActive?.layers ?? []).filter((id) => paints.byId[id])
-      const propose = !chosen.length && box.layerAuto && !(layerProposal === proposalKey && box.layerIds.length)
+      const propose = !chosen.length && palette.layerAuto && !(layerProposal === proposalKey && palette.layerIds.length)
       const pool = (chosen.length ? chosen.map((id) => paints.byId[id]) : propose ? paints.autoCandidates : paints.layerPaints).map(({ id, hex }) => ({ id, hex }))
       this.layerStep = null
       this.layerPoint = null
@@ -524,18 +526,18 @@ export const useAnalysisStore = defineStore('analysis', {
           height,
           paints: pool,
           // Auto: the number of wash layers (accent paints come on top). By hand: every chosen paint may be one.
-          count: !chosen.length && box.layerAuto ? this.settings.layerCount : undefined,
+          count: !chosen.length && palette.layerAuto ? this.settings.layerCount : undefined,
           // A plain copy: the worker cannot be sent the reactive array of the store.
-          paintIds: chosen.length ? chosen : propose ? undefined : [...box.layerIds],
+          paintIds: chosen.length ? chosen : propose ? undefined : [...palette.layerIds],
           maxCoats: this.settings.maxCoats,
           simplify: this.settings.layerSimplify,
           geometric: this.settings.geometric,
           accents: this.settings.layerAccents,
         })
         if (token !== analysisToken || !this.layerMode) return // superseded
-        // The proposal goes to the box it was made for, also when another box was opened meanwhile.
+        // The proposal goes to the palette it was made for, also when another picture was opened meanwhile.
         if (propose) {
-          paints.setLayerPaints(result.paintIds, true, box)
+          paints.setLayerPaints(result.paintIds, true, palette)
           layerProposal = proposalKey
         }
         this.layers = markRaw(result)
@@ -556,7 +558,7 @@ export const useAnalysisStore = defineStore('analysis', {
     proposeLayers() {
       layerProposal = null
       const paints = usePaintsStore()
-      paints.setLayerPaints(paints.activeBox.layerIds, true)
+      paints.setLayerPaints(paints.palette.layerIds, true)
       if (this.layerMode) this.analyse()
     },
 
@@ -646,7 +648,7 @@ export const useAnalysisStore = defineStore('analysis', {
       const key = this.aiKey
       const { provider, model } = ai
       // The paints to choose from: the Auto pool, or what the paint box holds.
-      const pool = (paints.activeBox.auto ? paints.autoCandidates : paints.enabled).map(({ id, name, hex }) => ({ id, name, hex }))
+      const pool = (paints.palette.auto ? paints.autoCandidates : paints.enabled).map(({ id, name, hex }) => ({ id, name, hex }))
       this.aiBusy = true
       this.aiError = null
       try {
@@ -693,7 +695,7 @@ export const useAnalysisStore = defineStore('analysis', {
       const wash = detailWash(lab, width, height, boxMask(plan.details.map((d) => d.box), width, height))
       if (!wash.pixels) return
       const paints = usePaintsStore()
-      const candidates = paints.activeBox.auto ? paints.autoCandidates : paints.enabled
+      const candidates = paints.palette.auto ? paints.autoCandidates : paints.enabled
       // The paint the AI named, or the darkest one at hand.
       const paint = paints.byId[plan.detailPaint] ?? candidates.reduce((x, y) => (hexToOklab(y.hex)[0] < hexToOklab(x.hex)[0] ? y : x), candidates[0])
       if (!paint) return
@@ -775,7 +777,7 @@ export const useAnalysisStore = defineStore('analysis', {
     /** While the paint box is on Auto, pick the paints that suit the colours of this picture. */
     autoPaints(force = false) {
       const paints = usePaintsStore()
-      if (!this.segmentation || !(force || paints.activeBox.auto)) return
+      if (!this.segmentation || !(force || paints.palette.auto)) return
       if (!force && this.aiPaints) return // the AI chose them
       // Every wash is a target: a wash its mix cannot reach needs paints for a mix of its own.
       const targets = this.segmentation.clusters.filter((c) => c.pixelCount).map((c) => ({ hex: c.hex, weight: c.pixelCount }))

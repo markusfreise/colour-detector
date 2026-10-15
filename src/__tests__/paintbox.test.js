@@ -109,7 +109,7 @@ describe('paint libraries', () => {
     expect(horadam.catalogue.find((c) => c.number === '347').name).toBe('Kadmiumrot mittel')
     // However it is written in the form.
     expect(libraryByName('  schmincke horadam ')).toBe(horadam)
-    expect(libraryByName('Michael Harding')).toBe(null)
+    expect(libraryByName('My own series')).toBe(null)
     expect(libraryByName(undefined)).toBe(null)
   })
 
@@ -121,12 +121,21 @@ describe('paint libraries', () => {
     expect(wn.catalogue.find((c) => c.number === '263').name).toBe('French Ultramarine')
   })
 
+  it('ships Michael Harding with its range, under the name the stock uses', () => {
+    const mh = libraryByName('Michael Harding')
+    expect(mh.catalogue).toHaveLength(136)
+    expect(new Set(mh.catalogue.map((c) => c.number)).size).toBe(136)
+    expect(mh.catalogue.every((c) => /^W\d{3}$/.test(c.number) && /^#[0-9a-f]{6}$/.test(c.hex) && c.name)).toBe(true)
+    expect(mh.catalogue.find((c) => c.number === 'W311').name).toBe('Quinacridone Bronze')
+  })
+
   it('offers the series in use and those of the libraries, for the autocomplete', () => {
     const names = seriesNames(
       [paint('W311', '#c88c5f', ['tube 15 ml'], 'Michael Harding'), paint('347', '#e2544d', ['half pan'])],
       PAINT_LIBRARIES,
     )
     expect(names).toEqual(['Michael Harding', HOUSE_VENDOR, 'Winsor & Newton Professional'])
+    expect(new Set(names).size).toBe(names.length)
     expect(seriesNames(stockPaints, PAINT_LIBRARIES)).toContain('Travelbox')
   })
 })

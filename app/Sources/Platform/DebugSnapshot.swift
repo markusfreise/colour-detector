@@ -4,13 +4,13 @@ import AppKit
 /// Writes every window of the app as a PNG into the temporary folder: "-snapshot" at launch, for checking layouts.
 @MainActor
 enum DebugSnapshot {
-    static func writeAll() {
+    static func writeAll(prefix: String = "snapshot") {
         for (index, window) in NSApp.windows.enumerated() where window.isVisible {
             // The frame view includes title bar and toolbar.
             guard let view = window.contentView?.superview ?? window.contentView,
                   let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { continue }
             view.cacheDisplay(in: view.bounds, to: bitmap)
-            let url = FileManager.default.temporaryDirectory.appendingPathComponent("snapshot-\(index).png")
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(prefix)-\(index).png")
             try? bitmap.representation(using: .png, properties: [:])?.write(to: url)
             print("snapshot", url.path)
         }

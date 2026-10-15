@@ -13,6 +13,7 @@ struct RootView: View {
     @Environment(Store.self) private var store
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.openPreferences) private var openPreferences
 
     @State private var showingPaintBox = false
     @State private var showingCollection = false
@@ -23,8 +24,9 @@ struct RootView: View {
     @State private var paywallReason = "save more than one picture"
     @State private var showingSamples = false
     @State private var showingBreakdown = false
-    @State private var showingSettings = false
-    @State private var showingColours = false
+    // Kept by the window: they stay open when a new language redraws this view.
+    @SceneStorage("showingSettings") private var showingSettings = false
+    @SceneStorage("showingColours") private var showingColours = false
     @State private var photo: PhotosPickerItem?
     @State private var boxRevision = 0
 
@@ -45,7 +47,7 @@ struct RootView: View {
             }
             .background(Theme.page.ignoresSafeArea())
             .tint(Theme.corporate)
-            .navigationTitle(session.imageName.isEmpty ? "No Picture" : session.imageName)
+            .navigationTitle(session.imageName.isEmpty ? L("No Picture") : session.imageName)
         .sheet(isPresented: $showingPaintBox, onDismiss: paintBoxClosed) { PaintBoxView() }
         .sheet(isPresented: $showingCollection) { CollectionView() }
         .sheet(isPresented: $showingPaywall) { PaywallView(reason: paywallReason) }
@@ -57,7 +59,7 @@ struct RootView: View {
         }
         #if os(iOS)
         .fullScreenCover(isPresented: $showingCamera) {
-            CameraPicker { session.load($0, name: "Photo \(Date.now.formatted(date: .abbreviated, time: .shortened))") }
+            CameraPicker { session.load($0, name: L("Photo %@", Date.now.formatted(date: .abbreviated, time: .shortened))) }
                 .ignoresSafeArea()
         }
         #endif
@@ -84,10 +86,15 @@ struct RootView: View {
     }
 
     #if DEBUG
-    /// "-screen paintbox|collection|editor|breakdown|samples|settings|colours|paywall" opens that screen at
+    nonisolated(unsafe) private static var screenshotDone = false
+
+    /// "-screen paintbox|collection|editor|breakdown|samples|settings|colours|paywall|preferences" opens that screen at
     /// launch, for screenshots; "-view mixed|target|overlay|original|template" sets what the picture shows;
     /// "-sample" steps to the next sample photo; "-closeup" opens a close-up, "-framing" starts choosing one.
     private func openScreenForScreenshot() async {
+        // Once per launch: a new language redraws this view and runs its task again.
+        guard !Self.screenshotDone else { return }
+        Self.screenshotDone = true
         let arguments = ProcessInfo.processInfo.arguments
         if arguments.contains("-sample") { session.loadSample() }
         // "-geometric" switches to areas with straight edges.
@@ -123,6 +130,7 @@ struct RootView: View {
         case "settings": open(.settings)
         case "colours": open(.colours)
         case "paywall": showingPaywall = true
+        case "preferences": openPreferences()
         default: break
         }
         #if os(macOS)
@@ -132,11 +140,33 @@ struct RootView: View {
             try? PrintSheet.pdf(session: session, library: library).write(to: url)
             print("pdf", url.path)
         }
-        if ProcessInfo.processInfo.arguments.contains("-snapshot") {
+        let snapshot = arguments.contains("-snapshot")
+        if snapshot {
             try? await Task.sleep(for: .seconds(2))
             DebugSnapshot.writeAll()
         }
+        #else
+        let snapshot = false
         #endif
+        // "-switch de,en,theme:dark,auto": changes the language (or with "theme:" the look) as the
+        // preferences do, one after the other, every 4 seconds; on the Mac with "-snapshot" it writes
+        // "de-*.png", "theme:dark-*.png" ... after each. Its own task: a new language redraws this
+        // view, which ends the view's task.
+        if let list = arguments.firstIndex(of: "-switch").flatMap({ arguments.dropFirst($0 + 1).first }) {
+            Task { @MainActor in
+                for step in list.split(separator: ",").map(String.init) {
+                    if step.hasPrefix("theme:") {
+                        UserDefaults.standard.set(String(step.dropFirst("theme:".count)), forKey: Localization.themeKey)
+                    } else {
+                        UserDefaults.standard.set(step, forKey: Localization.languageKey)
+                    }
+                    try? await Task.sleep(for: .seconds(4))
+                    #if os(macOS)
+                    if snapshot { DebugSnapshot.writeAll(prefix: step) }
+                    #endif
+                }
+            }
+        }
     }
     #endif
 
@@ -214,6 +244,9 @@ struct RootView: View {
             IconButton(title: "Print", symbol: "printer") { PrintSheet.print(session: session, library: library) }
                 .disabled(!printable)
             shareMenu
+            // Language and light or dark, as the web's person button below the picture buttons.
+            IconButton(title: "Preferences", symbol: "person.crop.circle", action: openPreferences)
+                .padding(.top, Theme.gap)
         }
     }
 
@@ -224,7 +257,7 @@ struct RootView: View {
         Menu {
             ShareLink(
                 item: SheetPDF(name: session.imageName) { PrintSheet.pdf(session: session, library: library) },
-                preview: SharePreview("\(session.imageName) – \(session.layerMode ? "layers" : "colours and mixes")")
+                preview: SharePreview(L(session.layerMode ? "%@ – layers" : "%@ – colours and mixes", session.imageName))
             ) {
                 Label("PDF", systemImage: "doc.richtext")
             }
@@ -364,7 +397,7 @@ struct RootView: View {
         do {
             try collection.save(session)
         } catch {
-            session.error = "Could not save the picture: \(error.localizedDescription)"
+            session.error = L("Could not save the picture: %@", error.localizedDescription)
         }
     }
 
@@ -373,9 +406,9 @@ struct RootView: View {
         photo = nil
         Task {
             if let data = try? await item.loadTransferable(type: Data.self) {
-                session.load(data, name: "Photo \(Date.now.formatted(date: .abbreviated, time: .shortened))")
+                session.load(data, name: L("Photo %@", Date.now.formatted(date: .abbreviated, time: .shortened)))
             } else {
-                session.error = "Could not load this photo."
+                session.error = L("Could not load this photo.")
             }
         }
     }
@@ -384,7 +417,7 @@ struct RootView: View {
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
         guard let data = try? Data(contentsOf: url) else {
-            session.error = "Could not read this file."
+            session.error = L("Could not read this file.")
             return
         }
         session.load(data, name: url.deletingPathExtension().lastPathComponent)

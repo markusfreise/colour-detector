@@ -16,7 +16,6 @@ export function accountsWanted(api, location) {
 
 const NOTICES = {
   'login=failed': { kind: 'error', text: 'Signing in did not work. Please try again.' },
-  'login=invitation': { kind: 'error', text: 'Watercolourlove is open by invitation for now. Please sign in with the link by e-mail and your invitation code.' },
   'login=no-email': { kind: 'error', text: 'That account shares no e-mail address. Please sign in another way.' },
   'billing=ok': { kind: 'paid', text: 'Thank you. Your purchase is being confirmed.' },
   'billing=cancelled': { kind: 'info', text: 'The payment was not completed. Nothing was charged.' },

@@ -73,9 +73,9 @@
             <span class="field__label">{{ buttons.length ? t('Or with a link by e-mail') : t('Your e-mail address') }}</span>
             <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
           </label>
-          <!-- While new accounts need an invitation. An existing account signs in without it. -->
+          <!-- Optional: a code unlocks everything for good. Without one the account is a free one. -->
           <label v-if="account.invitation" class="field gate__field">
-            <span class="field__label">{{ t('Invitation code, if you are new') }}</span>
+            <span class="field__label">{{ t('Invitation code (optional)') }}</span>
             <input v-model.trim="code" class="input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
           </label>
           <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Send me a sign-in link') }}</button>

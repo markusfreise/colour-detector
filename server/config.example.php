@@ -17,10 +17,9 @@ return [
         'transport' => 'mail',
     ],
 
-    // New accounts only by invitation: addresses on 'allow', or anybody who enters one of 'codes'
-    // (case does not matter). Each code works once and gives a lifetime licence. Existing accounts
-    // sign in as before. Leave it out to let everybody in.
-    // 'invitation' => ['allow' => ['someone@example.org'], 'codes' => ['SPRING-PAINTERS']],
+    // Invitation codes: anybody may sign up as a free account; a code entered when signing up makes
+    // the account one with a lifetime licence. Each code works once; case does not matter.
+    // 'invitation' => ['codes' => ['SPRING-PAINTERS']],
 
     // A personal key per address: entered in the code field, it signs that address in at once, as
     // paid, without a link by e-mail. Anybody who knows address and key is in that account.

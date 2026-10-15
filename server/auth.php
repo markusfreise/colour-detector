@@ -179,22 +179,6 @@ function invitationCode(string $code): ?string
     return null;
 }
 
-/**
- * Whether an address may sign in while new accounts need an invitation ('invitation' in
- * config.php): it has an account already, it is on the list, or it brings an unused code.
- */
-function mayJoin(string $email, string $code): bool
-{
-    $invitation = config('invitation');
-    if (!is_array($invitation) || row('SELECT id FROM users WHERE email = ?', [$email])) {
-        return true;
-    }
-    if (in_array($email, array_map('strtolower', $invitation['allow'] ?? []), true)) {
-        return true;
-    }
-    return invitationCode($code) !== null;
-}
-
 /** Signs an account in at once (local test, personal key), as paid or free, with the current consent. */
 function testSignIn(string $email, string $kind): never
 {
@@ -239,12 +223,13 @@ function sendMagicLink(): never
     if ($key !== '' && hash_equals(strtolower($key), strtolower(trim((string) (body()['code'] ?? ''))))) {
         testSignIn($email, 'paid');
     }
-    $code = (string) (body()['code'] ?? '');
-    if (!mayJoin($email, $code)) {
-        fail(403, 'Watercolourlove is open by invitation for now. Please enter your invitation code. Each code works once.');
+    // Anybody may sign up, as a free account. An invitation code is optional and becomes a
+    // lifetime licence when the link is opened; a wrong or used one is said, not ignored.
+    $code = trim((string) (body()['code'] ?? ''));
+    $invited = $code === '' ? null : invitationCode($code);
+    if ($code !== '' && $invited === null) {
+        fail(422, 'This invitation code is not valid or was already used. Leave the field empty to sign up for free.');
     }
-    // The code becomes a lifetime licence when the link is opened.
-    $invited = invitationCode($code);
     if ($invited !== null) {
         run('INSERT OR REPLACE INTO invitations (code, email, asked_at) VALUES (?, ?, ?)', [$invited, $email, time()]);
     }
@@ -396,9 +381,6 @@ function finishOauth(string $provider): never
         // Without an address there is nothing to hang the account on.
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             backToApp('login=no-email');
-        }
-        if (!mayJoin(strtolower($email), '')) {
-            backToApp('login=invitation');
         }
         $userId = (int) userByEmail($email)['id'];
         run('INSERT INTO identities (provider, subject, user_id) VALUES (?, ?, ?)', [$provider, $subject, $userId]);

@@ -256,11 +256,11 @@
     }
 
     &__footer {
+        grid-column: 1 / -1;
         display: flex;
         flex-wrap: wrap;
         gap: var(--gap-05x) var(--gap);
         white-space: nowrap;
-        margin-top: #{pxtorem(20)};
         padding-top: #{pxtorem(14)};
         border-top: 1px solid var(--c-border);
         font-size: var(--fs-small);

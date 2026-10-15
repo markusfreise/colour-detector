@@ -115,12 +115,6 @@
       <p v-if="account.loaded && !account.user && account.error" class="gate__actions">
         <button class="button button--ghost" type="button" @click="account.refresh()">{{ t('Try again') }}</button>
       </p>
-      <footer class="gate__footer">
-        <a :href="legalPage('privacy')">{{ t('Privacy') }}</a>
-        <a :href="legalPage('terms')">{{ t('Terms') }}</a>
-        <a :href="legalPage('imprint')">{{ t('Imprint') }}</a>
-        <button v-if="consent.available" class="gate__settings" type="button" @click="consent.review()">{{ t('Privacy settings') }}</button>
-      </footer>
       </div>
 
       <!-- What the app does, in three steps. The pictures are hand-drawn sketches for now, to be
@@ -134,6 +128,14 @@
           </li>
         </ol>
       </aside>
+
+      <!-- Below both columns, in one row. -->
+      <footer class="gate__footer">
+        <a :href="legalPage('privacy')">{{ t('Privacy') }}</a>
+        <a :href="legalPage('terms')">{{ t('Terms') }}</a>
+        <a :href="legalPage('imprint')">{{ t('Imprint') }}</a>
+        <button v-if="consent.available" class="gate__settings" type="button" @click="consent.review()">{{ t('Privacy settings') }}</button>
+      </footer>
     </section>
   </main>
 </template>

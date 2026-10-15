@@ -37,6 +37,7 @@ switch ($route) {
             'providers' => enabledProviders(),
             'plans' => enabledPlans(),
             'consentVersion' => config('consent_version'),
+            'invitation' => is_array(config('invitation')),
         ]);
 
     case 'auth/magic':

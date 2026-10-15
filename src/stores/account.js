@@ -29,6 +29,7 @@ export const useAccountStore = defineStore('account', {
     user: null,
     providers: [],
     plans: [],
+    invitation: false, // new accounts need an invitation code
     busy: false,
     error: null,
     notice: null, // { kind, text } after coming back from signing in or paying
@@ -68,6 +69,7 @@ export const useAccountStore = defineStore('account', {
         this.user = data.user
         this.providers = data.providers
         this.plans = data.plans
+        this.invitation = Boolean(data.invitation)
       }, false)
       this.loaded = true
     },
@@ -95,9 +97,9 @@ export const useAccountStore = defineStore('account', {
     signInWith(provider) {
       window.location.assign(`${ACCOUNT_API}/auth/${provider}/start`)
     },
-    async sendLink(email) {
+    async sendLink(email, code = '') {
       let data
-      if (!(await this.attempt(async () => (data = await call('auth/magic', { email }))))) return
+      if (!(await this.attempt(async () => (data = await call('auth/magic', { email, code }))))) return
       // A local test account is signed in at once.
       if (data.signedIn) {
         await this.refresh()

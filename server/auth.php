@@ -41,6 +41,28 @@ function localTest(): ?array
     return is_array($test) && $local ? $test : null;
 }
 
+/**
+ * Whether an address may sign in while new accounts need an invitation ('invitation' in
+ * config.php): it has an account already, it is on the list, or it brings one of the codes.
+ */
+function mayJoin(string $email, string $code): bool
+{
+    $invitation = config('invitation');
+    if (!is_array($invitation) || row('SELECT id FROM users WHERE email = ?', [$email])) {
+        return true;
+    }
+    if (in_array($email, array_map('strtolower', $invitation['allow'] ?? []), true)) {
+        return true;
+    }
+    $code = strtoupper(trim($code));
+    foreach ($invitation['codes'] ?? [] as $valid) {
+        if ($code !== '' && hash_equals(strtoupper((string) $valid), $code)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 /** Signs a test account in at once, as paid or free, with the current consent. */
 function testSignIn(string $email, string $kind): never
 {
@@ -78,6 +100,10 @@ function sendMagicLink(): never
     }
     if (tooMany('ip:' . ($_SERVER['REMOTE_ADDR'] ?? ''), MAGIC_PER_IP) || tooMany('mail:' . $email, MAGIC_PER_EMAIL)) {
         fail(429, 'Too many links were asked for. Please try again in an hour.');
+    }
+    // After the rate limit, so that guessed codes count as attempts.
+    if (!mayJoin($email, (string) (body()['code'] ?? ''))) {
+        fail(403, 'Watercolourlove is open by invitation for now. Please enter your invitation code.');
     }
     $value = token();
     run('DELETE FROM magic_links WHERE expires_at < ?', [time()]);
@@ -225,6 +251,9 @@ function finishOauth(string $provider): never
         // Without an address there is nothing to hang the account on.
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             backToApp('login=no-email');
+        }
+        if (!mayJoin(strtolower($email), '')) {
+            backToApp('login=invitation');
         }
         $userId = (int) userByEmail($email)['id'];
         run('INSERT INTO identities (provider, subject, user_id) VALUES (?, ?, ?)', [$provider, $subject, $userId]);

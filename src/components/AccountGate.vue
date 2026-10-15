@@ -62,10 +62,15 @@
           A sign-in link is on its way to <strong>{{ account.sentTo }}</strong>. Open it on this device; it works for 15 minutes.
           <button class="gate__link" type="button" @click="account.sentTo = ''">Use another address</button>
         </p>
-        <form v-else class="gate__form" @submit.prevent="account.sendLink(email)">
+        <form v-else class="gate__form" @submit.prevent="account.sendLink(email, code)">
           <label class="field gate__field">
             <span class="field__label">{{ buttons.length ? 'Or with a link by e-mail' : 'Your e-mail address' }}</span>
             <input v-model.trim="email" class="input" type="email" required autocomplete="email" placeholder="you@example.org" />
+          </label>
+          <!-- While new accounts need an invitation. An existing account signs in without it. -->
+          <label v-if="account.invitation" class="field gate__field">
+            <span class="field__label">Invitation code, if you are new</span>
+            <input v-model.trim="code" class="input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
           </label>
           <button class="button" type="submit" :disabled="account.busy || !email">Send me a sign-in link</button>
         </form>
@@ -120,6 +125,7 @@ const steps = [
 const account = useAccountStore()
 const logo = logoSvg.replace(/fill="black"/g, 'fill="currentColor"')
 const email = ref('')
+const code = ref('')
 const privacy = ref(false)
 const local = ref(false)
 

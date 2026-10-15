@@ -174,9 +174,9 @@
     gap: #{pxtorem(6)};
     border: 1px solid transparent;
     border-radius: var(--radius-medium);
-    // The system font sits in the middle of its line box: the same space above and below, and
-    // more at the sides.
-    padding: #{pxtorem(10)} #{pxtorem(20)};
+    // The system font sits about a pixel high in its line box (measured: 16.3 px above the
+    // capitals, 17.5 px below the baseline). A little more padding on top centres it.
+    padding: #{pxtorem(10.6)} #{pxtorem(20)} #{pxtorem(9.4)};
     line-height: 1.25;
     cursor: pointer;
     background: var(--c-background-raised);

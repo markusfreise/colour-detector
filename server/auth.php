@@ -29,6 +29,102 @@ const OAUTH = [
 // --- Link by e-mail ---------------------------------------------------------------------------
 
 /**
+ * The sign-in mail as plain text and HTML. A full letter with sender and reason reads less like
+ * spam to filters and people than a bare link.
+ * @return array{0: string, 1: string}
+ */
+function signInMail(string $link): array
+{
+    $minutes = MAGIC_MINUTES;
+    $host = (string) parse_url((string) config('app_url'), PHP_URL_HOST);
+    $text = <<<TEXT
+        Hello,
+
+        here is your link to sign in to Watercolourlove:
+
+        $link
+
+        Open it on the device and in the browser where you asked for it. It works once and for $minutes minutes.
+
+        Why you get this message: someone entered this e-mail address to sign in at $host. If that was not you, you can ignore this message. Without the link nobody can sign in with your address.
+
+        Watercolourlove finds the main colours of a photo and shows how to mix each of them from your own watercolours. Your pictures stay in your browser and are never uploaded.
+
+        Questions? Reply to this message or write to support@markus-freise.de.
+
+        --
+        Watercolourlove
+        Markus Freise, Weststrasse 48, 33615 Bielefeld, Germany
+        https://$host/
+        TEXT;
+    $url = htmlspecialchars($link, ENT_QUOTES);
+    $home = htmlspecialchars("https://$host/", ENT_QUOTES);
+    $hostHtml = htmlspecialchars($host, ENT_QUOTES);
+    $html = <<<HTML
+        <!doctype html>
+        <html lang="en">
+        <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Sign in to Watercolourlove</title></head>
+        <body style="margin:0;padding:0;background:#f7f4ee;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f4ee;">
+        <tr><td align="center" style="padding:32px 16px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border:1px solid #e4ddd2;border-radius:12px;">
+        <tr><td style="padding:32px 32px 8px;font:600 22px/1.3 Georgia,'Times New Roman',serif;color:#2a2622;">Watercolourlove</td></tr>
+        <tr><td style="padding:8px 32px 0;font:16px/1.6 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#2a2622;">
+        <p style="margin:0 0 16px;">Hello,</p>
+        <p style="margin:0 0 24px;">here is your link to sign in to Watercolourlove. Open it on the device and in the browser where you asked for it. It works once and for $minutes minutes.</p>
+        </td></tr>
+        <tr><td style="padding:0 32px 24px;">
+        <a href="$url" style="display:inline-block;padding:12px 24px;background:#2f5d8a;color:#ffffff;border-radius:8px;font:600 16px/1.2 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;text-decoration:none;">Sign in to Watercolourlove</a>
+        </td></tr>
+        <tr><td style="padding:0 32px 24px;font:14px/1.6 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#6d655c;">
+        <p style="margin:0 0 16px;">If the button does not work, copy this address into your browser:<br><a href="$url" style="color:#2f5d8a;word-break:break-all;">$url</a></p>
+        <p style="margin:0 0 16px;">Why you get this message: someone entered this e-mail address to sign in at $hostHtml. If that was not you, you can ignore this message. Without the link nobody can sign in with your address.</p>
+        <p style="margin:0;">Watercolourlove finds the main colours of a photo and shows how to mix each of them from your own watercolours. Your pictures stay in your browser and are never uploaded.</p>
+        </td></tr>
+        <tr><td style="padding:16px 32px 32px;border-top:1px solid #e4ddd2;font:13px/1.6 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#6d655c;">
+        Questions? Reply to this message or write to <a href="mailto:support@markus-freise.de" style="color:#2f5d8a;">support@markus-freise.de</a>.<br>
+        Markus Freise, Weststra&szlig;e 48, 33615 Bielefeld, Germany &middot; <a href="$home" style="color:#2f5d8a;">$hostHtml</a>
+        </td></tr>
+        </table>
+        </td></tr>
+        </table>
+        </body>
+        </html>
+        HTML;
+    return [$text, $html];
+}
+
+/** Sends a message as text and HTML, with the headers mail filters look for. */
+function sendMail(string $to, string $subject, string $text, string $html): void
+{
+    $mail = config('mail') ?? [];
+    $from = (string) ($mail['from'] ?? '');
+    preg_match('/<([^>]+)>/', $from, $match);
+    $address = $match[1] ?? $from;
+    $domain = substr((string) strrchr($address, '@'), 1) ?: 'localhost';
+    $boundary = 'b' . bin2hex(random_bytes(12));
+    $headers = implode("\r\n", [
+        "From: $from",
+        "Reply-To: $address",
+        'Date: ' . date(DATE_RFC2822),
+        'Message-ID: <' . bin2hex(random_bytes(16)) . "@$domain>",
+        'MIME-Version: 1.0',
+        "Content-Type: multipart/alternative; boundary=\"$boundary\"",
+        'Auto-Submitted: auto-generated',
+    ]);
+    $part = fn (string $type, string $body) => "--$boundary\r\nContent-Type: $type; charset=utf-8\r\n"
+        . "Content-Transfer-Encoding: quoted-printable\r\n\r\n" . quoted_printable_encode(str_replace("\n", "\r\n", $body)) . "\r\n";
+    $body = $part('text/plain', $text) . $part('text/html', $html) . "--$boundary--\r\n";
+    $transport = $mail['transport'] ?? 'mail';
+    if ($transport === 'mail') {
+        // The envelope sender is the From address, so that the receiving server checks SPF against it.
+        mail($to, mb_encode_mimeheader($subject, 'UTF-8'), $body, $headers, '-f' . $address);
+    } else {
+        file_put_contents($transport, "To: $to\nSubject: $subject\n$headers\n\n$body\n", FILE_APPEND | LOCK_EX);
+    }
+}
+
+/**
  * Test accounts for a local run, or null. Only when config.php has 'local_test', the app runs on
  * localhost or *.test and the request comes from this machine: never on a server.
  */
@@ -121,16 +217,7 @@ function sendMagicLink(): never
     if ($test !== null) {
         send(['sent' => true, 'link' => $link]);
     }
-    $text = "Open this link to sign in to Watercolourlove:\n\n$link\n\n"
-        . 'It works once and for ' . MAGIC_MINUTES . " minutes. If you did not ask for it, ignore this message.\n";
-    $mail = config('mail') ?? [];
-    $transport = $mail['transport'] ?? 'mail';
-    if ($transport === 'mail') {
-        $headers = 'From: ' . ($mail['from'] ?? '') . "\r\nContent-Type: text/plain; charset=utf-8";
-        mail($email, 'Your sign-in link for Watercolourlove', $text, $headers);
-    } else {
-        file_put_contents($transport, "To: $email\n$text\n", FILE_APPEND | LOCK_EX);
-    }
+    sendMail($email, 'Your sign-in link for Watercolourlove', ...signInMail($link));
     // The same answer whether or not the address has an account.
     send(['sent' => true]);
 }

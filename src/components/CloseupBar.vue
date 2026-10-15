@@ -1,8 +1,8 @@
 <template>
   <!-- Above the picture while a part of it is on screen. -->
   <div v-if="closeup" class="closeup closeup--bar">
-    <button class="button button--secondary" type="button" :disabled="analysis.busy" @click="analysis.showBase()">{{ t('Return to base image') }}</button>
-    <span class="closeup__name">{{ t('Detail {n}', { n: closeup.number }) }}</span>
+    <!-- Which part it is shows in the strip at the bottom, where it is highlighted. -->
+    <button class="button button--secondary" type="button" :disabled="analysis.busy" :aria-label="t('Return to base image')" @click="analysis.showBase()">{{ t('Back') }}</button>
   </div>
 </template>
 

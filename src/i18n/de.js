@@ -27,6 +27,7 @@ export default {
   'terms': 'AGB',
   // Details (close-ups)
   'Return to base image': 'Zurück zum ganzen Bild',
+  'Back': 'Zurück',
   'Detail {n}': 'Ausschnitt {n}',
   'Details of the picture': 'Ausschnitte des Bildes',
   'Show detail {n}': 'Ausschnitt {n} zeigen',

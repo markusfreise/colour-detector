@@ -113,12 +113,20 @@ describe('paint libraries', () => {
     expect(libraryByName(undefined)).toBe(null)
   })
 
+  it('ships Winsor & Newton Professional with its chart', () => {
+    const wn = libraryByName('winsor & newton professional')
+    expect(wn.catalogue).toHaveLength(116)
+    expect(new Set(wn.catalogue.map((c) => c.number)).size).toBe(116)
+    expect(wn.catalogue.every((c) => /^\d{3}$/.test(c.number) && /^#[0-9a-f]{6}$/.test(c.hex) && c.name)).toBe(true)
+    expect(wn.catalogue.find((c) => c.number === '263').name).toBe('French Ultramarine')
+  })
+
   it('offers the series in use and those of the libraries, for the autocomplete', () => {
     const names = seriesNames(
       [paint('W311', '#c88c5f', ['tube 15 ml'], 'Michael Harding'), paint('347', '#e2544d', ['half pan'])],
       PAINT_LIBRARIES,
     )
-    expect(names).toEqual(['Michael Harding', HOUSE_VENDOR])
+    expect(names).toEqual(['Michael Harding', HOUSE_VENDOR, 'Winsor & Newton Professional'])
     expect(seriesNames(stockPaints, PAINT_LIBRARIES)).toContain('Travelbox')
   })
 })

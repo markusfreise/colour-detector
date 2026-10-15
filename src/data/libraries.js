@@ -2,9 +2,13 @@
 // number fills in name and colour. Schmincke Horadam is the example every further series follows:
 // a name as it is written on the tube, and a catalogue of { number, name, hex } (backlog TASK-37).
 import { horadamCatalogue } from './horadam-catalogue.js'
+import { winsorNewtonCatalogue } from './winsor-newton-catalogue.js'
 import { HOUSE_VENDOR } from '../lib/paintbox.js'
 
-export const PAINT_LIBRARIES = [{ id: 'horadam', name: HOUSE_VENDOR, catalogue: horadamCatalogue }]
+export const PAINT_LIBRARIES = [
+  { id: 'horadam', name: HOUSE_VENDOR, catalogue: horadamCatalogue },
+  { id: 'winsor-newton-professional', name: 'Winsor & Newton Professional', catalogue: winsorNewtonCatalogue },
+]
 
 /** The library of that series, however it is capitalised or spaced; null for a series of one's own. */
 export function libraryByName(name) {

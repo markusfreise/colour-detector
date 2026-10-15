@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system" data-screen="stage" data-mode="mix" data-tab="photo" data-steps="closed" data-picture="fit" data-view="mixed" data-outlines="on" data-numbers="on" data-guides="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studio bench &mdash; round 1</title>
+<meta name="description" content="Prototype of the Studio bench UI proposal for Watercolourlove, round 1.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Crect%20width='8'%20height='8'%20fill='%231f4f73'/%3E%3Crect%20x='8'%20width='8'%20height='8'%20fill='%238a5a2b'/%3E%3Crect%20y='8'%20width='8'%20height='8'%20fill='%23efece6'/%3E%3Crect%20x='8'%20y='8'%20width='8'%20height='8'%20fill='%23221f1c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&amp;display=swap">
+<style>
+
+/* ---------------------------------------------------------------- reset */
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:100%;-webkit-text-size-adjust:100%}
+body{margin:0}
+h1,h2,h3,h4,p,figure{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;padding:0;cursor:pointer;text-align:left;color:inherit}
+svg{display:block}
+fieldset{margin:0;padding:0;border:0}
+
+/* ---------------------------------------------------------------- properties */
+:root{
+  --c-background:#efece6;
+  --c-surface:#ffffff;
+  --c-surface-sunken:#f7f5f1;
+  --c-copy:#221f1c;
+  --c-copy-light:#655d54;
+  --c-head:#141210;
+  --c-border:#d9d2c7;
+  --c-corporate:#1f4f73;
+  --c-corporate-hover:#163b57;
+  --c-corporate-soft:#e3ecf3;
+  --c-accent:#8a5a2b;
+  --c-danger:#a33327;
+  --c-success:#2f6b43;
+  --c-white:#ffffff;
+  --c-overlay:rgba(20,18,16,.5);
+  --c-on-corporate:#ffffff;
+  --c-on-danger:#ffffff;
+
+  --ff-copy:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --ff-head:var(--ff-copy);
+  --ff-fixed:ui-monospace,'SFMono-Regular','Menlo',monospace;
+
+  --fs-mini:.75rem;
+  --fs-small:.875rem;
+  --fs-copy:1rem;
+  --fs-medium:1.125rem;
+  --fs-large:1.25rem;
+  --fs-hl-small:1.375rem;
+  --fs-hl-medium:1.75rem;
+  --fs-hl-large:2.25rem;
+
+  --gap:1rem;
+  --gap-025x:calc(var(--gap) * .25);
+  --gap-05x:calc(var(--gap) * .5);
+  --gap-15x:calc(var(--gap) * 1.5);
+  --gap-2x:calc(var(--gap) * 2);
+  --gap-3x:calc(var(--gap) * 3);
+  --m-vert:1.5rem;
+  --m-vert-slim:.75rem;
+  --m-vert-2x:3rem;
+
+  --max-width:90rem;
+  --article-width:44rem;
+  --rail:24rem;
+  --radius:.75rem;
+  --radius-medium:.5rem;
+  --radius-small:.25rem;
+  --shadow:0 1px 2px rgba(26,22,18,.08),0 8px 24px rgba(26,22,18,.10);
+  --shadow-flat:0 1px 0 0 var(--c-border);
+  --touch:3rem;
+  --touch-primary:3.5rem;
+  --bar-height:3.25rem;
+  --tabs-height:3.5rem;
+
+  --proto-h:5.75rem;
+  --picture-share:.28;
+  --app-vh:calc(100vh - var(--proto-h));
+  --app-vh:calc(100dvh - var(--proto-h));
+}
+[data-mode="layer"][data-steps="open"]{--picture-share:.22}
+@media (min-width:48rem){
+  :root{
+    --fs-small:.9375rem;--fs-copy:1.0625rem;--fs-medium:1.1875rem;--fs-large:1.3125rem;
+    --fs-hl-small:1.5rem;--fs-hl-medium:1.875rem;--fs-hl-large:2.5rem;
+    --bar-height:3.5rem;--proto-h:3.5rem;
+  }
+}
+@media (min-width:64rem){
+  :root{
+    --fs-mini:.8125rem;--fs-medium:1.25rem;--fs-large:1.375rem;
+    --fs-hl-small:1.625rem;--fs-hl-medium:2rem;--fs-hl-large:2.75rem;
+  }
+}
+@media (min-width:80rem){ :root{--rail:26rem} }
+@media (min-width:90rem){
+  :root{
+    --fs-small:1rem;--fs-copy:1.125rem;--fs-large:1.5rem;--fs-hl-small:1.75rem;
+    --fs-hl-medium:2.25rem;--fs-hl-large:3rem;--rail:28rem;
+  }
+}
+
+/* dark mode: system setting, overridable by the switch */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --c-background:#161412;--c-surface:#201d1a;--c-surface-sunken:#2a2622;
+    --c-copy:#ece6dd;--c-copy-light:#a79d91;--c-head:#fbf7f1;--c-border:#39332d;
+    --c-corporate:#8fbfe3;--c-corporate-hover:#b3d6f0;--c-corporate-soft:#22323f;
+    --c-accent:#d3a06a;--c-danger:#e4867a;--c-success:#76b98e;
+    --c-overlay:rgba(0,0,0,.62);--c-on-corporate:#10212e;--c-on-danger:#2a0f0c;
+    --shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --c-background:#161412;--c-surface:#201d1a;--c-surface-sunken:#2a2622;
+  --c-copy:#ece6dd;--c-copy-light:#a79d91;--c-head:#fbf7f1;--c-border:#39332d;
+  --c-corporate:#8fbfe3;--c-corporate-hover:#b3d6f0;--c-corporate-soft:#22323f;
+  --c-accent:#d3a06a;--c-danger:#e4867a;--c-success:#76b98e;
+  --c-overlay:rgba(0,0,0,.62);--c-on-corporate:#10212e;--c-on-danger:#2a0f0c;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.45);
+}
+
+/* ---------------------------------------------------------------- typography */
+body{
+  font-family:var(--ff-copy);
+  font-size:var(--fs-copy);
+  line-height:1.45;
+  color:var(--c-copy);
+  background:var(--c-background);
+}
+a{color:var(--c-corporate);text-underline-offset:.18em}
+.icon{width:1.5rem;height:1.5rem}
+
+/* ---------------------------------------------------------------- scaffold */
+.app{min-height:100%}
+.app__main{
+  padding:calc(var(--proto-h) + var(--bar-height) + var(--gap-05x)) var(--gap-05x)
+          calc(var(--tabs-height) + var(--gap-2x) + env(safe-area-inset-bottom));
+  padding-left:max(var(--gap-05x),env(safe-area-inset-left));
+  padding-right:max(var(--gap-05x),env(safe-area-inset-right));
+}
+
+/* ---------------------------------------------------------------- prototype bar */
+.proto{
+  position:fixed;inset:0 0 auto 0;z-index:40;
+  display:flex;flex-wrap:wrap;align-items:center;gap:var(--gap-05x);
+  padding:var(--gap-025x) var(--gap-05x);
+  background:var(--c-surface-sunken);
+  border-bottom:1px solid var(--c-border);
+  padding-top:max(var(--gap-025x),env(safe-area-inset-top));
+}
+.proto__note{flex:1 1 100%;font-size:var(--fs-mini);line-height:1.3;color:var(--c-copy-light)}
+.proto__label{display:none}
+.proto .segmented__option{min-width:3rem;padding-inline:var(--gap-025x);font-size:var(--fs-mini)}
+.proto__controls{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;gap:var(--gap-05x)}
+.proto__field{display:flex;align-items:center;gap:var(--gap-025x);min-width:0}
+.proto__label{font-size:var(--fs-mini);color:var(--c-copy-light)}
+.proto__select{
+  min-height:var(--touch);min-width:8rem;max-width:14rem;
+  padding:0 var(--gap-05x);border:1px solid var(--c-border);
+  border-radius:var(--radius-medium);background:var(--c-surface);
+  font-size:var(--fs-small);font-weight:600;
+}
+@media (min-width:48rem){
+  .proto{flex-wrap:nowrap;padding-inline:var(--gap)}
+  .proto__note{flex:1 1 auto;font-size:var(--fs-small)}
+  .proto__label{display:block}
+  .proto__controls{flex:0 0 auto}
+}
+
+/* ---------------------------------------------------------------- header */
+.app__bar{
+  position:fixed;inset:var(--proto-h) 0 auto 0;z-index:30;
+  display:flex;align-items:center;gap:var(--gap-05x);
+  min-height:var(--bar-height);
+  padding-inline:max(var(--gap-05x),env(safe-area-inset-left));
+  background:var(--c-surface);box-shadow:var(--shadow-flat);
+}
+.app__name{font-size:var(--fs-medium);font-weight:600;line-height:1.2;letter-spacing:-.01em;color:var(--c-head)}
+.app__tagline{display:none}
+.app__account{margin-left:auto}
+@media (min-width:64rem){
+  .app__tagline{display:block;font-size:var(--fs-small);color:var(--c-copy-light)}
+}
+
+/* ---------------------------------------------------------------- footer */
+.app__footer{display:none}
+@media (min-width:48rem){
+  .app__footer{
+    display:flex;flex-wrap:wrap;gap:var(--gap-05x);
+    margin:var(--m-vert-2x) auto 0;max-width:var(--max-width);
+    padding:0 var(--gap) var(--gap-2x);
+  }
+}
+.app__footer-link,.photo__link,.settings__link{
+  display:inline-flex;align-items:center;min-height:var(--touch);
+  padding-inline:var(--gap-05x);border-radius:var(--radius-medium);
+  font-size:var(--fs-small);color:var(--c-corporate);text-decoration:underline;
+}
+
+/* ---------------------------------------------------------------- tabs */
+.app__tabs{
+  position:fixed;inset:auto 0 0 0;z-index:30;display:flex;
+  background:var(--c-surface);border-top:1px solid var(--c-border);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.app__tab{
+  flex:1 1 0;min-width:0;min-height:var(--tabs-height);
+  display:flex;align-items:center;justify-content:center;gap:.25rem;
+  font-size:var(--fs-small);color:var(--c-copy-light);
+  border-top:2px solid transparent;
+  transition:background-color 120ms linear,color 120ms linear;
+}
+.app__tab--active{
+  background:var(--c-corporate-soft);color:var(--c-corporate);
+  font-weight:600;border-top-color:var(--c-corporate);
+}
+.app__tab:active{background:var(--c-surface-sunken);transition:none}
+.app__tab-dot{
+  width:.375rem;height:.375rem;border-radius:50%;background:var(--c-corporate);
+}
+.app__tab--active .app__tab-dot{display:none}
+@media (min-width:48rem){ .app__tabs{display:none} }
+
+/* ---------------------------------------------------------------- ui: buttons */
+.button{
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--gap-05x);
+  min-height:var(--touch);min-width:var(--touch);
+  padding-inline:var(--gap);
+  border:1px solid transparent;border-radius:var(--radius-medium);
+  background:var(--c-corporate);color:var(--c-on-corporate);
+  font-size:var(--fs-copy);font-weight:600;line-height:1.2;text-align:center;
+  transition:background-color 120ms linear,color 120ms linear;
+}
+.button:active{background:var(--c-corporate-hover);transition:none}
+.button--main{min-height:var(--touch-primary)}
+.button--secondary{background:var(--c-corporate-soft);color:var(--c-corporate)}
+.button--secondary:active{background:var(--c-corporate-soft);filter:brightness(.95)}
+.button--quiet{background:transparent;color:var(--c-copy);border-color:var(--c-border)}
+.button--quiet:active{background:var(--c-surface-sunken)}
+.button--danger{background:var(--c-danger);color:var(--c-on-danger)}
+.button--wide{width:100%}
+.button:disabled{opacity:.45;cursor:default}
+:where(button,a,input,select,label,summary):focus-visible{
+  outline:2px solid var(--c-corporate);outline-offset:2px;
+}
+.chip:focus-within,.plan__wash:focus-visible,.paintbox .chip:focus-within{
+  box-shadow:0 0 0 4px var(--c-surface);
+}
+
+/* ---------------------------------------------------------------- ui: segmented */
+.segmented{
+  display:flex;min-width:0;
+  border:1px solid var(--c-border);border-radius:var(--radius-medium);
+  overflow:hidden;background:var(--c-surface);
+}
+.segmented__option{
+  flex:1 1 0;min-width:4rem;min-height:var(--touch);
+  display:flex;align-items:center;justify-content:center;
+  padding-inline:var(--gap-05x);
+  font-size:var(--fs-small);line-height:1.2;text-align:center;
+  color:var(--c-copy);
+  transition:background-color 120ms linear,color 120ms linear;
+}
+.segmented__option + .segmented__option{border-inline-start:1px solid var(--c-border)}
+.segmented__option--active{background:var(--c-corporate-soft);color:var(--c-corporate);font-weight:600}
+.segmented__option:active{background:var(--c-surface-sunken);transition:none}
+.segmented--scroll{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.segmented--scroll .segmented__option{min-width:7rem;scroll-snap-align:start;flex:1 0 auto}
+
+/* ---------------------------------------------------------------- forms: switch */
+.switch{
+  display:flex;align-items:center;gap:var(--gap-05x);
+  min-height:var(--touch);padding-inline:var(--gap-05x);
+  border-radius:var(--radius-medium);cursor:pointer;
+  font-size:var(--fs-copy);
+}
+.switch:active{background:var(--c-surface-sunken)}
+.switch__box{
+  flex:0 0 auto;width:1.5rem;height:1.5rem;margin:0;accent-color:var(--c-corporate);
+}
+
+/* ---------------------------------------------------------------- forms: slider */
+.slider{
+  -webkit-appearance:none;appearance:none;
+  width:100%;min-width:0;height:var(--touch);margin:0;
+  background:transparent;
+}
+.slider::-webkit-slider-runnable-track{
+  height:.625rem;border-radius:var(--radius-small);
+  background:var(--c-surface-sunken);border:1px solid var(--c-border);
+}
+.slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:1.875rem;height:1.875rem;margin-top:-.73rem;border-radius:50%;
+  background:var(--c-corporate);border:1px solid var(--c-border);
+  box-shadow:0 0 0 2px var(--c-surface);
+}
+.slider::-moz-range-track{
+  height:.625rem;border-radius:var(--radius-small);
+  background:var(--c-surface-sunken);border:1px solid var(--c-border);
+}
+.slider::-moz-range-thumb{
+  width:1.875rem;height:1.875rem;border-radius:50%;
+  background:var(--c-corporate);border:1px solid var(--c-border);
+  box-shadow:0 0 0 2px var(--c-surface);
+}
+.slider:focus-visible{outline:2px solid var(--c-corporate);outline-offset:2px}
+
+/* ---------------------------------------------------------------- forms: text */
+.field{display:flex;flex-direction:column;gap:var(--gap-025x);min-width:0}
+.field__label{font-size:var(--fs-copy);font-weight:600}
+.field__input{
+  min-height:var(--touch);padding:0 var(--gap-05x);
+  border:1px solid var(--c-border);border-radius:var(--radius-medium);
+  background:var(--c-surface);
+}
+.field__hint{font-size:var(--fs-small);color:var(--c-copy-light)}
+
+/* ---------------------------------------------------------------- cards */
+.stage,.detail,.plan,.settings,.photo{
+  background:var(--c-surface);
+  border:1px solid var(--c-border);
+  border-radius:var(--radius);
+}
+.detail,.plan,.settings,.photo{padding:var(--gap)}
+.stage{padding:var(--gap-05x)}
+.app__group > * + *{margin-top:var(--m-vert)}
+.app__panels > * + *{margin-top:var(--m-vert)}
+
+/* ---------------------------------------------------------------- stage */
+.app__stage{
+  position:sticky;top:calc(var(--proto-h) + var(--bar-height));z-index:2;
+  background:var(--c-background);
+  padding-bottom:var(--gap-05x);
+  margin-bottom:var(--gap-05x);
+}
+.stage__head{display:none}
+.stage__title{
+  font-size:var(--fs-large);font-weight:600;line-height:1.25;
+  letter-spacing:-.005em;color:var(--c-head);
+}
+.stage__state{font-size:var(--fs-small);color:var(--c-success);font-weight:600}
+.stage__actions{display:flex;flex-wrap:wrap;gap:var(--gap-05x);margin-top:var(--gap-05x)}
+.stage__tools{
+  display:flex;flex-wrap:wrap;align-items:center;gap:var(--gap-05x);
+  min-height:var(--touch);
+}
+.stage__status{
+  margin-left:auto;font-size:var(--fs-small);color:var(--c-copy-light);
+  font-variant-numeric:tabular-nums;
+}
+@media (min-width:48rem){
+  .stage__head{display:block;margin-bottom:var(--gap-05x)}
+  .stage{padding:var(--gap)}
+}
+
+/* ---------------------------------------------------------------- picture */
+.picture{margin-top:var(--gap-05x)}
+.picture__pane{
+  position:relative;
+  width:fit-content;max-width:100%;margin-inline:auto;
+  background:var(--c-surface-sunken);
+  border-radius:var(--radius-small);
+  padding:var(--gap-025x);
+  display:flex;justify-content:center;
+}
+.picture__canvas{
+  width:auto;max-width:100%;
+  max-height:calc(var(--app-vh) * var(--picture-share));
+  margin-inline:auto;
+  border-radius:var(--radius-small);
+  touch-action:manipulation;
+}
+.picture__area{stroke:none}
+[data-outlines="on"] .picture__area{stroke:#141210;stroke-width:.7;stroke-opacity:.55}
+[data-view="sketch"] .picture__area{fill:#ffffff;stroke:#141210;stroke-width:.7;stroke-opacity:.8}
+[data-view="sketch"] .picture__number{fill:#141210;stroke:#ffffff}
+.picture__number{
+  font-family:var(--ff-copy);font-size:13px;font-weight:600;
+  fill:#141210;stroke:#ffffff;stroke-width:3;paint-order:stroke;
+  text-anchor:middle;dominant-baseline:middle;
+}
+[data-numbers="off"] .picture__number{display:none}
+.picture__guides{display:none}
+[data-view="sketch"][data-guides="on"] .picture__guides{display:block}
+.picture__readout{
+  min-height:2.75rem;display:flex;align-items:center;
+  padding:var(--gap-025x) var(--gap-05x);
+  font-size:var(--fs-small);color:var(--c-copy-light);
+  overflow-wrap:anywhere;
+}
+
+/* ---------------------------------------------------------------- viewbar */
+.viewbar{margin-top:var(--gap-05x);display:flex;flex-direction:column;gap:var(--gap-05x)}
+.viewbar__row{display:flex;align-items:center;gap:var(--gap-05x);min-width:0}
+.viewbar__label{
+  flex:0 0 auto;font-size:var(--fs-small);color:var(--c-copy-light);
+}
+.viewbar__group{flex:1 1 auto;min-width:0}
+.viewbar__toggles{display:flex;flex-wrap:wrap;gap:var(--gap-05x)}
+.viewbar__toggle--guides{display:none}
+[data-view="sketch"] .viewbar__toggle--guides{display:flex}
+.viewbar__hint{display:none;font-size:var(--fs-small);color:var(--c-copy-light)}
+[data-view="sketch"] .viewbar__hint{display:block}
+
+/* ---------------------------------------------------------------- steps */
+.steps{display:none;flex-direction:column;gap:var(--gap-05x);margin-top:var(--gap-05x)}
+[data-mode="layer"][data-steps="open"] .steps{display:flex}
+[data-mode="layer"][data-steps="open"] .viewbar{display:none}
+.steps__head{display:flex;align-items:flex-start;gap:var(--gap-05x)}
+.steps__title{
+  flex:1 1 auto;font-size:var(--fs-medium);font-weight:600;line-height:1.3;
+  font-variant-numeric:tabular-nums;color:var(--c-head);
+}
+.steps__nav{display:flex;gap:var(--gap-05x)}
+.steps__nav .button{flex:1 1 0}
+.steps__lines{
+  display:grid;grid-template-columns:auto minmax(0,1fr);
+  gap:var(--gap-025x) var(--gap-05x);
+  padding:var(--gap-05x);background:var(--c-surface-sunken);
+  border-radius:var(--radius-medium);
+}
+.steps__key{font-size:var(--fs-small);font-weight:600}
+.steps__value{font-size:var(--fs-small)}
+.steps__hint{font-size:var(--fs-small);color:var(--c-copy-light)}
+.steps__warn{font-size:var(--fs-small);color:var(--c-accent)}
+
+/* ---------------------------------------------------------------- closeup */
+.closeup{margin-top:var(--gap-05x)}
+.closeup__bar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:var(--gap-05x);
+  margin-bottom:var(--gap-05x);
+}
+.closeup__name{font-size:var(--fs-small);font-weight:600}
+.closeup__strip{display:flex;gap:var(--gap-05x);overflow-x:auto;padding-bottom:var(--gap-025x)}
+.closeup__item{position:relative;flex:0 0 auto}
+.closeup__thumb{
+  display:block;width:9rem;height:5.5rem;border-radius:var(--radius-small);
+  border:1px solid var(--c-border);
+}
+.closeup__item--active .closeup__thumb{outline:2px solid var(--c-corporate);outline-offset:1px}
+.closeup__number{
+  position:absolute;left:var(--gap-025x);bottom:var(--gap-025x);
+  padding:0 .3rem;border-radius:var(--radius-small);
+  background:var(--c-surface);font-size:var(--fs-mini);font-weight:600;
+  font-variant-numeric:tabular-nums;
+}
+.closeup__remove{
+  position:absolute;top:0;right:0;width:var(--touch);height:var(--touch);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--c-copy);background:var(--c-surface);
+  border:1px solid var(--c-border);border-radius:var(--radius-small);
+}
+
+/* ---------------------------------------------------------------- plan */
+.plan__head{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--gap-05x)}
+.plan__title,.detail__title,.settings__title,.photo__title{
+  font-size:var(--fs-large);font-weight:600;line-height:1.25;
+  letter-spacing:-.005em;color:var(--c-head);
+}
+.plan__count{
+  flex:1 1 100%;font-size:var(--fs-small);color:var(--c-copy-light);
+  font-variant-numeric:tabular-nums;
+}
+.plan__actions{display:flex;flex-wrap:wrap;gap:var(--gap-05x);margin-top:var(--gap-05x)}
+.plan__key{
+  margin-top:var(--gap-05x);padding:var(--gap-05x);
+  background:var(--c-surface-sunken);border-radius:var(--radius-medium);
+  font-size:var(--fs-small);color:var(--c-copy-light);
+}
+.plan__list{margin-top:var(--gap-05x);display:flex;flex-direction:column;gap:var(--gap-05x)}
+.plan__group-title{
+  margin-top:var(--gap-05x);font-size:var(--fs-copy);font-weight:600;letter-spacing:.02em;
+}
+.plan__item{
+  display:flex;gap:var(--gap-05x);
+  padding:var(--gap-05x);border-radius:var(--radius-medium);
+  border:1px solid var(--c-border);background:var(--c-surface);
+  transition:background-color 120ms linear;
+}
+.plan__item--selected{background:var(--c-corporate-soft);border-color:var(--c-corporate)}
+.plan__item--current{border-color:var(--c-corporate)}
+.plan__item--muted{opacity:.6}
+.plan__tick{flex:0 0 var(--touch)}
+.plan__main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:var(--gap-025x)}
+.plan__row{
+  display:grid;grid-template-columns:2.5rem 2.5rem minmax(0,1fr);
+  align-items:center;gap:var(--gap-05x);
+  min-height:var(--touch-primary);width:100%;
+  border-radius:var(--radius-small);
+}
+.plan__row:active{background:var(--c-surface-sunken)}
+.plan__item--selected .plan__row:active{background:transparent}
+.plan__number{
+  font-size:var(--fs-medium);font-weight:600;line-height:1;
+  font-variant-numeric:tabular-nums;text-align:center;
+}
+.plan__item--selected .plan__number{color:var(--c-corporate)}
+.plan__swatch{
+  width:2.5rem;height:2.5rem;border-radius:var(--radius-small);
+  border:1px solid var(--c-border);
+}
+.plan__text{min-width:0}
+.plan__name{
+  display:block;font-size:var(--fs-copy);line-height:1.3;overflow-wrap:anywhere;
+  font-variant-numeric:tabular-nums;
+}
+.plan__meta{
+  display:block;font-size:var(--fs-small);color:var(--c-copy-light);line-height:1.4;
+  overflow-wrap:anywhere;font-variant-numeric:tabular-nums;
+}
+.plan__item--selected .plan__meta{color:var(--c-copy)}
+.plan__changed{color:var(--c-accent);font-weight:600}
+.plan__sub{display:flex;flex-wrap:wrap;gap:var(--gap-05x)}
+.plan__wash{
+  min-width:3rem;height:var(--touch);
+  display:inline-flex;align-items:center;justify-content:center;
+  padding-inline:var(--gap-025x);
+  border:1px solid var(--c-border);border-radius:var(--radius-small);
+  background:var(--c-surface-sunken);
+  font-size:var(--fs-mini);font-weight:600;font-variant-numeric:tabular-nums;
+}
+.plan__wash--selected{background:var(--c-corporate-soft);border-color:var(--c-corporate);color:var(--c-corporate)}
+.plan__wash:active{background:var(--c-surface-sunken);filter:brightness(.95)}
+.plan__note{margin-top:var(--gap-05x);font-size:var(--fs-small);color:var(--c-copy-light)}
+.plan__tick-label{
+  position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);
+  white-space:nowrap;
+}
+
+/* ---------------------------------------------------------------- recipe bar */
+.recipe{
+  display:flex;height:1.25rem;width:100%;
+  border-radius:var(--radius-small);overflow:hidden;
+  border:1px solid var(--c-border);
+}
+.recipe__part{
+  min-width:0;display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.recipe__part-text{
+  font-size:var(--fs-mini);font-weight:600;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+
+/* ---------------------------------------------------------------- detail */
+.detail__head{display:flex;align-items:center;gap:var(--gap-05x)}
+.detail__head .button{margin-left:auto}
+.detail__compare{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:var(--gap-05x);margin-top:var(--gap-05x);
+}
+.detail__cell{min-width:0}
+.detail__chip{
+  height:3.5rem;display:flex;align-items:center;justify-content:center;
+  border-radius:var(--radius-small);border:1px solid var(--c-border);
+}
+.detail__hex{font-family:var(--ff-fixed);font-size:var(--fs-small);line-height:1.2}
+.detail__caption{
+  display:block;margin-top:var(--gap-025x);
+  font-size:var(--fs-small);color:var(--c-copy-light);
+}
+.detail__match{margin-top:var(--gap-05x);font-size:var(--fs-small)}
+.detail__actions{display:flex;flex-wrap:wrap;gap:var(--gap-05x);margin-top:var(--gap)}
+.detail__colour{
+  display:inline-flex;align-items:center;gap:var(--gap-05x);
+  min-height:var(--touch-primary);padding-inline:var(--gap-05x);
+  border:1px solid var(--c-border);border-radius:var(--radius-medium);
+  font-weight:600;font-size:var(--fs-copy);cursor:pointer;
+}
+.detail__colour-input{width:3rem;height:var(--touch);padding:0;border:0;background:none}
+.detail__subtitle{
+  margin-top:var(--gap);font-size:var(--fs-copy);font-weight:600;letter-spacing:.02em;
+}
+.detail__note{margin-top:var(--gap-025x);font-size:var(--fs-small);color:var(--c-copy-light)}
+.detail__recipes{margin-top:var(--gap-05x);display:flex;flex-direction:column;gap:var(--gap-05x)}
+.detail__recipe{
+  display:flex;flex-direction:column;gap:var(--gap-025x);
+  min-height:var(--touch-primary);justify-content:center;
+  padding:var(--gap-05x);border:1px solid var(--c-border);
+  border-radius:var(--radius-medium);background:var(--c-surface);
+}
+.detail__recipe--chosen{background:var(--c-corporate-soft);border-color:var(--c-corporate)}
+.detail__recipe-name{font-size:var(--fs-copy);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.detail__recipe-meta{font-size:var(--fs-small);color:var(--c-copy-light)}
+.detail__washes{margin-top:var(--gap-05x);display:flex;flex-wrap:wrap;gap:var(--gap-05x)}
+.detail__layers{margin-top:var(--gap-05x);display:flex;flex-direction:column;gap:var(--gap-05x)}
+.detail__layer{
+  display:grid;grid-template-columns:2.5rem minmax(0,1fr);gap:var(--gap-05x);
+  align-items:center;min-height:var(--touch);
+}
+.detail__layer-swatch{width:2.5rem;height:2.5rem;border-radius:var(--radius-small);border:1px solid var(--c-border)}
+
+/* ---------------------------------------------------------------- settings */
+.settings__group{border-top:1px solid var(--c-border);padding-top:var(--gap-05x);margin-top:var(--gap-05x)}
+.settings__group:first-of-type{border-top:0;margin-top:var(--gap-05x)}
+.settings__group-head{display:flex;align-items:center;gap:var(--gap-05x)}
+.settings__group-title{flex:1 1 auto;font-size:var(--fs-copy);font-weight:600;letter-spacing:.02em}
+.settings__fold{
+  flex:0 0 auto;width:var(--touch);height:var(--touch);
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--c-border);border-radius:var(--radius-medium);
+}
+.settings__group-body{display:flex;flex-direction:column;gap:var(--gap-05x);padding-bottom:var(--gap-05x)}
+.settings__group--folded .settings__group-body{display:none}
+.settings__group--folded .settings__fold .icon{transform:rotate(-90deg)}
+.settings__group-hint{font-size:var(--fs-small);color:var(--c-copy-light)}
+.settings__foot{display:none}
+@media (max-width:47.999rem){
+  .settings__foot{display:block;margin-top:var(--gap-3x);border-top:1px solid var(--c-border);padding-top:var(--gap)}
+  .settings__links{display:flex;flex-wrap:wrap;gap:var(--gap-05x);margin-top:var(--gap-05x)}
+}
+@media (min-width:64rem){
+  .settings__group--pair .settings__group-body{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--gap);
+  }
+  .settings__group--pair .settings__group-hint{grid-column:1 / -1}
+}
+
+/* ---------------------------------------------------------------- control */
+.control{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  gap:var(--gap-025x) var(--gap-05x);align-items:center;
+}
+.control__label{grid-column:1;font-size:var(--fs-copy);font-weight:600;line-height:1.3}
+.control__value{
+  grid-column:2;min-width:4ch;text-align:right;
+  font-size:var(--fs-medium);font-weight:600;line-height:1.2;
+  font-variant-numeric:tabular-nums;
+}
+.control__field{
+  grid-column:1 / -1;
+  display:grid;grid-template-columns:var(--touch) minmax(0,1fr) var(--touch);
+  gap:var(--gap-05x);align-items:center;
+}
+.control__segment{grid-column:1 / -1}
+.control__step{
+  width:var(--touch);height:var(--touch);
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--c-border);border-radius:var(--radius-medium);
+  background:var(--c-surface);
+}
+.control__step:active{background:var(--c-surface-sunken)}
+.control__step:disabled{opacity:.45;cursor:default}
+.control__hint{grid-column:1 / -1;font-size:var(--fs-small);color:var(--c-copy-light)}
+.control__action{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:var(--gap-05x)}
+
+/* ---------------------------------------------------------------- photo panel (phone) */
+.photo{display:none}
+.photo__actions{display:flex;flex-direction:column;gap:var(--gap-05x);margin-top:var(--gap-05x)}
+.photo__actions .button{width:100%;min-height:var(--touch-primary)}
+.photo__state{margin-top:var(--gap-025x);font-size:var(--fs-small);color:var(--c-success);font-weight:600}
+.photo__hint{margin-top:var(--gap-05x);font-size:var(--fs-small);color:var(--c-copy-light)}
+.photo__sub{margin-top:var(--gap);font-size:var(--fs-copy);font-weight:600;letter-spacing:.02em}
+
+/* ---------------------------------------------------------------- chips */
+.chip{
+  display:grid;grid-template-columns:1.5rem 2rem minmax(0,1fr);
+  align-items:center;gap:var(--gap-05x);
+  min-height:var(--touch-primary);padding:var(--gap-025x) var(--gap-05x);
+  border:1px solid var(--c-border);border-radius:var(--radius-small);
+  background:var(--c-surface);cursor:pointer;
+}
+.chip__box{width:1.5rem;height:1.5rem;margin:0;accent-color:var(--c-corporate)}
+.chip__swatch{width:2rem;height:2rem;border-radius:var(--radius-small);border:1px solid var(--c-border)}
+.chip__text{min-width:0}
+.chip__name{display:block;font-size:var(--fs-small);font-weight:600;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.chip__meta{display:block;font-size:var(--fs-mini);color:var(--c-copy-light);overflow-wrap:anywhere}
+
+/* ---------------------------------------------------------------- dialog */
+.dialog{
+  width:min(60rem,calc(100vw - var(--gap)));
+  max-height:calc(100dvh - var(--gap));
+  padding:0;border:1px solid var(--c-border);border-radius:var(--radius);
+  background:var(--c-surface);color:var(--c-copy);box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.dialog::backdrop{background:var(--c-overlay)}
+.dialog__inner{display:flex;flex-direction:column;max-height:calc(100dvh - var(--gap))}
+.dialog__head{
+  display:flex;align-items:center;gap:var(--gap-05x);
+  padding:var(--gap-05x) var(--gap);
+  border-bottom:1px solid var(--c-border);background:var(--c-surface);
+}
+.dialog__title{
+  flex:1 1 auto;font-size:var(--fs-hl-small);font-weight:600;line-height:1.2;
+  letter-spacing:-.01em;color:var(--c-head);
+}
+.dialog__close{
+  flex:0 0 auto;width:var(--touch);height:var(--touch);
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--c-border);border-radius:var(--radius-medium);
+}
+.dialog__body{padding:var(--gap);overflow-y:auto;overscroll-behavior:contain;flex:1 1 auto;min-height:0}
+.dialog__head,.dialog__foot{flex:0 0 auto}
+.dialog__foot{
+  display:flex;flex-wrap:wrap;gap:var(--gap-05x);
+  padding:var(--gap-05x) var(--gap) calc(var(--gap-05x) + env(safe-area-inset-bottom));
+  border-top:1px solid var(--c-border);background:var(--c-surface);
+}
+.dialog__foot .button--main{flex:1 1 14rem}
+@media (max-width:47.999rem){
+  .dialog{
+    width:100vw;max-width:100vw;height:100dvh;max-height:none;
+    border-radius:0;border:0;margin:0;
+  }
+  .dialog__inner{height:100dvh;max-height:none}
+  .dialog__head{padding-top:max(var(--gap-05x),env(safe-area-inset-top))}
+}
+
+/* ---------------------------------------------------------------- paintbox */
+.paintbox__row{display:flex;flex-wrap:wrap;gap:var(--gap-05x);align-items:center}
+.paintbox__group{margin-top:var(--gap-15x)}
+.paintbox__group-head{display:flex;flex-wrap:wrap;align-items:center;gap:var(--gap-05x)}
+.paintbox__group-title{flex:1 1 auto;font-size:var(--fs-copy);font-weight:600;letter-spacing:.02em}
+.paintbox__count{font-size:var(--fs-small);color:var(--c-copy-light);font-variant-numeric:tabular-nums}
+.paintbox__list{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(9rem,1fr));
+  gap:var(--gap-05x);margin-top:var(--gap-05x);
+}
+.paintbox__note{margin-top:var(--gap-05x);font-size:var(--fs-small);color:var(--c-copy-light)}
+.paintbox__form{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));
+  gap:var(--gap-05x);margin-top:var(--gap-05x);align-items:end;
+}
+
+/* ---------------------------------------------------------------- collection */
+.collection__list{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(11rem,1fr));gap:var(--gap);
+}
+.collection__item{
+  display:flex;flex-direction:column;gap:var(--gap-05x);
+  padding:var(--gap-05x);border:1px solid var(--c-border);border-radius:var(--radius-medium);
+}
+.collection__thumb{height:7rem;border-radius:var(--radius-small);border:1px solid var(--c-border)}
+.collection__name{font-size:var(--fs-copy);font-weight:600;overflow-wrap:anywhere}
+.collection__date{font-size:var(--fs-small);color:var(--c-copy-light);font-variant-numeric:tabular-nums}
+.collection__actions{display:flex;gap:var(--gap-05x)}
+.collection__actions .button{flex:1 1 0}
+
+/* ---------------------------------------------------------------- mode and screen toggles */
+[data-mode="mix"] [data-show="layer"],
+[data-mode="layer"] [data-show="mix"]{display:none}
+[data-picture="fit"] [data-show="full"],
+[data-picture="full"] [data-show="fit"]{display:none}
+
+/* ---------------------------------------------------------------- phone tabs: one panel at a time */
+@media (max-width:47.999rem){
+  .detail,.plan,.settings,.photo{display:none}
+  [data-tab="detail"] .detail{display:block}
+  [data-tab="plan"] .plan{display:block}
+  [data-tab="settings"] .settings{display:block}
+  [data-tab="photo"] .photo{display:block}
+  [data-picture="full"] .app__panels{display:none}
+  [data-picture="full"] .picture__canvas{
+    max-height:calc(var(--app-vh) - var(--bar-height) - var(--tabs-height) - 7rem);
+  }
+  /* on the phone the details of a picture live in the Photo tab, not in the sticky stage */
+  .stage .closeup{display:none}
+  /* one scrolling row of toggles instead of two ragged rows */
+  .viewbar__toggles{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .viewbar__toggles .switch{flex:0 0 auto}
+  /* the step walk takes the screen: picture, title, buttons, the step itself */
+  [data-mode="layer"][data-steps="open"] .app__panels{display:none}
+  [data-mode="layer"][data-steps="open"] .app__stage{position:static}
+  [data-mode="layer"][data-steps="open"] .stage__tools [data-act="steps"]{display:none}
+  .steps__title{font-size:var(--fs-copy)}
+  .button{padding-inline:var(--gap-05x)}
+  .stage__status{white-space:nowrap;min-width:0}
+}
+
+/* ---------------------------------------------------------------- small phones (<=360px) */
+@media (max-width:22.5rem){
+  .viewbar{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .viewbar__row,.viewbar__toggles{flex:0 0 auto}
+  .viewbar__group{flex:0 0 auto}
+  .viewbar .segmented--scroll{overflow-x:visible}
+}
+
+/* ---------------------------------------------------------------- phone landscape */
+@media (max-width:47.999rem) and (orientation:landscape){
+  .app__main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--gap-05x)}
+  .app__stage{position:static}
+  .picture__canvas{max-height:calc(var(--app-vh) - var(--bar-height) - var(--tabs-height) - 9rem)}
+}
+
+/* ---------------------------------------------------------------- tablet */
+@media (min-width:48rem){
+  .app__main{
+    padding:calc(var(--proto-h) + var(--bar-height) + var(--gap)) var(--gap) var(--gap);
+    padding-left:max(var(--gap),env(safe-area-inset-left));
+    padding-right:max(var(--gap),env(safe-area-inset-right));
+  }
+  .app__panels{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:var(--gap);align-items:start;
+  }
+  .app__panels > * + *{margin-top:0}
+  :root{--picture-share:.46}
+  [data-mode="layer"][data-steps="open"]{--picture-share:.38}
+}
+
+/* ---------------------------------------------------------------- wide and desktop */
+@media (min-width:64rem){
+  .app__main{
+    display:grid;grid-template-columns:minmax(0,1fr) var(--rail);
+    gap:var(--gap);align-items:start;
+    max-width:var(--max-width);margin-inline:auto;
+  }
+  .app__stage{margin-bottom:0}
+  .app__panels{display:block}
+  .app__panels > * + *{margin-top:var(--m-vert)}
+  .picture__canvas{max-height:calc(var(--app-vh) - 18rem)}
+  [data-mode="layer"][data-steps="open"] .picture__canvas{max-height:calc(var(--app-vh) - 24rem)}
+}
+
+/* ---------------------------------------------------------------- motion */
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:0ms !important}
+}
+
+</style>
+</head>
+<body>
+
+<div class="proto">
+  <p class="proto__note">Prototype of a design proposal. Other teams: <a href="../round-1/paper.html">Paper and pigment</a> &middot; <a href="../round-1/path.html">Guided path</a> &middot; <a href="../round-1/">round 1</a></p>
+  <div class="proto__controls">
+    <label class="proto__field"><span class="proto__label">Screen</span>
+      <select class="proto__select" id="screen">
+        <option value="stage">Stage with the picture</option>
+        <option value="colours">Colours and recipe</option>
+        <option value="settings">Settings</option>
+        <option value="paintbox">Paint box</option>
+        <option value="layer">Layer mode</option>
+        <option value="dialog">Dialog: collection</option>
+      </select>
+    </label>
+    <label class="proto__field"><span class="proto__label">Theme</span>
+      <div class="segmented" role="group" aria-label="Theme"><button class="segmented__option segmented__option--active" type="button" data-act="theme" data-val="system" aria-pressed="true">System</button><button class="segmented__option" type="button" data-act="theme" data-val="light" aria-pressed="false">Light</button><button class="segmented__option" type="button" data-act="theme" data-val="dark" aria-pressed="false">Dark</button></div>
+    </label>
+  </div>
+</div>
+
+<div class="app">
+  <header class="app__bar">
+    <h1 class="app__name">Watercolourlove</h1>
+    <p class="app__tagline">Find the main colours in a photo and mix them from your watercolours.</p>
+    <button class="button button--quiet app__account" type="button">Account</button>
+  </header>
+
+  <main class="app__main">
+    <div class="app__stage">
+      <section class="stage" aria-label="Stage">
+        <div class="stage__head">
+          <h2 class="stage__title">Meadow in June (sample)</h2>
+          <p class="stage__state">In collection</p>
+          <div class="stage__actions"><button class="button " type="button">New photo</button><button class="button button--quiet" type="button">Take photo</button><button class="button button--quiet" type="button">Sample</button><button class="button button--quiet" type="button">Save</button><button class="button button--quiet" type="button" data-act="open-collection">Collection</button><button class="button button--quiet" type="button">Print / PDF</button></div>
+        </div>
+
+        <div class="stage__tools">
+          <button class="button button--quiet" type="button" data-act="fitsize">
+            <span data-show="fit">Full size</span><span data-show="full">Fit</span>
+          </button>
+          <button class="button button--quiet" type="button">Pick a detail</button>
+          <button class="button button--quiet" type="button" data-act="steps" data-show="layer">Paint step by step</button>
+          <p class="stage__status">Analysing&hellip;</p>
+        </div>
+
+        <div class="picture">
+          <div class="picture__pane"><svg class="picture__canvas" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Sample photo shown as flat numbered colour areas: sky, hills, trees, meadow, path and water."><rect class="picture__area" x="0" y="0" width="400" height="70" fill="#b7c9d8"/><rect class="picture__area" x="0" y="70" width="400" height="45" fill="#cdd9e2"/><rect class="picture__area" x="0" y="115" width="400" height="30" fill="#e2e3dc"/><path class="picture__area" d="M196 28 q22 -16 46 -6 q26 -12 44 8 q20 2 16 16 l-128 0 q-8 -10 22 -18 Z" fill="#f1efe8"/><path class="picture__area" d="M0 145 L72 118 L150 140 L236 110 L318 136 L400 118 L400 162 L0 162 Z" fill="#9aa7a4"/><path class="picture__area" d="M0 162 L104 143 L220 170 L312 152 L400 166 L400 190 L0 190 Z" fill="#7d8b78"/><path class="picture__area" d="M250 190 L256 150 q22 -34 48 -6 q24 18 10 46 Z" fill="#4c5a4a"/><path class="picture__area" d="M64 190 L70 158 q20 -28 42 -4 q18 16 8 36 Z" fill="#6f7f55"/><rect class="picture__area" x="0" y="190" width="400" height="34" fill="#c7bf84"/><rect class="picture__area" x="0" y="224" width="400" height="28" fill="#a8a362"/><path class="picture__area" d="M140 252 L176 190 L206 190 L196 252 Z" fill="#cbb08a"/><rect class="picture__area" x="0" y="252" width="400" height="48" fill="#8fa3ad"/><g class="picture__guides" stroke="#1f4f73" stroke-width="1" stroke-dasharray="6 5" fill="none"><path d="M200 0V300M0 150H400M0 0L400 300M400 0L0 300"/></g><text class="picture__number" x="36" y="34">1</text><text class="picture__number" x="36" y="92">2</text><text class="picture__number" x="36" y="130">3</text><text class="picture__number" x="244" y="36">4</text><text class="picture__number" x="150" y="150">5</text><text class="picture__number" x="56" y="175">6</text><text class="picture__number" x="282" y="172">7</text><text class="picture__number" x="90" y="176">8</text><text class="picture__number" x="300" y="206">9</text><text class="picture__number" x="300" y="238">10</text><text class="picture__number" x="172" y="232">11</text><text class="picture__number" x="300" y="276">12</text></svg></div>
+        </div>
+
+        <div class="viewbar">
+          <div class="viewbar__row">
+            <span class="viewbar__label">Show</span>
+            <div class="viewbar__group"><div class="segmented segmented--scroll" role="group" aria-label="Which view" data-show="mix"><button class="segmented__option segmented__option--active" type="button" data-act="view" data-val="mixed" aria-pressed="true">Mixed paint</button><button class="segmented__option" type="button" data-act="view" data-val="photocolour" aria-pressed="false">Photo colour</button><button class="segmented__option" type="button" data-act="view" data-val="photo" aria-pressed="false">Photo</button><button class="segmented__option" type="button" data-act="view" data-val="sketch" aria-pressed="false">Sketch</button></div><div class="segmented segmented--scroll" role="group" aria-label="Which view" data-show="layer"><button class="segmented__option segmented__option--active" type="button" data-act="view" data-val="mixed" aria-pressed="true">Layered paint</button><button class="segmented__option" type="button" data-act="view" data-val="photo" aria-pressed="false">Photo</button><button class="segmented__option" type="button" data-act="view" data-val="sketch" aria-pressed="false">Sketch</button></div></div>
+          </div>
+          <div class="viewbar__toggles">
+            <label class="switch"><input class="switch__box" type="checkbox" checked data-act="flag" data-flag="outlines"><span class="switch__text">Outlines</span></label>
+            <label class="switch"><input class="switch__box" type="checkbox" checked data-act="flag" data-flag="numbers"><span class="switch__text">Numbers</span></label>
+            <label class="switch viewbar__toggle--guides"><input class="switch__box" type="checkbox" checked data-act="flag" data-flag="guides"><span class="switch__text">Guides</span></label>
+          </div>
+          <p class="viewbar__hint">Quarters and diagonals, to transfer the sketch to paper.</p>
+        </div>
+
+        <div class="steps">
+          <div class="steps__head">
+            <h3 class="steps__title">Step 3 of 11: layer 2 of 5, 480 Cerulean blue, coat 1 of 2</h3>
+            <button class="button button--quiet steps__close" type="button" data-act="steps">Close</button>
+          </div>
+          <div class="steps__nav">
+            <button class="button button--secondary button--main" type="button">Previous</button>
+            <button class="button button--main" type="button">Next</button>
+          </div>
+          <div class="segmented segmented--scroll" role="group" aria-label="Which step view"><button class="segmented__option segmented__option--active" type="button" data-act="seg" data-val="where" aria-pressed="true">Where to paint</button><button class="segmented__option" type="button" data-act="seg" data-val="wash" aria-pressed="false">This wash</button><button class="segmented__option" type="button" data-act="seg" data-val="sofar" aria-pressed="false">So far</button></div>
+          <p class="steps__hint">Where to paint: the paper after this step. What is painted now is in full colour, the rest faded.</p>
+          <div class="steps__lines">
+            <span class="steps__key">Mix</span><span class="steps__value">480 Cerulean blue, 1:5 with water, like weak tea</span>
+            <span class="steps__key">Paint</span><span class="steps__value">Sky and water, in one stroke, wet on dry paper.</span>
+            <span class="steps__key">Then</span><span class="steps__value">Let it dry before the second coat of this layer.</span>
+          </div>
+          <p class="steps__warn">Note: this layer covers many small shapes. Work from the top down so the edges stay wet.</p>
+        </div>
+
+        <p class="picture__readout" data-show="mix" id="readout-mix">7 &middot; 23% of image &middot; 1 x 663 Sepia brown + 2 x 485 Indigo + 1 x 208 Burnt sienna</p>
+        <p class="picture__readout" data-show="layer">Spot: 3 layers &middot; match: good</p>
+
+        <div class="closeup">
+          <div class="closeup__bar">
+            <span class="closeup__name">Detail 2</span>
+            <button class="button button--quiet" type="button">Back to the whole picture</button>
+          </div>
+          <ul class="closeup__strip"><li class="closeup__item"><span class="closeup__thumb" style="background:#9aa7a4"></span><span class="closeup__number">1</span><button class="closeup__remove" type="button" aria-label="Remove detail 1"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></li><li class="closeup__item closeup__item--active"><span class="closeup__thumb" style="background:#4c5a4a"></span><span class="closeup__number">2</span><button class="closeup__remove" type="button" aria-label="Remove detail 2"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></li><li class="closeup__item"><span class="closeup__thumb" style="background:#cbb08a"></span><span class="closeup__number">3</span><button class="closeup__remove" type="button" aria-label="Remove detail 3"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></li></ul>
+        </div>
+      </section>
+    </div>
+
+    <div class="app__panels">
+      <div class="app__group">
+
+        <section class="detail" aria-label="Selected colour">
+          <div class="detail__head">
+            <h2 class="detail__title"><span data-show="mix">Colour 7</span><span data-show="layer">This spot</span></h2>
+            <button class="button button--quiet" type="button">Close</button>
+          </div>
+
+          <div class="detail__compare">
+            <div class="detail__cell">
+              <div class="detail__chip" style="background:#4c5a4a">
+                <span class="detail__hex" style="color:#ffffff">#4c5a4a</span>
+              </div>
+              <span class="detail__caption"><span data-show="mix">Photo colour</span><span data-show="layer">Photo</span></span>
+            </div>
+            <div class="detail__cell">
+              <div class="detail__chip" style="background:#4f5c4d">
+                <span class="detail__hex" style="color:#ffffff">#4f5c4d</span>
+              </div>
+              <span class="detail__caption"><span data-show="mix">Your mix</span><span data-show="layer">Layered</span></span>
+            </div>
+          </div>
+          <p class="detail__match" data-show="layer">Match: good</p>
+
+          <div class="detail__actions">
+            <label class="detail__colour">Change colour
+              <input class="detail__colour-input" type="color" value="#4c5a4a" aria-label="Change the colour of this area">
+            </label>
+            <button class="button button--quiet" type="button">Back to photo colour</button>
+            <button class="button button--quiet" type="button">Edit only the tapped area</button>
+          </div>
+
+          <div data-show="mix">
+            <h3 class="detail__subtitle">Washes of this mix</h3>
+            <div class="detail__washes"><button class="plan__wash" type="button" data-act="wash">7W</button><button class="plan__wash" type="button" data-act="wash">7L</button><button class="plan__wash plan__wash--selected" type="button" data-act="wash">7M</button><button class="plan__wash" type="button" data-act="wash">7R</button></div>
+            <p class="detail__note">Same mix as 7L, 7M &mdash; only the amount of water differs.</p>
+            <h3 class="detail__subtitle">Recipes</h3>
+            <div class="detail__recipes"><button class="detail__recipe detail__recipe--chosen" type="button" data-act="recipe"><span class="detail__recipe-name">1 x 663 Sepia brown + 2 x 485 Indigo + 1 x 208 Burnt sienna</span><span class="detail__recipe-meta">closest match</span><span class="recipe"><span class="recipe__part" style="flex:1;background:#473a2e"><span class="recipe__part-text" style="color:#ffffff">663</span></span><span class="recipe__part" style="flex:2;background:#2c3a56"><span class="recipe__part-text" style="color:#ffffff">485</span></span><span class="recipe__part" style="flex:1;background:#a85a36"><span class="recipe__part-text" style="color:#ffffff">208</span></span></span></button><button class="detail__recipe" type="button" data-act="recipe"><span class="detail__recipe-name">2 x 517 Perylene green + 1 x 663 Sepia brown</span><span class="detail__recipe-meta">a little greener</span><span class="recipe"><span class="recipe__part" style="flex:2;background:#2b4a3f"><span class="recipe__part-text" style="color:#ffffff">517</span></span><span class="recipe__part" style="flex:1;background:#473a2e"><span class="recipe__part-text" style="color:#ffffff">663</span></span></span></button><button class="detail__recipe" type="button" data-act="recipe"><span class="detail__recipe-name">1 x 485 Indigo + 1 x 208 Burnt sienna</span><span class="detail__recipe-meta">two paints only</span><span class="recipe"><span class="recipe__part" style="flex:1;background:#2c3a56"><span class="recipe__part-text" style="color:#ffffff">485</span></span><span class="recipe__part" style="flex:1;background:#a85a36"><span class="recipe__part-text" style="color:#ffffff">208</span></span></span></button><button class="detail__recipe" type="button" data-act="recipe"><span class="detail__recipe-name">1 x 670 Neutral tint + 1 x 542 Sap green + 1 x 208 Burnt sienna</span><span class="detail__recipe-meta">flatter, less depth</span><span class="recipe"><span class="recipe__part" style="flex:1;background:#3f4349"><span class="recipe__part-text" style="color:#ffffff">670</span></span><span class="recipe__part" style="flex:1;background:#5a7a34"><span class="recipe__part-text" style="color:#ffffff">542</span></span><span class="recipe__part" style="flex:1;background:#a85a36"><span class="recipe__part-text" style="color:#ffffff">208</span></span></span></button></div>
+          </div>
+
+          <div data-show="layer">
+            <h3 class="detail__subtitle">Layers on this spot</h3>
+            <div class="detail__layers">
+              <div class="detail__layer"><span class="detail__layer-swatch" style="background:#efe3c3"></span>
+                <span class="plan__text"><span class="plan__name">1 &middot; 702 Naples yellow</span><span class="plan__meta">1 coat, 1:6 with water</span></span></div>
+              <div class="detail__layer"><span class="detail__layer-swatch" style="background:#c08a5e"></span>
+                <span class="plan__text"><span class="plan__name">3 &middot; 208 Burnt sienna</span><span class="plan__meta">1 coat, 1:4 with water</span></span></div>
+              <div class="detail__layer"><span class="detail__layer-swatch" style="background:#3c4a63"></span>
+                <span class="plan__text"><span class="plan__name">5 &middot; 485 Indigo</span><span class="plan__meta">2 coats, 1:3 with water</span></span></div>
+            </div>
+            <p class="detail__note">Not painted here: 2, 4.</p>
+          </div>
+        </section>
+
+        <section class="plan" aria-label="The plan">
+          <div class="plan__head">
+            <h2 class="plan__title"><span data-show="mix">Colours</span><span data-show="layer">Layers</span></h2>
+            <p class="plan__count"><span data-show="mix">20 colours in 12 mixes</span><span data-show="layer">5 layers, 2 accents, 11 steps &middot; match: good</span></p>
+          </div>
+          <div class="plan__actions">
+            <button class="button button--secondary" type="button" data-act="open-paintbox">Paint box</button>
+            <button class="button button--quiet" type="button" data-show="layer">Show all layers</button>
+          </div>
+          <p class="plan__key" data-show="mix">W very watery &middot; L light &middot; M medium &middot; R rich &middot; C concentrated</p>
+
+          <ul class="plan__list" data-show="mix"><li class="plan__item" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">1</span>
+      <span class="plan__swatch" style="background:#b7c9d8"></span>
+      <span class="plan__text"><span class="plan__name">1 x 480 Cerulean blue + 1 x 485 Indigo</span><span class="plan__meta">light · 11% of image</span></span>
+    </button>
+    <span class="recipe"><span class="recipe__part" style="flex:1;background:#3b84b3"><span class="recipe__part-text" style="color:#ffffff">480</span></span><span class="recipe__part" style="flex:1;background:#2c3a56"><span class="recipe__part-text" style="color:#ffffff">485</span></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">1L</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">2</span>
+      <span class="plan__swatch" style="background:#cdd9e2"></span>
+      <span class="plan__text"><span class="plan__name">1 x 480 Cerulean blue</span><span class="plan__meta">2 washes · 9% of image</span></span>
+    </button>
+    <span class="recipe"><span class="recipe__part" style="flex:1;background:#3b84b3"><span class="recipe__part-text" style="color:#ffffff">480</span></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">2W</button><button class="plan__wash" type="button" data-act="wash">2L</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">3</span>
+      <span class="plan__swatch" style="background:#e2e3dc"></span>
+      <span class="plan__text"><span class="plan__name">1 x 702 Naples yellow + 1 x 480 Cerulean blue</span><span class="plan__meta">very watery · 6% of image</span></span>
+    </button>
+    <span class="recipe"><span class="recipe__part" style="flex:1;background:#888888"><span class="recipe__part-text" style="color:#ffffff">702</span></span><span class="recipe__part" style="flex:1;background:#3b84b3"><span class="recipe__part-text" style="color:#ffffff">480</span></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">3W</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">4</span>
+      <span class="plan__swatch" style="background:#f1efe8"></span>
+      <span class="plan__text"><span class="plan__name">Paper white</span><span class="plan__meta">very watery · 3% of image</span></span>
+    </button>
+    <span class="recipe recipe--empty"><span class="recipe__part" style="background:#f1efe8;flex:1"></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">4W</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">5</span>
+      <span class="plan__swatch" style="background:#9aa7a4"></span>
+      <span class="plan__text"><span class="plan__name">1 x 485 Indigo + 1 x 208 Burnt sienna</span><span class="plan__meta">3 washes · 8% of image</span></span>
+    </button>
+    <span class="recipe"><span class="recipe__part" style="flex:1;background:#2c3a56"><span class="recipe__part-text" style="color:#ffffff">485</span></span><span class="recipe__part" style="flex:1;background:#a85a36"><span class="recipe__part-text" style="color:#ffffff">208</span></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">5L</button><button class="plan__wash" type="button" data-act="wash">5M</button><button class="plan__wash" type="button" data-act="wash">5R</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">6</span>
+      <span class="plan__swatch" style="background:#7d8b78"></span>
+      <span class="plan__text"><span class="plan__name">2 x 517 Perylene green + 1 x 208 Burnt sienna</span><span class="plan__meta">2 washes · 7% of image</span></span>
+    </button>
+    <span class="recipe"><span class="recipe__part" style="flex:2;background:#2b4a3f"><span class="recipe__part-text" style="color:#ffffff">517</span></span><span class="recipe__part" style="flex:1;background:#a85a36"><span class="recipe__part-text" style="color:#ffffff">208</span></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">6M</button><button class="plan__wash" type="button" data-act="wash">6R</button></div>
+  </div>
+</li><li class="plan__item plan__item--selected" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">7</span>
+      <span class="plan__swatch" style="background:#4c5a4a"></span>
+      <span class="plan__text"><span class="plan__name">1 x 663 Sepia brown + 2 x 485 Indigo + 1 x 208 Burnt sienna</span><span class="plan__meta">4 washes · 23% of image · <span class="plan__changed">changed</span></span></span>
+    </button>
+    <span class="recipe"><span class="recipe__part" style="flex:1;background:#473a2e"><span class="recipe__part-text" style="color:#ffffff">663</span></span><span class="recipe__part" style="flex:2;background:#2c3a56"><span class="recipe__part-text" style="color:#ffffff">485</span></span><span class="recipe__part" style="flex:1;background:#a85a36"><span class="recipe__part-text" style="color:#ffffff">208</span></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">7W</button><button class="plan__wash" type="button" data-act="wash">7L</button><button class="plan__wash plan__wash--selected" type="button" data-act="wash">7M</button><button class="plan__wash" type="button" data-act="wash">7R</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">8</span>
+      <span class="plan__swatch" style="background:#6f7f55"></span>
+      <span class="plan__text"><span class="plan__name">1 x 517 Perylene green + 1 x 254 Cadmium orange</span><span class="plan__meta">medium · 5% of image</span></span>
+    </button>
+    <span class="recipe"><span class="recipe__part" style="flex:1;background:#2b4a3f"><span class="recipe__part-text" style="color:#ffffff">517</span></span><span class="recipe__part" style="flex:1;background:#e8762c"><span class="recipe__part-text" style="color:#ffffff">254</span></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">8M</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">9</span>
+      <span class="plan__swatch" style="background:#c7bf84"></span>
+      <span class="plan__text"><span class="plan__name">1 x 213 Cadmium yellow + 1 x 517 Perylene green</span><span class="plan__meta">light · 6% of image</span></span>
+    </button>
+    <span class="recipe"><span class="recipe__part" style="flex:1;background:#f7c33a"><span class="recipe__part-text" style="color:#141210">213</span></span><span class="recipe__part" style="flex:1;background:#2b4a3f"><span class="recipe__part-text" style="color:#ffffff">517</span></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">9L</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">10</span>
+      <span class="plan__swatch" style="background:#a8a362"></span>
+      <span class="plan__text"><span class="plan__name">2 x 213 Cadmium yellow + 1 x 485 Indigo</span><span class="plan__meta">2 washes · 7% of image</span></span>
+    </button>
+    <span class="recipe"><span class="recipe__part" style="flex:2;background:#f7c33a"><span class="recipe__part-text" style="color:#141210">213</span></span><span class="recipe__part" style="flex:1;background:#2c3a56"><span class="recipe__part-text" style="color:#ffffff">485</span></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">10M</button><button class="plan__wash" type="button" data-act="wash">10R</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">11</span>
+      <span class="plan__swatch" style="background:#cbb08a"></span>
+      <span class="plan__text"><span class="plan__name">1 x 208 Burnt sienna + 1 x 702 Naples yellow</span><span class="plan__meta">light · 4% of image</span></span>
+    </button>
+    <span class="recipe"><span class="recipe__part" style="flex:1;background:#a85a36"><span class="recipe__part-text" style="color:#ffffff">208</span></span><span class="recipe__part" style="flex:1;background:#888888"><span class="recipe__part-text" style="color:#ffffff">702</span></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">11L</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">12</span>
+      <span class="plan__swatch" style="background:#8fa3ad"></span>
+      <span class="plan__text"><span class="plan__name">1 x 480 Cerulean blue + 1 x 663 Sepia brown</span><span class="plan__meta">medium · 11% of image</span></span>
+    </button>
+    <span class="recipe"><span class="recipe__part" style="flex:1;background:#3b84b3"><span class="recipe__part-text" style="color:#ffffff">480</span></span><span class="recipe__part" style="flex:1;background:#473a2e"><span class="recipe__part-text" style="color:#ffffff">663</span></span></span>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash">12M</button></div>
+  </div>
+</li></ul>
+
+          <div data-show="layer">
+            <ul class="plan__list"><li class="plan__item" data-act="row">
+  <label class="switch plan__tick"><input class="switch__box" type="checkbox" checked>
+    <span class="plan__tick-label">Show layer 1 in the picture</span></label>
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">1</span>
+      <span class="plan__swatch" style="background:#efe3c3"></span>
+      <span class="plan__text"><span class="plan__name">702 Naples yellow</span>
+      <span class="plan__meta">1:6 with water, like weak tea · 1 coat · 100% · the first glaze over everything</span></span>
+    </button>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash"><span class="plan__tick-label">Coat 1 of 1 of layer 1: </span>1</button></div>
+  </div>
+</li><li class="plan__item plan__item--current" data-act="row">
+  <label class="switch plan__tick"><input class="switch__box" type="checkbox" checked>
+    <span class="plan__tick-label">Show layer 2 in the picture</span></label>
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">2</span>
+      <span class="plan__swatch" style="background:#c6d8e4"></span>
+      <span class="plan__text"><span class="plan__name">480 Cerulean blue</span>
+      <span class="plan__meta">1:5 with water, like weak tea · 2 coats · 62% · sky and water</span></span>
+    </button>
+    <div class="plan__sub"><button class="plan__wash plan__wash--selected" type="button" data-act="wash"><span class="plan__tick-label">Coat 1 of 2 of layer 2: </span>1</button><button class="plan__wash" type="button" data-act="wash"><span class="plan__tick-label">Coat 2 of 2 of layer 2: </span>2</button></div>
+  </div>
+</li><li class="plan__item plan__item--selected" data-act="row">
+  <label class="switch plan__tick"><input class="switch__box" type="checkbox" checked>
+    <span class="plan__tick-label">Show layer 3 in the picture</span></label>
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">3</span>
+      <span class="plan__swatch" style="background:#c08a5e"></span>
+      <span class="plan__text"><span class="plan__name">208 Burnt sienna</span>
+      <span class="plan__meta">1:4 with water, like tea · 1 coat · 41% · the warm ground</span></span>
+    </button>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash"><span class="plan__tick-label">Coat 1 of 1 of layer 3: </span>1</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <label class="switch plan__tick"><input class="switch__box" type="checkbox" checked>
+    <span class="plan__tick-label">Show layer 4 in the picture</span></label>
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">4</span>
+      <span class="plan__swatch" style="background:#5d7a5a"></span>
+      <span class="plan__text"><span class="plan__name">517 Perylene green</span>
+      <span class="plan__meta">1:3 with water, like tea · 2 coats · 38% · the trees</span></span>
+    </button>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash"><span class="plan__tick-label">Coat 1 of 2 of layer 4: </span>1</button><button class="plan__wash" type="button" data-act="wash"><span class="plan__tick-label">Coat 2 of 2 of layer 4: </span>2</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <label class="switch plan__tick"><input class="switch__box" type="checkbox" checked>
+    <span class="plan__tick-label">Show layer 5 in the picture</span></label>
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">5</span>
+      <span class="plan__swatch" style="background:#3c4a63"></span>
+      <span class="plan__text"><span class="plan__name">485 Indigo</span>
+      <span class="plan__meta">1:3 with water, like milk · 3 coats · 23% · for the darks</span></span>
+    </button>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash"><span class="plan__tick-label">Coat 1 of 3 of layer 5: </span>1</button><button class="plan__wash" type="button" data-act="wash"><span class="plan__tick-label">Coat 2 of 3 of layer 5: </span>2</button><button class="plan__wash" type="button" data-act="wash"><span class="plan__tick-label">Coat 3 of 3 of layer 5: </span>3</button></div>
+  </div>
+</li></ul>
+            <h3 class="plan__group-title">Accents, painted last</h3>
+            <ul class="plan__list"><li class="plan__item" data-act="row">
+  <label class="switch plan__tick"><input class="switch__box" type="checkbox" checked>
+    <span class="plan__tick-label">Show layer A1 in the picture</span></label>
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">A1</span>
+      <span class="plan__swatch" style="background:#b4566f"></span>
+      <span class="plan__text"><span class="plan__name">341 Quinacridone rose</span>
+      <span class="plan__meta">1:2 with water, rich · 1 coat · 3% · the one warm touch</span></span>
+    </button>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash"><span class="plan__tick-label">Coat 1 of 1 of layer A1: </span>1</button></div>
+  </div>
+</li><li class="plan__item" data-act="row">
+  <label class="switch plan__tick"><input class="switch__box" type="checkbox" checked>
+    <span class="plan__tick-label">Show layer A2 in the picture</span></label>
+  <div class="plan__main">
+    <button class="plan__row" type="button">
+      <span class="plan__number">A2</span>
+      <span class="plan__swatch" style="background:#4a3a2c"></span>
+      <span class="plan__text"><span class="plan__name">663 Sepia brown</span>
+      <span class="plan__meta">1:1 with water, concentrated · 1 coat · 5% · the deepest darks</span></span>
+    </button>
+    <div class="plan__sub"><button class="plan__wash" type="button" data-act="wash"><span class="plan__tick-label">Coat 1 of 1 of layer A2: </span>1</button></div>
+  </div>
+</li></ul>
+            <p class="plan__note">Ticks only change what the picture shows. Change the paints in the paint box.</p>
+            <p class="plan__note">Not needed for this picture: 341 Quinacridone rose.</p>
+            <p class="plan__note">14% of the picture is out of reach of these paints. Compare with Photo, or swap a paint.</p>
+          </div>
+        </section>
+
+      </div>
+
+      <div class="app__group">
+        <section class="settings" aria-label="Settings">
+          <h2 class="settings__title">Settings</h2>
+
+          <div class="settings__group">
+            <div class="settings__group-head">
+              <h3 class="settings__group-title">Method</h3>
+              <button class="settings__fold" type="button" data-act="fold" aria-label="Fold the group Method"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="settings__group-body">
+              <div class="control">
+  <span class="control__label">Method</span>
+  <div class="control__segment"><div class="segmented" role="group" aria-label="Method"><button class="segmented__option segmented__option--active" type="button" data-act="mode" data-val="mix" aria-pressed="true">Mix</button><button class="segmented__option" type="button" data-act="mode" data-val="layer" aria-pressed="false">Layer</button></div></div>
+  <p class="control__hint"><span data-show="mix">Mix: every area gets one mixed colour, painted once.</span><span data-show="layer">Layer: a few thin washes, each painted over the dry one before.</span></p>
+</div>
+            </div>
+          </div>
+
+          <div class="settings__group">
+            <div class="settings__group-head">
+              <h3 class="settings__group-title">Plan</h3>
+              <button class="settings__fold" type="button" data-act="fold" aria-label="Fold the group Plan"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="settings__group-body">
+              <div data-show="mix"><div class="control">
+  <span class="control__label" id="label-colours">Colours</span>
+  <output class="control__value" id="value-colours" for="colours">20</output>
+  <div class="control__field">
+    <button class="control__step" type="button" data-act="step" data-target="colours" data-val="-1" aria-label="One step less: Colours"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    <input class="slider" type="range" id="colours" min="2" max="32" step="1" value="20" data-unit="" aria-labelledby="label-colours">
+    <button class="control__step" type="button" data-act="step" data-target="colours" data-val="1" aria-label="One step more: Colours"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+  </div>
+  <p class="control__hint">More colours means more detail and more mixes to prepare.</p>
+</div><div class="control">
+  <span class="control__label" id="label-details">Details</span>
+  <output class="control__value" id="value-details" for="details">3</output>
+  <div class="control__field">
+    <button class="control__step" type="button" data-act="step" data-target="details" data-val="-1" aria-label="One step less: Details"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    <input class="slider" type="range" id="details" min="0" max="10" step="1" value="3" data-unit="" aria-labelledby="label-details">
+    <button class="control__step" type="button" data-act="step" data-target="details" data-val="1" aria-label="One step more: Details"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+  </div>
+  <p class="control__hint">0 keeps the picture as close to the photo as it can. 10 lets small areas of another hue keep their own mix.</p>
+</div><div class="control">
+  <span class="control__label">Max. paints</span>
+  <div class="control__segment"><div class="segmented" role="group" aria-label="Max. paints"><button class="segmented__option" type="button" data-act="seg" data-val="1" aria-pressed="false">1</button><button class="segmented__option" type="button" data-act="seg" data-val="2" aria-pressed="false">2</button><button class="segmented__option segmented__option--active" type="button" data-act="seg" data-val="3" aria-pressed="true">3</button></div></div>
+  <p class="control__hint">How many paints one mix may use.</p>
+</div></div>
+              <div data-show="layer"><div class="control">
+  <span class="control__label" id="label-layers">Layers</span>
+  <output class="control__value" id="value-layers" for="layers">5</output>
+  <div class="control__field">
+    <button class="control__step" type="button" data-act="step" data-target="layers" data-val="-1" aria-label="One step less: Layers"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    <input class="slider" type="range" id="layers" min="2" max="8" step="1" value="5" data-unit="" aria-labelledby="label-layers">
+    <button class="control__step" type="button" data-act="step" data-target="layers" data-val="1" aria-label="One step more: Layers"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+  </div>
+  <p class="control__hint">Washes; accents and second coats are extra steps.</p>
+</div><div class="control">
+  <span class="control__label" id="label-accents">Accents</span>
+  <output class="control__value" id="value-accents" for="accents">2</output>
+  <div class="control__field">
+    <button class="control__step" type="button" data-act="step" data-target="accents" data-val="-1" aria-label="One step less: Accents"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    <input class="slider" type="range" id="accents" min="0" max="3" step="1" value="2" data-unit="" aria-labelledby="label-accents">
+    <button class="control__step" type="button" data-act="step" data-target="accents" data-val="1" aria-label="One step more: Accents"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+  </div>
+  <p class="control__hint">Small strong touches painted last: first for a colour the washes miss, then for the darks.</p>
+</div><div class="control">
+  <span class="control__label">Max. coats</span>
+  <div class="control__segment"><div class="segmented" role="group" aria-label="Max. coats"><button class="segmented__option" type="button" data-act="seg" data-val="1" aria-pressed="false">1</button><button class="segmented__option" type="button" data-act="seg" data-val="2" aria-pressed="false">2</button><button class="segmented__option segmented__option--active" type="button" data-act="seg" data-val="3" aria-pressed="true">3</button></div></div>
+  <p class="control__hint">How often one wash may be painted over itself.</p>
+</div></div>
+              <div class="control">
+  <div class="control__action"><button class="button button--secondary" type="button" data-act="open-paintbox">Paint box</button></div>
+  <p class="control__hint"><span data-show="mix">54 paints selected.</span><span data-show="layer">7 of 8 base paints chosen.</span></p>
+</div>
+            </div>
+          </div>
+
+          <div class="settings__group settings__group--pair">
+            <div class="settings__group-head">
+              <h3 class="settings__group-title">Shapes</h3>
+              <button class="settings__fold" type="button" data-act="fold" aria-label="Fold the group Shapes"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="settings__group-body">
+              <div class="control">
+  <span class="control__label">Areas</span>
+  <div class="control__segment"><div class="segmented" role="group" aria-label="Areas"><button class="segmented__option segmented__option--active" type="button" data-act="seg" data-val="organic" aria-pressed="true">Organic</button><button class="segmented__option" type="button" data-act="seg" data-val="geometric" aria-pressed="false">Geometric</button></div></div>
+  <p class="control__hint">Areas follow the outlines in the photo.</p>
+</div>
+              <div class="control">
+  <span class="control__label" id="label-simplify">Simplify areas</span>
+  <output class="control__value" id="value-simplify" for="simplify">4</output>
+  <div class="control__field">
+    <button class="control__step" type="button" data-act="step" data-target="simplify" data-val="-1" aria-label="One step less: Simplify areas"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    <input class="slider" type="range" id="simplify" min="0" max="10" step="1" value="4" data-unit="" aria-labelledby="label-simplify">
+    <button class="control__step" type="button" data-act="step" data-target="simplify" data-val="1" aria-label="One step more: Simplify areas"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+  </div>
+  <p class="control__hint">Higher gives fewer and bigger shapes to paint.</p>
+</div>
+            </div>
+          </div>
+
+          <div class="settings__group settings__group--pair">
+            <div class="settings__group-head">
+              <h3 class="settings__group-title">Photo</h3>
+              <button class="settings__fold" type="button" data-act="fold" aria-label="Fold the group Photo"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="settings__group-body">
+              <div class="control">
+  <span class="control__label" id="label-saturation">Saturation</span>
+  <output class="control__value" id="value-saturation" for="saturation">115%</output>
+  <div class="control__field">
+    <button class="control__step" type="button" data-act="step" data-target="saturation" data-val="-1" aria-label="One step less: Saturation"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    <input class="slider" type="range" id="saturation" min="0" max="200" step="5" value="115" data-unit="%" aria-labelledby="label-saturation">
+    <button class="control__step" type="button" data-act="step" data-target="saturation" data-val="1" aria-label="One step more: Saturation"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+  </div>
+  <p class="control__hint">Stronger or weaker colour in the photo the plan is mixed from.</p>
+</div>
+              <div class="control">
+  <span class="control__label" id="label-contrast">Contrast</span>
+  <output class="control__value" id="value-contrast" for="contrast">100%</output>
+  <div class="control__field">
+    <button class="control__step" type="button" data-act="step" data-target="contrast" data-val="-1" aria-label="One step less: Contrast"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    <input class="slider" type="range" id="contrast" min="50" max="200" step="5" value="100" data-unit="%" aria-labelledby="label-contrast">
+    <button class="control__step" type="button" data-act="step" data-target="contrast" data-val="1" aria-label="One step more: Contrast"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+  </div>
+  <p class="control__hint">More contrast separates the darks from the lights.</p>
+</div>
+              <div class="control">
+  <div class="control__action"><button class="button button--quiet" type="button">Reset saturation and contrast</button></div>
+  <p class="control__hint">Both back to the photo as it is.</p>
+</div>
+              <p class="settings__group-hint">The painting is mixed from the photo with these values, not from the original.</p>
+            </div>
+          </div>
+
+          <div class="settings__group">
+            <div class="settings__group-head">
+              <h3 class="settings__group-title">AI help</h3>
+              <button class="settings__fold" type="button" data-act="fold" aria-label="Fold the group AI help"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="settings__group-body">
+              <div class="control">
+  <span class="control__label">AI help</span>
+  <div class="control__segment"><div class="segmented" role="group" aria-label="AI help"><button class="segmented__option segmented__option--active" type="button" data-act="seg" data-val="off" aria-pressed="true">Off</button><button class="segmented__option" type="button" data-act="seg" data-val="on" aria-pressed="false">On</button></div></div>
+  <p class="control__hint">An AI model looks at the picture and says what matters in it. Off: the app chooses on its own.</p>
+</div>
+              <div class="control">
+  <div class="control__action"><button class="button button--quiet" type="button">Open AI settings</button></div>
+  <p class="control__hint">Provider, model, your key and what is sent.</p>
+</div>
+            </div>
+          </div>
+
+          <div class="settings__foot">
+            <button class="button button--quiet" type="button">Account</button>
+            <div class="settings__links">
+              <a class="settings__link" href="#manual">Manual</a>
+              <a class="settings__link" href="#privacy">Privacy</a>
+              <a class="settings__link" href="#terms">Terms</a>
+              <a class="settings__link" href="#imprint">Imprint</a>
+              <a class="settings__link" href="#privacy-settings">Privacy settings</a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="photo" aria-label="Photo">
+        <h2 class="photo__title">Meadow in June (sample)</h2>
+        <p class="photo__state">In collection</p>
+        <div class="photo__actions"><button class="button " type="button">New photo</button><button class="button button--quiet" type="button">Take photo</button><button class="button button--quiet" type="button">Sample</button><button class="button button--quiet" type="button">Save</button><button class="button button--quiet" type="button" data-act="open-collection">Collection</button><button class="button button--quiet" type="button">Print / PDF</button></div>
+        <p class="photo__hint">Nothing to print yet is shown here when a plan has not been computed.</p>
+        <h3 class="photo__sub">Details of this picture</h3>
+        <ul class="closeup__strip"><li class="closeup__item"><span class="closeup__thumb" style="background:#9aa7a4"></span><span class="closeup__number">1</span><button class="closeup__remove" type="button" aria-label="Remove detail 1"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></li><li class="closeup__item closeup__item--active"><span class="closeup__thumb" style="background:#4c5a4a"></span><span class="closeup__number">2</span><button class="closeup__remove" type="button" aria-label="Remove detail 2"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></li><li class="closeup__item"><span class="closeup__thumb" style="background:#cbb08a"></span><span class="closeup__number">3</span><button class="closeup__remove" type="button" aria-label="Remove detail 3"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></li></ul>
+      </section>
+    </div>
+
+    <footer class="app__footer">
+      <a class="app__footer-link" href="#manual">Manual</a>
+      <a class="app__footer-link" href="#privacy">Privacy</a>
+      <a class="app__footer-link" href="#terms">Terms</a>
+      <a class="app__footer-link" href="#imprint">Imprint</a>
+      <a class="app__footer-link" href="#privacy-settings">Privacy settings</a>
+    </footer>
+  </main>
+
+  <nav class="app__tabs" aria-label="Sections">
+    <button class="app__tab" type="button" data-act="tab" data-val="plan">
+      <span data-show="mix">Colours</span><span data-show="layer">Layers</span>
+    </button>
+    <button class="app__tab" type="button" data-act="tab" data-val="detail">
+      <span data-show="mix">Recipe</span><span data-show="layer">Spot</span>
+      <span class="app__tab-dot"></span>
+    </button>
+    <button class="app__tab" type="button" data-act="tab" data-val="settings">Settings</button>
+    <button class="app__tab app__tab--active" type="button" data-act="tab" data-val="photo">Photo</button>
+  </nav>
+</div>
+
+<dialog class="dialog" id="dialog-paintbox" aria-labelledby="paintbox-title">
+  <div class="dialog__inner">
+    <div class="dialog__head">
+      <h2 class="dialog__title" id="paintbox-title">Paint box</h2>
+      <button class="dialog__close" type="button" data-act="close" aria-label="Close"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="dialog__body">
+      <div class="paintbox__row">
+        <div class="segmented" role="group" aria-label="Paint box"><button class="segmented__option segmented__option--active" type="button" data-act="seg" data-val="studio" aria-pressed="true">Studio box</button><button class="segmented__option" type="button" data-act="seg" data-val="travel" aria-pressed="false">Travel tin</button><button class="segmented__option" type="button" data-act="seg" data-val="tubes" aria-pressed="false">Tubes on the shelf</button></div>
+        <button class="button button--quiet" type="button">New box</button>
+        <button class="button button--quiet" type="button">Rename</button>
+        <button class="button button--quiet" type="button">Delete box</button>
+      </div>
+
+      <div class="paintbox__group">
+        <div class="paintbox__group-head">
+          <h3 class="paintbox__group-title">Selected paints</h3>
+          <p class="paintbox__count">54 paints selected</p>
+          <label class="switch"><input class="switch__box" type="checkbox" checked><span class="switch__text">Use for Auto</span></label>
+        </div>
+        <div class="paintbox__list"><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#f4e55a"></span><span class="chip__text"><span class="chip__name">101 Lemon yellow</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#f6e24b"></span><span class="chip__text"><span class="chip__name">109 Cadmium lemon</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#f7c33a"></span><span class="chip__text"><span class="chip__name">213 Cadmium yellow</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#eda72c"></span><span class="chip__text"><span class="chip__name">220 Indian yellow</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#f3cc41"></span><span class="chip__text"><span class="chip__name">224 Aureolin</span><span class="chip__meta">Schmincke · pan · estimate</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#efd9a3"></span><span class="chip__text"><span class="chip__name">227 Naples yellow</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#f0bb33"></span><span class="chip__text"><span class="chip__name">231 Transparent yellow</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#cb9a46"></span><span class="chip__text"><span class="chip__name">240 Yellow ochre</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#b98542"></span><span class="chip__text"><span class="chip__name">248 Raw sienna</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#e8762c"></span><span class="chip__text"><span class="chip__name">254 Cadmium orange</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#e5692a"></span><span class="chip__text"><span class="chip__name">260 Translucent orange</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#dd5a26"></span><span class="chip__text"><span class="chip__name">266 Perinone orange</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#a85a36"></span><span class="chip__text"><span class="chip__name">208 Burnt sienna</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#b85a44"></span><span class="chip__text"><span class="chip__name">272 Light red</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#c62f30"></span><span class="chip__text"><span class="chip__name">280 Pyrrole red</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#cf3328"></span><span class="chip__text"><span class="chip__name">284 Scarlet red</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#a92440"></span><span class="chip__text"><span class="chip__name">290 Permanent carmine</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#8e2338"></span><span class="chip__text"><span class="chip__name">296 Alizarin crimson</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#962a3c"></span><span class="chip__text"><span class="chip__name">303 Madder red dark</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#a32447"></span><span class="chip__text"><span class="chip__name">310 Ruby red</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#b43a68"></span><span class="chip__text"><span class="chip__name">341 Quinacridone rose</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#d94a86"></span><span class="chip__text"><span class="chip__name">349 Opera rose</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#c68a94"></span><span class="chip__text"><span class="chip__name">355 Potters pink</span><span class="chip__meta">Schmincke · pan · estimate</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#a8296b"></span><span class="chip__text"><span class="chip__name">362 Magenta</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#8b2a6b"></span><span class="chip__text"><span class="chip__name">370 Purple magenta</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#712b5c"></span><span class="chip__text"><span class="chip__name">378 Quinacridone violet</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#5c3a77"></span><span class="chip__text"><span class="chip__name">385 Mauve</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#4a3d84"></span><span class="chip__text"><span class="chip__name">392 Ultramarine violet</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#2e3f8c"></span><span class="chip__text"><span class="chip__name">410 Ultramarine finest</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#2a3a86"></span><span class="chip__text"><span class="chip__name">418 French ultramarine</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#2b5fa8"></span><span class="chip__text"><span class="chip__name">425 Cobalt blue light</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#234f99"></span><span class="chip__text"><span class="chip__name">432 Cobalt blue deep</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#3b84b3"></span><span class="chip__text"><span class="chip__name">480 Cerulean blue</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#2f94b8"></span><span class="chip__text"><span class="chip__name">487 Manganese blue hue</span><span class="chip__meta">Schmincke · pan · estimate</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#13547f"></span><span class="chip__text"><span class="chip__name">494 Phthalo blue</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#2c3a56"></span><span class="chip__text"><span class="chip__name">485 Indigo</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#1d445c"></span><span class="chip__text"><span class="chip__name">501 Prussian blue</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#223a63"></span><span class="chip__text"><span class="chip__name">508 Indanthrene blue</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#13707d"></span><span class="chip__text"><span class="chip__name">514 Phthalo turquoise</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#2b4a3f"></span><span class="chip__text"><span class="chip__name">517 Perylene green</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#3fa89e"></span><span class="chip__text"><span class="chip__name">523 Cobalt teal</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#2f7a4a"></span><span class="chip__text"><span class="chip__name">530 Helio green</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#15674f"></span><span class="chip__text"><span class="chip__name">536 Phthalo green</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#5a7a34"></span><span class="chip__text"><span class="chip__name">542 Sap green</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#6d7336"></span><span class="chip__text"><span class="chip__name">548 Olive green</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#6b7f5a"></span><span class="chip__text"><span class="chip__name">554 Chromium oxide green</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#7d8a63"></span><span class="chip__text"><span class="chip__name">560 Green earth</span><span class="chip__meta">Schmincke · pan · estimate</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#7b6442"></span><span class="chip__text"><span class="chip__name">610 Raw umber</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#6b4330"></span><span class="chip__text"><span class="chip__name">617 Burnt umber</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#4e3626"></span><span class="chip__text"><span class="chip__name">624 Van Dyke brown</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#473a2e"></span><span class="chip__text"><span class="chip__name">663 Sepia brown</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#3f4349"></span><span class="chip__text"><span class="chip__name">670 Neutral tint</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#46535f"></span><span class="chip__text"><span class="chip__name">677 Payne&#x27;s grey</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox" checked><span class="chip__swatch" style="background:#2a2724"></span><span class="chip__text"><span class="chip__name">684 Ivory black</span><span class="chip__meta">Schmincke · pan</span></span></label></div>
+        <p class="paintbox__note">Colours marked &quot;estimate&quot; are guessed from the catalogue, not measured.</p>
+      </div>
+
+      <div class="paintbox__group">
+        <div class="paintbox__group-head">
+          <h3 class="paintbox__group-title">Pans</h3>
+          <p class="paintbox__count">8 more in the catalogue</p>
+          <label class="switch"><input class="switch__box" type="checkbox" checked><span class="switch__text">Use for Auto</span></label>
+        </div>
+        <div class="paintbox__list"><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#f8e469"></span><span class="chip__text"><span class="chip__name">115 Cadmium yellow pale</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#bb4a63"></span><span class="chip__text"><span class="chip__name">332 Rose madder</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#3a4d9b"></span><span class="chip__text"><span class="chip__name">404 Smalt</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#3a7fc0"></span><span class="chip__text"><span class="chip__name">441 Cobalt azure</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#5a9ec4"></span><span class="chip__text"><span class="chip__name">455 Verditer blue</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#6f8468"></span><span class="chip__text"><span class="chip__name">575 Terre verte</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#6a583f"></span><span class="chip__text"><span class="chip__name">630 Sepia light</span><span class="chip__meta">Schmincke · pan</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#23211f"></span><span class="chip__text"><span class="chip__name">690 Lamp black</span><span class="chip__meta">Schmincke · pan</span></span></label></div>
+      </div>
+
+      <div class="paintbox__group">
+        <div class="paintbox__group-head">
+          <h3 class="paintbox__group-title">Tubes</h3>
+          <p class="paintbox__count">6 more in the catalogue</p>
+          <label class="switch"><input class="switch__box" type="checkbox"><span class="switch__text">Use for Auto</span></label>
+        </div>
+        <div class="paintbox__list"><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#efd978"></span><span class="chip__text"><span class="chip__name">118 Nickel titanate</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#b02a46"></span><span class="chip__text"><span class="chip__name">326 Quinacridone red</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#7a4a93"></span><span class="chip__text"><span class="chip__name">468 Cobalt violet</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#3d6b3c"></span><span class="chip__text"><span class="chip__name">585 Hooker&#x27;s green</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#6d3a34"></span><span class="chip__text"><span class="chip__name">640 Caput mortuum</span><span class="chip__meta">Schmincke · tube</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#55595b"></span><span class="chip__text"><span class="chip__name">696 Graphite grey</span><span class="chip__meta">Schmincke · tube</span></span></label></div>
+      </div>
+
+      <div class="paintbox__group">
+        <div class="paintbox__group-head">
+          <h3 class="paintbox__group-title">Your own paints</h3>
+          <p class="paintbox__count">3 paints</p>
+          <label class="switch"><input class="switch__box" type="checkbox" checked><span class="switch__text">Use for Auto</span></label>
+        </div>
+        <div class="paintbox__list"><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#4c6b4a"></span><span class="chip__text"><span class="chip__name">901 Studio green</span><span class="chip__meta">Your own paint</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#6a6a66"></span><span class="chip__text"><span class="chip__name">902 Grey mix</span><span class="chip__meta">Your own paint</span></span></label><label class="chip"><input class="chip__box" type="checkbox"><span class="chip__swatch" style="background:#5a4436"></span><span class="chip__text"><span class="chip__name">903 Warm shadow</span><span class="chip__meta">Your own paint</span></span></label></div>
+        <div class="paintbox__form">
+          <label class="field"><span class="field__label">Number</span><input class="field__input" type="text" value="904" inputmode="numeric"></label>
+          <label class="field"><span class="field__label">Name</span><input class="field__input" type="text" placeholder="Shadow mix"></label>
+          <label class="field"><span class="field__label">Colour</span><input class="field__input" type="color" value="#5a4436"></label>
+          <button class="button button--secondary" type="button">Add this paint</button>
+        </div>
+        <p class="paintbox__note">Mark a paint P for pan or T for tube when you add it, so the print sheet says which one to reach for.</p>
+      </div>
+    </div>
+    <div class="dialog__foot">
+      <button class="button button--main" type="button">Update mixes</button>
+      <button class="button button--quiet" type="button">Auto</button>
+      <button class="button button--quiet" type="button">Revert</button>
+      <button class="button button--quiet" type="button">Clear</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="dialog" id="dialog-collection" aria-labelledby="collection-title">
+  <div class="dialog__inner">
+    <div class="dialog__head">
+      <h2 class="dialog__title" id="collection-title">Collection</h2>
+      <button class="dialog__close" type="button" data-act="close" aria-label="Close"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="dialog__body">
+      <p class="field__hint">Six pictures saved on this device. Opening one replaces what is on the stage.</p>
+      <ul class="collection__list"><li class="collection__item"><span class="collection__thumb" style="background:#9aa7a4"></span><span class="collection__name">Meadow in June</span><span class="collection__date">2026-06-14</span><span class="collection__actions"><button class="button button--quiet" type="button">Rename</button><button class="button button--quiet" type="button">Delete</button></span></li><li class="collection__item"><span class="collection__thumb" style="background:#8fa3ad"></span><span class="collection__name">Harbour wall</span><span class="collection__date">2026-06-02</span><span class="collection__actions"><button class="button button--quiet" type="button">Rename</button><button class="button button--quiet" type="button">Delete</button></span></li><li class="collection__item"><span class="collection__thumb" style="background:#cbb08a"></span><span class="collection__name">Kitchen window</span><span class="collection__date">2026-05-21</span><span class="collection__actions"><button class="button button--quiet" type="button">Rename</button><button class="button button--quiet" type="button">Delete</button></span></li><li class="collection__item"><span class="collection__thumb" style="background:#6f7f55"></span><span class="collection__name">Beech wood</span><span class="collection__date">2026-05-09</span><span class="collection__actions"><button class="button button--quiet" type="button">Rename</button><button class="button button--quiet" type="button">Delete</button></span></li><li class="collection__item"><span class="collection__thumb" style="background:#b7c9d8"></span><span class="collection__name">Low tide</span><span class="collection__date">2026-04-27</span><span class="collection__actions"><button class="button button--quiet" type="button">Rename</button><button class="button button--quiet" type="button">Delete</button></span></li><li class="collection__item"><span class="collection__thumb" style="background:#a85a36"></span><span class="collection__name">Red roofs</span><span class="collection__date">2026-04-11</span><span class="collection__actions"><button class="button button--quiet" type="button">Rename</button><button class="button button--quiet" type="button">Delete</button></span></li></ul>
+    </div>
+    <div class="dialog__foot">
+      <button class="button button--main" type="button">Open the selected picture</button>
+      <button class="button button--quiet" type="button" data-act="close">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  var r = document.documentElement;
+  var proto = document.querySelector('.proto');
+  var select = document.getElementById('screen');
+
+  function setProtoHeight() {
+    r.style.setProperty('--proto-h', proto.offsetHeight + 'px');
+  }
+  if (window.ResizeObserver) { new ResizeObserver(setProtoHeight).observe(proto); }
+  window.addEventListener('resize', setProtoHeight);
+  setProtoHeight();
+
+  var SCREENS = {
+    stage:    { mode: 'mix',   tab: 'photo',    steps: 'closed', dialog: null },
+    colours:  { mode: 'mix',   tab: 'plan',     steps: 'closed', dialog: null },
+    settings: { mode: 'mix',   tab: 'settings', steps: 'closed', dialog: null },
+    paintbox: { mode: 'mix',   tab: 'plan',     steps: 'closed', dialog: 'paintbox' },
+    layer:    { mode: 'layer', tab: 'plan',     steps: 'open',   dialog: null },
+    dialog:   { mode: 'mix',   tab: 'plan',     steps: 'closed', dialog: 'collection' }
+  };
+
+  function markGroup(button, selector, activeClass) {
+    var box = button.closest(selector);
+    if (!box) { return; }
+    box.querySelectorAll('.' + activeClass).forEach(function (el) {
+      el.classList.remove(activeClass);
+      el.setAttribute('aria-pressed', 'false');
+    });
+    button.classList.add(activeClass);
+    button.setAttribute('aria-pressed', 'true');
+  }
+
+  function setMode(mode) {
+    r.dataset.mode = mode;
+    document.querySelectorAll('[data-act="mode"]').forEach(function (b) {
+      var on = b.dataset.val === mode;
+      b.classList.toggle('segmented__option--active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+
+  function setTab(tab) {
+    r.dataset.tab = tab;
+    document.querySelectorAll('.app__tab').forEach(function (b) {
+      b.classList.toggle('app__tab--active', b.dataset.val === tab);
+    });
+  }
+
+  function applyScreen(name) {
+    var s = SCREENS[name];
+    if (!s) { return; }
+    r.dataset.screen = name;
+    setMode(s.mode);
+    setTab(s.tab);
+    r.dataset.steps = s.steps;
+    document.querySelectorAll('.dialog').forEach(function (d) { if (d.open) { d.close(); } });
+    if (s.dialog) { document.getElementById('dialog-' + s.dialog).showModal(); }
+    if (select.value !== name) { select.value = name; }
+    window.scrollTo(0, 0);
+  }
+
+  select.addEventListener('change', function () { applyScreen(select.value); });
+
+  document.addEventListener('click', function (ev) {
+    if (!ev.target || !ev.target.closest) { return; }
+    var b = ev.target.closest('[data-act]');
+    if (!b) { return; }
+    var act = b.dataset.act;
+    if (act === 'theme') { r.dataset.theme = b.dataset.val; markGroup(b, '.segmented', 'segmented__option--active'); }
+    else if (act === 'tab') { setTab(b.dataset.val); }
+    else if (act === 'mode') { setMode(b.dataset.val); }
+    else if (act === 'view') { r.dataset.view = b.dataset.val; markGroup(b, '.segmented', 'segmented__option--active'); }
+    else if (act === 'seg') { markGroup(b, '.segmented', 'segmented__option--active'); }
+    else if (act === 'fitsize') { r.dataset.picture = r.dataset.picture === 'fit' ? 'full' : 'fit'; }
+    else if (act === 'steps') { r.dataset.steps = r.dataset.steps === 'open' ? 'closed' : 'open'; }
+    else if (act === 'fold') { b.closest('.settings__group').classList.toggle('settings__group--folded'); }
+    else if (act === 'row') { markGroup(b, '.app__panels', 'plan__item--selected'); }
+    else if (act === 'wash') { markGroup(b, '.plan__sub, .detail__washes', 'plan__wash--selected'); }
+    else if (act === 'recipe') { markGroup(b, '.detail__recipes', 'detail__recipe--chosen'); }
+    else if (act === 'open-paintbox') { applyScreen('paintbox'); }
+    else if (act === 'open-collection') { applyScreen('dialog'); }
+    else if (act === 'close') { applyScreen('colours'); }
+  });
+
+  document.addEventListener('change', function (ev) {
+    var box = ev.target;
+    if (box.dataset && box.dataset.flag) { r.dataset[box.dataset.flag] = box.checked ? 'on' : 'off'; }
+  });
+
+  document.addEventListener('input', function (ev) {
+    var s = ev.target;
+    if (!s.classList.contains('slider')) { return; }
+    var out = document.getElementById('value-' + s.id);
+    if (out) { out.textContent = s.value + (s.dataset.unit || ''); }
+  });
+
+  document.querySelectorAll('[data-act="step"]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var s = document.getElementById(b.dataset.target);
+      var step = Number(s.step || 1) * Number(b.dataset.val);
+      s.value = Math.min(Number(s.max), Math.max(Number(s.min), Number(s.value) + step));
+      s.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  });
+
+  applyScreen('stage');
+}());
+</script>
+</body>
+</html>

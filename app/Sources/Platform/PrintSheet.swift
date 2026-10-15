@@ -33,7 +33,7 @@ enum PrintSheet {
             let pageRows = Array(rows.prefix(count))
             rows.removeFirst(count)
             let view = PageView(
-                title: first ? "\(session.imageName) – colours and mixes" : nil,
+                title: first ? L("%@ – colours and mixes", session.imageName) : nil,
                 picture: first ? picture : nil,
                 segmentation: session.segmentation,
                 labels: labels,
@@ -68,7 +68,7 @@ enum PrintSheet {
             }
         }
         add(LayerOverviewPage(
-            title: "\(session.imageName) – layers",
+            title: L("%@ – layers", session.imageName),
             picture: session.layerPicture(show: plan.layers.map(\.top)),
             width: plan.width,
             rows: rows
@@ -78,13 +78,13 @@ enum PrintSheet {
             let used = row.coats.count
             // "Coat 2 on the 2s and 3s."
             let more = (2...max(2, used)).filter { $0 <= used }.map { coat in
-                "Coat \(coat) on the \((coat...used).map { "\($0)s" }.joined(separator: " and "))."
+                L("Coat %lld on the %@.", coat, (coat...used).map { L("%llds", $0) }.joined(separator: L(" and ")))
             }
             add(LayerPage(
-                title: "\(row.accent ? "Accent" : "Layer") \(row.number): \(row.name)\(row.accent ? " (accent)" : ""), \(layer.guide)",
+                title: L(row.accent ? "Accent %@: %@ (accent), %@" : "Layer %@: %@, %@", row.number, row.name, Words.guide(water: layer.water, consistency: layer.consistency)),
                 instruction: row.accent
-                    ? "A strong wash on the numbered shapes, painted last, when everything else is dry."
-                    : (["Coat 1 on every numbered area."] + more + ["Let each coat dry."]).joined(separator: " "),
+                    ? L("A strong wash on the numbered shapes, painted last, when everything else is dry.")
+                    : ([L("Coat 1 on every numbered area.")] + more + [L("Let each coat dry.")]).joined(separator: " "),
                 hex: row.hex,
                 picture: session.layerPicture(show: plan.layers.indices.map { $0 == row.id ? layer.top : 0 }),
                 width: plan.width,
@@ -123,7 +123,7 @@ enum PrintSheet {
                             Text(row.number).font(.system(size: 11, weight: .bold))
                             RoundedRectangle(cornerRadius: 4).fill(Color(hex: row.hex)).frame(width: 26, height: 18)
                                 .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(.black.opacity(0.35), lineWidth: 1))
-                            Text("\(row.name)\(row.accent ? " (accent)" : "")")
+                            Text(row.name + (row.accent ? L(" (accent)") : ""))
                             Text(row.wash)
                             Text("\(max(1, row.coats.count))")
                             Text(PrintSheet.percent(row.share))
@@ -202,7 +202,7 @@ enum PrintSheet {
                         .frame(height: PrintSheet.pictureHeight + 30, alignment: .top)
                 }
                 if key {
-                    Text(Mixing.washLetters.map { "\($0.letter) \($0.label)" }.joined(separator: "   "))
+                    Text(Mixing.washLetters.map { "\($0.letter) \(L($0.label))" }.joined(separator: "   "))
                         .font(.system(size: 9))
                         .foregroundStyle(.secondary)
                         .frame(height: 16, alignment: .top)
@@ -256,7 +256,7 @@ enum PrintSheet {
             HStack(spacing: 6) {
                 Text("\(Text(part.parts + " x").bold()) \(part.paint.formLabel)").fixedSize()
                 Spacer(minLength: 0)
-                Text("\(Text(part.paint.displayNumber).bold()) \(part.paint.name)").truncationMode(.tail)
+                Text("\(Text(part.paint.displayNumber).bold()) \(part.paint.displayName)").truncationMode(.tail)
             }
             .font(.system(size: 8.5))
             .lineLimit(1)

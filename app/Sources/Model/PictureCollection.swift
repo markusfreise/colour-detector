@@ -60,7 +60,7 @@ final class PictureCollection {
         guard let record = items.first(where: { $0.id == id }),
               let data = try? Data(contentsOf: folder(id).appendingPathComponent("image.jpg")),
               session.load(data, name: record.name, settings: record.settings, edits: record.edits) else {
-            session.error = "Could not open the saved picture."
+            session.error = L("Could not open the saved picture.")
             return
         }
         session.savedID = id

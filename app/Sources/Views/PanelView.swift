@@ -21,7 +21,7 @@ struct PanelView: View {
     private var colours: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                Text(session.layerMode ? "Layers" : "Colours").font(Theme.title)
+                Text(L(session.layerMode ? "Layers" : "Colours")).font(Theme.title)
                 if session.layerMode {
                     HStack {
                         Text("Tap a layer to see it alone.").font(Theme.small).foregroundStyle(Theme.copyLight)

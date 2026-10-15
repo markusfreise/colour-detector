@@ -39,7 +39,7 @@ struct CollectionView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
                 ToolbarItem(placement: .primaryAction) {
-                    Button(session.savedID == nil ? "Save Picture" : "Save Changes", systemImage: "square.and.arrow.down", action: save)
+                    Button(L(session.savedID == nil ? "Save Picture" : "Save Changes"), systemImage: "square.and.arrow.down", action: save)
                         .labelStyle(.titleAndIcon)
                         .disabled(session.image == nil)
                 }
@@ -51,7 +51,7 @@ struct CollectionView: View {
                 Button("Save") { collection.rename(item.id, to: newName, session: session) }
             }
             .confirmationDialog("Delete this picture?", isPresented: Binding(get: { toDelete != nil }, set: { if !$0 { toDelete = nil } }), titleVisibility: .visible, presenting: toDelete) { item in
-                Button("Delete \(item.name)", role: .destructive) { collection.delete(item.id, session: session) }
+                Button(L("Delete %@", item.name), role: .destructive) { collection.delete(item.id, session: session) }
             } message: { _ in
                 Text("The photo in your photo library is not touched.")
             }
@@ -85,7 +85,7 @@ struct CollectionView: View {
                 .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(item.id == session.savedID ? Color.accentColor : .clear, lineWidth: 2))
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Open \(item.name)")
+            .accessibilityLabel(L("Open %@", item.name))
             HStack {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(item.name).fontWeight(.semibold).lineLimit(1)
@@ -103,7 +103,7 @@ struct CollectionView: View {
                 }
                 .menuStyle(.borderlessButton)
                 .fixedSize()
-                .accessibilityLabel("Actions for \(item.name)")
+                .accessibilityLabel(L("Actions for %@", item.name))
             }
         }
     }

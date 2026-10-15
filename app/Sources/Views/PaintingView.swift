@@ -30,7 +30,7 @@ struct PaintingView: View {
                     .scaleEffect(zoom)
                     .offset(offset)
                 if session.busy {
-                    ProgressView(session.layerMode ? "Planning layers" : "Analysing")
+                    ProgressView(L(session.layerMode ? "Planning layers" : "Analysing"))
                         .padding(12)
                         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                 }
@@ -92,8 +92,8 @@ struct PaintingView: View {
                 .shadow(color: .black.opacity(0.12), radius: 12, y: 4)
                 .padding(Self.padding)
                 .opacity(session.busy ? 0.5 : 1)
-                .accessibilityLabel(session.layerMode ? "Picture as layers of paint" : "Picture as numbered colour areas")
-                .accessibilityHint(session.layerMode ? "Tap a spot to see which layers it gets." : "Tap an area to see its recipe.")
+                .accessibilityLabel(L(session.layerMode ? "Picture as layers of paint" : "Picture as numbered colour areas"))
+                .accessibilityHint(L(session.layerMode ? "Tap a spot to see which layers it gets." : "Tap an area to see its recipe."))
         } else {
             RoundedRectangle(cornerRadius: 6)
                 .fill(.quaternary)

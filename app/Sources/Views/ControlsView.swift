@@ -100,7 +100,7 @@ struct ControlsView: View {
     private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, unit: String = "", hint: String? = nil, commit: @escaping () -> Void) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack {
-                Text(title).font(Theme.strong)
+                Text(L(title)).font(Theme.strong)
                 Spacer(minLength: 4)
                 Text("\(Int(value.wrappedValue.rounded()))\(unit)").foregroundStyle(Theme.copyLight).monospacedDigit()
             }
@@ -114,11 +114,11 @@ struct ControlsView: View {
                 if before != analysed { session.analyse() }
                 sync()
             }
-            .accessibilityLabel(title)
+            .accessibilityLabel(L(title))
             .accessibilityValue("\(Int(value.wrappedValue.rounded()))\(unit)")
         }
         // The explanation is a tooltip, as on the web.
-        .help(hint ?? "")
+        .help(hint.map { L($0) } ?? "")
         .frame(maxWidth: .infinity)
     }
 

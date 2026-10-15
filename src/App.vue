@@ -37,6 +37,10 @@
           <button class="button button--ghost" type="button" :data-hint="account.enabled ? t('Account') : t('Preferences')" @click="account.open = true">
             <AppIcon name="user" :label="account.enabled ? t('Account') : t('Preferences')" />
           </button>
+          <!-- Phone: the manual is here instead of in the footer, which then fits in one line. -->
+          <a v-if="!isNative" class="button button--ghost app__manual" :href="legalPage('manual')" :data-hint="t('Manual')">
+            <AppIcon name="manual" :label="t('Manual')" />
+          </a>
         </div>
       </div>
       <div class="app__top">
@@ -74,11 +78,11 @@
     <LayerSheets v-if="analysis.layerMode" />
     <PrintLegend v-else />
     <footer v-if="!isNative" class="app__footer">
-      <a class="app__footer-link" :href="legalPage('manual')">{{ t('Manual') }}</a>
+      <a class="app__footer-link app__footer-manual" :href="legalPage('manual')">{{ t('Manual') }}</a>
       <a class="app__footer-link" :href="legalPage('privacy')">{{ t('Privacy') }}</a>
       <a class="app__footer-link" :href="legalPage('terms')">{{ t('Terms') }}</a>
       <a class="app__footer-link" :href="legalPage('imprint')">{{ t('Imprint') }}</a>
-      <button v-if="consent.available" class="app__footer-link" type="button" @click="consent.review()">{{ t('Privacy settings') }}</button>
+      <button v-if="consent.available" class="app__footer-link" type="button" @click="consent.review()">{{ t('Cookies') }}</button>
     </footer>
     <ColourBreakdown ref="breakdown" />
     <PaintBox ref="paintBox" />

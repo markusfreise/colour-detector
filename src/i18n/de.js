@@ -22,7 +22,7 @@ export default {
   'Privacy': 'Datenschutz',
   'Terms': 'AGB',
   'Manual': 'Anleitung',
-  'Privacy settings': 'Datenschutz-Einstellungen',
+  'Cookies': 'Cookies',
   'privacy policy': 'Datenschutzerklärung',
   'terms': 'AGB',
   // Details (close-ups)
@@ -453,8 +453,8 @@ export default {
   '79 EUR once': '79 EUR einmalig',
   // Cookie banner (ConsentBanner)
   'Cookies and statistics': 'Cookies und Statistik',
-  'Some cookies are needed to sign in. With your permission this site also uses Google Analytics to count visits: that sets cookies and sends usage data to Google, also to the USA. Your photos are never uploaded. You can change your choice at any time under "Privacy settings".':
-    'Einige Cookies sind für die Anmeldung nötig. Mit deiner Erlaubnis nutzt diese Seite außerdem Google Analytics, um Besuche zu zählen: Dabei werden Cookies gesetzt und Nutzungsdaten an Google übermittelt, auch in die USA. Deine Fotos werden nie hochgeladen. Du kannst deine Wahl jederzeit unter „Datenschutz-Einstellungen“ ändern.',
+  'Some cookies are needed to sign in. With your permission this site also uses Google Analytics to count visits: that sets cookies and sends usage data to Google, also to the USA. Your photos are never uploaded. You can change your choice at any time under "Cookies".':
+    'Einige Cookies sind für die Anmeldung nötig. Mit deiner Erlaubnis nutzt diese Seite außerdem Google Analytics, um Besuche zu zählen: Dabei werden Cookies gesetzt und Nutzungsdaten an Google übermittelt, auch in die USA. Deine Fotos werden nie hochgeladen. Du kannst deine Wahl jederzeit unter „Cookies“ ändern.',
   'Privacy policy': 'Datenschutzerklärung',
   Necessary: 'Notwendig',
   'always on': 'immer aktiv',

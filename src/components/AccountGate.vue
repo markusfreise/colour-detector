@@ -134,7 +134,7 @@
         <a :href="legalPage('privacy')">{{ t('Privacy') }}</a>
         <a :href="legalPage('terms')">{{ t('Terms') }}</a>
         <a :href="legalPage('imprint')">{{ t('Imprint') }}</a>
-        <button v-if="consent.available" class="gate__settings" type="button" @click="consent.review()">{{ t('Privacy settings') }}</button>
+        <button v-if="consent.available" class="gate__settings" type="button" @click="consent.review()">{{ t('Cookies') }}</button>
       </footer>
     </section>
   </main>

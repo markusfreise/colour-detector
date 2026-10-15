@@ -14,7 +14,7 @@ function loadChoice() {
 }
 
 // Cookies: the necessary ones need no consent and are only listed; Google Analytics runs only
-// after an explicit yes, which can be withdrawn at any time under "Privacy settings".
+// after an explicit yes, which can be withdrawn at any time under "Cookies".
 export const useConsentStore = defineStore('consent', {
   state: () => ({
     choice: loadChoice(), // { analytics, version, at } or null (not asked, or to be asked again)
@@ -45,7 +45,7 @@ export const useConsentStore = defineStore('consent', {
       if (analytics) startAnalytics(GA_MEASUREMENT_ID)
       else stopAnalytics(GA_MEASUREMENT_ID)
     },
-    // "Privacy settings": the banner again, with the details open and the current choice set.
+    // "Cookies": the banner again, with the details open and the current choice set.
     review() {
       this.analytics = this.granted
       this.details = true

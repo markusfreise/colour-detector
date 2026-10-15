@@ -6,7 +6,7 @@
     <p class="consent__text">
       {{
         t(
-          'Some cookies are needed to sign in. With your permission this site also uses Google Analytics to count visits: that sets cookies and sends usage data to Google, also to the USA. Your photos are never uploaded. You can change your choice at any time under "Privacy settings".',
+          'Some cookies are needed to sign in. With your permission this site also uses Google Analytics to count visits: that sets cookies and sends usage data to Google, also to the USA. Your photos are never uploaded. You can change your choice at any time under "Cookies".',
         )
       }}
       <a :href="legalPage('privacy')" target="_blank" rel="noopener">{{ t('Privacy policy') }}</a> ·

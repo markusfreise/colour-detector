@@ -163,8 +163,10 @@
     }
 }
 
-// The template to print in the menu: only on a phone, where it leaves the tools at the bottom.
-.app__left .app__template {
+// The template to print and the manual in the menu: only on a phone, where they leave the tools
+// at the bottom and the footer.
+.app__left .app__template,
+.app__left .app__manual {
     display: none;
 
     @media (max-width: 760px) {

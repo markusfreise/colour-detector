@@ -130,10 +130,13 @@
         font-weight: 600;
     }
 
-    // "Fit" and "Detail" are written out, as tall as the icon buttons beside them.
-    &__tool--text {
+    // "Fit" and "Detail": icon and word, as tall as the icon buttons beside them.
+    &__tools &__tool--text {
+        width: auto;
+        aspect-ratio: auto;
+        gap: #{pxtorem(4)};
         height: #{pxtorem(48)};
-        padding-block: 0;
+        padding: 0 #{pxtorem(14)} 0 #{pxtorem(8)};
         font-weight: 600;
     }
 
@@ -183,10 +186,14 @@
             height: #{pxtorem(30)};
         }
 
-        &__tools .painting__pro,
-        &__tools .painting__tool--text {
+        &__tools .painting__pro {
             width: auto;
             padding-inline: #{pxtorem(10)};
+        }
+
+        &__tools .painting__tool--text {
+            width: auto;
+            padding: 0 #{pxtorem(10)} 0 #{pxtorem(4)};
         }
     }
 

@@ -45,6 +45,7 @@
         {{ t('Get pro') }}
       </button>
       <button class="button button--ghost painting__tool painting__tool--text" type="button" :aria-label="t('Fit the picture to the window')" @click="fit">
+        <AppIcon name="zoom" />
         {{ t('Fit') }}
       </button>
       <!-- A frame drawn on the base picture becomes a close-up: that part, analysed on its own. -->
@@ -57,6 +58,7 @@
         :aria-label="framing ? t('Cancel choosing a part of the picture') : t('Zoom in on a part of the picture')"
         @click="framing = !framing"
       >
+        <AppIcon name="frame" />
         {{ t('Detail') }}
       </button>
       <ViewSwitch />

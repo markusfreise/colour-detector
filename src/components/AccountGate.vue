@@ -159,8 +159,8 @@ const { t, legalPage } = useText()
 const consent = useConsentStore()
 const preferences = usePreferencesStore()
 const steps = [
-  { title: 'Choose a reference photo', image: stepPhoto, alt: 'A photo chosen from the device opens in the app' },
-  { title: 'Add the colours and paints you use', image: stepPaints, alt: 'The paint box with the paints you own ticked' },
+  { title: 'Choose your reference photo you want to paint with watercolours and need mixes for.', image: stepPhoto, alt: 'A photo chosen from the device opens in the app' },
+  { title: 'Add the colours and paints you use for your art. Presets for known vendors are included.', image: stepPaints, alt: 'The paint box with the paints you own ticked' },
   { title: 'Image is analysed and recipes for colours calculated. Refine with powerful settings.', image: stepMixes, alt: 'The photo as numbered areas, with the recipe of one area' },
 ]
 

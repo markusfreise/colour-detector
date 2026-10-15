@@ -22,6 +22,8 @@ targets:
     sources:
       - Sources
       - Resources/Assets.xcassets
+      # What the app collects (nothing), for the App Store.
+      - Resources/PrivacyInfo.xcprivacy
       # Paint stock, colour chart and sample photos, exported from the web app's data (npm run app:data).
       - path: Resources/Data
         buildPhase: resources

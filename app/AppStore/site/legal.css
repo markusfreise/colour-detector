@@ -1,0 +1,18 @@
+/* Tintmap support, privacy and imprint: a copy of public/legal.css from the web app. */
+:root { --paper: #f7f4ee; --surface: #ffffff; --ink: #2a2622; --ink-soft: #6d655c; --line: #e4ddd2; --accent: #2f5d8a; --accent-soft: #e3ecf5; }
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #1b1a18; --surface: #252321; --ink: #eee9e1; --ink-soft: #a89f94; --line: #3a3632; --accent: #8fb6dc; --accent-soft: #2b3642; }
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 1.0625rem/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+.legal { max-width: 46rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
+.legal__back { color: var(--accent); }
+.legal__title { margin: 1.5rem 0 0.25rem; font-size: 2rem; line-height: 1.2; }
+.legal__date { margin: 0 0 1.5rem; color: var(--ink-soft); }
+.legal__draft { margin: 0 0 1.5rem; padding: 0.75rem 1rem; border-radius: 8px; background: var(--accent-soft); }
+.legal__heading { margin: 2rem 0 0.5rem; font-size: 1.25rem; }
+.legal p, .legal ul { margin: 0 0 0.9rem; }
+.legal ul { padding-left: 1.25rem; }
+.legal a { color: var(--accent); }
+.legal__open { background: var(--accent-soft); padding: 0 0.25rem; border-radius: 3px; }
+.legal__nav { display: flex; gap: 1rem; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); }

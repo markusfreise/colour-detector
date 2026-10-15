@@ -50,9 +50,26 @@ xcrun simctl launch <device> de.markusfreise.tintmap -screen editor
 xcrun simctl io <device> screenshot AppStore/screenshots/iphone-2-editor.png
 ```
 
-## Before the first upload
+## Website
 
-1. App Store Connect: create the app with the bundle ID above, then the in-app purchase with the product ID above, and enter the texts from `AppStore/metadata.md`.
-2. Put the support and privacy pages online (URLs in `metadata.md`).
-3. Replace the temporary icon in `Resources/Assets.xcassets/AppIcon.appiconset`.
-4. Archive in Xcode for iOS and for macOS, upload both, submit together with the purchase.
+`AppStore/site/` is the app's page with support, privacy and imprint, at https://tintmap.markus-freise.de (Mittwald, `~/html/_sites/tintmap`). These are the URLs in `metadata.md`. To publish a change:
+
+```bash
+rsync -az --delete -e "ssh -i ~/.ssh/mittwald -o IdentitiesOnly=yes" AppStore/site/ p236891@p236891.mittwaldserver.info:html/_sites/tintmap/
+```
+
+## TestFlight and release
+
+```bash
+scripts/release.sh               # archive iOS and macOS, upload both to App Store Connect
+scripts/release.sh --export-only # the same, signed packages in build/release/ without uploading
+```
+
+Signing is automatic: Xcode must be signed in to the team account (Xcode > Settings > Accounts); the distribution certificate and profiles are made in the cloud. The build number is the number of commits, the version is `MARKETING_VERSION` in `project.yml`. The app sends nothing anywhere (`Resources/PrivacyInfo.xcprivacy`, no network entitlement), so the App Privacy answer in App Store Connect is "Data Not Collected".
+
+### Once, before the first upload
+
+1. App Store Connect: create the app (iOS and macOS, bundle ID `de.markusfreise.tintmap`, SKU `tintmap`), then the in-app purchase `de.markusfreise.tintmap.pro` (non-consumable), with the texts from `AppStore/metadata.md`.
+2. App Privacy: "Data Not Collected". Age rating questionnaire: all "None".
+3. TestFlight: internal testers need nothing more. For external testers fill in the beta description, feedback address `support@markus-freise.de` and the privacy URL; the first external build goes to Beta App Review.
+4. Run `scripts/release.sh`. Builds show up in TestFlight after Apple's processing, usually within half an hour.

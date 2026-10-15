@@ -13,9 +13,9 @@ Everything App Store Connect asks for, in English (primary) and German. Characte
 | Price | Free |
 | Age rating | 4+ (no restricted content, no web access, no user-generated content shared with others) |
 | Copyright | 2026 Markus Freise |
-| Support URL | https://tintmap.markus-freise.de/support (to be set up) |
-| Privacy policy URL | https://tintmap.markus-freise.de/privacy (to be set up) |
-| Marketing URL | https://tintmap.markus-freise.de (optional) |
+| Support URL | https://tintmap.markus-freise.de/support/ |
+| Privacy policy URL | https://tintmap.markus-freise.de/privacy/ |
+| Marketing URL | https://tintmap.markus-freise.de/ |
 
 ## English
 

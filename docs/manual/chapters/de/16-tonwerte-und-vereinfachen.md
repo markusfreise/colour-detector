@@ -53,10 +53,11 @@ Das ist auch ein Grund, warum die App die **Sättigung** vor der Analyse auf 200
 
 ## Tonwerte in der App prüfen
 
-Eine Ansicht und eine Einstellung helfen dir, Tonwerte ohne die Ablenkung der Farbe zu beurteilen.
+Zwei Ansichten und eine Einstellung helfen dir, Tonwerte ohne die Ablenkung der Farbe zu beurteilen.
 
 - **Fotofarbe** zeigt jede Fläche in der durchschnittlichen Farbe des Fotos an dieser Stelle. Das ist das Foto, reduziert auf seine Formen, ohne Einzelheiten, und die beste Ansicht für einen Blinzeltest am Bildschirm.
-- **Tonwerte** in den Einstellungen geht weiter: Das Bild wird in Grau analysiert und in bis zu 24 Tonwerte geteilt, und jeder Tonwert wird mit einer Farbe deiner Palette gemalt, egal welchen Farbton sie hat. Heraus kommt eine Tonwertstudie in deinen eigenen Farben. Die Einstellungen dazu stehen unter [Tonwerte](tonwerte.html).
+- **Blocking** zeigt nur Licht und Schatten: zwei oder drei flache Töne in großen Massen, vom hellsten an nummeriert. Es ist der Blinzeltest, für dich erledigt, und es zeigt das Papierweiß, das du aussparen musst. Siehe [Tonwerte](tonwerte.html#blocking-licht-und-schatten-zuerst).
+- **Monochrom** in den Einstellungen geht weiter: Das Bild wird in Grau analysiert und in bis zu 24 Tonwerte geteilt, und jeder Tonwert wird mit einer Farbe deiner Palette gemalt, egal welchen Farbton sie hat. Heraus kommt eine Tonwertstudie in deinen eigenen Farben. Die Einstellungen dazu stehen unter [Tonwerte](tonwerte.html).
 
 ![Die Ansicht Fotofarbe: jede Fläche in der durchschnittlichen Farbe des Fotos](shot:view-target)
 
@@ -66,13 +67,13 @@ Schalte zwischen **Fotofarbe** und **Gemischte Farbe** hin und her und blinzle. 
 
 Diese Übung bringt deine Malerei weiter als jede Farbübung.
 
-1. Öffne **Llyn Idwal**, drück in den Einstellungen auf **Tonwerte** und stell **Farben** auf den kleinsten Wert, 2.
+1. Öffne **Llyn Idwal**, drück in den Einstellungen auf **Monochrom** und stell **Farben** auf den kleinsten Wert, 2.
 2. Öffne den **Farbkasten** und leg eine einzige dunkle, transparente Farbe in die Palette, zum Beispiel eine Neutraltinte, eine Sepia oder ein Indigo.
 3. Stell **Flächen vereinfachen** so hoch, dass du nicht mehr als etwa dreißig Flächen zählst.
 4. Druck das Blatt oder die **Vorlage zum Drucken**, übertrag die Umrisse und male die Studie mit den Lasuren, die die App dir gibt, von der hellsten zur dunkelsten.
 5. Leg sie, wenn sie trocken ist, neben einen grauen Ausdruck des Fotos und blinzle auf beide.
 
-![Llyn Idwal in Tonwerten mit einer Farbe: das Bild in Grau, jeder Tonwert mit einer einzigen Farbe der Palette gemalt](shot:values)
+![Llyn Idwal in Monochrom mit einer Farbe: das Bild in Grau, jeder Tonwert mit einer einzigen Farbe der Palette gemalt](shot:values)
 
 Du wirst sehen, dass die Studie schon wie der Ort aussieht. Genau darum geht es: Die Farbe, die du später dazugibst, muss nur noch auf einem Gerüst sitzen, das schon trägt.
 

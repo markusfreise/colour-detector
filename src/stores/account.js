@@ -3,6 +3,7 @@ import { ACCOUNT_API } from '../config.js'
 import { accountsWanted, readReturn } from '../lib/account.js'
 import { t, currentLocale } from '../i18n/index.js'
 import { pictureKey } from '../lib/picture.js'
+import { trackEvent } from '../lib/analytics.js'
 
 // The account as last told by the API, for use without a connection: plan, credits, unlocked pictures.
 const CACHE_KEY = 'colour-detector:account'
@@ -161,6 +162,7 @@ export const useAccountStore = defineStore('account', {
         this.keys = { ...this.keys, [hash]: key }
         this.user = data.user
         writeCache(this.user)
+        if (data.result === 'unlocked') trackEvent('credit_unlock', { credits_left: this.credits })
       })
     },
     /** After paying for a pack: Stripe confirms it a moment later. */
@@ -169,7 +171,10 @@ export const useAccountStore = defineStore('account', {
         await new Promise((resolve) => setTimeout(resolve, 2000))
         await this.refresh()
       }
-      if (this.credits > before) this.notice = { kind: 'info', text: t('Thank you. You can now unlock {n} pictures.', { n: this.credits }) }
+      if (this.credits > before) {
+        trackEvent('pack_purchase', { credits_added: this.credits - before })
+        this.notice = { kind: 'info', text: t('Thank you. You can now unlock {n} pictures.', { n: this.credits }) }
+      }
     },
     async awaitPurchase(tries = 8) {
       for (let i = 0; i < tries && !this.pro; i++) {

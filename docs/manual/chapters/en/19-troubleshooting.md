@@ -73,7 +73,7 @@ Pictures, paint boxes and the collection are stored in the browser on this devic
 
 ### I cannot save, print or export
 
-In the free version on the web, pictures cannot be saved and the picture cannot be printed or exported, and a palette mixes from at most eight paints. Pro lifts all of these limits. See [Account, Pro and your data](account.html).
+In the free version on the web, pictures cannot be saved, printed or exported, and the palette mixes from the Starter box instead of your own paints. Unlocking the picture with a credit lifts these limits for that picture; Pro lifts them for every picture. See [Account, Pro and your data](account.html).
 
 ### The sign-in link does not work
 

@@ -18,7 +18,7 @@ Open **Settings** in the right-hand column. Everything in this chapter is set th
 5. **Details**: whether small areas of another hue keep a mix of their own.
 6. **Max. paints**: how many paints one mix may contain.
 
-The button with the half-filled circle beside the areas switches to [Values](values.html), a study in light and dark.
+The button with the half-filled circle beside the areas switches to [Monochrome](values.html#monochrome-one-temperature-every-value), a study in light and dark painted with your paints (Pro). For light and shadow alone, use the **Blocking** view.
 
 ## Colours: how many mixes
 

@@ -1,4 +1,14 @@
 {
+  "de/blocking": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/blocking-tone": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
   "de/breakdown": {
     "width": 768,
     "height": 786,
@@ -299,6 +309,16 @@
         "y": 3
       }
     ]
+  },
+  "en/blocking": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/blocking-tone": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
   },
   "en/breakdown": {
     "width": 768,

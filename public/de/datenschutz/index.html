@@ -22,12 +22,12 @@
 <ul>
   <li>Deine Bilder werden in deinem Browser bearbeitet. Sie werden nicht zu uns hochgeladen, und wir können sie nicht sehen.</li>
   <li>Bilder, die du sicherst, deine Farbkästen und deine Einstellungen werden in deinem Browser auf deinem Gerät gespeichert, nicht in deinem Konto und nicht in einer Cloud.</li>
-  <li>Ein Konto besteht aus deiner E-Mail-Adresse, der Einwilligung, die du gegeben hast, und der Angabe, ob du bezahlt hast. Ein Profil gibt es nicht.</li>
+  <li>Ein Konto besteht aus deiner E-Mail-Adresse, der Einwilligung, die du gegeben hast, der Angabe, ob du bezahlt hast, und deinem Guthaben an Bildern. Ein Profil gibt es nicht.</li>
   <li>Zahlungen wickelt Stripe ab. Deine Kartendaten sehen wir nie.</li>
 </ul>
 
 <h2 class="legal__heading">3. Bilder und andere Inhalte</h2>
-<p>Die App analysiert ein Foto mit Code, der in deinem Browser läuft. Das Foto, die Farbflächen, die Rezepte, deine gesicherte Sammlung und deine Farbkästen liegen im Speicher deines Browsers (Local Storage und IndexedDB). Sie bleiben dort, bis du sie löschst oder die Daten deines Browsers löschst. Wir haben keine Kopie und können sie nicht wiederherstellen.</p>
+<p>Die App analysiert ein Foto mit Code, der in deinem Browser läuft. Um ein Bild wiederzuerkennen, das du mit einem Guthaben freigeschaltet hast, schickt sie nur einen Schlüssel aus dem Foto (siehe Abschnitt 5), nie das Foto. Das Foto, die Farbflächen, die Rezepte, deine gesicherte Sammlung und deine Farbkästen liegen im Speicher deines Browsers (Local Storage und IndexedDB). Sie bleiben dort, bis du sie löschst oder die Daten deines Browsers löschst. Wir haben keine Kopie und können sie nicht wiederherstellen.</p>
 <p>Du bist für die Bilder verantwortlich, die du öffnest. Nutze nur Bilder, die du nutzen darfst.</p>
 
 <h2 class="legal__heading">4. Die freiwillige KI-Hilfe</h2>
@@ -41,6 +41,8 @@
   <li>Datum und Fassung der Einwilligung, die du gegeben hast,</li>
   <li>ob du ein Abo oder eine Lebenszeit-Lizenz hast, bis wann bezahlt ist, und deine Kundennummer bei Stripe,</li>
   <li>wenn ein Gutschein auf dich ausgestellt wurde: deine E-Mail-Adresse mit dem Gutschein und wann er eingelöst wurde,</li>
+  <li>dein Guthaben an Bildern: jede Änderung des Stands mit Grund und Datum (das Gratis-Guthaben, ein gekauftes Paket, ein freigeschaltetes Bild, eine Erstattung, ein von uns gegebenes Guthaben), und die gekauften Pakete mit ihrem Betrag,</li>
+  <li>für jedes Bild, das du freigeschaltet hast: einen Schlüssel aus 64 Zeichen und das Datum. Die App bildet den Schlüssel in deinem Browser aus einem Fingerabdruck der Fotodatei und einem Zufallswert deines Kontos. Er enthält nichts vom Bild, das Bild lässt sich nicht daraus herstellen, und dasselbe Foto ergibt in einem anderen Konto einen anderen Schlüssel,</li>
   <li>eine Sitzung, damit du bis zu 60 Tage angemeldet bleibst.</li>
 </ul>
 <p>Rechtsgrundlage: Erfüllung des Vertrags mit dir (Art. 6 Abs. 1 lit. b DSGVO). Wenn du dich mit Google, Apple oder Facebook anmeldest, erfährt dieser Dienst, dass du diese App nutzt; es gilt seine eigene Datenschutzerklärung. Ein Anmeldelink per E-Mail gilt 15 Minuten. Damit die Anmeldung nicht missbraucht wird, zählen wir Anfragen je E-Mail-Adresse und Netzwerkadresse eine Stunde lang, in einer Form, aus der sich die Adresse nicht ablesen lässt (Art. 6 Abs. 1 lit. f DSGVO).</p>

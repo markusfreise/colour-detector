@@ -55,7 +55,7 @@ Ein guter Ausgangspunkt ist je eine warme und eine kalte Version jeder Grundfarb
 
 Das sind sechs bis acht Farben, und damit lässt sich fast alles mischen. Nimm eine Farbe nur dazu, wenn das Bild einen Ton verlangt, den diese nicht erreichen, etwa ein klares Türkis oder ein leuchtendes Violett.
 
-> **Gut zu wissen:** Ein kostenloses Konto mischt aus bis zu acht Farben in einem Farbkasten. Ist die Palette voll, sagt der Farbkasten Bescheid; mit Pro mischst du aus so vielen Farben, wie du willst.
+> **Gut zu wissen:** Ein kostenloses Konto mischt aus dem **Einsteigerkasten**: zwölf Farben, wie ein günstiger Schulmalkasten sie hat (zwei Gelb, zwei Rot, zwei Blau, ein Violett, ein Grün, drei Erdfarben und Schwarz). Du kannst unter ihnen wählen, aber keine eigenen Farben hinzufügen. Deine eigenen Farben und Farbkästen gibt es mit einem freigeschalteten Bild oder mit Pro; siehe [Konto, Pro und deine Daten](konto.html).
 
 ## Farben hinzufügen
 

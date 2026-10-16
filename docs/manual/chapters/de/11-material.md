@@ -129,4 +129,4 @@ Male bei Tageslicht von der Seite, am besten an einem Nordfenster. Warmes Lampen
 | Wasser | Zwei Gläser |
 | Sonstiges | Brett, Kreppband, Bleistift HB bis 2H, Knetradierer, Küchenpapier, Sprühflasche |
 
-> **Tipp:** Fang auch in der App mit einer kleinen Palette an. In der kostenlosen Version im Web mischt die Palette aus bis zu acht Farben; mit acht gut gewählten Einpigmentfarben erreichst du fast jede Farbe einer Landschaft wie Llyn Idwal.
+> **Tipp:** Fang auch in der App mit einer kleinen Palette an. Mit acht gut gewählten Einpigmentfarben erreichst du fast jede Farbe einer Landschaft wie Llyn Idwal. (Die kostenlose Version im Web mischt aus ihrem Einsteigerkasten mit zwölf Schulfarben; deine eigenen Farben gibt es mit einem freigeschalteten Bild oder mit Pro.)

@@ -2,7 +2,7 @@
 title: Account, Pro and your data
 nav: Account and data
 slug: account
-lead: Your account is only your e-mail address and your plan. Your photos, paint boxes and saved pictures never leave the device you work on. This chapter explains signing in, the free version and Pro, the preferences, and what happens to your data.
+lead: Your account is only your e-mail address, your plan and your picture credits. Your photos, paint boxes and saved pictures never leave the device you work on. This chapter explains signing in, the free version and Pro, the preferences, and what happens to your data.
 part: The app
 ---
 
@@ -25,38 +25,50 @@ The second one matters, and the rest of this chapter explains why. Press **Conti
 
 You stay signed in on this device for 60 days. **Sign out** in the account dialog ends it.
 
-## Free and Pro
+## Free, a picture, or Pro
 
-The free version is the whole app with a few limits. It shows you exactly how Watercolourlove works with your own photos and paints. Pro lifts every limit.
+The free version analyses your photos and gives you every recipe, mixed from the **Starter box**: twelve colours as a cheap student set has them. It shows you how Watercolourlove works with your own photos. To paint a picture with **your own paints**, unlock that picture with a credit, or go Pro for every picture.
 
-| | Free | Pro |
-| --- | --- | --- |
-| Analyse photos, mix and layer mode, values | yes | yes |
-| Colour list, recipes, full breakdown, changing colours | yes | yes |
-| Paints to mix from | up to 8, in one paint box | all, in as many paint boxes as you like |
-| Brand colour charts in the colour search | | yes |
-| Save pictures in the collection | | yes |
-| Print / PDF, Export as JPG | | yes |
-| Details of a picture (close-ups) | | yes |
-| Simplify areas below 0 | | yes |
+| | Free | One picture (a credit) | Pro |
+| --- | --- | --- | --- |
+| Analyse photos, mix and layer mode, colour list, recipes | yes | yes | yes |
+| Paints to mix from | the Starter box | your own paints, in the boxes you have | your own paints, in as many boxes as you like |
+| Blocking, close-ups, Simplify below 0 | | yes | yes |
+| Save, Print / PDF, the template, Export as JPG | | yes | yes |
+| More paint boxes, brand colour charts, importing a paint box | | | yes |
+| Monochrome | | | yes |
 
-When you reach a limit, the app tells you what Pro would allow and offers the plans. **Get pro** among the tools of the picture opens them at any time.
+The samples are open to everybody with everything a picture can have, so you can try each feature on them first.
+
+When you reach a limit, the app tells you what would allow it and offers what fits: **Unlock this picture**, packs of pictures, or the plans. **Get pro** among the tools of the picture opens them at any time; beside it you see how many pictures you can still unlock.
+
+### Pictures and credits
+
+A credit unlocks **one picture for good**. Every account starts with one; more come in packs. They do not expire, and they stay when a subscription ends.
+
+- **Unlock this picture** asks once more and shows how many you have left. Then the picture is yours: open it, change it, print it again, as often as you like. Close-ups and changed settings stay part of it.
+- **The same photo is the same picture.** Opening the same file again, or the saved picture in the collection, costs nothing. Another photo is another picture. Pictures you unlocked carry the mark **Unlocked** in the collection.
+- With a subscription or a lifetime licence you never spend a credit.
+
+> **Note:** The photo still never leaves your device. To know a picture again, the app works out a fingerprint of the photo's file and sends only a key made from it and your account. Nobody can rebuild the photo from it, and the same photo in another account gives another key.
 
 ### Plans
 
-| Plan | Price | |
-| --- | --- | --- |
-| **Monthly** | 4.99 EUR per month | renews every month, cancel at any time |
-| **Yearly** | 29.99 EUR per year | renews every year, cancel at any time |
-| **Lifetime licence** | 79 EUR once | one payment, no renewal |
+| Plan | |
+| --- | --- |
+| **Monthly** | renews every month, cancel at any time |
+| **Yearly** | renews every year, cancel at any time |
+| **Lifetime licence** | one payment, no renewal |
 
-Prices include VAT. Payment is handled by Stripe; the app never sees your card. "Lifetime" means the life of the product: for as long as Watercolourlove is offered, not a promise that it runs forever. The terms explain this in full.
+The dialog shows the current prices. They include VAT. Payment is handled by Stripe; the app never sees your card. "Lifetime" means the life of the product: for as long as Watercolourlove is offered, not a promise that it runs forever. The terms explain this in full.
+
+What you paid for pictures in the last 30 days comes off your first plan: the dialog says how much.
 
 With a subscription you can **Switch to a lifetime licence** at any time. A **Voucher for a lifetime licence** is redeemed in the plan dialog with **Redeem**; a voucher only works with the e-mail address it was made out to.
 
 ### The account dialog
 
-The person icon in the left column opens **Account**. It shows your address and your plan, and offers:
+The person icon in the left column opens **Account**. It shows your address, your plan and how many pictures you can still unlock, and offers:
 
 - **Manage subscription:** change or cancel a subscription, update the payment method.
 - **Invoices:** your invoices, to view and download.

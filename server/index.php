@@ -11,6 +11,7 @@
 declare(strict_types=1);
 
 require __DIR__ . '/lib.php';
+require __DIR__ . '/entitlements.php';
 require __DIR__ . '/auth.php';
 require __DIR__ . '/billing.php';
 
@@ -35,7 +36,7 @@ switch ($route) {
         send([
             'user' => $user ? describeUser($user) : null,
             'providers' => enabledProviders(),
-            'plans' => enabledPlans(),
+            'products' => enabledProducts(),
             'consentVersion' => config('consent_version'),
             // Whether invitation codes exist: the sign-in shows the optional field.
             'invitation' => !empty(config('invitation')['codes']),

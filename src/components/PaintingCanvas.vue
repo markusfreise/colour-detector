@@ -41,7 +41,7 @@
     <span v-if="spot && !backdrop" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
     <div v-if="!backdrop" class="painting__tools">
       <!-- Until everything is unlocked: the plans, one click away. -->
-      <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(false, 'use everything')">
+      <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(null, 'use everything')">
         {{ t('Get pro') }}
       </button>
       <button class="button button--ghost painting__tool" type="button" :data-hint="t('Fit')" @click="fit">

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { stockPaints } from '../data/paints.js'
+import { starterPaints } from '../data/starter.js'
 import { useProStore } from './pro.js'
 import { groupPaints, sortPaints, AUTO_OFF_DEFAULT, HOUSE_VENDOR } from '../lib/paintbox.js'
 import { t } from '../i18n/index.js'
@@ -10,6 +11,7 @@ const OLD_BOXES_KEY = 'colour-detector:boxes'
 const PALETTE_KEY = 'colour-detector:palette'
 const PAINTBOXES_KEY = 'colour-detector:paintboxes'
 const CUSTOM_KEY = 'colour-detector:custom-paints'
+const STARTER_KEY = 'colour-detector:starter-palette'
 // The format of an exported paint box file.
 export const BOX_FILE_FORMAT = 'watercolourlove-paintbox'
 
@@ -39,6 +41,10 @@ export function normalizePalette(palette) {
   p.auto ??= [...p.paintIds].sort().join() === defaultIds().sort().join()
   return { paintIds: [...p.paintIds], auto: p.auto, layerIds: [...p.layerIds], layerAuto: p.layerAuto, autoOff: [...p.autoOff] }
 }
+
+// The palette of the Starter box: all twelve colours, on Auto.
+const starterPalette = () =>
+  normalizePalette({ paintIds: starterPaints.map((p) => p.id), auto: true, autoOff: [], ...read(STARTER_KEY) })
 
 function loadPalette() {
   const saved = read(PALETTE_KEY)
@@ -72,19 +78,28 @@ export const usePaintsStore = defineStore('paints', {
       boxes: loadBoxes([...stockPaints, ...custom]),
       // The palette of the picture on screen (normalizePalette); saved with the picture.
       selection: loadPalette(),
+      // The palette while the free version mixes from the Starter box; kept apart from the user's.
+      starterSelection: starterPalette(),
       // Behind signing in: a palette of its own with the showcase paints, in place of the user's
       // while it is set, and never saved (startShowcase / endShowcase).
       showcase: null,
     }
   },
   getters: {
-    all: (state) => (state.showcase ? state.showcase.paints : [...stockPaints, ...state.custom]),
-    palette: (state) => state.showcase?.palette ?? state.selection,
+    // The free version mixes from the Starter box; one's own paints take a credit on the picture, or a plan.
+    starter: (state) => !state.showcase && !useProStore().can('own_paints'),
+    all(state) {
+      if (state.showcase) return state.showcase.paints
+      return this.starter ? starterPaints : [...stockPaints, ...state.custom]
+    },
+    palette(state) {
+      return state.showcase?.palette ?? (this.starter ? state.starterSelection : state.selection)
+    },
     // Paints Auto may choose from: those in the paint boxes ticked for Auto. A Schmincke stock paint
     // outside the default selection is held back (its colour is not checked yet).
     autoCandidates() {
       const held = (p) => !p.enabled && !p.custom && p.vendor === HOUSE_VENDOR
-      if (this.showcase) return this.all.filter((p) => !held(p))
+      if (this.showcase || this.starter) return this.all.filter((p) => !held(p))
       const off = new Set(this.palette.autoOff)
       const ids = new Set(this.boxes.filter((b) => !off.has(b.id)).flatMap((b) => b.paintIds))
       return this.all.filter((p) => ids.has(p.id) && !held(p))
@@ -94,12 +109,9 @@ export const usePaintsStore = defineStore('paints', {
       const byId = this.byId
       return this.palette.layerIds.map((id) => byId[id]).filter(Boolean)
     },
-    // The paints mixed with: what the box holds, cut to what the account may use. The box itself
-    // keeps its whole selection, so nothing is lost while a plan has run out.
+    // The paints mixed with.
     enabledIds() {
-      const ids = this.palette.paintIds
-      const limit = this.showcase ? Infinity : useProStore().paintLimit
-      return new Set(ids.length > limit ? ids.slice(0, limit) : ids)
+      return new Set(this.palette.paintIds)
     },
     enabled() {
       return this.all.filter((p) => this.enabledIds.has(p.id))
@@ -124,13 +136,12 @@ export const usePaintsStore = defineStore('paints', {
     },
     /** Any selection made by hand switches Auto off for the box. */
     setEnabled(ids, auto = false) {
-      // A proposal lists the paints for the largest areas first: those stay when the account has a limit.
-      this.palette.paintIds = auto ? [...ids].slice(0, useProStore().paintLimit) : [...ids]
+      this.palette.paintIds = [...ids]
       this.palette.auto = auto
       this.persist()
     },
     reset() {
-      this.setEnabled(defaultIds())
+      this.setEnabled(this.starter ? starterPaints.map((p) => p.id) : defaultIds())
     },
     /** Whether Auto may choose from the paints of a paint box. */
     setAutoBox(id, on) {
@@ -276,6 +287,7 @@ export const usePaintsStore = defineStore('paints', {
         localStorage.setItem(PAINTBOXES_KEY, JSON.stringify(this.boxes))
         localStorage.setItem(PALETTE_KEY, JSON.stringify(this.selection))
         localStorage.setItem(CUSTOM_KEY, JSON.stringify(this.custom))
+        localStorage.setItem(STARTER_KEY, JSON.stringify(this.starterSelection))
       } catch {
         // ignore – the boxes just won't survive a reload
       }

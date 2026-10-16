@@ -60,6 +60,14 @@ It creates the product, the three prices, the 19 % VAT rate, the webhook to `<ap
 
 In the Stripe dashboard, once: public details (terms and privacy URL, support address) and the VAT ID on the invoices.
 
+## Plans and what they unlock
+
+`plans.json` holds the products (subscriptions, the lifetime licence, credit packs), the two groups of paid features (`picture`: what one picture needs, unlocked by a credit; `studio`: only with a plan) and the free limits. The app reads the same file (`src/lib/entitlements.js`), and `entitlements.php` decides with the same rules; `tests/entitlement-cases.json` checks both. A product is offered when it is `active` and has a Stripe price: `STRIPE_PRICE_<KEY>` in the environment (`pictures-5` → `STRIPE_PRICE_PICTURES_5`) or `stripe.prices` in `config.php`. The prices shown come from Stripe, not from the file or the translations.
+
+## Tests
+
+`npm run test:server` (or `php server/tests/run.php`): no packages, every test on a new SQLite file.
+
 ## Vouchers
 
 A voucher is a lifetime licence for one e-mail address. Make one on the server, in the folder of the API:

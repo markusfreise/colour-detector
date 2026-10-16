@@ -8,7 +8,7 @@
       <p v-if="account.error" class="account__error">{{ account.error }}</p>
 
       <div class="account__actions">
-        <button v-if="!account.user.plan && account.plans.length" class="button" type="button" @click="upgrade">{{ t('Unlock everything') }}</button>
+        <button v-if="!account.user.plan && account.products.length" class="button" type="button" @click="upgrade">{{ t('Unlock everything') }}</button>
         <button v-if="account.user.plan === 'subscription' && lifetime" class="button button--secondary" type="button" @click="upgrade">
           {{ t('Switch to a lifetime licence') }}
         </button>
@@ -80,7 +80,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useAccountStore } from '../stores/account.js'
-import { useProStore, FREE_PAINTS } from '../stores/pro.js'
+import { useProStore } from '../stores/pro.js'
 import { paidUntil } from '../lib/account.js'
 import { usePreferencesStore } from '../stores/preferences.js'
 import { useText } from '../i18n/index.js'
@@ -103,7 +103,7 @@ const themes = computed(() => [
   { value: 'dark', label: t('Dark') },
 ])
 
-const lifetime = computed(() => account.plans.some((plan) => plan.id === 'lifetime'))
+const lifetime = computed(() => account.products.some((product) => product.type === 'lifetime'))
 const planText = computed(() => {
   const user = account.user
   if (user.plan === 'lifetime') return t('Lifetime licence: everything is unlocked.')
@@ -112,12 +112,12 @@ const planText = computed(() => {
       ? t('Subscription: everything is unlocked, paid until {date}.', { date: paidUntil(user.until, region.value) })
       : t('Subscription: everything is unlocked.')
   }
-  return t('Free version: one paint box with up to {n} paints, no saved pictures, no print.', { n: FREE_PAINTS })
+  return t('Free version: mixes from the Starter box of 12 colours, no saved pictures, no print.')
 })
 
 function upgrade() {
   dialog.value.close()
-  pro.require(false, 'use everything')
+  pro.require(null, 'use everything')
 }
 
 function close() {

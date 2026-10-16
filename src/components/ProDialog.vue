@@ -29,8 +29,7 @@
     <template v-else>
       <p class="pro__text">
         {{
-          t('The free version mixes from up to {n} paints in one paint box, and does not save pictures or print. To {reason}, choose a plan.', {
-            n: FREE_PAINTS,
+          t('The free version mixes from the Starter box of 12 colours, and does not save pictures or print. To {reason}, choose a plan.', {
             reason: t(pro.reason),
           })
         }}
@@ -38,17 +37,17 @@
       <ul class="pro__list">
         <li>{{ t('Save as many pictures as you like') }}</li>
         <li>{{ t('Print the sheet or save it as a PDF') }}</li>
-        <li>{{ t('Mix from all your paints') }}</li>
+        <li>{{ t('Mix from your own paints') }}</li>
         <li>{{ t('Keep a paint box for every set of paints you own') }}</li>
       </ul>
       <p v-if="account.error" class="pro__error">{{ account.error }}</p>
-      <ul v-if="account.plans.length" class="pro__plans">
-        <li v-for="plan in account.plans" :key="plan.id" class="pro__plan">
+      <ul v-if="plans.length" class="pro__plans">
+        <li v-for="plan in plans" :key="plan.key" class="pro__plan">
           <span class="pro__plan-text">
-            <strong>{{ PLAN_NAMES[plan.id] ? t(PLAN_NAMES[plan.id]) : plan.id }}</strong>
-            <span class="pro__plan-note">{{ PLAN_NOTES[plan.id] ? t(PLAN_NOTES[plan.id]) : '' }}</span>
+            <strong>{{ t(planName(plan)) }}</strong>
+            <span class="pro__plan-note">{{ t(planNote(plan)) }}</span>
           </span>
-          <button class="button" type="button" :disabled="account.busy" @click="account.buy(plan.id)">{{ plan.label ? t(plan.label) : t('Choose') }}</button>
+          <button class="button" type="button" :disabled="account.busy" @click="account.buy(plan.key)">{{ t('Choose') }}</button>
         </li>
       </ul>
       <p v-else class="pro__text">{{ t('No plans are on offer at the moment.') }}</p>
@@ -72,8 +71,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { useProStore, FREE_PAINTS } from '../stores/pro.js'
+import { computed, ref, watch } from 'vue'
+import { useProStore } from '../stores/pro.js'
 import { useAccountStore } from '../stores/account.js'
 import { isNative } from '../lib/native.js'
 import { useText } from '../i18n/index.js'
@@ -91,13 +90,16 @@ async function redeem() {
   dialog.value.close()
 }
 
-const PLAN_NAMES = { monthly: 'Monthly', yearly: 'Yearly', lifetime: 'Lifetime licence' }
+// The plans of the config (server/plans.json); credit packs are offered on their own.
+const plans = computed(() => account.products.filter((p) => p.type === 'subscription' || p.type === 'lifetime'))
+const planName = (plan) => (plan.type === 'lifetime' ? 'Lifetime licence' : plan.interval === 'year' ? 'Yearly' : 'Monthly')
 // What "lifetime" means stands next to its price, not only in the terms.
-const PLAN_NOTES = {
-  monthly: 'Renews every month, cancel at any time.',
-  yearly: 'Renews every year, cancel at any time.',
-  lifetime: 'One payment, no renewal. For as long as the app is offered: the life of the product, not a promise that it runs for ever.',
-}
+const planNote = (plan) =>
+  plan.type === 'lifetime'
+    ? 'One payment, no renewal. For as long as the app is offered: the life of the product, not a promise that it runs for ever.'
+    : plan.interval === 'year'
+      ? 'Renews every year, cancel at any time.'
+      : 'Renews every month, cancel at any time.'
 
 watch(
   () => pro.offered,

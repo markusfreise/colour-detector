@@ -218,7 +218,7 @@ async function showcase() {
   paints.startShowcase(showcasePaints)
   analysis.settings.mode = 'mix'
   // The first rendering takes over from the pulsing watercolour.
-  await analysis.loadFromSource(background, 'Watercolour')
+  await analysis.loadFromSource(background, 'Watercolour', { sample: true, hash: null })
   if (!running) return
   mapShown.value = true
   let previous = background
@@ -238,7 +238,7 @@ async function showcase() {
       // then is the new one made, and the photo gives way once it is drawn, not before HOLD.
       await pause(FADE)
       if (!running) return
-      await Promise.all([pause(HOLD), analysis.loadFromSource(picture.url, picture.name).then(painted)])
+      await Promise.all([pause(HOLD), analysis.loadFromSource(picture.url, picture.name, { sample: true, hash: null }).then(painted)])
       if (!running) return
       photoShown.value = false
       previous = picture.url

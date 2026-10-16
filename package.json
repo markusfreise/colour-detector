@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:server": "php server/tests/run.php",
     "app:data": "node app/scripts/export-data.mjs"
   },
   "dependencies": {

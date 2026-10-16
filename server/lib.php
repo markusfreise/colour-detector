@@ -18,24 +18,24 @@ const MAGIC_PER_IP = 20;
 
 function config(?string $key = null): mixed
 {
-    static $config = null;
-    if ($config === null) {
+    // The tests put a configuration of their own here.
+    if (!isset($GLOBALS['accountConfig'])) {
         $file = __DIR__ . '/config.php';
         if (!is_file($file)) {
             fail(500, 'The account service is not configured.');
         }
-        $config = require $file;
+        $GLOBALS['accountConfig'] = require $file;
     }
+    $config = $GLOBALS['accountConfig'];
     return $key === null ? $config : ($config[$key] ?? null);
 }
 
 function db(): PDO
 {
-    static $db = null;
-    if ($db !== null) {
-        return $db;
+    if (isset($GLOBALS['accountDb'])) {
+        return $GLOBALS['accountDb'];
     }
-    $db = new PDO('sqlite:' . config('database'), null, null, [
+    $db = $GLOBALS['accountDb'] = new PDO('sqlite:' . config('database'), null, null, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
@@ -105,8 +105,20 @@ function row(string $sql, array $values = []): ?array
     return $found === false ? null : $found;
 }
 
+/** What send() and fail() throw under test, instead of answering and ending the script. */
+final class Answer extends Exception
+{
+    public function __construct(public readonly array $data, public readonly int $status)
+    {
+        parent::__construct((string) ($data['error'] ?? 'answer'), $status);
+    }
+}
+
 function send(array $data, int $status = 200): never
 {
+    if (defined('ACCOUNT_TESTS')) {
+        throw new Answer($data, $status);
+    }
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store');
@@ -315,17 +327,17 @@ function enabledProviders(): array
     return $providers;
 }
 
-function enabledPlans(): array
+/** The products that can be bought: active in plans.json and with a Stripe price. */
+function enabledProducts(): array
 {
-    $stripe = config('stripe') ?? [];
-    if (($stripe['secret_key'] ?? '') === '') {
+    if (((config('stripe') ?? [])['secret_key'] ?? '') === '') {
         return [];
     }
-    $plans = [];
-    foreach ($stripe['plans'] ?? [] as $name => $plan) {
-        if (($plan['price'] ?? '') !== '') {
-            $plans[] = ['id' => $name, 'label' => $plan['label'] ?? ''];
+    $products = [];
+    foreach (activeProducts() as $product) {
+        if (priceIdOf($product['key']) !== '') {
+            $products[] = array_intersect_key($product, array_flip(['key', 'type', 'interval', 'quantity']));
         }
     }
-    return $plans;
+    return $products;
 }

@@ -1,0 +1,28 @@
+{
+  "comment": "Plans and what they unlock, read by the app (src/lib/entitlements.js) and by the account API (server/entitlements.php). Prices shown come from Stripe; 'amount' (cents, gross) is only what stripe-setup.php creates. Price IDs are in config.php (stripe.prices) or in STRIPE_PRICE_<KEY>.",
+  "currency": "eur",
+  "products": [
+    { "key": "monthly", "type": "subscription", "interval": "month", "amount": 499, "active": true, "sort": 10 },
+    { "key": "yearly", "type": "subscription", "interval": "year", "amount": 2999, "active": true, "sort": 20 },
+    { "key": "lifetime", "type": "lifetime", "amount": 7900, "active": true, "sort": 30 },
+    { "key": "pictures-1", "type": "credit_pack", "quantity": 1, "amount": 249, "active": true, "sort": 40 },
+    { "key": "pictures-5", "type": "credit_pack", "quantity": 5, "amount": 899, "active": true, "sort": 50 },
+    { "key": "pictures-10", "type": "credit_pack", "quantity": 10, "amount": 1499, "active": true, "sort": 60 }
+  ],
+  "features": {
+    "picture": ["own_paints", "blocking", "closeups", "finer_areas", "save", "print", "export_jpg"],
+    "studio": ["paint_boxes", "brand_charts", "box_import", "monochrome", "ai"]
+  },
+  "free": {
+    "saved_pictures": 0,
+    "saved_pictures_native": 1,
+    "samples_unlocked": true
+  },
+  "native": {
+    "locked": ["save", "blocking", "paint_boxes", "brand_charts", "box_import", "closeups", "finer_areas", "ai"]
+  },
+  "credits": {
+    "welcome": 1,
+    "deduction_days": 30
+  }
+}

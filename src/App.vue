@@ -121,6 +121,7 @@ import { useAccountStore } from './stores/account.js'
 import { isNative } from './lib/native.js'
 import { useProStore } from './stores/pro.js'
 import { useCollectionStore } from './stores/collection.js'
+import { usePaintsStore } from './stores/paints.js'
 import { useText } from './i18n/index.js'
 
 const { t, legalPage } = useText()
@@ -144,16 +145,27 @@ function toggleHints() {
 const pro = useProStore()
 function getPro() {
   menuOpen.value = false
-  pro.require(false, 'use everything')
+  pro.require(null, 'use everything')
 }
 watch(
   () => account.ready && account.welcome && account.loaded,
   (show) => {
     if (!show) return
     account.welcome = false
-    if (!pro.active && account.plans.length) pro.require(false, 'use everything')
+    if (!pro.active && account.products.length) pro.require(null, 'use everything')
   },
   { flush: 'post' },
+)
+// A picture that changes between the Starter box and one's own paints (unlocked, a plan bought
+// or ended) is mixed again with the paints it now has. A picture being analysed does that itself.
+const paints = usePaintsStore()
+watch(
+  () => paints.starter,
+  () => {
+    if (analysis.busy || !analysis.pixels) return
+    analysis.autoPaints()
+    analysis.recomputeAllRecipes()
+  },
 )
 onMounted(() => {
   consent.init()

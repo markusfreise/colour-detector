@@ -33,6 +33,11 @@ export const SAMPLES = [
   { file: 'sample-winter-fields.webp', name: 'Winter fields', credit: MARKUS },
   { file: 'sample-old-town-snow.webp', name: 'Old town in snow', credit: MARKUS },
   {
+    file: 'sample-red-train.webp',
+    name: 'Red train',
+    credit: { name: 'Markus Freise', url: 'https://unsplash.com/photos/red-and-white-train-on-train-station-Zi8T2OwJf44' },
+  },
+  {
     file: 'sample-woman-white-wall.webp',
     name: 'Woman by a white wall',
     credit: { name: 'Ayo Ogunseinde', url: 'https://unsplash.com/photos/woman-looking-sideways-leaning-on-white-wall-6W4F62sN_yI' },

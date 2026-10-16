@@ -103,6 +103,7 @@ export default {
   'Sample photos under the Unsplash License.': 'Beispielfotos unter der Unsplash-Lizenz.',
   'Photo: {name} / Unsplash': 'Foto: {name} / Unsplash',
   'Woman by a white wall': 'Frau an weißer Wand',
+  'Red train': 'Roter Zug',
   'Rooftops at dusk': 'Dächer in der Dämmerung',
   'Winter fields': 'Winterfelder',
   'Old town in snow': 'Altstadt im Schnee',

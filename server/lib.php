@@ -6,6 +6,10 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/entitlements.php';
+require_once __DIR__ . '/migrations.php';
+require_once __DIR__ . '/ledger.php';
+
 const SESSION_COOKIE = 'cd_session';
 const STATE_COOKIE = 'cd_state';
 const SESSION_DAYS = 60;
@@ -38,6 +42,8 @@ function db(): PDO
     $db = $GLOBALS['accountDb'] = new PDO('sqlite:' . config('database'), null, null, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        // A request that finds the database held by another one waits for it (seconds).
+        PDO::ATTR_TIMEOUT => 10,
     ]);
     $db->exec('PRAGMA journal_mode = WAL');
     $db->exec('PRAGMA foreign_keys = ON');
@@ -89,6 +95,8 @@ function db(): PDO
         PRIMARY KEY (code, email)
     )');
     $db->exec('CREATE TABLE IF NOT EXISTS stripe_events (id TEXT PRIMARY KEY, at INTEGER NOT NULL)');
+    // Everything added since: migrations.php.
+    migrate($db);
     return $db;
 }
 
@@ -281,8 +289,9 @@ function userByEmail(string $email): array
     $email = strtolower(trim($email));
     $user = row('SELECT * FROM users WHERE email = ?', [$email]);
     if (!$user) {
-        run('INSERT INTO users (email, created_at) VALUES (?, ?)', [$email, time()]);
+        run('INSERT INTO users (email, created_at, picture_salt) VALUES (?, ?, ?)', [$email, time(), bin2hex(random_bytes(16))]);
         $user = row('SELECT * FROM users WHERE email = ?', [$email]);
+        grantWelcomeCredits(db(), (int) $user['id']);
     }
     return $user;
 }
@@ -308,7 +317,7 @@ function describeUser(array $user): array
         'until' => (int) $user['lifetime'] === 1 ? null : ($user['sub_until'] ? (int) $user['sub_until'] : null),
         'consent' => $user['consent_version'] === config('consent_version'),
         'billing' => $user['stripe_customer'] !== null,
-    ];
+    ] + describeCredits($user);
 }
 
 function enabledProviders(): array
@@ -336,7 +345,7 @@ function enabledProducts(): array
     $products = [];
     foreach (activeProducts() as $product) {
         if (priceIdOf($product['key']) !== '') {
-            $products[] = array_intersect_key($product, array_flip(['key', 'type', 'interval', 'quantity']));
+            $products[] = array_intersect_key($product, array_flip(['key', 'type', 'interval', 'quantity'])) + ['price' => priceOf(priceIdOf($product['key']))];
         }
     }
     return $products;

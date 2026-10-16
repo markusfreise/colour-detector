@@ -6,7 +6,6 @@ declare(strict_types=1);
 const ACCOUNT_TESTS = true;
 
 require dirname(__DIR__) . '/lib.php';
-require dirname(__DIR__) . '/entitlements.php';
 require dirname(__DIR__) . '/billing.php';
 
 /** A configuration as a test needs it, on a new database file. */

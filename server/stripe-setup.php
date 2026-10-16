@@ -7,7 +7,7 @@
  *
  * It asks for the secret key (sk_live_..., or a restricted key rk_live_... with the permissions
  * listed in README.md) without showing it, then creates what is
- * missing and reuses what is there: the product, the three prices (gross), the German VAT rate
+ * missing and reuses what is there: the product, a price (gross) for every product in plans.json, the German VAT rate
  * inside them, the webhook and the customer portal. Markus Freise is the seller; Stripe only
  * takes the payments. Running it again is safe. The webhook is made anew each time,
  * because Stripe shows its signing secret only when it is created.
@@ -22,11 +22,15 @@ if (PHP_SAPI !== 'cli') {
     exit;
 }
 
-const PLANS = [
-    'monthly' => ['amount' => 499, 'interval' => 'month', 'label' => '4.99 EUR per month'],
-    'yearly' => ['amount' => 2999, 'interval' => 'year', 'label' => '29.99 EUR per year'],
-    'lifetime' => ['amount' => 7900, 'interval' => null, 'label' => '79 EUR once'],
-];
+// The products and their gross amounts come from plans.json, which the app reads too.
+$plansFile = json_decode((string) file_get_contents(__DIR__ . '/plans.json'), true, 512, JSON_THROW_ON_ERROR);
+$currency = $plansFile['currency'] ?? 'eur';
+$plans = [];
+foreach ($plansFile['products'] as $product) {
+    if ($product['active'] ?? false) {
+        $plans[$product['key']] = $product;
+    }
+}
 const EVENTS = [
     'checkout.session.completed',
     'customer.subscription.created',
@@ -154,7 +158,7 @@ $product = $products[0] ?? stripe('POST', 'products', [
 say('Product: ' . $product['id'] . ($products ? ' (found)' : ' (created)'));
 
 $prices = [];
-foreach (PLANS as $plan => $spec) {
+foreach ($plans as $plan => $spec) {
     $lookup = "watercolourlove_$plan";
     $found = stripe('GET', 'prices', ['lookup_keys' => [$lookup], 'active' => 'true'])['data'][0] ?? null;
     // A price with another amount stays for its existing customers; the new one takes the key over.
@@ -163,14 +167,14 @@ foreach (PLANS as $plan => $spec) {
     }
     $fields = [
         'product' => $product['id'],
-        'currency' => 'eur',
+        'currency' => $currency,
         'unit_amount' => $spec['amount'],
         'tax_behavior' => 'inclusive',
         'lookup_key' => $lookup,
         'transfer_lookup_key' => 'true',
-        'nickname' => $spec['label'],
+        'nickname' => $plan,
     ];
-    if ($spec['interval']) {
+    if ($spec['type'] === 'subscription') {
         $fields['recurring'] = ['interval' => $spec['interval']];
     }
     $price = $found ?? stripe('POST', 'prices', $fields);
@@ -210,7 +214,7 @@ $portalFields = [
             'enabled' => 'true',
             'default_allowed_updates' => ['price'],
             'proration_behavior' => 'create_prorations',
-            'products' => [['product' => $product['id'], 'prices' => [$prices['monthly'], $prices['yearly']]]],
+            'products' => [['product' => $product['id'], 'prices' => array_values(array_intersect_key($prices, array_filter($plans, fn (array $p) => $p['type'] === 'subscription')))]],
         ],
     ],
     'default_return_url' => $appUrl,
@@ -226,7 +230,7 @@ $config['stripe'] = [
     'secret_key' => $key,
     'webhook_secret' => $hook['secret'],
     'tax_rate' => $rate['id'],
-    'plans' => array_map(fn (string $plan) => ['price' => $prices[$plan], 'label' => PLANS[$plan]['label']], array_combine(array_keys(PLANS), array_keys(PLANS))),
+    'prices' => $prices,
 ];
 $text = "<?php\n// Written by stripe-setup.php on " . date('Y-m-d H:i') . ".\nreturn " . var_export($config, true) . ";\n";
 if (file_put_contents($configFile, $text, LOCK_EX) === false) {

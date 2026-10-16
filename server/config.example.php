@@ -11,6 +11,15 @@ return [
     // Version of the privacy text a user agreed to. Change it when the text changes: everybody is asked again.
     'consent_version' => '2026-10',
 
+    // The app itself (api/app/) and the mixing service (api/mix/) are for signed-in accounts. On a
+    // development instance whose build has no accounts (no VITE_ACCOUNT_API), and for `npm run dev`
+    // against a local API, set 'open' to true: then anyone may use them, and nothing is locked.
+    // Never on the public host.
+    // 'open' => true,
+    // Where answers of the mixing service are kept for a week (colours and paints, no picture);
+    // default: a folder in the system's temporary directory.
+    // 'mix_cache' => '/home/www/pXXXXXX/colour-detector-mix-cache',
+
     'mail' => [
         'from' => 'Watercolourlove <support@markus-freise.de>',
         // 'mail' sends with PHP mail(); a file path writes the message there instead (for local tests).

@@ -448,6 +448,7 @@ export default {
   'Analysis failed: {reason}': 'Die Analyse ist fehlgeschlagen: {reason}',
   'Sketch failed: {reason}': 'Die Skizze ist fehlgeschlagen: {reason}',
   'Mixing failed: {reason}': 'Das Mischen ist fehlgeschlagen: {reason}',
+  'The app could not be loaded. Please reload the page.': 'Die App konnte nicht geladen werden. Bitte lade die Seite neu.',
   'The mixing service cannot be reached. Check the connection.': 'Der Mischdienst ist nicht erreichbar. Prüfe die Verbindung.',
   'The mixing service did not answer as expected.': 'Der Mischdienst hat nicht wie erwartet geantwortet.',
   // Plan labels as set on the server (config.php, stripe-setup.php)

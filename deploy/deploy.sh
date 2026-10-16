@@ -34,8 +34,11 @@ rsync -a --delete \
   --exclude 'api/' \
   dist/ "$WEB_ROOT/"
 # The account API next to the app; its configuration stays on the server.
+# The app itself (dist/api/app/) is not a public file: the account API sends it to signed-in
+# users only, from api/bundle/.
 mkdir -p "$WEB_ROOT/api"
-rsync -a --delete --exclude 'config.php' --exclude 'README.md' server/ "$WEB_ROOT/api/"
+rsync -a --delete --exclude 'config.php' --exclude 'README.md' --exclude 'tests/' server/ "$WEB_ROOT/api/"
+rsync -a --delete dist/api/app/ "$WEB_ROOT/api/bundle/"
 cp deploy/webhook.php "$WEB_ROOT/webhook.php"
 
 echo "=== $(date -Is) done ==="

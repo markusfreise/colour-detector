@@ -3,7 +3,7 @@
   <div
     ref="root"
     class="painting"
-    :class="{ 'painting--moving': moving, 'painting--backdrop': backdrop }"
+    :class="{ 'painting--moving': moving }"
     @click="onClick"
     @wheel="onWheel"
     @pointerdown="onDown"
@@ -16,7 +16,7 @@
     <canvas
       ref="canvas"
       class="painting__canvas"
-      :class="{ 'painting__canvas--busy': (analysis.busy || analysis.mixing > 0) && !backdrop, 'painting__canvas--framing': framing }"
+      :class="{ 'painting__canvas--busy': analysis.busy || analysis.mixing > 0, 'painting__canvas--framing': framing }"
       :style="canvasStyle"
       @mousemove="onMove"
       @mouseleave="hover = null"
@@ -26,7 +26,7 @@
       @pointercancel="frame = null"
     ></canvas>
     <!-- No picture yet: the whole canvas is the way to the first one. -->
-    <label v-if="!analysis.image && !analysis.busy && !backdrop" class="painting__welcome">
+    <label v-if="!analysis.image && !analysis.busy" class="painting__welcome">
       <input class="painting__file" type="file" accept="image/*" @change="onWelcomeFile" />
       <span class="painting__welcome-text">
         {{ t('Welcome to {app}', { app: APP_NAME }) }}<br />
@@ -38,8 +38,8 @@
     </label>
     <div v-if="frame" class="painting__frame" :style="frameStyle"></div>
     <!-- The spot whose colour is being looked at, blinking under the card. -->
-    <span v-if="spot && !backdrop" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
-    <div v-if="!backdrop" class="painting__tools">
+    <span v-if="spot" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
+    <div class="painting__tools">
       <!-- Until everything is unlocked: the plans, one click away. -->
       <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(null, 'use everything')">
         {{ t('Get pro') }}
@@ -86,7 +86,7 @@
       <p v-else-if="framing && !frame" class="painting__status">{{ t('Drag a frame over the part to zoom in on') }}</p>
     </div>
     <!-- Without a paint the picture would be blank paper. One is enough: it is painted in washes. -->
-    <p v-if="noPaints && !backdrop" class="painting__notice">{{ t('Put at least one colour in paintbox') }}</p>
+    <p v-if="noPaints" class="painting__notice">{{ t('Put at least one colour in paintbox') }}</p>
     <RecipeTip v-if="hover" :index="hover.entry" :x="hover.x" :y="hover.y" />
   </div>
 </template>
@@ -119,9 +119,6 @@ const BLANK = [255, 255, 255] // paper
 const TEMPLATE_LINE = [205, 230, 255]
 const TEMPLATE_NUMBER = '#96c3ff'
 
-// As the background behind signing in: the picture covers the window and only shows the recipe
-// under the pointer; no tools, no moving, zooming or picking.
-const props = defineProps({ backdrop: { type: Boolean, default: false } })
 const emit = defineEmits(['show-samples'])
 
 function onWelcomeFile(event) {
@@ -557,8 +554,7 @@ const canvasStyle = computed(() => ({ transform: `translate(${view.x}px, ${view.
 function fitScale() {
   const el = root.value
   if (!size.width || !el?.clientWidth) return 1
-  const fill = props.backdrop ? Math.max : Math.min // cover the window, or fit into it
-  return fill(el.clientWidth / size.width, el.clientHeight / size.height)
+  return Math.min(el.clientWidth / size.width, el.clientHeight / size.height)
 }
 function fit() {
   const el = root.value
@@ -597,7 +593,6 @@ function zoomAt(cx, cy, factor) {
 
 // A pinch on a trackpad arrives as a wheel with ctrl held; two fingers moved together as a plain wheel.
 function onWheel(event) {
-  if (props.backdrop) return
   event.preventDefault()
   hover.value = null
   if (event.ctrlKey || event.metaKey) zoomAt(event.clientX, event.clientY, Math.exp(-event.deltaY * 0.01))
@@ -609,7 +604,6 @@ function onGestureStart() {
   gestureScale = 1
 }
 function onGestureChange(event) {
-  if (props.backdrop) return
   zoomAt(event.clientX, event.clientY, event.scale / gestureScale)
   gestureScale = event.scale
 }
@@ -622,7 +616,7 @@ const centre = () => {
   return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) || 1 }
 }
 function onDown(event) {
-  if (props.backdrop || event.button || event.target.closest('button')) return
+  if (event.button || event.target.closest('button')) return
   pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
   travelled = 0
   // A second finger ends a frame that the first one began.
@@ -684,7 +678,7 @@ function onMove(event) {
 }
 
 function onClick(event) {
-  if (props.backdrop || afterDrag(event) || framing.value || event.target.closest('button')) return
+  if (afterDrag(event) || framing.value || event.target.closest('button')) return
   const at = pixelAt(event)
   if (!at) return
   const { cx, cy, x, y } = at

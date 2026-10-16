@@ -37,7 +37,11 @@ npm run build --silent
 
 SSH="ssh -i $SSH_KEY -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=accept-new"
 # The build replaces the web root; the server's own files there stay (.htaccess, the API's config).
+# The app itself (dist/api/app/) is not a public file: the account API sends it to signed-in
+# users only, from api/bundle/.
+rm -rf server/bundle
+cp -R dist/api/app server/bundle
 rsync -a --delete -e "$SSH" --exclude '.htaccess' --exclude 'api/' dist/ "$TARGET"
-rsync -a --delete -e "$SSH" --exclude 'config.php' --exclude 'README.md' server/ "${TARGET}api/"
+rsync -a --delete -e "$SSH" --exclude 'config.php' --exclude 'README.md' --exclude 'tests/' server/ "${TARGET}api/"
 rm -rf "$BUILD"
 echo "=== $(date -Is) done ==="

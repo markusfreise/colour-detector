@@ -1,7 +1,6 @@
 <template>
-  <!-- With accounts on, the app opens after signing in and agreeing to the two statements. -->
-  <AccountGate v-if="!account.ready" />
-  <div v-else class="app" :class="{ 'app--layer': analysis.layerMode, 'app--hints': hints }">
+  <!-- Opened by Root.vue once signed in (or without accounts). -->
+  <div class="app" :class="{ 'app--layer': analysis.layerMode, 'app--hints': hints }">
     <p v-if="account.notice" class="app__notice">
       {{ account.notice.text }}
       <button class="app__footer-link" type="button" @click="account.notice = null">{{ t('Hide') }}</button>
@@ -88,8 +87,6 @@
     <ProDialog />
     <AccountDialog />
   </div>
-  <!-- Over the app and over the sign-in alike. -->
-  <ConsentBanner />
 </template>
 
 <script setup>
@@ -108,14 +105,12 @@ import LayerSteps from './components/LayerSteps.vue'
 import LayerStrip from './components/LayerStrip.vue'
 import LayerSheets from './components/LayerSheets.vue'
 import PaintBox from './components/PaintBox.vue'
-import ConsentBanner from './components/ConsentBanner.vue'
 import PrintLegend from './components/PrintLegend.vue'
 import CollectionDialog from './components/CollectionDialog.vue'
 import SampleDialog from './components/SampleDialog.vue'
 import ProDialog from './components/ProDialog.vue'
 import AppIcon from './components/AppIcon.vue'
 import CreditCount from './components/CreditCount.vue'
-import AccountGate from './components/AccountGate.vue'
 import AccountDialog from './components/AccountDialog.vue'
 import { useConsentStore } from './stores/consent.js'
 import { useAccountStore } from './stores/account.js'
@@ -174,14 +169,11 @@ watch(
   },
 )
 onMounted(() => {
-  consent.init()
-  account.init()
   useProStore().init()
   useCollectionStore().refresh()
 })
 // Once the app is open it shows the picture used last, or nothing and the welcome to load one
-// (PaintingCanvas.vue). Behind the gate the showcase has the picture (AccountGate.vue), and it is
-// gone by the time this runs.
+// (PaintingCanvas.vue).
 const collection = useCollectionStore()
 watch(
   () => account.ready,

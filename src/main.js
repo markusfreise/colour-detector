@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import App from './App.vue'
+import Root from './Root.vue'
 import { usePreferencesStore } from './stores/preferences.js'
 import { setMixBase } from './lib/mixClient.js'
 import { MIX_API } from './config.js'
@@ -10,4 +10,4 @@ setMixBase(MIX_API)
 const pinia = createPinia()
 // Theme and language before the first paint, so that nothing flashes in the wrong one.
 usePreferencesStore(pinia).apply()
-createApp(App).use(pinia).mount('#app')
+createApp(Root).use(pinia).mount('#app')

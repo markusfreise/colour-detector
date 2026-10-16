@@ -170,6 +170,10 @@ function cookiePath(): string
 /** The JSON body of a request that changes something. Only the app itself may send one. */
 function body(): array
 {
+    // The tests hand in the body of the request they play.
+    if (defined('ACCOUNT_TESTS') && array_key_exists('testBody', $GLOBALS)) {
+        return $GLOBALS['testBody'];
+    }
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
     $app = parse_url((string) config('app_url'));
     $expected = ($app['scheme'] ?? '') . '://' . ($app['host'] ?? '') . (isset($app['port']) ? ':' . $app['port'] : '');
@@ -289,6 +293,48 @@ function currentUser(): ?array
 function requireUser(): array
 {
     return currentUser() ?? fail(401, 'Please sign in.');
+}
+
+/**
+ * Who may use the app (its code, api/app/) and the mixing service (api/mix/): an account that is
+ * signed in and has agreed to the terms. On a development instance without accounts (`open` in
+ * config.php) anyone, as the app opens there without signing in; then there is no account (null).
+ */
+function appUser(): ?array
+{
+    if (config('open') === true) {
+        return null;
+    }
+    $user = requireUser();
+    if ($user['consent_version'] !== config('consent_version')) {
+        fail(403, 'Please agree to the terms first.');
+    }
+    return $user;
+}
+
+/**
+ * A file of the app (api/app/<name>.js), for those who may use it. The build writes them to
+ * dist/api/app/; the deploy puts them next to this file as bundle/, which is never served as it is.
+ */
+function sendAppFile(string $name): never
+{
+    method('GET');
+    appUser();
+    $dir = is_dir(__DIR__ . '/bundle') ? __DIR__ . '/bundle' : dirname(__DIR__) . '/dist/api/app';
+    $file = $dir . '/' . $name;
+    if (!preg_match('/^[A-Za-z0-9_.-]+\.js$/', $name) || !is_file($file)) {
+        fail(404, 'Not found.');
+    }
+    if (defined('ACCOUNT_TESTS')) {
+        throw new Answer(['file' => $name], 200);
+    }
+    header('Content-Type: text/javascript; charset=utf-8');
+    // The names carry a hash of the content: a file never changes. Only this browser keeps it.
+    header('Cache-Control: private, max-age=31536000, immutable');
+    header('X-Content-Type-Options: nosniff');
+    header('Content-Length: ' . filesize($file));
+    readfile($file);
+    exit;
 }
 
 /** The account that belongs to an address, created on first sight. */

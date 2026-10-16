@@ -25,6 +25,9 @@ $path = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 $at = strrpos($path, '/api/');
 $route = trim($at === false ? $path : substr($path, $at + 5), '/');
 
+if (preg_match('#^app/([^/]+)$#', $route, $match)) {
+    sendAppFile($match[1]);
+}
 if (str_starts_with($route, 'mix/')) {
     require __DIR__ . '/mix/api.php';
     handleMix(substr($route, 4));

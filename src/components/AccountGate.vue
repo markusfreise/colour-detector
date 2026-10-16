@@ -1,14 +1,15 @@
 <template>
   <main class="gate">
     <!-- Behind it the app at work: the watercolour as numbered areas mixed from three paints, then
-         the samples in turn; the recipe of a colour follows the pointer. Each photo fades in over
-         the last rendering, then gives way to its own. Until the first rendering is there, the
-         watercolour itself pulses: the picture, and the same one turned almost upside down and
-         multiplied onto it. -->
+         the samples in turn, as the app painted them (resources/showcase/, made by
+         docs/manual/tools/showcase.mjs: the app itself only goes to signed-in users). Each photo
+         fades in over the last rendering, then gives way to its own. Until the first rendering is
+         there, the watercolour itself pulses: the picture, and the same one turned almost upside
+         down and multiplied onto it. -->
     <div class="gate__backdrop" aria-hidden="true">
       <img class="gate__layer" :src="background" alt="" />
       <img class="gate__layer gate__layer--turned" :src="background" alt="" />
-      <PaintingCanvas v-if="showing" class="gate__map" :class="{ 'gate__map--shown': mapShown }" backdrop />
+      <img class="gate__map" :class="{ 'gate__map--shown': mapShown }" :src="rendering ?? undefined" alt="" />
       <!-- Always in the page, so that every photo fades in, the first one too. -->
       <img class="gate__photo" :class="{ 'gate__photo--shown': photoShown }" :src="photo ?? undefined" alt="" />
     </div>
@@ -143,10 +144,7 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useAccountStore } from '../stores/account.js'
-import { useAnalysisStore, SAMPLES } from '../stores/analysis.js'
-import { usePaintsStore } from '../stores/paints.js'
-import { showcasePaints } from '../data/showcase.js'
-import PaintingCanvas from './PaintingCanvas.vue'
+import { SAMPLES } from '../data/samples.js'
 import { APP_NAME } from '../config.js'
 import logoSvg from '../../resources/logo.svg?raw'
 import background from '../../resources/background.webp'
@@ -185,9 +183,11 @@ const buttons = computed(() => ['google', 'apple', 'meta'].filter((id) => accoun
 const DWELL = 6000 // a rendering on its own
 const FADE = 2500 // as long as the fades in gate.scss
 const HOLD = 1240 // the photo fully there, at the least
-const analysis = useAnalysisStore()
-const paints = usePaintsStore()
-const showing = ref(false)
+// The renderings, by the file name of their photo.
+const RENDERINGS = Object.fromEntries(
+  Object.entries(import.meta.glob('../../resources/showcase/*.webp', { eager: true, import: 'default' })).map(([file, url]) => [file.split('/').pop(), url]),
+)
+const rendering = ref(null)
 const mapShown = ref(false)
 const photo = ref(null)
 const photoShown = ref(false)
@@ -203,9 +203,7 @@ const shuffled = (list) => {
   return copy
 }
 const pause = (ms) => new Promise((resolve) => (timer = setTimeout(resolve, ms)))
-// Until what has just changed is on screen.
 const painted = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
-// A photo is shown only once it is loaded, so that it fades in whole.
 const ready = (url) => new Promise((resolve) => {
   const img = new Image()
   img.onload = img.onerror = () => resolve()
@@ -214,31 +212,28 @@ const ready = (url) => new Promise((resolve) => {
 
 async function showcase() {
   running = true
-  showing.value = true
-  paints.startShowcase(showcasePaints)
-  analysis.settings.mode = 'mix'
-  // The first rendering takes over from the pulsing watercolour.
-  await analysis.loadFromSource(background, 'Watercolour', { sample: true, hash: null })
+  const first = RENDERINGS['background.webp']
+  if (!first) return
+  await ready(first)
   if (!running) return
+  rendering.value = first
+  await painted()
   mapShown.value = true
   let previous = background
+  const pictures = [{ url: background, file: 'background.webp' }, ...SAMPLES.filter((s) => !s.local && RENDERINGS[s.file])]
   while (running) {
-    // The samples of the site in an order of their own each round, the watercolour among them again.
-    const round = shuffled([{ url: background, name: 'Watercolour' }, ...SAMPLES.filter((s) => !s.local)])
-    for (const picture of round) {
+    for (const picture of shuffled(pictures)) {
       if (picture.url === previous) continue
       await pause(DWELL)
       if (!running) return
       await ready(picture.url)
       photo.value = picture.url
-      // The new source has to be in place before the fade starts.
       await painted()
       photoShown.value = true
-      // The rendering before stays under the photo until the photo covers it completely; only
-      // then is the new one made, and the photo gives way once it is drawn, not before HOLD.
       await pause(FADE)
       if (!running) return
-      await Promise.all([pause(HOLD), analysis.loadFromSource(picture.url, picture.name, { sample: true, hash: null }).then(painted)])
+      // Under the photo its rendering takes the place of the one before.
+      await Promise.all([pause(HOLD), ready(RENDERINGS[picture.file]).then(() => (rendering.value = RENDERINGS[picture.file])).then(painted)])
       if (!running) return
       photoShown.value = false
       previous = picture.url
@@ -249,13 +244,8 @@ async function showcase() {
 function stopShowcase() {
   running = false
   clearTimeout(timer)
-  if (!paints.showcase) return
-  // Its colours name the showcase paints: the picture goes with them.
-  analysis.clearPicture()
-  paints.endShowcase()
 }
 
-// Only once it is known who is there: a signed-in user goes straight to the app.
 watch(
   () => account.loaded && !account.ready,
   (gate) => {

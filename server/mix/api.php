@@ -16,23 +16,6 @@ const MIX_LIMITS = ['paints' => 400, 'clusters' => 1200, 'targets' => 1200, 'job
 // opened again) is answered at once.
 const MIX_CACHE_DAYS = 7;
 
-/**
- * Who may use the service: an account that is signed in and has agreed to the terms. On a
- * development instance without accounts (`open` in config.php) anyone, as the app opens there
- * without signing in.
- */
-function mixUser(): ?array
-{
-    if (config('open') === true) {
-        return null;
-    }
-    $user = requireUser();
-    if ($user['consent_version'] !== config('consent_version')) {
-        fail(403, 'Please agree to the terms first.');
-    }
-    return $user;
-}
-
 /** Whether the account may use a studio feature; everyone may on an open instance. */
 function mixMayUse(?array $user, string $feature): bool
 {
@@ -46,7 +29,7 @@ function handleMix(string $name): never
     if (!isset($routes[$name])) {
         fail(404, 'Not found.');
     }
-    $user = mixUser();
+    $user = appUser();
     $request = body();
     checkMixRequest($request);
     // Monochrome (value mode) comes with a plan.
@@ -61,8 +44,7 @@ function handleMix(string $name): never
     if ($cached !== null) {
         sendJsonText($cached);
     }
-    require_once __DIR__ . '/service.php';
-    require_once __DIR__ . '/layers.php';
+    require_once __DIR__ . ($name === 'layers' ? '/layers.php' : '/service.php');
     set_time_limit(120);
     $answer = json_encode($routes[$name]($request), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
     writeMixCache($key, $answer);
@@ -135,7 +117,7 @@ function sendJsonText(string $json): never
 function handleCharts(): never
 {
     method('GET');
-    if (!mixMayUse(mixUser(), 'brand_charts')) {
+    if (!mixMayUse(appUser(), 'brand_charts')) {
         fail(403, 'Colour charts come with Pro.');
     }
     sendJsonText((string) file_get_contents(__DIR__ . '/charts.json'));

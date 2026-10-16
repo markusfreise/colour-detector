@@ -199,14 +199,24 @@ final class Session {
     static let sourceSize = 1600 // longest side that is kept and saved
     static let renderScale = 2 // picture pixels per working pixel, keeps outlines crisp
 
-    /// Sample photos, chosen from the samples sheet; the first one loads at start.
+    /// Sample photos, chosen from the samples sheet; the first one loads at start. All are under
+    /// the Unsplash License; `credit` names the photographer and links to the photo or the profile.
     static let samples = [
-        (file: "sample-bielefeld", name: "Bielefeld (sample)"),
-        (file: "sample-llyn-idwal", name: "Llyn Idwal (sample)"),
-        (file: "sample-rooftops-dusk", name: "Rooftops at dusk (sample)"),
-        (file: "sample-winter-fields", name: "Winter fields (sample)"),
-        (file: "sample-old-town-snow", name: "Old town in snow (sample)"),
+        Sample(file: "sample-bielefeld", name: "Bielefeld (sample)"),
+        Sample(file: "sample-llyn-idwal", name: "Llyn Idwal (sample)"),
+        Sample(file: "sample-rooftops-dusk", name: "Rooftops at dusk (sample)"),
+        Sample(file: "sample-winter-fields", name: "Winter fields (sample)"),
+        Sample(file: "sample-old-town-snow", name: "Old town in snow (sample)"),
+        Sample(file: "sample-red-train", name: "Red train (sample)", url: "https://unsplash.com/photos/red-and-white-train-on-train-station-Zi8T2OwJf44"),
+        Sample(file: "sample-woman-white-wall", name: "Woman by a white wall (sample)", photographer: "Ayo Ogunseinde", url: "https://unsplash.com/photos/woman-looking-sideways-leaning-on-white-wall-6W4F62sN_yI"),
     ]
+
+    struct Sample {
+        let file: String
+        let name: String
+        var photographer = "Markus Freise"
+        var url = "https://unsplash.com/@markusfreise"
+    }
 
     @ObservationIgnored private let library: Library
     @ObservationIgnored private var nextSample = 0

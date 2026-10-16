@@ -15,6 +15,7 @@ struct PaintBoxView: View {
     @State private var boxToDelete: PaintBox?
     @State private var paintToDelete: Paint?
     @State private var showingPaywall = false
+    @State private var paywallReason = "add paint boxes of your own"
     /// The box a colour is being added to, and what is typed into its search.
     @State private var addingTo: String?
     @State private var query = ""
@@ -88,7 +89,7 @@ struct PaintBoxView: View {
                 }
             }
             .sheet(item: $editedPaint) { PaintEditorView(paint: $0.paint, box: $0.box) }
-            .sheet(isPresented: $showingPaywall) { PaywallView(reason: "add paint boxes of your own") }
+            .sheet(isPresented: $showingPaywall) { PaywallView(reason: paywallReason) }
             .alert(L(naming == .new ? "New Paint Box" : "Rename Paint Box"), isPresented: Binding(get: { naming != nil }, set: { if !$0 { naming = nil } })) {
                 TextField("Name", text: $boxName)
                 Button("Cancel", role: .cancel) {}
@@ -163,6 +164,7 @@ struct PaintBoxView: View {
     /// Boxes of one's own are part of the full version.
     private func mayAddBox() -> Bool {
         if store.unlocked { return true }
+        paywallReason = "add paint boxes of your own"
         showingPaywall = true
         return false
     }
@@ -252,14 +254,14 @@ struct PaintBoxView: View {
                 Button {
                     switch option.kind {
                     case .paint(let id): library.addToBox(box.id, paint: id)
-                    case .chart(let colour): library.addChartColour(colour, to: box.id)
+                    case .chart(let colour, let source): library.addChartColour(colour, of: source, to: box.id)
                     }
                     query = ""
                 } label: {
                     HStack(spacing: 10) {
                         RoundedRectangle(cornerRadius: 4).fill(Color(hex: option.hex)).frame(width: 28, height: 28)
                         Text(option.label).frame(maxWidth: .infinity, alignment: .leading)
-                        if option.isChart { Text("Colour chart").font(Theme.small).foregroundStyle(.secondary) }
+                        if option.isChart { Text("Catalogue").font(Theme.small).foregroundStyle(.secondary) }
                     }
                     .contentShape(Rectangle())
                 }
@@ -267,6 +269,17 @@ struct PaintBoxView: View {
             }
             if !query.trimmingCharacters(in: .whitespaces).isEmpty && matches(for: box).isEmpty {
                 Text("No colour found").foregroundStyle(.secondary)
+            }
+            // The catalogues of known manufacturers are part of the full version.
+            if !store.unlocked {
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Button("Get pro") {
+                        paywallReason = "add colours from the catalogues of known manufacturers"
+                        showingPaywall = true
+                    }.buttonStyle(.borderless)
+                    Text("and easily add pre-defined colours from the catalogues of known manufacturers and brands.")
+                        .font(Theme.small).foregroundStyle(.secondary)
+                }
             }
             Button("Or enter a colour of your own") {
                 editedPaint = EditedPaint(paint: Paint(id: "custom-\(UUID().uuidString.prefix(8))", vendor: Paint.houseVendor, number: "", name: "", hex: "#c88c5f", forms: [box.id == "tube" ? "tube" : "pan"], source: "custom", custom: true), box: box.id)
@@ -279,7 +292,7 @@ struct PaintBoxView: View {
     private struct ColourOption: Identifiable {
         enum Kind {
             case paint(String)
-            case chart(ChartColour)
+            case chart(ChartColour, PaintLibrary)
         }
 
         let id: String
@@ -293,8 +306,8 @@ struct PaintBoxView: View {
         }
     }
 
-    /// What the search offers: every paint the app knows that is not in the box yet, and the
-    /// colours of the Horadam chart that are not among the paints.
+    /// What the search offers: every paint the app knows that is not in the box yet, and with the
+    /// full version the colours of the libraries that are not among the paints.
     private func matches(for box: PaintBox) -> [ColourOption] {
         let words = query.lowercased().split(separator: " ").map(String.init)
         guard !words.isEmpty else { return [] }
@@ -303,10 +316,14 @@ struct PaintBoxView: View {
             let label = "\(paint.vendor) \(paint.displayNumber) \(paint.displayName)"
             return ColourOption(id: paint.id, kind: .paint(paint.id), label: label, hex: paint.hex, search: "\(label) \(paint.name) \(paint.nameDe)".lowercased())
         }
-        let known = Set(library.all.filter { $0.vendor == Paint.houseVendor }.map(\.number))
-        options += library.chart.filter { !known.contains($0.number) }.map { colour -> ColourOption in
-            let label = "\(Paint.houseVendor) \(colour.number) \(colour.name)"
-            return ColourOption(id: "chart-\(colour.number)", kind: .chart(colour), label: label, hex: colour.hex, search: label.lowercased())
+        if store.unlocked {
+            let known = Set(library.all.map { "\($0.vendor.lowercased())|\($0.number.lowercased())" })
+            for source in library.libraries {
+                options += source.catalogue.filter { !known.contains("\(source.name.lowercased())|\($0.number.lowercased())") }.map { colour -> ColourOption in
+                    let label = "\(source.name) \(colour.number) \(colour.name)"
+                    return ColourOption(id: "\(source.id):\(colour.number)", kind: .chart(colour, source), label: label, hex: colour.hex, search: label.lowercased())
+                }
+            }
         }
         return Array(options.filter { option in words.allSatisfy { option.search.contains($0) } }.prefix(30))
     }
@@ -419,33 +436,55 @@ struct BoxDocument: FileDocument {
     }
 }
 
-/// Add or change one of the user's own paints.
+/// Add or change one of the user's own paints: series, number, form, name and colour.
 struct PaintEditorView: View {
     @Environment(Library.self) private var library
+    @Environment(Store.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State var paint: Paint
     /// The box a new paint goes into.
     var box: String? = nil
+    /// "New series" picked: the series is typed in.
+    @State private var newSeries = false
 
     private var isNew: Bool { !library.custom.contains { $0.id == paint.id } }
     private var complete: Bool {
         ![paint.vendor, paint.number, paint.name].contains { $0.trimmingCharacters(in: .whitespaces).isEmpty }
     }
+    /// The library of the series entered: with the full version its numbers fill in name and colour.
+    private var source: PaintLibrary? { library.library(named: paint.vendor) }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Brand", text: $paint.vendor)
+                    Picker("Vendor and Series", selection: Binding(
+                        get: { newSeries || !library.seriesNames.contains(paint.vendor) ? "" : paint.vendor },
+                        set: { name in
+                            newSeries = name.isEmpty
+                            paint.vendor = name
+                            lookUp()
+                        }
+                    )) {
+                        ForEach(library.seriesNames, id: \.self) { Text($0).tag($0) }
+                        Text("New series").tag("")
+                    }
+                    if newSeries || !library.seriesNames.contains(paint.vendor) {
+                        TextField("Name of the series", text: $paint.vendor)
+                            .onSubmit { lookUp() }
+                    }
                     TextField("Number", text: $paint.number)
                         .onChange(of: paint.number) { lookUp() }
-                    TextField("Name", text: $paint.name)
                     Picker("Form", selection: Binding(get: { paint.comes(as: .tube) ? PaintForm.tube : .pan }, set: { paint.forms = [$0.rawValue] })) {
                         ForEach(PaintForm.own) { Text($0.singular).tag($0) }
                     }
+                    TextField("Name", text: $paint.name)
                     ColorPicker("Colour", selection: Binding(get: { .from(hex: paint.hex) }, set: { paint.hex = $0.hex }), supportsOpacity: false)
                 } footer: {
-                    Text("Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube. Schmincke Horadam numbers fill in name and colour.")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube.")
+                        if let source, store.unlocked { Text(L("%@ numbers fill in name and colour.", source.name)) }
+                    }
                 }
             }
             .formStyle(.grouped)
@@ -468,14 +507,13 @@ struct PaintEditorView: View {
             }
         }
         #if os(macOS)
-        .frame(minWidth: 420, minHeight: 360)
+        .frame(minWidth: 420, minHeight: 380)
         #endif
     }
 
-    /// A Horadam number that is on the colour chart fills in the rest.
+    /// A number that is on the colour chart of its library fills in the rest (full version).
     private func lookUp() {
-        guard isNew, paint.name.isEmpty, paint.vendor.localizedCaseInsensitiveContains("schmincke"),
-              let known = library.chartColour(number: paint.number) else { return }
+        guard isNew, paint.name.isEmpty, store.unlocked, let known = source?.colour(number: paint.number) else { return }
         paint.name = known.name
         paint.hex = known.hex
     }

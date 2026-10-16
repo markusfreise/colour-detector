@@ -107,6 +107,9 @@ export const useAnalysisStore = defineStore('analysis', {
   state: () => ({
     imageName: '',
     savedId: null, // id in the collection when the picture was saved or opened from it
+    // The picture as the entitlements know it: a sample, or a photo with the hash of its bytes
+    // (null until it is known). Close-ups are part of the picture they are cut from.
+    picture: null, // { sample, hash }
     image: null, // HTMLImageElement (raw)
     pixels: null, // { rgba, width, height } at working resolution (raw)
     adjusted: null, // the same pixels with saturation and contrast applied, null when both are at 100 (raw)
@@ -171,8 +174,9 @@ export const useAnalysisStore = defineStore('analysis', {
     layerMode: (state) => state.settings.mode === 'layer',
     /** What an AI plan belongs to: the picture as it is analysed. */
     aiKey: (state) => [state.pictureStamp, state.settings.saturation, state.settings.contrast, state.settings.values ? 'values' : ''].join('/'),
-    // Value mode belongs to mix mode: layers are fitted to colours.
-    valueMode: (state) => !!state.settings.values && state.settings.mode !== 'layer',
+    // Monochrome (setting `values`) belongs to mix mode: layers are fitted to colours. It is a Pro
+    // feature, so a picture saved with it opens in colour without Pro.
+    valueMode: (state) => !!state.settings.values && state.settings.mode !== 'layer' && useProStore().can('monochrome'),
     /** What a sketch belongs to: the picture, and the AI's answer for it once there is one. */
     sketchKey(state) {
       return `${state.pictureStamp}/${state.aiPlan?.key === this.aiKey ? state.aiPlan.serial : 0}`
@@ -244,11 +248,11 @@ export const useAnalysisStore = defineStore('analysis', {
     /** Load a sample picture by its place in the list; the first one is used at start. */
     async loadSample(index = 0) {
       const sample = SAMPLES[index] ?? SAMPLES[0]
-      await this.loadFromSource(sample.url, t('{name} (sample)', { name: t(sample.name) }))
+      await this.loadFromSource(sample.url, t('{name} (sample)', { name: t(sample.name) }), { sample: true, hash: null })
     },
     async loadFile(file) {
       const url = URL.createObjectURL(file)
-      await this.loadFromSource(url, file.name)
+      await this.loadFromSource(url, file.name, { sample: false, hash: null })
     },
     /** Open a picture from the collection with its saved settings and colour changes. */
     async loadSaved(record) {
@@ -257,7 +261,7 @@ export const useAnalysisStore = defineStore('analysis', {
       // The palette belongs to the picture. Pictures saved before it did keep the one on screen.
       if (record.palette) usePaintsStore().setPalette(record.palette)
       const url = URL.createObjectURL(record.blob)
-      await this.loadFromSource(url, record.name)
+      await this.loadFromSource(url, record.name, record.picture ?? { sample: false, hash: null })
       URL.revokeObjectURL(url)
       if (this.error) return
       this.savedId = record.id
@@ -288,7 +292,7 @@ export const useAnalysisStore = defineStore('analysis', {
         .map((e, index) => ({ index, targetHex: e.overridden ? e.targetHex : null, chosen: e.chosen }))
         .filter((e) => e.targetHex || e.chosen)
     },
-    async loadFromSource(src, name) {
+    async loadFromSource(src, name, picture = { sample: false, hash: null }) {
       this.error = null
       this.savedId = null
       // Pictures asked for one after the other: the last one asked for wins, whichever loads first.
@@ -312,6 +316,7 @@ export const useAnalysisStore = defineStore('analysis', {
         this.image = markRaw(img)
         this.pixels = markRaw({ rgba: data, width, height })
         this.imageName = name
+        this.picture = picture
         this.forgetPicture()
         await this.analyse()
       } catch (e) {
@@ -324,7 +329,7 @@ export const useAnalysisStore = defineStore('analysis', {
      * the analysis finds what the whole picture has no room for. `rect` is in shares of the picture.
      */
     async addCloseup(rect) {
-      if (!this.image || !useProStore().require(false, 'zoom in on a part of the picture')) return
+      if (!this.image || !useProStore().require('closeups', 'zoom in on a part of the picture')) return
       const source = this.base?.image ?? this.image
       const cut = closeupSize(source.naturalWidth ?? source.width, source.naturalHeight ?? source.height, rect, 160 * 160)
       const thumb = document.createElement('canvas')

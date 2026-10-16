@@ -47,7 +47,7 @@ async function print() {
   // window.print() does nothing inside the app's web view; the shell prints it instead.
   if (isNative) return sendNative('print')
   // A free account in the browser does not print.
-  if (!usePro.require(false, 'print or save a PDF')) return
+  if (!usePro.require('print', 'print or save a PDF')) return
   // The sheets of layer mode are built on `beforeprint`, but the page only renders them a tick
   // later, which is too late for the print snapshot. So build them first, then print.
   window.dispatchEvent(new Event('beforeprint'))
@@ -57,7 +57,7 @@ async function print() {
 
 function exportPicture() {
   // A free account in the browser does not export, as it does not print.
-  if (!usePro.require(false, 'export the picture')) return
+  if (!usePro.require('export_jpg', 'export the picture')) return
   emit('export-picture')
 }
 

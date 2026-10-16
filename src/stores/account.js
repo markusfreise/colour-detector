@@ -36,7 +36,8 @@ export const useAccountStore = defineStore('account', {
     loaded: false,
     user: null,
     providers: [],
-    plans: [],
+    products: [], // what can be bought: [{ key, type, interval, quantity }], see server/plans.json
+    unlocks: [], // pictures unlocked with a credit: [{ hash, at }]
     invitation: false, // new accounts need an invitation code
     busy: false,
     error: null,
@@ -76,7 +77,7 @@ export const useAccountStore = defineStore('account', {
         const data = await call('me')
         this.user = data.user
         this.providers = data.providers
-        this.plans = data.plans
+        this.products = data.products ?? []
         this.invitation = Boolean(data.invitation)
       }, false)
       this.loaded = true

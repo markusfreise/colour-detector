@@ -45,7 +45,7 @@ export const useCollectionStore = defineStore('collection', {
       const analysis = useAnalysisStore()
       if (!analysis.image) return false
       const isNew = !analysis.savedId
-      if (isNew && !useProStore().require(this.items.length < FREE_IMAGES, FREE_IMAGES ? 'save more than one picture' : 'save pictures')) return false
+      if (isNew && !useProStore().require('save', FREE_IMAGES ? 'save more than one picture' : 'save pictures', this.items.length < FREE_IMAGES)) return false
       this.error = null
       try {
         const id = analysis.savedId ?? `img-${Date.now().toString(36)}`
@@ -58,6 +58,7 @@ export const useCollectionStore = defineStore('collection', {
           settings: { ...analysis.settings },
           edits: analysis.exportEdits(),
           palette: structuredClone(toRaw(usePaintsStore().palette)),
+          picture: existing?.picture ?? { ...analysis.picture },
           updatedAt: Date.now(),
         })
         analysis.savedId = id
@@ -88,6 +89,7 @@ export const useCollectionStore = defineStore('collection', {
           settings: { ...analysis.settings },
           edits: analysis.exportEdits(),
           palette: structuredClone(toRaw(usePaintsStore().palette)),
+          picture: { ...analysis.picture },
           savedId: analysis.savedId ?? null,
           updatedAt: Date.now(),
         })

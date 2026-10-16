@@ -59,15 +59,25 @@
         <p v-else class="paintbox__empty">
           {{ layerMode ? t('No base paints chosen. Click a paint below to add it, or press Auto.') : t('No paints selected. Click a paint below to add it.') }}
         </p>
-        <p v-if="!layerMode && selected.length >= pro.paintLimit" class="paintbox__note paintbox__limit">
-          {{ t('Maximum number of colours reached.') }}
-          <button class="paintbox__get-pro" type="button" @click="pro.require(false, `mix from more than ${FREE_PAINTS} paints`)">{{ t('Get Pro') }}</button>
-          {{ t('to lift this limit.') }}
-        </p>
-        <p v-if="!layerMode" class="paintbox__note">{{ t('The palette is saved with the picture.') }}</p>
+        <p v-if="!layerMode && !paints.starter" class="paintbox__note">{{ t('The palette is saved with the picture.') }}</p>
       </div>
 
-      <div class="paintbox__boxes">
+      <!-- The free version: the twelve colours of the Starter box, and nothing to change about them. -->
+      <section v-if="paints.starter" class="paintbox__group" :aria-label="t(STARTER_BOX_NAME)">
+        <h3 class="paintbox__group-title">{{ t(STARTER_BOX_NAME) }}</h3>
+        <ul v-if="starterList.length" class="paintbox__list">
+          <li v-for="p in starterList" :key="p.id">
+            <PaintChip :paint="p" :disabled="full" @toggle="toggle(p.id, $event)" />
+          </li>
+        </ul>
+        <p v-else class="paintbox__empty">{{ t('All of these are selected.') }}</p>
+        <p class="paintbox__note">
+          {{ t('The free version mixes from the twelve colours of a student set.') }}
+          <button class="paintbox__get-pro" type="button" @click="askOwnPaints">{{ t('Mix with your own paints') }}</button>
+        </p>
+      </section>
+
+      <div v-if="!paints.starter" class="paintbox__boxes">
         <button class="button button--ghost" type="button" @click="startNewBox">{{ t('New paint box') }}</button>
         <label class="button button--ghost paintbox__import">
           {{ t('Import paint box') }}
@@ -124,8 +134,8 @@
             :placeholder="t('Series, number or name')"
             @pick="pickColour(box, $event)"
           />
-          <p v-if="!pro.active" class="paintbox__note">
-            <button class="paintbox__get-pro" type="button" @click="pro.require(false, 'add colours from the catalogues of known manufacturers')">
+          <p v-if="!pro.can('brand_charts')" class="paintbox__note">
+            <button class="paintbox__get-pro" type="button" @click="openPro('brand_charts', 'add colours from the catalogues of known manufacturers')">
               {{ t('Get pro') }}
             </button>
             {{ t('and easily add pre-defined colours from the catalogues of known manufacturers and brands.') }}
@@ -133,7 +143,7 @@
           <button v-if="formAt !== box.id" class="paintbox__get-pro" type="button" @click="startPaint(null, box.id)">{{ t('Or enter a colour of your own') }}</button>
           <template v-if="formAt === box.id">
             <h4 class="paintbox__form-title">{{ t('A colour of your own') }}</h4>
-            <PaintForm v-model="paintForm" :series="series" :library="library" :pro="pro.active" @submit="savePaint" @cancel="paintForm = null" />
+            <PaintForm v-model="paintForm" :series="series" :library="library" :pro="pro.can('brand_charts')" @submit="savePaint" @cancel="paintForm = null" />
           </template>
         </div>
 
@@ -157,9 +167,9 @@
       </section>
 
       <!-- One's own paints, with what is done with them: edited here, put into boxes with the + of a box. -->
-      <div v-if="paints.custom.length" class="paintbox__group">
+      <div v-if="paints.custom.length && !paints.starter" class="paintbox__group">
         <h3 class="paintbox__group-title">{{ t('Your own paints') }}</h3>
-        <PaintForm v-if="formAt === 'own'" v-model="paintForm" :series="series" :library="library" :pro="pro.active" @submit="savePaint" @cancel="paintForm = null" />
+        <PaintForm v-if="formAt === 'own'" v-model="paintForm" :series="series" :library="library" :pro="pro.can('brand_charts')" @submit="savePaint" @cancel="paintForm = null" />
         <ul class="paintbox__own">
           <!-- One paint per row: the colour itself carries what is done with it. -->
           <li v-for="p in paints.custom" :key="p.id" class="chip chip--row paintbox__own-chip" :style="chipStyle(p.hex)">
@@ -192,7 +202,8 @@
 import { computed, nextTick, ref } from 'vue'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useAnalysisStore } from '../stores/analysis.js'
-import { useProStore, FREE_PAINTS } from '../stores/pro.js'
+import { useProStore } from '../stores/pro.js'
+import { STARTER_BOX_NAME } from '../data/starter.js'
 import { chipStyle } from '../lib/color.js'
 import { paintNumber, paintForms, sortPaints, sortBoxPaints, seriesNames, HOUSE_VENDOR } from '../lib/paintbox.js'
 import { PAINT_LIBRARIES, libraryByName } from '../data/libraries.js'
@@ -228,8 +239,15 @@ const selected = computed(() => (layerMode.value ? sortPaints(paints.layerPaints
 const autoOff = computed(() => new Set(paints.palette.autoOff))
 const full = computed(() => layerMode.value && paints.palette.layerIds.length >= MAX_LAYER_PAINTS)
 
+// The Starter box: its colours that are not in the palette.
+const starterList = computed(() => {
+  const inPalette = layerMode.value ? new Set(paints.palette.layerIds) : paints.enabledIds
+  return sortPaints(paints.all.filter((p) => !inPalette.has(p.id)))
+})
+
 // Every box with the paints that are not in the palette; those are at the top already.
 const boxLists = computed(() => {
+  if (paints.starter) return []
   const inPalette = layerMode.value ? new Set(paints.palette.layerIds) : paints.enabledIds
   return paints.boxes.map((box) => {
     const own = box.paintIds.map((id) => paints.byId[id]).filter(Boolean)
@@ -248,7 +266,7 @@ const searchOptions = computed(() => {
     const text = label(p.vendor, p.number, paintName(p))
     return { key: p.id, kind: 'paint', id: p.id, hex: p.hex, label: text, search: `${text} ${p.name} ${p.nameDe ?? ''}`.toLowerCase() }
   })
-  if (pro.active) {
+  if (pro.can('brand_charts')) {
     for (const library of PAINT_LIBRARIES) {
       for (const colour of library.catalogue) {
         if (known.has(`${library.name.toLowerCase()}|${String(colour.number).toLowerCase()}`)) continue
@@ -291,7 +309,6 @@ function toggle(id, on) {
     if (on && full.value) return // the chip stays unticked; the note above says why
     paints.toggleLayerPaint(id, on)
   } else {
-    if (on && !pro.require(paints.enabledIds.size < pro.paintLimit, `mix from more than ${FREE_PAINTS} paints`)) return
     paints.toggle(id, on)
   }
   dirty.value = true
@@ -336,13 +353,18 @@ function boxesChanged() {
   if (autoOn.value) dirty.value = true
 }
 
-// Boxes of one's own are part of the full version. The purchase dialog is a modal of its own;
-// this one would cover it.
-function mayAddBox() {
-  if (pro.require(pro.active, 'add paint boxes of your own')) return true
+// The purchase dialog is a modal of its own; this one would cover it.
+function openPro(feature, reason) {
+  if (pro.require(feature, reason)) return true
   dialog.value.close()
   return false
 }
+
+// Boxes of one's own are part of the full version.
+const mayAddBox = () => openPro('paint_boxes', 'add paint boxes of your own')
+
+// One's own paints take a credit on this picture, or a plan.
+const askOwnPaints = () => openPro('own_paints', 'mix with your own paints')
 
 async function startNewBox() {
   if (!mayAddBox()) return
@@ -414,7 +436,7 @@ function exportBox(box) {
 
 function onImportClick(event) {
   importError.value = ''
-  if (!mayAddBox()) event.preventDefault()
+  if (!openPro('box_import', 'import a paint box')) event.preventDefault()
 }
 
 async function importBox(event) {

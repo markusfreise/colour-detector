@@ -24,14 +24,15 @@ function startCheckout(): never
     $user = requireUser();
     $body = body();
     $name = (string) ($body['plan'] ?? '');
-    $plan = (config('stripe')['plans'] ?? [])[$name] ?? null;
-    if (!$plan || ($plan['price'] ?? '') === '') {
+    $product = productByKey($name);
+    $price = $product ? priceIdOf($name) : '';
+    if (!$product || $price === '' || !in_array($product['type'], ['subscription', 'lifetime'], true)) {
         fail(422, 'This plan is not offered.');
     }
     if ((int) $user['lifetime'] === 1) {
         fail(409, 'This account already has a lifetime licence.');
     }
-    $once = $name === 'lifetime';
+    $once = $product['type'] === 'lifetime';
     if (!$once && isPro($user)) {
         fail(409, 'This account already has a subscription. Change it under "Manage subscription".');
     }
@@ -40,7 +41,7 @@ function startCheckout(): never
     $vat = (string) (config('stripe')['tax_rate'] ?? '');
     $fields = [
         'mode' => $once ? 'payment' : 'subscription',
-        'line_items' => [['price' => $plan['price'], 'quantity' => 1]],
+        'line_items' => [['price' => $price, 'quantity' => 1]],
         'client_reference_id' => $user['id'],
         'metadata' => ['plan' => $name],
         'success_url' => config('app_url') . '#billing=ok',

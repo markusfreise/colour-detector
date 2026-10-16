@@ -44,17 +44,17 @@
             <template v-else>{{ t(a.label) }}</template>
           </button>
         </div>
-        <!-- A value study: the picture in grey, each value painted with one colour of the paint box. -->
+        <!-- Monochrome: the picture in grey, each value painted with one colour of the paint box. -->
         <button
           type="button"
           class="button"
           :class="{ 'button--active': analysis.valueMode }"
           :aria-pressed="analysis.valueMode"
           :disabled="analysis.layerMode"
-          :title="t('Values: the picture in grey, each value painted with one colour of the paint box')"
+          :title="t('Monochrome: the picture in grey, each value painted with one colour of the paint box')"
           @click="setValues(!analysis.settings.values)"
         >
-          <AppIcon name="contrast" :label="t('Values')" />
+          <AppIcon name="contrast" :label="t('Monochrome')" />
         </button>
         </div>
             <span class="controls__toggles">
@@ -71,7 +71,7 @@
               type="range"
               :min="analysis.layerMode ? 0 : FINEST"
               max="10"
-              :title="analysis.layerMode || pro.active ? undefined : t('Below 0 with Pro')"
+              :title="analysis.layerMode || pro.can('finer_areas') ? undefined : t('Below 0 with Pro')"
               @input="setSimplify($event)"
               @change="simplifyChanged"
             />
@@ -213,6 +213,7 @@ const areas = [
   { value: true, label: 'Geometric', icon: 'geometric', title: 'Geometric: areas as polygons with a few straight edges that overlap' }
 ]
 function setValues(on) {
+  if (on && !pro.require('monochrome', 'paint the picture in monochrome')) return
   analysis.settings.values = on
   analysis.analyse()
 }
@@ -234,7 +235,7 @@ const pro = useProStore()
 let wantedFiner = false
 function setSimplify(event) {
   let value = Number(event.target.value)
-  wantedFiner = !analysis.layerMode && !pro.active && value < SIMPLIFY_ZERO
+  wantedFiner = !analysis.layerMode && !pro.can('finer_areas') && value < SIMPLIFY_ZERO
   if (wantedFiner) {
     value = SIMPLIFY_ZERO
     event.target.value = value
@@ -242,7 +243,7 @@ function setSimplify(event) {
   analysis.settings[simplifyKey.value] = value
 }
 function simplifyChanged() {
-  if (wantedFiner) pro.require(false, 'make the areas finer than Simplify 0')
+  if (wantedFiner) pro.require('finer_areas', 'make the areas finer than Simplify 0')
   wantedFiner = false
   analysis.analyse()
 }

@@ -71,9 +71,8 @@ struct RootView: View {
         #endif
         .onChange(of: photo) { loadPhoto() }
         // A saved picture shown in Blocking opens in the paint without the full version.
-        .onChange(of: session.settings.view, initial: true) { _, view in
-            if view == .blocking, !store.unlocked { session.settings.view = .mixed }
-        }
+        .onChange(of: session.settings.view, initial: true) { leaveLockedView() }
+        .onChange(of: store.checked) { leaveLockedView() }
         // A phone: the colour card comes up where the panel card was; one thing over the picture at a time.
         .onChange(of: session.selectedRegion) { _, region in
             if compact, region != nil { showingSettings = false; showingColours = false; menuOpen = false }
@@ -425,6 +424,11 @@ struct RootView: View {
             return
         }
         session.settings.view = view
+    }
+
+    /// Once the purchase state is known: Blocking without the full version falls back to the paint.
+    private func leaveLockedView() {
+        if session.settings.view == .blocking, store.checked, !store.unlocked { session.settings.view = .mixed }
     }
 
     /// In layer mode the paint is layered, not mixed.

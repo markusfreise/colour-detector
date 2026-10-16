@@ -18,7 +18,7 @@ part: Die App
 5. **Details**: ob kleine Flächen eines anderen Farbtons eine eigene Mischung behalten.
 6. **Max. Farben**: wie viele Farben eine Mischung enthalten darf.
 
-Der Knopf mit dem halb gefüllten Kreis neben den Flächen schaltet auf [Tonwerte](tonwerte.html) um, eine Studie in Hell und Dunkel.
+Der Knopf mit dem halb gefüllten Kreis neben den Flächen schaltet auf [Monochrom](tonwerte.html#monochrom-eine-temperatur-jeder-tonwert) um, eine Studie in Hell und Dunkel, gemalt mit deinen Farben (Pro). Für Licht und Schatten allein gibt es die Ansicht **Blocking**.
 
 ## Farben: wie viele Mischungen
 

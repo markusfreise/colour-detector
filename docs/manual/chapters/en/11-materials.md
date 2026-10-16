@@ -129,4 +129,4 @@ Paint in daylight from the side, ideally from a north-facing window (south-facin
 | Water | Two jars |
 | Other | Board, masking tape, HB to 2H pencil, kneaded eraser, kitchen paper, spray bottle |
 
-> **Tip:** Start with a small palette in the app too. In the free version on the web the palette mixes from up to eight paints; with eight well-chosen single-pigment paints you can reach nearly every colour of a landscape like Llyn Idwal.
+> **Tip:** Start with a small palette in the app too. With eight well-chosen single-pigment paints you can reach nearly every colour of a landscape like Llyn Idwal. (The free version on the web mixes from its Starter box of twelve student colours; your own paints come with an unlocked picture or Pro.)

@@ -2,7 +2,7 @@
 title: Konto, Pro und deine Daten
 nav: Konto und Daten
 slug: konto
-lead: Dein Konto ist nur deine E-Mail-Adresse und dein Tarif. Deine Fotos, Farbkästen und gesicherten Bilder verlassen nie das Gerät, auf dem du arbeitest. Dieses Kapitel erklärt die Anmeldung, die kostenlose Version und Pro, die Einstellungen zu Sprache und Darstellung und was mit deinen Daten geschieht.
+lead: Dein Konto ist nur deine E-Mail-Adresse, dein Tarif und dein Guthaben an Bildern. Deine Fotos, Farbkästen und gesicherten Bilder verlassen nie das Gerät, auf dem du arbeitest. Dieses Kapitel erklärt die Anmeldung, die kostenlose Version und Pro, die Einstellungen zu Sprache und Darstellung und was mit deinen Daten geschieht.
 part: Die App
 ---
 
@@ -25,38 +25,50 @@ Das zweite ist wichtig, und der Rest dieses Kapitels erklärt, warum. Drücke **
 
 Auf diesem Gerät bleibst du 60 Tage angemeldet. **Abmelden** im Konto beendet das.
 
-## Kostenlos und Pro
+## Kostenlos, ein Bild oder Pro
 
-Die kostenlose Version ist die ganze App mit wenigen Grenzen. Sie zeigt dir genau, wie Watercolourlove mit deinen eigenen Fotos und Farben arbeitet. Pro hebt jede Grenze auf.
+Die kostenlose Version analysiert deine Fotos und gibt dir jedes Rezept, gemischt aus dem **Einsteigerkasten**: zwölf Farben, wie ein günstiger Schulmalkasten sie hat. Sie zeigt dir, wie Watercolourlove mit deinen eigenen Fotos arbeitet. Um ein Bild mit **deinen eigenen Farben** zu malen, schaltest du dieses Bild mit einem Guthaben frei, oder du nimmst Pro für jedes Bild.
 
-| | Kostenlos | Pro |
-| --- | --- | --- |
-| Fotos analysieren, Mischen und Schichten, Tonwerte | ja | ja |
-| Farbliste, Rezepte, Alle Details, Farben ändern | ja | ja |
-| Farben zum Mischen | bis zu 8, in einem Farbkasten | alle, in beliebig vielen Farbkästen |
-| Farbkarten der Hersteller in der Farbsuche | | ja |
-| Bilder in der Sammlung sichern | | ja |
-| Drucken / PDF, Als JPG exportieren | | ja |
-| Ausschnitte eines Bildes | | ja |
-| Flächen vereinfachen unter 0 | | ja |
+| | Kostenlos | Ein Bild (ein Guthaben) | Pro |
+| --- | --- | --- | --- |
+| Fotos analysieren, Mischen und Schichten, Farbliste, Rezepte | ja | ja | ja |
+| Farben zum Mischen | der Einsteigerkasten | deine eigenen Farben, in deinen Farbkästen | deine eigenen Farben, in beliebig vielen Farbkästen |
+| Blocking, Ausschnitte, Flächen vereinfachen unter 0 | | ja | ja |
+| Sichern, Drucken / PDF, die Vorlage, Als JPG exportieren | | ja | ja |
+| Weitere Farbkästen, Farbkarten der Hersteller, Farbkasten importieren | | | ja |
+| Monochrom | | | ja |
 
-Erreichst du eine Grenze, sagt dir die App, was Pro erlauben würde, und zeigt die Tarife. **Pro holen** bei den Werkzeugen des Bildes öffnet sie jederzeit.
+Die Beispielbilder stehen allen mit allem offen, was ein Bild haben kann; so probierst du jede Funktion zuerst an ihnen aus.
+
+Erreichst du eine Grenze, sagt dir die App, was sie aufheben würde, und bietet an, was passt: **Dieses Bild freischalten**, Pakete mit Bildern oder die Tarife. **Pro holen** bei den Werkzeugen des Bildes öffnet sie jederzeit; daneben siehst du, wie viele Bilder du noch freischalten kannst.
+
+### Bilder und Guthaben
+
+Ein Guthaben schaltet **ein Bild dauerhaft frei**. Jedes Konto beginnt mit einem; weitere gibt es in Paketen. Sie verfallen nicht, und sie bleiben, wenn ein Abo endet.
+
+- **Dieses Bild freischalten** fragt noch einmal nach und zeigt, wie viele dir bleiben. Danach gehört das Bild dir: öffnen, ändern, wieder drucken, so oft du willst. Ausschnitte und geänderte Einstellungen gehören dazu.
+- **Dasselbe Foto ist dasselbe Bild.** Dieselbe Datei noch einmal öffnen, oder das gesicherte Bild aus der Sammlung, kostet nichts. Ein anderes Foto ist ein anderes Bild. Freigeschaltete Bilder tragen in der Sammlung die Marke **Freigeschaltet**.
+- Mit einem Abo oder einer Lebenszeit-Lizenz verbrauchst du nie ein Guthaben.
+
+> **Gut zu wissen:** Das Foto verlässt dein Gerät trotzdem nie. Um ein Bild wiederzuerkennen, bildet die App einen Fingerabdruck der Fotodatei und schickt nur einen Schlüssel daraus und aus deinem Konto. Niemand kann das Foto daraus zurückgewinnen, und dasselbe Foto in einem anderen Konto ergibt einen anderen Schlüssel.
 
 ### Tarife
 
-| Tarif | Preis | |
-| --- | --- | --- |
-| **Monatlich** | 4,99 EUR im Monat | verlängert sich jeden Monat, jederzeit kündbar |
-| **Jährlich** | 29,99 EUR im Jahr | verlängert sich jedes Jahr, jederzeit kündbar |
-| **Lebenszeit-Lizenz** | 79 EUR einmalig | eine Zahlung, keine Verlängerung |
+| Tarif | |
+| --- | --- |
+| **Monatlich** | verlängert sich jeden Monat, jederzeit kündbar |
+| **Jährlich** | verlängert sich jedes Jahr, jederzeit kündbar |
+| **Lebenszeit-Lizenz** | eine Zahlung, keine Verlängerung |
 
-Die Preise enthalten die Mehrwertsteuer. Die Zahlung wickelt Stripe ab; die App sieht deine Karte nie. „Lebenszeit“ meint die Lebenszeit des Produkts: so lange, wie Watercolourlove angeboten wird, kein Versprechen, dass es ewig läuft. Die AGB erklären das genau.
+Der Dialog zeigt die aktuellen Preise. Sie enthalten die Mehrwertsteuer. Die Zahlung wickelt Stripe ab; die App sieht deine Karte nie. „Lebenszeit“ meint die Lebenszeit des Produkts: so lange, wie Watercolourlove angeboten wird, kein Versprechen, dass es ewig läuft. Die AGB erklären das genau.
+
+Was du in den letzten 30 Tagen für Bilder bezahlt hast, ziehen wir von deinem ersten Tarif ab: Der Dialog sagt dir, wie viel.
 
 Mit einem Abo kannst du jederzeit **Zur Lebenszeit-Lizenz wechseln**. Einen **Gutschein für eine Lebenszeit-Lizenz** löst du im Tarif-Dialog mit **Einlösen** ein; ein Gutschein gilt nur für die E-Mail-Adresse, auf die er ausgestellt ist.
 
 ### Das Konto
 
-Das Personensymbol in der linken Spalte öffnet **Konto**. Es zeigt deine Adresse und deinen Tarif und bietet:
+Das Personensymbol in der linken Spalte öffnet **Konto**. Es zeigt deine Adresse, deinen Tarif und wie viele Bilder du noch freischalten kannst, und bietet:
 
 - **Abo verwalten:** ein Abo ändern oder kündigen, die Zahlungsart ändern.
 - **Rechnungen:** deine Rechnungen zum Ansehen und Herunterladen.

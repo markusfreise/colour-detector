@@ -300,9 +300,10 @@ function drawBlocking(el) {
   if (alpha < 255) drawPhoto(ctx, el)
   paintPixels(ctx, el, img, w, h)
   if (numbers) {
-    labelFont(ctx, SCALE)
+    // The masses are few and large: their numbers are twice the size of those of the mixes.
+    labelFont(ctx, SCALE * 2)
     for (const region of regions) {
-      if (region.anchorDist < MIN_LABEL_DIST || (solo != null && region.tone !== solo)) continue
+      if (region.anchorDist < MIN_LABEL_DIST * 2 || (solo != null && region.tone !== solo)) continue
       ctx.fillStyle = toneGrey(region.tone, tones)[0] > 140 ? '#1d1b18' : '#ffffff'
       ctx.fillText(String(region.tone + 1), (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE)
     }

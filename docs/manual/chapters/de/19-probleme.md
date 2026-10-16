@@ -74,7 +74,7 @@ Bilder, Farbkästen und die Sammlung liegen im Browser auf diesem Gerät, nicht 
 
 ### Ich kann nicht sichern, drucken oder exportieren
 
-In der kostenlosen Version im Web lassen sich keine Bilder sichern, das Bild lässt sich nicht drucken oder exportieren, und eine Palette mischt aus höchstens acht Farben. Pro hebt all diese Grenzen auf. Siehe [Konto, Pro und deine Daten](konto.html).
+In der kostenlosen Version im Web lassen sich keine Bilder sichern, drucken oder exportieren, und die Palette mischt aus dem Einsteigerkasten statt aus deinen eigenen Farben. Ein Bild, das du mit einem Guthaben freischaltest, hebt diese Grenzen für dieses Bild auf; Pro für jedes Bild. Siehe [Konto, Pro und deine Daten](konto.html).
 
 ### Der Anmeldelink funktioniert nicht
 

@@ -46,7 +46,7 @@
 
     <div class="controls__settings controls__settings_two">
       <label class="field">
-        <span class="field__label">{{ t('Over photo') }} <output class="field__value">{{ settings.blockingOpacity }}%</output></span>
+        <span class="field__label">{{ t('Opacity') }} <output class="field__value">{{ settings.blockingOpacity }}%</output></span>
         <input v-model.number="settings.blockingOpacity" class="field__range" type="range" min="20" max="100" step="5" :title="t('How strongly the tones cover the photo')" />
       </label>
       <label class="field">
@@ -133,7 +133,7 @@ function commitForms() {
 }
 
 const greyOf = (tone) => `rgb(${toneGrey(tone, result.value?.tones ?? settings.blockingTones).join(',')})`
-const toneName = (tone) => (tone === 0 ? 'Light' : tone === (result.value?.tones ?? 2) - 1 ? 'Shadow' : 'Middle tone')
+const toneName = (tone) => (tone === 0 ? 'Light@@tone' : tone === (result.value?.tones ?? 2) - 1 ? 'Shadow@@tone' : 'Middle tone')
 // What the tone on its own tells the painter.
 function advice(tone) {
   if (tone === 0) return 'The lightest tone: save the paper white here, or mask it before you paint.'

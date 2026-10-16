@@ -53,10 +53,11 @@ That is also one reason why the app raises **Saturation** to 200% before the ana
 
 ## Checking values in the app
 
-A view and a setting help you judge values without the distraction of colour.
+Two views and a setting help you judge values without the distraction of colour.
 
 - **Photo colour** shows each area in the average colour of the photo there. It is the photo reduced to its shapes, without detail, and it is the best view for a squint test on screen.
-- **Values** in the settings goes further: the picture is analysed in grey and split into up to 24 values, and each value is painted with one of the paints of your palette, whatever its hue. The result is a value study in your own paints. See [Values](values.html) for the settings.
+- **Blocking** shows only light and shadow: two or three flat tones in large masses, numbered from the lightest. It is the squint test done for you, and it marks the paper white you have to save. See [Values](values.html#blocking-light-and-shadow-first).
+- **Monochrome** in the settings goes further: the picture is analysed in grey and split into up to 24 values, and each value is painted with one of the paints of your palette, whatever its hue. The result is a value study in your own paints. See [Values](values.html) for the settings.
 
 ![The view Photo colour: every area in the average colour of the photo](shot:view-target)
 
@@ -66,13 +67,13 @@ Switch between **Photo colour** and **Mixed paint** and squint. If an area of yo
 
 This exercise does more for your painting than any colour exercise.
 
-1. Open **Llyn Idwal**, press **Values** in the settings and set **Colours** to its lowest, 2.
+1. Open **Llyn Idwal**, press **Monochrome** in the settings and set **Colours** to its lowest, 2.
 2. Open the **Paint box** and put a single dark, transparent paint in the palette, for example a neutral tint, a sepia or an indigo.
 3. Set **Simplify areas** high enough that you count no more than about thirty areas.
 4. Print the sheet or the **Template to print**, transfer the outlines and paint the study with the washes the app gives you, from the lightest to the darkest.
 5. When it is dry, put it next to a grey print of the photo and squint at both.
 
-![Llyn Idwal in Values with one paint: the picture in grey, each value painted with a single colour of the palette](shot:values)
+![Llyn Idwal in Monochrome with one paint: the picture in grey, each value painted with a single colour of the palette](shot:values)
 
 You will find that the study already looks like the place. That is the point: the colour you add later only has to sit on a structure that already works.
 

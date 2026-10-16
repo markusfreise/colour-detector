@@ -100,6 +100,27 @@ export const shots = [
     },
   },
 
+  // Blocking as chapter 08 describes it: light and shadow, then the lightest tone on its own.
+  {
+    id: 'blocking',
+    settings: { view: 'blocking' },
+    collapsed: { controls: false },
+    prepare: async (page) => {
+      await page.waitForFunction(() => document.querySelector('#app').__vue_app__.config.globalProperties.$pinia._s.get('analysis').blockingResult)
+      await page.waitForTimeout(300)
+    },
+  },
+  {
+    id: 'blocking-tone',
+    settings: { view: 'blocking' },
+    collapsed: { controls: false },
+    prepare: async (page) => {
+      await page.waitForFunction(() => document.querySelector('#app').__vue_app__.config.globalProperties.$pinia._s.get('analysis').blockingResult)
+      await page.locator('.blocking__tone').first().evaluate((el) => el.click())
+      await page.waitForTimeout(300)
+    },
+  },
+
   // ------------------------------------------------------------------ Views
   { id: 'view-target', settings: { view: 'target' } },
   { id: 'view-overlay', settings: { view: 'overlay' } },

@@ -55,7 +55,7 @@ A good starting point is a warm and a cool version of each primary, plus one or 
 
 That is six to eight paints, and it mixes almost everything. Add a paint only when the picture asks for a colour these cannot reach, such as a clear turquoise or an intense violet.
 
-> **Note:** A free account mixes from up to eight paints in one paint box. When the palette is full, the paint box says so; with Pro you can mix from as many paints as you like.
+> **Note:** A free account mixes from the **Starter box**: twelve colours as a cheap student set has them (two yellows, two reds, two blues, a violet, a green, three earths and black). You can choose among them, but not add your own paints. Your own paints and paint boxes come with a picture you unlocked, or with Pro; see [Account, Pro and your data](account.html).
 
 ## Adding paints
 

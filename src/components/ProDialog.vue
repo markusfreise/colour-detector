@@ -97,7 +97,7 @@
         <a :href="legalPage('terms')" target="_blank" rel="noopener">{{ t('terms') }}</a>.
       </p>
       <div class="pro__actions">
-        <button class="button button--ghost" type="button" @click="dialog.close()">{{ t('Not now') }}</button>
+        <button class="button button--ghost" type="button" @click="notNow">{{ t('Not now') }}</button>
       </div>
     </template>
   </dialog>
@@ -110,6 +110,7 @@ import { useAccountStore } from '../stores/account.js'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { formatPrice } from '../lib/account.js'
 import { PLANS } from '../lib/entitlements.js'
+import { trackEvent } from '../lib/analytics.js'
 import { isNative } from '../lib/native.js'
 import { useText } from '../i18n/index.js'
 
@@ -137,10 +138,17 @@ const deduction = computed(() => {
 const priceText = (product) => (product.price ? formatPrice(product.price, region.value) : t('Choose'))
 
 function choose(key) {
+  trackEvent('upsell_choice', { choice: key, feature: pro.feature ?? 'everything' })
   account.buy(key)
 }
 
+function notNow() {
+  trackEvent('upsell_choice', { choice: 'not_now', feature: pro.feature ?? 'everything' })
+  dialog.value.close()
+}
+
 async function unlock() {
+  trackEvent('upsell_choice', { choice: 'unlock', feature: pro.feature ?? 'everything' })
   if (!(await account.unlock(analysis.picture?.hash))) return
   confirming.value = false
   account.notice = { kind: 'info', text: t('This picture is unlocked. {n} left to unlock.', { n: account.credits }) }
@@ -171,6 +179,7 @@ watch(
     if (offered) {
       account.error = null
       confirming.value = false
+      trackEvent('upsell_shown', { feature: pro.feature ?? 'everything', credit_offered: pictureOption.value })
       dialog.value.showModal()
     } else if (dialog.value.open) dialog.value.close()
   },

@@ -4,6 +4,7 @@ import { listImages, getImage, putImage, deleteImage, getLast, putLast } from '.
 import { usePaintsStore } from './paints.js'
 import { useAnalysisStore } from './analysis.js'
 import { useProStore, FREE_IMAGES } from './pro.js'
+import { useAccountStore } from './account.js'
 import { t } from '../i18n/index.js'
 
 const STORE_SIZE = 1600 // longest side of the stored picture
@@ -33,8 +34,10 @@ export const useCollectionStore = defineStore('collection', {
       try {
         const records = await listImages()
         this.items = records
-          .map(({ id, name, thumb, updatedAt }) => ({ id, name, thumb, updatedAt }))
+          .map(({ id, name, thumb, updatedAt, picture }) => ({ id, name, thumb, updatedAt, hash: picture?.hash ?? null }))
           .sort((a, b) => b.updatedAt - a.updatedAt)
+        // Which of them were unlocked with a credit (the badge in the collection).
+        useAccountStore().learnKeys(this.items.map((item) => item.hash))
       } catch (e) {
         this.error = t('Could not read the collection: {reason}', { reason: t(e.message) })
       }

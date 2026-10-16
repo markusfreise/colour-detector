@@ -43,6 +43,7 @@
       <!-- Until everything is unlocked: the plans, one click away. -->
       <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(null, 'use everything')">
         {{ t('Get pro') }}
+        <CreditCount />
       </button>
       <button class="button button--ghost painting__tool" type="button" :data-hint="t('Fit')" @click="fit">
         <AppIcon name="zoom" :label="t('Fit the picture to the window')" />
@@ -101,6 +102,7 @@ import { smoothCurve } from '../lib/sketch.js'
 import { upscaleAreas } from '../lib/smooth.js'
 import RecipeTip from './RecipeTip.vue'
 import AppIcon from './AppIcon.vue'
+import CreditCount from './CreditCount.vue'
 import ViewSwitch from './ViewSwitch.vue'
 import { closeupRect } from '../lib/closeup.js'
 import { APP_NAME } from '../config.js'

@@ -27,6 +27,7 @@
           </form>
           <template v-else>
             <span class="collection__name" :title="item.name">{{ item.name }}</span>
+            <span v-if="!account.user?.plan && account.unlockedHashes.has(item.hash)" class="credits-unlocked" :title="unlockedTitle(item)">{{ t('Unlocked') }}</span>
             <span class="collection__item-actions">
               <button class="button button--ghost" type="button" @click="startRename(item)">{{ t('Rename') }}</button>
               <button class="button button--ghost" type="button" @click="remove(item.id)">
@@ -48,9 +49,11 @@ import { ref } from 'vue'
 import { useCollectionStore } from '../stores/collection.js'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { useProStore } from '../stores/pro.js'
+import { useAccountStore } from '../stores/account.js'
 import { useText } from '../i18n/index.js'
 
-const { t } = useText()
+const { t, region } = useText()
+const account = useAccountStore()
 const collection = useCollectionStore()
 const analysis = useAnalysisStore()
 const pro = useProStore()
@@ -58,6 +61,11 @@ const dialog = ref(null)
 const renaming = ref(null)
 const newName = ref('')
 const confirming = ref(null) // id whose delete button was clicked once
+// "Unlocked with a credit on 16 October 2026".
+function unlockedTitle(item) {
+  const at = account.unlockedAt(item.hash)
+  return at ? t('Unlocked with a credit on {date}', { date: new Date(at * 1000).toLocaleDateString(region.value, { day: 'numeric', month: 'long', year: 'numeric' }) }) : ''
+}
 
 defineExpose({
   open: () => {

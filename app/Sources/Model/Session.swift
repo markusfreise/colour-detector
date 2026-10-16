@@ -751,7 +751,7 @@ final class Session {
     }
 
     /// What `buildPalette` hands back.
-    private struct Palette: Sendable {
+    private struct BuiltPalette: Sendable {
         var entries: [PaletteEntry]
         var baseEntries: Int
         var regionEntry: [Int]
@@ -809,7 +809,7 @@ final class Session {
     private nonisolated static func buildPalette(
         seg: Segmentation, paints: [MixPaint], candidates: [MixPaint]?, maxPaints: Int, wanted: Int, variety: Int,
         old: [PaletteEntry], oldBase: Int, oldRegionEntry: [Int]
-    ) -> Palette {
+    ) -> BuiltPalette {
         var box = paints
         var picked: [String]?
         if let candidates {
@@ -907,7 +907,7 @@ final class Session {
                 entries[i].chosen = entries[i].recipes.firstIndex { paintKey($0) == wanted } ?? 0
             }
         }
-        return Palette(entries: entries, baseEntries: baseEntries, regionEntry: regionEntry, mixRecipes: mixRecipes, paintIDs: picked)
+        return BuiltPalette(entries: entries, baseEntries: baseEntries, regionEntry: regionEntry, mixRecipes: mixRecipes, paintIDs: picked)
     }
 
     /// Recipes of one colour: washes of its mix, or recipes of its own once its colour was changed by hand.

@@ -11,7 +11,6 @@
 declare(strict_types=1);
 
 require __DIR__ . '/lib.php';
-require __DIR__ . '/entitlements.php';
 require __DIR__ . '/auth.php';
 require __DIR__ . '/billing.php';
 
@@ -77,6 +76,21 @@ switch ($route) {
             'licenceWithoutEnd' => (int) $user['lifetime'] === 1,
             'subscription' => $user['sub_id'] ? ['status' => $user['sub_status'], 'paidUntil' => $user['sub_until'] ? date('c', (int) $user['sub_until']) : null] : null,
             'stripeCustomer' => $user['stripe_customer'],
+            'credits' => [
+                'balance' => creditBalance((int) $user['id']),
+                'ledger' => array_map(
+                    fn (array $l) => ['change' => (int) $l['delta'], 'kind' => $l['kind'], 'reason' => $l['reason'], 'at' => date('c', (int) $l['created_at'])],
+                    run('SELECT delta, kind, reason, created_at FROM credit_ledger WHERE user_id = ? ORDER BY id', [$user['id']])->fetchAll(),
+                ),
+                'unlockedPictures' => array_map(
+                    fn (array $u) => ['key' => $u['picture_key'], 'at' => date('c', (int) $u['created_at'])],
+                    run('SELECT picture_key, created_at FROM picture_unlocks WHERE user_id = ? ORDER BY created_at', [$user['id']])->fetchAll(),
+                ),
+                'packs' => array_map(
+                    fn (array $p) => ['product' => $p['product'], 'pictures' => (int) $p['quantity'], 'paid' => $p['amount'] / 100, 'currency' => $p['currency'], 'refunded' => $p['refunded_amount'] / 100, 'at' => date('c', (int) $p['created_at'])],
+                    run('SELECT * FROM purchases WHERE user_id = ? ORDER BY id', [$user['id']])->fetchAll(),
+                ),
+            ],
             'vouchers' => array_map(
                 fn (array $v) => ['made' => date('c', (int) $v['created_at']), 'used' => $v['redeemed_at'] ? date('c', (int) $v['redeemed_at']) : null],
                 run('SELECT created_at, redeemed_at FROM vouchers WHERE email = ?', [$user['email']])->fetchAll(),
@@ -101,6 +115,9 @@ switch ($route) {
 
     case 'billing/voucher':
         redeemVoucher();
+
+    case 'credits/unlock':
+        spendCredit();
 
     case 'stripe/webhook':
         stripeWebhook();

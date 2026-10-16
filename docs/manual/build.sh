@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds the manual: screenshots of the app in English and German, then the HTML pages.
 #
-#   docs/manual/build.sh             # screenshots and pages (needs `npm run dev` in the repository root)
+#   docs/manual/build.sh             # screenshots and pages (needs `MIX_REFERENCE=1 npm run dev` in the repository root)
 #   docs/manual/build.sh --pages     # only the pages; the screenshots stay
 set -euo pipefail
 cd "$(dirname "$0")"

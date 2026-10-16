@@ -15,7 +15,7 @@ on one page, for print. The app links the manual of its language (`legalPage('ma
 ## Building
 
 ```bash
-npm run dev                    # in the repository root: the screenshots are taken from the dev server
+MIX_REFERENCE=1 npm run dev    # in the repository root: the screenshots are taken from the dev server, which then mixes without the PHP API
 docs/manual/build.sh           # screenshots in both languages, then the pages
 docs/manual/build.sh --pages   # only the pages; text and styles changed, screenshots stay
 ```

@@ -91,50 +91,62 @@
         }
     }
 
-    // A card like the settings panel: signing in on the left (at most 400 px of it, as before),
-    // how the app works on the right; one above the other in a narrow window.
+    // The card: signing in on the left, how the app works on the right, on the paper colour of
+    // the app; one above the other in a narrow window.
     &__card {
         pointer-events: auto;
+        position: relative;
         display: grid;
-        grid-template-columns: minmax(0, #{pxtorem(352)}) minmax(0, 1fr);
-        gap: var(--gap-2x);
-        width: min(#{pxtorem(880)}, 100%);
+        grid-template-columns: minmax(0, #{pxtorem(384)}) minmax(0, 1fr);
+        gap: var(--gap-3x);
+        width: min(#{pxtorem(1120)}, 100%);
+        // Above the columns a strip for the language switch.
+        padding: calc(var(--gap-3x) + var(--gap-15x)) var(--gap-3x) var(--gap-3x);
 
-        @media (max-width: 760px) {
+        @media (max-width: 960px) {
             grid-template-columns: minmax(0, 1fr);
-            width: min(#{pxtorem(400)}, 100%);
-            // Room above the logo for the language switch.
-            padding-top: calc(var(--gap-15x) + #{pxtorem(20)});
+            gap: var(--gap-2x);
+            width: min(#{pxtorem(560)}, 100%);
+            padding: calc(var(--gap-3x) + var(--gap-05x)) var(--gap-2x) var(--gap-2x);
+        }
+
+        @media (max-width: 480px) {
+            padding: calc(var(--gap-3x) + var(--gap-05x)) var(--gap) var(--gap-15x);
         }
 
         // The link is sent: one column, as wide as the left one.
         &--sent {
             grid-template-columns: minmax(0, 1fr);
-            width: min(#{pxtorem(352)} + var(--gap-15x) * 2, 100%);
+            width: min(#{pxtorem(384)} + var(--gap-3x) * 2, 100%);
         }
-        padding: var(--gap-15x);
     }
 
-    // EN | DE in the top right corner of the card.
+    &__main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    // EN | DE in the top right corner of the card, as large as every other button.
     &__languages {
         position: absolute;
         top: var(--gap-05x);
         right: var(--gap-05x);
         display: flex;
-        gap: #{pxtorem(2)};
+        gap: var(--gap-025x);
     }
 
     &__language {
-        padding: #{pxtorem(5)} #{pxtorem(8)};
-        line-height: 1.25;
+        min-width: #{pxtorem(48)};
+        min-height: #{pxtorem(48)};
+        padding: 0 #{pxtorem(10)};
         border: 0;
-        border-radius: var(--radius-small);
+        border-radius: var(--radius-medium);
         background: none;
         color: var(--c-copy-light);
         font: inherit;
         font-size: var(--fs-small);
         font-weight: 600;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.06em;
         cursor: pointer;
 
         &:hover {
@@ -151,15 +163,27 @@
         }
     }
 
+    // The logo at a size that leaves the form in view, in a short window too.
     &__title {
-        margin-bottom: var(--gap);
+        width: min(#{pxtorem(296)}, 100%);
+        margin-bottom: var(--gap-2x);
         color: var(--c-head);
+
+        @media (max-width: 960px) {
+            width: min(#{pxtorem(280)}, 72%);
+        }
     }
 
-    // As wide as the card, its height follows.
+    // A drawing in the colour of the text, or a picture: either fills the width of the title.
     &__logo {
         display: block;
         width: 100%;
+
+        img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
 
         svg {
             display: block;
@@ -169,8 +193,10 @@
     }
 
     &__text {
-        margin-bottom: #{pxtorem(14)};
+        margin-bottom: var(--gap-15x);
         color: var(--c-copy-light);
+        font-size: var(--fs-copy);
+        line-height: 1.5;
 
         strong {
             color: var(--c-copy);
@@ -204,15 +230,26 @@
     &__form {
         display: flex;
         flex-direction: column;
-        gap: #{pxtorem(10)};
+        gap: var(--gap);
 
-        .button {
-            justify-content: center;
+        .input {
+            min-height: #{pxtorem(56)};
+            padding: 0 var(--gap);
         }
     }
 
+    // The one thing to do on the card: filled, full width, as tall as the field above it.
+    &__primary {
+        justify-content: center;
+        width: 100%;
+        min-height: #{pxtorem(56)};
+        font-weight: 600;
+    }
+
     &__field {
-        margin-top: #{pxtorem(10)};
+        .field__label {
+            margin-bottom: var(--gap-05x);
+        }
     }
 
     &__check {
@@ -234,10 +271,12 @@
         margin-top: #{pxtorem(6)};
     }
 
-    // "Sign up" under the button, and back.
+    // "Sign up" under the button, and back: a link, but with room for a finger.
     &__switch {
         align-self: center;
-        font-size: var(--fs-small);
+        min-height: #{pxtorem(48)};
+        padding: 0 var(--gap-05x);
+        font-size: var(--fs-copy);
     }
 
     &__link {
@@ -259,11 +298,18 @@
         grid-column: 1 / -1;
         display: flex;
         flex-wrap: wrap;
-        gap: var(--gap-05x) var(--gap);
+        align-items: center;
+        gap: 0 var(--gap-15x);
         white-space: nowrap;
-        padding-top: #{pxtorem(14)};
-        border-top: 1px solid var(--c-border);
+        margin-top: calc(var(--gap) * -1);
         font-size: var(--fs-small);
+
+        a,
+        button {
+            display: inline-flex;
+            align-items: center;
+            min-height: #{pxtorem(44)};
+        }
     }
 
     // The sign-in link of a local test is one long word.
@@ -288,53 +334,82 @@
         cursor: pointer;
     }
 
+    // How the app works, on the paper colour of the app, set into the card.
     &__how {
-        @media (max-width: 760px) {
-            padding-top: var(--gap-15x);
-            border-top: 1px solid var(--c-border);
+        padding: var(--gap-2x);
+        border-radius: var(--radius);
+        background: var(--c-background);
+
+        @media (max-width: 480px) {
+            margin: 0 calc(var(--gap) * -0.5);
+            padding: var(--gap-15x) var(--gap);
         }
     }
 
     &__how-title {
-        margin-bottom: var(--gap);
+        margin-bottom: var(--gap-15x);
         color: var(--c-head);
         font-size: var(--fs-hl-small);
         font-weight: 700;
+        letter-spacing: -0.01em;
     }
 
     &__steps {
         display: grid;
-        gap: var(--gap);
+        gap: var(--gap-15x);
         margin: 0;
         padding: 0;
         list-style: none;
-        counter-reset: step;
     }
 
-    // One row per step: the picture, and the headline beside it.
+    // One row per step: the picture, and beside it the number over the text.
     &__step {
-        counter-increment: step;
         display: grid;
-        grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         align-items: center;
-        gap: var(--gap);
+        gap: var(--gap-15x);
+
+        @media (max-width: 480px) {
+            grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+            gap: var(--gap);
+        }
     }
 
-    &__step-title {
-        order: 2;
-        color: var(--c-head);
-        font-size: var(--fs-copy);
-        font-weight: 600;
-
-        &::before {
-            content: counter(step) ". ";
-        }
+    // 3:2, the shape of a camera photo; a picture of another shape is cropped to it.
+    &__step-frame {
+        overflow: hidden;
+        margin: 0;
+        aspect-ratio: 3 / 2;
+        border-radius: var(--radius-medium);
+        background: var(--c-background-raised);
+        box-shadow: var(--shadow-flat);
     }
 
     &__step-image {
         display: block;
         width: 100%;
-        height: auto;
-        border-radius: var(--radius-medium);
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &__step-number {
+        display: block;
+        margin-bottom: var(--gap-025x);
+        color: var(--c-copy-light);
+        font-size: var(--fs-hl-medium);
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+    }
+
+    &__step-title {
+        color: var(--c-head);
+        font-size: var(--fs-copy);
+        font-weight: 500;
+        line-height: 1.4;
+
+        @media (max-width: 480px) {
+            font-size: var(--fs-small);
+        }
     }
 }

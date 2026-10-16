@@ -62,7 +62,7 @@
           </span>
         </label>
         <div class="gate__actions">
-          <button class="button" type="button" :disabled="!privacy || !local || account.busy" @click="account.agree()">{{ t('Continue') }}</button>
+          <button class="button button--secondary gate__primary" type="button" :disabled="!privacy || !local || account.busy" @click="account.agree()">{{ t('Continue') }}</button>
           <button class="button button--ghost" type="button" :disabled="account.busy" @click="account.signOut()">{{ t('Sign out') }}</button>
         </div>
       </template>
@@ -84,7 +84,7 @@
           {{ t('A sign-in link is on its way to') }} <strong>{{ account.sentTo }}</strong>{{ t('. Open it on this device; it works for 15 minutes.') }}
         </p>
         <div v-if="account.sentTo" class="gate__actions">
-          <button class="button" type="button" @click="account.sentTo = ''">{{ t('Use different address') }}</button>
+          <button class="button button--secondary gate__primary" type="button" @click="account.sentTo = ''">{{ t('Use different address') }}</button>
         </div>
         <!-- Signing in and signing up are the same link by e-mail; the second form is there for
              people who look for one. Only signing up asks for an invitation code. -->
@@ -93,7 +93,7 @@
             <span class="field__label">{{ t('Sign in with e-mail') }}</span>
             <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
           </label>
-          <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Send me a sign-in link') }}</button>
+          <button class="button button--secondary gate__primary" type="submit" :disabled="account.busy || !email">{{ t('Send me a sign-in link') }}</button>
           <button class="gate__link gate__switch" type="button" @click="signingUp = true">{{ t('Sign up') }}</button>
         </form>
         <form v-else class="gate__form" @submit.prevent="account.sendLink(email, code)">
@@ -106,7 +106,7 @@
             <span class="field__label">{{ t('Invitation code (optional)') }}</span>
             <input v-model.trim="code" class="input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
           </label>
-          <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Create my account') }}</button>
+          <button class="button button--secondary gate__primary" type="submit" :disabled="account.busy || !email">{{ t('Create my account') }}</button>
           <button class="gate__link gate__switch" type="button" @click="signingUp = false">{{ t('Sign in with account') }}</button>
         </form>
       </template>
@@ -117,14 +117,20 @@
       </p>
       </div>
 
-      <!-- What the app does, in three steps. The pictures are hand-drawn sketches for now, to be
-           replaced by screenshots taken after them. -->
+      <!-- What the app does, in three steps, on the paper colour of the app. The pictures are
+           hand-drawn sketches for now, to be replaced by photos of the process; their frames are
+           3:2, the shape of a camera photo, and crop whatever is given to it. -->
       <aside v-if="!account.sentTo || account.user" class="gate__how" aria-labelledby="how-title">
         <h2 id="how-title" class="gate__how-title">{{ t('How this works') }}</h2>
         <ol class="gate__steps">
-          <li v-for="step in steps" :key="step.title" class="gate__step">
-            <h3 class="gate__step-title">{{ t(step.title) }}</h3>
-            <img class="gate__step-image" :src="step.image" :alt="t(step.alt)" loading="lazy" />
+          <li v-for="(step, index) in steps" :key="step.title" class="gate__step">
+            <figure class="gate__step-frame">
+              <img class="gate__step-image" :src="step.image" :alt="t(step.alt)" loading="lazy" />
+            </figure>
+            <div class="gate__step-text">
+              <span class="gate__step-number" aria-hidden="true">{{ index + 1 }}</span>
+              <h3 class="gate__step-title">{{ t(step.title) }}</h3>
+            </div>
           </li>
         </ol>
       </aside>

@@ -12,8 +12,19 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
         case .mixed: "Mixed paint"
         case .target: "Photo colour"
         case .original: "Photo"
+        case .overlay: "Overlay: the photo at half strength over the paint"
+        case .template: "Template to print: areas and numbers in light blue, nothing filled in"
+        }
+    }
+
+    /// The short label shown with Help.
+    var hint: String {
+        switch self {
+        case .mixed: "Mixed paint"
+        case .target: "Photo colour"
+        case .original: "Photo"
         case .overlay: "Overlay"
-        case .template: "Template"
+        case .template: "Template to print"
         }
     }
 
@@ -35,7 +46,7 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
         case .target: "swatchpalette"
         case .original: "photo"
         case .overlay: "photo.on.rectangle"
-        case .template: "printer"
+        case .template: "square.dashed"
         }
     }
 

@@ -98,12 +98,85 @@ struct IconButton: View {
     let symbol: String
     var active = false
     var size = Theme.iconButton
+    /// The short label shown with Help on; the title when there is none.
+    var hint: String? = nil
+    /// Below a row of tools: 1 puts the label a line lower than its neighbours'.
+    var hintRow = 0
     let action: () -> Void
 
     var body: some View {
         Button(L(title), systemImage: symbol, action: action)
             .buttonStyle(IconButtonStyle(active: active, size: size))
             .help(L(title))
+            .hint(hint ?? title, size: size, row: hintRow)
+    }
+}
+
+/// Where the labels of the buttons go while Help is on: beside a column of buttons, on the side
+/// away from the edge of the window, or below a row of tools (above it at the bottom of a phone).
+enum HintSide {
+    case leading, trailing, below, above
+}
+
+extension EnvironmentValues {
+    /// Help is on: every button shows its label, as the web's .app--hints.
+    @Entry var showHints = false
+    @Entry var hintSide = HintSide.trailing
+}
+
+extension View {
+    /// The label of a button of side `size`, shown beside it while Help is on. Below a row of tools
+    /// every second label (`row` 1) sits a line lower, so that neighbours do not run into each other.
+    func hint(_ text: String, size: CGFloat = Theme.iconButton, row: Int = 0) -> some View {
+        modifier(HintLabel(text: text, size: size, row: row))
+    }
+}
+
+private struct HintLabel: ViewModifier {
+    let text: String
+    let size: CGFloat
+    let row: Int
+    @Environment(\.showHints) private var shown
+    @Environment(\.hintSide) private var side
+
+    func body(content: Content) -> some View {
+        content.overlay(alignment: alignment) {
+            if shown {
+                placed
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+                    .transition(.opacity)
+            }
+        }
+    }
+
+    private var bubble: some View {
+        Text(L(text))
+            .font(.caption2.weight(.medium))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(Theme.onCorporate)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 3)
+            .background(Theme.corporate.opacity(0.9), in: RoundedRectangle(cornerRadius: Theme.radiusSmall))
+    }
+
+    @ViewBuilder private var placed: some View {
+        switch side {
+        case .leading: bubble.fixedSize().offset(x: -(size + 6))
+        case .trailing: bubble.fixedSize().offset(x: size + 6)
+        case .below: bubble.frame(width: 96).fixedSize().offset(y: size + 4 + CGFloat(row) * 26)
+        case .above: bubble.frame(width: 96).fixedSize().offset(y: -(size + 4 + CGFloat(row) * 26))
+        }
+    }
+
+    /// The side of the button the label starts from, before it is moved past the button.
+    private var alignment: Alignment {
+        switch side {
+        case .leading: .trailing
+        case .trailing: .leading
+        case .below: .top
+        case .above: .bottom
+        }
     }
 }
 
@@ -115,6 +188,8 @@ struct SegmentedGroup<Option: Hashable>: View {
     let symbol: (Option) -> String
     let choose: (Option) -> Void
     var size = Theme.iconButton
+    /// Short labels for Help; the titles when there are none.
+    var hint: ((Option) -> String)? = nil
 
     var body: some View {
         HStack(spacing: 0) {
@@ -140,6 +215,15 @@ struct SegmentedGroup<Option: Hashable>: View {
         .clipShape(RoundedRectangle(cornerRadius: Theme.radiusSmall))
         .overlay(RoundedRectangle(cornerRadius: Theme.radiusSmall).strokeBorder(Theme.border))
         .flatShadow()
+        // The labels for Help outside the clipped frame, each under its option.
+        .overlay {
+            HStack(spacing: 0) {
+                ForEach(Array(options.enumerated()), id: \.element) { index, option in
+                    if index > 0 { Color.clear.frame(width: 1) }
+                    Color.clear.frame(width: size, height: size).hint(hint?(option) ?? title(option), size: size, row: index % 2)
+                }
+            }
+        }
     }
 }
 

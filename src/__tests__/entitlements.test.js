@@ -85,11 +85,12 @@ describe('entitlements: the Starter box', () => {
     analysis.picture = { sample: true, hash: null }
     expect(paints.starter).toBe(false)
     analysis.picture = { sample: false, hash: 'photo' }
-    account.unlocks = [{ hash: 'photo', at: 1 }]
+    account.keys = { photo: 'key-of-photo' }
+    account.user = { ...account.user, unlocks: [{ key: 'key-of-photo', at: 1 }] }
     expect(paints.starter).toBe(false)
     expect(pro.can('print')).toBe(true)
     expect(pro.can('paint_boxes')).toBe(false)
-    account.unlocks = []
+    account.user = { ...account.user, unlocks: [] }
     account.user = { ...account.user, plan: 'subscription' }
     expect(paints.starter).toBe(false)
     expect(pro.active).toBe(true)

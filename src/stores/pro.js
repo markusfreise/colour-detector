@@ -26,7 +26,7 @@ export const useProStore = defineStore('pro', {
         native: isNative,
         nativeUnlocked: state.unlocked,
         plan: account.user?.plan ?? null,
-        unlocked: new Set(account.unlocks.map((u) => u.hash)),
+        unlocked: account.unlockedHashes,
         picture: useAnalysisStore().picture,
       }
     },

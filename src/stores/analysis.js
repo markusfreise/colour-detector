@@ -11,6 +11,7 @@ import { boxMask, detailWash } from '../lib/details.js'
 import { toOklabPixels, SIMPLIFY_ZERO } from '../lib/segment.js'
 import { closeupSize } from '../lib/closeup.js'
 import { useProStore } from './pro.js'
+import { hashOf } from '../lib/picture.js'
 import { t } from '../i18n/index.js'
 
 // Working resolution: the picture is scaled down to about this many pixels, whatever its shape.
@@ -264,7 +265,9 @@ export const useAnalysisStore = defineStore('analysis', {
     },
     async loadFile(file) {
       const url = URL.createObjectURL(file)
-      await this.loadFromSource(url, file.name, { sample: false, hash: null })
+      // The bytes of the photo as they came: the same file is the same picture, whenever it is opened.
+      const hash = await hashOf(file).catch(() => null)
+      await this.loadFromSource(url, file.name, { sample: false, hash })
     },
     /** Open a picture from the collection with its saved settings and colour changes. */
     async loadSaved(record) {
@@ -273,7 +276,9 @@ export const useAnalysisStore = defineStore('analysis', {
       // The palette belongs to the picture. Pictures saved before it did keep the one on screen.
       if (record.palette) usePaintsStore().setPalette(record.palette)
       const url = URL.createObjectURL(record.blob)
-      await this.loadFromSource(url, record.name, record.picture ?? { sample: false, hash: null })
+      // Pictures saved before they knew their photo take the hash of the stored copy, which stays the same.
+      const picture = record.picture?.hash || record.picture?.sample ? record.picture : { sample: false, hash: await hashOf(record.blob).catch(() => null) }
+      await this.loadFromSource(url, record.name, picture)
       URL.revokeObjectURL(url)
       if (this.error) return
       this.savedId = record.id

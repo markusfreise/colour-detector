@@ -2,6 +2,41 @@ import { defineStore } from 'pinia'
 import { ACCOUNT_API } from '../config.js'
 import { accountsWanted, readReturn } from '../lib/account.js'
 import { t, currentLocale } from '../i18n/index.js'
+import { pictureKey } from '../lib/picture.js'
+
+// The account as last told by the API, for use without a connection: plan, credits, unlocked pictures.
+const CACHE_KEY = 'colour-detector:account'
+
+function readCache() {
+  try {
+    return JSON.parse(localStorage.getItem(CACHE_KEY) ?? 'null')
+  } catch {
+    return null
+  }
+}
+
+function writeCache(user) {
+  try {
+    if (user) localStorage.setItem(CACHE_KEY, JSON.stringify(user))
+    else localStorage.removeItem(CACHE_KEY)
+  } catch {
+    // Not kept: without a connection the app asks to sign in again.
+  }
+}
+
+class Offline extends Error {}
+
+// The balance before paying for a pack, to see when Stripe's confirmation has added to it.
+const BEFORE_KEY = 'colour-detector:credits-before'
+function creditsBefore() {
+  try {
+    const before = Number(sessionStorage.getItem(BEFORE_KEY))
+    sessionStorage.removeItem(BEFORE_KEY)
+    return Number.isFinite(before) ? before : 0
+  } catch {
+    return 0
+  }
+}
 
 // One request to the account API. The session travels as a cookie the page cannot read.
 async function call(path, body) {
@@ -14,7 +49,7 @@ async function call(path, body) {
       body: body === undefined ? undefined : JSON.stringify(body),
     })
   } catch {
-    throw new Error(t('The account service cannot be reached. Please check your connection.'))
+    throw new Offline(t('The account service cannot be reached. Please check your connection.'))
   }
   const data = await response.json().catch(() => ({}))
   if (!response.ok) throw new Error(data.error ? serverText(data.error) : t('The account service did not answer as expected.'))
@@ -37,7 +72,8 @@ export const useAccountStore = defineStore('account', {
     user: null,
     providers: [],
     products: [], // what can be bought: [{ key, type, interval, quantity }], see server/plans.json
-    unlocks: [], // pictures unlocked with a credit: [{ hash, at }]
+    offline: false, // the API could not be reached: `user` is the one last told
+    keys: {}, // hash of a photo -> its key in this account (lib/picture.js)
     invitation: false, // new accounts need an invitation code
     busy: false,
     error: null,
@@ -51,6 +87,17 @@ export const useAccountStore = defineStore('account', {
     // The app itself may be used: signed in, and both statements agreed to.
     ready: (state) => !state.enabled || Boolean(state.user?.consent),
     pro: (state) => Boolean(state.user?.pro),
+    credits: (state) => state.user?.credits ?? 0,
+    /** Hashes of the photos unlocked with a credit, as far as their keys are worked out (learnKeys). */
+    unlockedHashes(state) {
+      const unlocked = new Set((state.user?.unlocks ?? []).map((u) => u.key))
+      return new Set(Object.keys(state.keys).filter((hash) => unlocked.has(state.keys[hash])))
+    },
+    /** When a photo was unlocked, in seconds, or null. */
+    unlockedAt(state) {
+      return (hash) => (state.user?.unlocks ?? []).find((u) => u.key === state.keys[hash])?.at ?? null
+    },
+    packs: (state) => state.products.filter((p) => p.type === 'credit_pack'),
   },
   actions: {
     async init() {
@@ -71,16 +118,58 @@ export const useAccountStore = defineStore('account', {
       if (back.signedIn && this.user) this.welcome = true
       // Stripe confirms a payment a moment after the buyer is back.
       if (back.notice?.kind === 'paid') this.awaitPurchase()
+      if (back.notice?.kind === 'pictures') this.awaitCredits(creditsBefore())
     },
     async refresh() {
       await this.attempt(async () => {
-        const data = await call('me')
+        let data
+        try {
+          data = await call('me')
+        } catch (error) {
+          // Without a connection the account last told stands in, so unlocked pictures stay open.
+          const cached = readCache()
+          if (!(error instanceof Offline) || !cached) throw error
+          this.user = cached
+          this.offline = true
+          return
+        }
+        this.offline = false
         this.user = data.user
         this.providers = data.providers
         this.products = data.products ?? []
         this.invitation = Boolean(data.invitation)
+        writeCache(this.user)
       }, false)
       this.loaded = true
+      await this.learnKeys(Object.keys(this.keys))
+    },
+    /** Works out the keys of photos in this account, so that their unlocks can be found. */
+    async learnKeys(hashes) {
+      const salt = this.user?.pictureSalt
+      if (!salt) return
+      const wanted = [...new Set(hashes.filter(Boolean))]
+      const keys = await Promise.all(wanted.map((hash) => pictureKey(salt, hash)))
+      if (salt !== this.user?.pictureSalt) return
+      this.keys = { ...this.keys, ...Object.fromEntries(wanted.map((hash, i) => [hash, keys[i]])) }
+    },
+    /** Spends a credit on the photo with this hash; true once it is unlocked. */
+    async unlock(hash) {
+      if (!hash || !this.user?.pictureSalt) return false
+      const key = await pictureKey(this.user.pictureSalt, hash)
+      return this.attempt(async () => {
+        const data = await call('credits/unlock', { key })
+        this.keys = { ...this.keys, [hash]: key }
+        this.user = data.user
+        writeCache(this.user)
+      })
+    },
+    /** After paying for a pack: Stripe confirms it a moment later. */
+    async awaitCredits(before, tries = 8) {
+      for (let i = 0; i < tries && this.credits <= before; i++) {
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        await this.refresh()
+      }
+      if (this.credits > before) this.notice = { kind: 'info', text: t('Thank you. You can now unlock {n} pictures.', { n: this.credits }) }
     },
     async awaitPurchase(tries = 8) {
       for (let i = 0; i < tries && !this.pro; i++) {
@@ -126,12 +215,20 @@ export const useAccountStore = defineStore('account', {
     async signOut() {
       if (await this.attempt(() => call('logout', {}))) {
         this.user = null
+        writeCache(null)
         this.sentTo = ''
         this.testLink = ''
         this.open = false
       }
     },
     async buy(plan) {
+      if (this.packs.some((p) => p.key === plan)) {
+        try {
+          sessionStorage.setItem(BEFORE_KEY, String(this.credits))
+        } catch {
+          // Then the thank-you comes without waiting for the credits.
+        }
+      }
       await this.attempt(async () => window.location.assign((await call('billing/checkout', { plan, lang: currentLocale() })).url))
     },
     // A voucher for a lifetime licence, made out to the address of this account.
@@ -147,6 +244,7 @@ export const useAccountStore = defineStore('account', {
     async remove() {
       if (await this.attempt(() => call('delete', {}))) {
         this.user = null
+        writeCache(null)
         this.open = false
         this.notice = { kind: 'info', text: t('Your account is deleted. Pictures and paint boxes saved in this browser are still here.') }
       }

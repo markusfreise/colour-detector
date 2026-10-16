@@ -4,6 +4,9 @@
       <h2 id="account-title" class="account__title">{{ t('Account') }}</h2>
       <p class="account__line">{{ account.user.email }}</p>
       <p class="account__line account__line--soft">{{ planText }}</p>
+      <p v-if="!account.user.plan" class="account__line account__line--soft">
+        {{ t('Pictures you can still unlock: {n}. A credit unlocks one picture for good: your own paints, save, print, close-ups and Blocking.', { n: account.credits }) }}
+      </p>
       <p class="account__line account__line--soft">{{ t('Pictures, paint boxes and the collection are stored in this browser, not in your account.') }}</p>
       <p v-if="account.error" class="account__error">{{ account.error }}</p>
 

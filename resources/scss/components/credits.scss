@@ -1,0 +1,31 @@
+@use "../functions" as *;
+
+// The pictures an account can still unlock (CreditCount.vue).
+
+.credits {
+    display: inline-flex;
+    align-items: center;
+    padding: #{pxtorem(2)} #{pxtorem(8)};
+    border-radius: #{pxtorem(999)};
+    background: var(--c-background);
+    color: var(--c-copy-light);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    white-space: nowrap;
+
+    // In a button: a second, quieter line of its label.
+    .button & {
+        margin-left: var(--gap-05x);
+    }
+}
+
+// The mark on a picture of the collection that a credit unlocked.
+.credits-unlocked {
+    align-self: flex-start;
+    padding: #{pxtorem(2)} #{pxtorem(8)};
+    border-radius: #{pxtorem(999)};
+    background: var(--c-corporate);
+    color: var(--c-white);
+    font-size: var(--fs-mini);
+    font-weight: 600;
+}

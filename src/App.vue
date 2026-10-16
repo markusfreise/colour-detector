@@ -17,7 +17,7 @@
           <button class="button button--ghost app__burger" type="button" :aria-expanded="menuOpen" :data-hint="t('Menu')" @click="menuOpen = !menuOpen">
             <AppIcon name="menu" :label="t('Menu')" />
           </button>
-          <button v-if="!pro.active" class="button button--secondary app__menu-pro" type="button" @click="getPro">{{ t('Get pro') }}</button>
+          <button v-if="!pro.active" class="button button--secondary app__menu-pro" type="button" @click="getPro">{{ t('Get pro') }} <CreditCount /></button>
         </div>
         <div class="app__left-buttons" @click="menuOpen = false">
           <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
@@ -114,6 +114,7 @@ import CollectionDialog from './components/CollectionDialog.vue'
 import SampleDialog from './components/SampleDialog.vue'
 import ProDialog from './components/ProDialog.vue'
 import AppIcon from './components/AppIcon.vue'
+import CreditCount from './components/CreditCount.vue'
 import AccountGate from './components/AccountGate.vue'
 import AccountDialog from './components/AccountDialog.vue'
 import { useConsentStore } from './stores/consent.js'
@@ -155,6 +156,12 @@ watch(
     if (!pro.active && account.products.length) pro.require(null, 'use everything')
   },
   { flush: 'post' },
+)
+// The key of the photo on screen in this account, to know whether a credit unlocked it.
+watch(
+  () => [analysis.picture?.hash, account.user?.pictureSalt],
+  ([hash]) => hash && account.learnKeys([hash]),
+  { immediate: true },
 )
 // A picture that changes between the Starter box and one's own paints (unlocked, a plan bought
 // or ended) is mixed again with the paints it now has. A picture being analysed does that itself.

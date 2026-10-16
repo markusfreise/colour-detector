@@ -20,14 +20,14 @@
 
 <h2 class="legal__heading">2. Das Wichtigste in Kürze</h2>
 <ul>
-  <li>Deine Bilder werden in deinem Browser bearbeitet. Sie werden nicht zu uns hochgeladen, und wir können sie nicht sehen.</li>
+  <li>Deine Bilder werden in deinem Browser bearbeitet. Sie werden nicht zu uns hochgeladen, und wir können sie nicht sehen. Für die Rezepte gehen nur die Farben, die im Bild gefunden wurden, als Zahlen an unseren Server.</li>
   <li>Bilder, die du sicherst, deine Farbkästen und deine Einstellungen werden in deinem Browser auf deinem Gerät gespeichert, nicht in deinem Konto und nicht in einer Cloud.</li>
   <li>Ein Konto besteht aus deiner E-Mail-Adresse, der Einwilligung, die du gegeben hast, der Angabe, ob du bezahlt hast, und deinem Guthaben an Bildern. Ein Profil gibt es nicht.</li>
   <li>Zahlungen wickelt Stripe ab. Deine Kartendaten sehen wir nie.</li>
 </ul>
 
 <h2 class="legal__heading">3. Bilder und andere Inhalte</h2>
-<p>Die App analysiert ein Foto mit Code, der in deinem Browser läuft. Um ein Bild wiederzuerkennen, das du mit einem Guthaben freigeschaltet hast, schickt sie nur einen Schlüssel aus dem Foto (siehe Abschnitt 5), nie das Foto. Das Foto, die Farbflächen, die Rezepte, deine gesicherte Sammlung und deine Farbkästen liegen im Speicher deines Browsers (Local Storage und IndexedDB). Sie bleiben dort, bis du sie löschst oder die Daten deines Browsers löschst. Wir haben keine Kopie und können sie nicht wiederherstellen.</p>
+<p>Die App analysiert ein Foto mit Code, der in deinem Browser läuft. Die Rezepte und die Schichten werden auf unserem Server berechnet: Die App schickt ihm die Farben, die sie im Bild gefunden hat (als Zahlen, mit dem Anteil am Bild), und die Farbtöne deiner Malfarben, nie das Bild. Aus ihnen lässt sich das Bild nicht wieder zusammensetzen. Der Server bewahrt seine Antworten bis zu sieben Tage auf, ohne dein Konto und ohne deine Netzwerkadresse, damit dieselbe Frage sofort beantwortet wird. Um ein Bild wiederzuerkennen, das du mit einem Guthaben freigeschaltet hast, schickt sie nur einen Schlüssel aus dem Foto (siehe Abschnitt 5), nie das Foto. Das Foto, die Farbflächen, die Rezepte, deine gesicherte Sammlung und deine Farbkästen liegen im Speicher deines Browsers (Local Storage und IndexedDB). Sie bleiben dort, bis du sie löschst oder die Daten deines Browsers löschst. Wir haben keine Kopie und können sie nicht wiederherstellen.</p>
 <p>Du bist für die Bilder verantwortlich, die du öffnest. Nutze nur Bilder, die du nutzen darfst.</p>
 
 <h2 class="legal__heading">4. Die freiwillige KI-Hilfe</h2>
@@ -68,7 +68,7 @@
 <p>Wir verkaufen keine Daten und nutzen sie nicht für Werbung.</p>
 
 <h2 class="legal__heading">10. Wie lange Daten gespeichert werden</h2>
-<p>Kontodaten werden gespeichert, bis du dein Konto löschst. Das kannst du jederzeit selbst unter „Konto“ tun; es wirkt sofort und beendet ein laufendes Abo. Sitzungen enden nach 60 Tagen, Anmeldelinks nach 15 Minuten. Rechnungen bleiben bei Stripe und in unserer Buchhaltung so lange, wie das Gesetz es verlangt.</p>
+<p>Kontodaten werden gespeichert, bis du dein Konto löschst. Das kannst du jederzeit selbst unter „Konto“ tun; es wirkt sofort und beendet ein laufendes Abo. Sitzungen enden nach 60 Tagen, Anmeldelinks nach 15 Minuten, Antworten des Rezeptdienstes nach sieben Tagen. Rechnungen bleiben bei Stripe und in unserer Buchhaltung so lange, wie das Gesetz es verlangt.</p>
 
 <h2 class="legal__heading">11. Deine Rechte</h2>
 <p>Du kannst Auskunft darüber verlangen, was über dich gespeichert ist, es berichtigen oder löschen lassen, die Verarbeitung einschränken lassen oder ihr widersprechen und die Daten in einem gängigen Format erhalten. Unter „Konto“ kannst du alles herunterladen, was zu deinem Konto gespeichert ist, und das Konto löschen. Eine Einwilligung kannst du jederzeit für die Zukunft widerrufen. Außerdem kannst du dich bei einer Datenschutzbehörde beschweren, zum Beispiel bei der Landesbeauftragten für Datenschutz und Informationsfreiheit Nordrhein-Westfalen.</p>

@@ -26,16 +26,18 @@ Project language is **English**: UI text, error messages, code comments, commit 
 
 ## Tech stack
 
-Vue 3 (Composition API, `<script setup>`) · Pinia · Vite 5 · Vitest · Web Worker · SCSS (BEM). No backend, no router, no Axios.
+Vue 3 (Composition API, `<script setup>`) · Pinia · Vite 5 · Vitest · Web Worker · SCSS (BEM) · PHP 8.3 account API and mixing service in `server/` (no packages). No router, no Axios.
 
 ## Where things are
 
 - `src/lib/` – pure logic (colour maths, mixing model, segmentation). Keep it framework-free and tested.
+- `server/mix/` – the mixing model, recipes, mixes and the planning of layers in PHP, answering `api/mix/`: the browser sends the colours it found, never the picture. `src/lib/mixing.js`, `mixes.js`, `layerPlan.js` and `mixService.js` are its reference and never go into the bundle (`vite.config.js` stops the build). A change to the model goes into JS, PHP and Swift, then `node server/tests/make-mix-cases.mjs` and `make-layer-cases.mjs`.
+- `src/Root.vue` – the sign-in; the app (`App.vue`) is loaded once signed in and is built to `api/app/`, which only the account API hands out.
 - `src/stores/` – `paints` (stock + enabled set, localStorage) and `analysis` (image, settings, segmentation, palette entries).
 - `src/data/paints.js` – hard-coded stock. `hex` = colour at strength 1, and since 2026-10-12 the darkest the paint is ever used: more of one paint than strength 1 does not exist (`MAX_AMOUNT` in `lib/mixing.js`). Darker needs a second paint. The stock values come from the Horadam chart, which shows a mid-strength wash, so dark paints are recorded lighter than they are at full strength.
 - `docs/manual/` – the manual (EN `public/manual/`, DE `public/de/handbuch/`), built by `docs/manual/build.sh`: chapters in Markdown, screenshots of the app via Playwright. After a UI change, re-run it and re-read the chapters that show the changed screens.
 - `deploy/` – `webhook.php` + `deploy.sh` for the live server.
-- `app/` – native app **Watercolourlove** (SwiftUI, iOS/iPadOS/macOS, bundle ID `de.markusfreise.watercolourlove`, until 2026-10-15 named Tintmap); its support and privacy pages are `public/app/`. `app/Sources/Core/` is a port of `src/lib/`: change both sides together. Details in `app/README.md`.
+- `app/` – native app **Watercolourlove** (SwiftUI, iOS/iPadOS/macOS, bundle ID `de.markusfreise.watercolourlove`, until 2026-10-15 named Tintmap); its support and privacy pages are `public/app/`. `app/Sources/Core/` is a port of `src/lib/`: change all sides together (JS, PHP in `server/mix/`, Swift). Details in `app/README.md`.
 
 ## Conventions
 

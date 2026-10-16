@@ -1,6 +1,6 @@
-# Account API
+# Account API and mixing service
 
-Small PHP service for sign-in and payment. No framework, no packages: PDO with SQLite, curl, openssl. Pictures never come here.
+Small PHP service for sign-in, payment and mixing. No framework, no packages: PDO with SQLite, curl, openssl. Pictures never come here.
 
 An account is an e-mail address, the consent given and what was paid for (`users`); plus the identifiers of Google, Apple and Meta (`identities`), sessions and sign-in links, all stored as hashes.
 
@@ -16,12 +16,32 @@ Accounts are **off** until both steps are done; the live site stays as it is.
 ## Local
 
 ```
-cp server/config.example.php server/config.php   # app_url http://localhost:5173/, a database path, mail transport = a file
+cp server/config.example.php server/config.php   # app_url http://localhost:5173/, a database path, mail transport = a file, 'open' => true
 php -S 127.0.0.1:8787 server/index.php
 npm run dev
 ```
 
+Without PHP: `MIX_REFERENCE=1 npm run dev` answers the mixing service and the charts from the JavaScript reference (no accounts then).
+
 On `localhost` and `*.test` the app opens without signing in. Add `?login` to the address to see the sign-in: http://localhost:5173/?login. With the mail transport set to a file, the sign-in link is written there; add `?login` before the `#` when opening it.
+
+## Mixing service and the app itself
+
+The mixing model, the recipes, the mixes and the planning of layers run here (`mix/`), so that this logic is not part of the code a browser downloads. The app analyses the picture in the browser and sends the colours it found (hex, OKLab, how much of the picture each covers) and the paints (id, hex); the picture never comes here. Routes, all for a signed-in account that agreed to the terms:
+
+| Route | What |
+|---|---|
+| `POST mix/propose`, `mix/plan`, `mix/recipes`, `mix/layers` | Auto, the mixes of a picture, recipes for single colours, the plan of the layers. `src/lib/mixService.js` is the reference |
+| `GET charts` | The colour charts (`mix/charts.json`, made from `src/data/` by `npm run charts`), with Pro |
+| `GET app/<file>.js` | The app itself and its worker. The build writes them to `dist/api/app/`; the deploy copies them to `bundle/` next to `index.php`, which `.htaccess` never serves as files. In a checkout (the dev instance) they are read from `../dist/api/app/`; `'bundle'` in `config.php` names another folder |
+
+Monochrome (value mode) needs a plan. Answers are kept a week in `mix_cache` (default: a folder in the system's temporary directory), keyed by the question, without account or address.
+
+On a development instance whose build has no accounts (no `VITE_ACCOUNT_API`) set `'open' => true` in `config.php`: then anyone may load the app and mix. Never on the public host.
+
+**Speed.** A proposal of layers for a picture of 480 x 360 with 40 paints takes about 3.4 s in PHP 8.3 without JIT, 1.6 s with the opcache JIT (`opcache.jit=tracing`, `opcache.jit_buffer_size=64M`); Auto in mix mode about 1 s. An extension such as pcov or Xdebug loaded into PHP-FPM makes it three times slower: keep them out of the web server's PHP.
+
+**Tests.** `server/tests/mix.test.php` and `layers.test.php` check the PHP against golden cases made from the JavaScript (`node server/tests/make-mix-cases.mjs`, `node server/tests/make-layer-cases.mjs`, run from the repository root after a change to the model). The JavaScript, the PHP and the Swift port in `app/Sources/Core/` are changed together. `app.test.php` checks who may use what.
 
 ## What to register
 

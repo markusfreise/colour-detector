@@ -22,7 +22,7 @@
 
 | Layer | Technology | Reason |
 |---|---|---|
-| Backend | Optional account service in `server/` (PHP, SQLite, no packages) – TASK-35 | All computation runs in the browser. The service only knows accounts and payments, never pictures; off unless the build sets `VITE_ACCOUNT_API` |
+| Backend | Account service and mixing service in `server/` (PHP, SQLite, no packages) – TASK-35, TASK-55, TASK-56 | The picture is analysed in the browser and never leaves it. The mixing model, recipes, mixes and the planning of layers run on the server (`server/mix/`, `api/mix/`), which gets the colours found in the picture and the paints, so that this logic is not part of the code a browser downloads. The code of the app itself goes only to signed-in accounts (`api/app/`). Accounts are off unless the build sets `VITE_ACCOUNT_API`; the mixing service is always needed |
 | Auth | Optional: e-mail link, Google, Meta, Apple; session cookie | Only an e-mail address is stored, no profile |
 | Roles | not needed | |
 | Frontend | Vue 3 (Composition API, `<script setup>`) + Pinia | Reactive editor state; Vue as requested |
@@ -31,7 +31,7 @@
 | CSS | BEM, SCSS under `resources/scss/` (house structure "base_resources"), `sass` as devDependency | House standard; changed from plain CSS on 2026-10-12, see §12 |
 | Database | not needed (v1) — `localStorage` for paint selection | Custom paints (TASK-11) also in localStorage + JSON import/export |
 | Build | Vite 5 | `base: './'` so the build runs under any sub-path |
-| Local env | `npm run dev` (Vite) | No services needed |
+| Local env | `npm run dev` (Vite) with the PHP API on port 8787 (`php -S 127.0.0.1:8787 server/index.php`, `'open' => true` in `server/config.php`), or `MIX_REFERENCE=1 npm run dev`, where the dev server answers the mixing service from the JavaScript reference | The app mixes through the API |
 | Hosting | markus-freise.de (shared hosting) — static files + PHP webhook | §15 |
 | Versioning | Git — GitHub private `markusfreise/colour-detector` | |
 | Testing frontend | Vitest | Unit tests for colour maths, mixing, segmentation |
@@ -151,7 +151,20 @@ Stock = 53 Schmincke Horadam + 1 Michael Harding paint (from Notion "My Watercol
 Persistence: `localStorage['colour-detector:enabled-paints']` = array of paint ids.
 
 ## 9. API endpoints
-**Not needed** — no backend. Only server endpoint: `POST /colour-detective/webhook.php` (GitHub push webhook, §15).
+The account API (`server/README.md`), and since TASK-55/56:
+
+| Endpoint | Who | What |
+|---|---|---|
+| `GET api/app/<file>.js` | signed in, agreed | The app itself and its worker (built to `dist/api/app/`, deployed to `api/bundle/`, never served as files) |
+| `POST api/mix/propose` | signed in, agreed | Auto: paints for the colours of a picture |
+| `POST api/mix/plan` | signed in, agreed | The mixes of a picture from the clusters of the analysis: joined to the wanted number, recipes, washes per water level |
+| `POST api/mix/recipes` | signed in, agreed | Recipes for single colours, or recipes diluted to a colour |
+| `POST api/mix/layers` | signed in, agreed | Layer mode: the plan of the layers from the colours of the picture (histogram bins, and for accents the pairs of blurred colour and grid cell) |
+| `GET api/charts` | Pro | The colour charts of the paint series that come with the app |
+
+Value mode (Monochrome) on `api/mix/` needs a plan. Requests are JSON (gzip-compressed when large); answers are kept for a week in a cache without account or address. On a development instance `'open' => true` in `config.php` lets anyone use them. The reference of what `api/mix/` answers is `src/lib/mixService.js` (not part of the bundle; a build that would carry it, `mixing.js`, `mixes.js`, `layerPlan.js` or the charts stops). The PHP is checked against it with golden cases (`server/tests/make-mix-cases.mjs`, `make-layer-cases.mjs`).
+
+Deploy webhook: `POST webhook.php` (GitHub push webhook, §15).
 
 ## 10. UI/UX
 
@@ -168,7 +181,8 @@ Single screen, two columns (stacked under 900 px):
 ## 11. Frontend architecture
 - Vue 3 Composition API, Pinia stores `paints` (catalogue + enabled set) and `analysis` (image, settings, segmentation, palette entries).
 - Large typed arrays/images are `markRaw` to keep them out of Vue reactivity; a `renderVersion` counter triggers canvas redraws.
-- Pipeline: image → working copy of about 480,000 pixels → saturation and contrast → worker `segmentImage()` → `applySegmentation()` → `findRecipes()` per entry.
+- Pipeline: image → working copy of about 480,000 pixels → saturation and contrast → worker `segmentImage()` → `applySegmentation()` → `api/mix/propose` (Auto) and `api/mix/plan` → entries with their recipes. Layer mode: worker `layerImage()` counts the colours of the picture, asks `api/mix/layers` for the plan and lays it over the pixels.
+- **Entry and sign-in** (TASK-56): `main.js` mounts `Root.vue`, which shows the sign-in (`AccountGate.vue`) and loads `App.vue` with a dynamic import once the account is ready (or at once without accounts). Behind the sign-in the samples are shown as the app painted them (`resources/showcase/`, made by `docs/manual/tools/showcase.mjs`); the sign-in loads nothing of the app.
 - **Depth limit** (`lib/mixing.js`, `depth`, `depthLimit`): the absorbance of a mix is `d(S)/S · Σ aᵢ·Aᵢ` with `S = Σ aᵢ` and `d(S) = M·(1 − (1 − 1/M)^S)`, so amount 1 of one paint still gives its `hex` and a thick layer levels off at `M` times the reference. `M` is the amount-weighted mean of the paints' limits: 1.6 for a bright paint (OKLab chroma 0.15 and above), rising to 4 for a neutral one (estimated masstones). Watery mixes add up paint by paint; a thick mix of bright paints cannot reach black. Since 2026-10-12 no paint counts for more than amount 1 (`MAX_AMOUNT`), in a mix and as coats in layer mode: a paint is never darker than its `hex`, and what has to be darker takes a second paint in the mix or as a layer over it. The water levels W, L, M, R, C are counted by the fullness of a recipe (its paint with least water; 1 = its `hex`), and a wash of strength 1 is taken as one part of water to one part of paint (`REFERENCE_WATER`).
 - **Washes:** *Colours* counts mixes. `clusterWashes` (`lib/segment.js`) treats a mix as a direction of absorbance and assigns each colour to the mix whose best wash comes closest (OKLab, lightness counting half); each mix is then split by strength into up to five washes. The analysis is asked for about twice the wanted number of mixes. `planMixes` (`lib/mixes.js`) then brings in the paints: mixes with the same recipe are joined, and the pair that is cheapest to paint as one is joined until the wanted number is left. *Variety* (0–10) sets the cost: at 0 the miss times the area it covers, at 10 the miss in hue alone, so small areas of another hue keep their mix. Finally each colour goes to the mix that reaches it best. The store derives the washes with `washRecipe` (all amounts scaled by one factor); washes of a mix on the same water level become one colour. Labels are mix number plus water level (W, L, M, R, C), e.g. 6L. A recipe is picked for the whole mix.
 - **Saturation / contrast** (`lib/color.js`, `adjustImage`): applied in OKLab to the working pixels before segmentation; 100% = unchanged.
@@ -177,7 +191,8 @@ Single screen, two columns (stacked under 900 px):
 - **Geometric areas** (`lib/geometric.js`, optional, setting `geometric`): after the merge, areas below a larger size threshold go, the outer outline of every area is traced and reduced to a polygon (Douglas-Peucker, tolerance grows with the picture and with *Simplify*), the polygons are filled from the largest to the smallest so that they overlap, uncovered pixels go to the nearest shape, slivers are merged away. In layer mode this is done per layer, so the shapes of different layers overlap; accents use half the tolerance.
 - **AI help** (`lib/ai.js`, `stores/ai.js`, optional): with the user's own API key and their consent, a 560 px JPEG of the picture and the paint list go straight from the browser to Anthropic or OpenAI (`fetch`, no SDK, no backend). The answer, JSON of a fixed shape, holds `mixes` (hex and name), `paints`, `layers` and `notes`. `segmentImage` takes the mixes as `anchors` (the mixes are given, not found), recipes use the chosen paints, layer mode the chosen glazing paints; the paint box is not changed. The plan is kept per picture and asked for only on a button press.
 - **Mixing** (`lib/mixing.js`): Beer–Lambert model of transparent watercolour on white paper. Per paint absorbance `A = −ln(reflectance)` from its reference colour; mix reflectance `exp(−Σ aᵢ·Aᵢ)`; `aᵢ` = amount relative to reference strength (→ ratio and water). Recipe search = non-negative least squares over all singles, pairs and shortlisted triples, refined by pattern search on OKLab ΔE; one extra ΔE-point penalty per additional paint to prefer simple mixes; "paper white" is a valid answer.
-- No Vue Router, no Axios (no API).
+- No Vue Router, no Axios: `fetch` for the account API and the mixing service (`lib/mixClient.js`, which keeps the last answers).
+- The JavaScript of the mixing model (`lib/mixing.js`, `lib/mixes.js`, `lib/layerPlan.js`) is the reference for the PHP in `server/mix/` and for the tests; it does not go into the bundle. A change to the model is made in all three places: JavaScript, PHP and the Swift port in `app/Sources/Core/`.
 
 ## 12. CSS architecture (BEM)
 SCSS in the house structure ("base_resources") under `resources/scss/`; entry `site.scss`, imported in `src/main.js`, loads the partials with `@use` in cascade order:

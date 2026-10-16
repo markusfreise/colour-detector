@@ -871,7 +871,7 @@ final class Session {
                 var levels: [Item] = []
                 for var item in items {
                     item.hex = ColorMath.hex(oklab: item.lab)
-                    item.letter = mix.recipes.first.map { Mixing.washLetter(wash($0, item.hex).strength) } ?? ""
+                    item.letter = mix.recipes.first.map { Mixing.washLetter(wash($0, item.hex).fullness) } ?? ""
                     if let same = levels.firstIndex(where: { $0.letter == item.letter }) {
                         let n = Double(levels[same].pixels + item.pixels)
                         levels[same].lab = (levels[same].lab * Double(levels[same].pixels) + item.lab * Double(item.pixels)) / n
@@ -984,7 +984,7 @@ final class Session {
     /// One block per mix, in the order of the labels.
     var mixBlocks: [MixBlock] {
         let paints = library.byID
-        func short(_ recipe: Recipe) -> String { recipe.dilution.replacingOccurrences(of: " (layer/glaze)", with: "") }
+        func short(_ recipe: Recipe) -> String { Words.withoutAside(recipe.dilution) }
         func parts(_ n: Double) -> String { Words.number(n) }
         var families: [String] = []
         var members: [String: [Int]] = [:]

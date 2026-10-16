@@ -87,7 +87,7 @@ struct RecipeView: View {
     private let rowHeight: CGFloat = 30
     /// The grid shows complete rows of slots; unused ones are drawn dashed.
     private var slots: Int { wide ? max(recipe.paints.count, 1) : stacked ? max(recipe.paints.count, 2) : 4 }
-    /// "very concentrated (layer/glaze)" -> "Very concentrated": the tile has no room for the aside.
+    /// "concentrated (hardly any water)" -> "Concentrated": the tile has no room for the aside.
     private var dilution: String { Words.dilutionTitle(recipe.dilution) }
 
     var body: some View {

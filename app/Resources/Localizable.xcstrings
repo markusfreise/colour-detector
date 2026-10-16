@@ -880,6 +880,17 @@
       },
       "extractionState": "manual"
     },
+    "concentrated (hardly any water)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "konzentriert (kaum Wasser)"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
     "Contrast": {
       "localizations": {
         "de": {
@@ -3289,6 +3300,588 @@
         }
       },
       "extractionState": "manual"
+    },
+    "Red train (sample)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Roter Zug (Beispiel)"
+          }
+        }
+      }
+    },
+    "Woman by a white wall (sample)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frau an weißer Wand (Beispiel)"
+          }
+        }
+      }
+    },
+    "Photo: %@ / Unsplash": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto: %@ / Unsplash"
+          }
+        }
+      }
+    },
+    "Sample photos under the Unsplash License.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beispielfotos unter der Unsplash-Lizenz."
+          }
+        }
+      }
+    },
+    "Catalogue": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Katalog"
+          }
+        }
+      }
+    },
+    "Get pro": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro holen"
+          }
+        }
+      }
+    },
+    "and easily add pre-defined colours from the catalogues of known manufacturers and brands.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "und ganz einfach fertige Farben aus den Katalogen bekannter Hersteller und Marken hinzufügen."
+          }
+        }
+      }
+    },
+    "Vendor and Series": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hersteller und Serie"
+          }
+        }
+      }
+    },
+    "New series": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Serie"
+          }
+        }
+      }
+    },
+    "Name of the series": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name der Serie"
+          }
+        }
+      }
+    },
+    "%@ numbers fill in name and colour.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nummern von %@ füllen Name und Farbe aus."
+          }
+        }
+      }
+    },
+    "Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähl den Farbton deiner Farbe in ihrer kräftigsten Lasur: etwa gleich viel Farbe und Wasser, trocken auf weißem Papier. Nicht die Farbe direkt aus dem Näpfchen oder der Tube."
+          }
+        }
+      }
+    },
+    "The free version holds one saved picture and the paint boxes it comes with. To %@, unlock the full version with a single purchase. No subscription.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die kostenlose Version hat ein gesichertes Bild und die Farbkästen, die sie mitbringt. Um %@, schalte die Vollversion mit einem einmaligen Kauf frei. Kein Abo."
+          }
+        }
+      }
+    },
+    "add colours from the catalogues of known manufacturers": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Farben aus den Katalogen bekannter Hersteller hinzuzufügen"
+          }
+        }
+      }
+    },
+    "Add colours from the catalogues of known manufacturers": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Farben aus den Katalogen bekannter Hersteller hinzufügen"
+          }
+        }
+      }
+    },
+    "Block in light and shadow, and make the areas finer": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht und Schatten anlegen und die Flächen feiner machen"
+          }
+        }
+      }
+    },
+    "Menu": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menü"
+          }
+        }
+      }
+    },
+    "Help": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hilfe"
+          }
+        }
+      }
+    },
+    "Share": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teilen"
+          }
+        }
+      }
+    },
+    "New picture": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neues Bild"
+          }
+        }
+      }
+    },
+    "Print / PDF": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drucken / PDF"
+          }
+        }
+      }
+    },
+    "Detail": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausschnitt"
+          }
+        }
+      }
+    },
+    "use everything": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "alles zu nutzen"
+          }
+        }
+      }
+    },
+    "Template to print": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorlage zum Drucken"
+          }
+        }
+      }
+    },
+    "Overlay: the photo at half strength over the paint": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Überlagerung: das Foto halb deckend über der Farbe"
+          }
+        }
+      }
+    },
+    "Template to print: areas and numbers in light blue, nothing filled in": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorlage zum Drucken: Flächen und Nummern in Hellblau, nichts ausgefüllt"
+          }
+        }
+      }
+    },
+    "Layered paint": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geschichtete Farbe"
+          }
+        }
+      }
+    },
+    "Tones": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Töne"
+          }
+        }
+      }
+    },
+    "Two tones: light against shadow (notan)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zwei Töne: Licht gegen Schatten (Notan)"
+          }
+        }
+      }
+    },
+    "Three tones: light, a middle tone and shadow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drei Töne: Licht, ein Mittelton und Schatten"
+          }
+        }
+      }
+    },
+    "Light against shadow (notan)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht gegen Schatten (Notan)"
+          }
+        }
+      }
+    },
+    "Light, a middle tone and shadow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht, ein Mittelton und Schatten"
+          }
+        }
+      }
+    },
+    "Light / shadow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht / Schatten"
+          }
+        }
+      }
+    },
+    "Light / middle": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht / Mittelton"
+          }
+        }
+      }
+    },
+    "Middle / shadow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mittelton / Schatten"
+          }
+        }
+      }
+    },
+    "Further left, more of the picture counts as light": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weiter links zählt mehr vom Bild als Licht"
+          }
+        }
+      }
+    },
+    "Split as the photo divides": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teilen, wie das Foto es vorgibt"
+          }
+        }
+      }
+    },
+    "Forms": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Formen"
+          }
+        }
+      }
+    },
+    "Left: more detail. Right: the largest masses.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Links: mehr Einzelheiten. Rechts: die größten Massen."
+          }
+        }
+      }
+    },
+    "Opacity": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deckkraft"
+          }
+        }
+      }
+    },
+    "How strongly the tones cover the photo": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wie stark die Töne das Foto verdecken"
+          }
+        }
+      }
+    },
+    "Middle tone": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mittelton"
+          }
+        }
+      }
+    },
+    "The lightest tone: save the paper white here, or mask it before you paint.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der hellste Ton: Hier bleibt das Papier weiß, oder du maskierst es vor dem Malen."
+          }
+        }
+      }
+    },
+    "The darkest tone: paint it last.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der dunkelste Ton: Male ihn zuletzt."
+          }
+        }
+      }
+    },
+    "The middle tone: one wash over everything but the light.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Mittelton: eine Lasur über alles außer dem Licht."
+          }
+        }
+      }
+    },
+    "Blocking": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocking"
+          }
+        }
+      }
+    },
+    "Blocking: light and shadow in large masses": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocking: Licht und Schatten in großen Massen"
+          }
+        }
+      }
+    },
+    "block in light and shadow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht und Schatten anzulegen"
+          }
+        }
+      }
+    },
+    "tone %lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ton %lld"
+          }
+        }
+      }
+    },
+    "The mix is lighter than its tone in the blocking": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Mischung ist heller als ihr Ton im Blocking"
+          }
+        }
+      }
+    },
+    "The mix is darker than its tone in the blocking": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Mischung ist dunkler als ihr Ton im Blocking"
+          }
+        }
+      }
+    },
+    "Monochrome": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monochrom"
+          }
+        }
+      }
+    },
+    "Monochrome: the picture in grey, each value painted with one colour of the paint box": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monochrom: das Bild in Grau, jeder Tonwert mit einer Farbe aus dem Farbkasten gemalt"
+          }
+        }
+      }
+    },
+    "Higher = bigger, calmer shapes. Below 0 with Pro": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Höher = größere, ruhigere Flächen. Unter 0 mit Pro"
+          }
+        }
+      }
+    },
+    "make the areas finer than Simplify 0": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "die Flächen feiner als „Vereinfachen 0“ zu machen"
+          }
+        }
+      }
+    },
+    "tone.shadow": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schatten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shadow"
+          }
+        }
+      }
+    },
+    "tone.light": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

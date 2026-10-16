@@ -18,9 +18,9 @@ import Foundation
 // - The colour of an area is white paper filtered by every layer:
 //   reflectance = exp(-sum over layers of depth * A of the paint).
 //   Different paints add up without a common limit, which is what a wet mix cannot do. The coats of
-//   ONE paint share that paint's limit, depth = depth(coats * strength, limit): three coats of
-//   yellow come closer to the yellow's masstone, they do not turn into an orange. An accent of a
-//   paint that is also a wash adds what is left up to that limit.
+//   ONE paint add up to the paint as its swatch shows it and no further (Mixing.maxAmount): three
+//   coats of a light yellow wash come closer to the yellow, they never get darker than it. An
+//   accent of a paint that is also a wash adds what is left up to that.
 // - Work has a price. Every coat must make the colour it is painted on visibly better, every step
 //   (one wash over the dried picture) must make the picture better, and an accent must make its
 //   small part much better. What does not pay is left out: a layer can end up with one coat, and
@@ -234,17 +234,18 @@ enum Layers {
     /// Parts of water to one part of paint (as it comes from the tube, or a pan worked up to that
     /// consistency) that are taken to give strength 1, the paint's swatch. An assumption, not a
     /// measurement: swatch a few washes and adjust it.
-    static let referenceWater = 4.0
+    static let referenceWater = 1.0
     /// Whether the coats of a layer may differ in strength when nothing else is asked for.
     static let graded = false
 
     // Combinations of coats of all layers that are still looked at one by one.
     private static let maxCombinations = 40000
     // Wash strengths tried when the paints are chosen; the strengths are tuned freely afterwards.
-    private static let strengths = [0.06, 0.1, 0.16, 0.25, 0.4, 0.6, 0.9, 1.4, 2.2, 3.4]
-    private static let accentStrengths = [0.25, 0.4, 0.6, 0.9, 1.4, 2.2, 3.4]
+    private static let strengths = [0.06, 0.1, 0.16, 0.25, 0.4, 0.6, 0.8, 1]
+    private static let accentStrengths = [0.25, 0.4, 0.6, 0.8, 1]
     private static let minStrength = 0.05
-    private static let maxStrength = 4.0
+    // No wash is stronger than the paint as its swatch shows it.
+    private static let maxStrength = Mixing.maxAmount
     // Graded coats: every coat this many times stronger than the one before (1 = the same wash again).
     private static let ratios = [1, 1.7, 3]
     private static let maxRatio = 4.0
@@ -385,6 +386,12 @@ enum Layers {
 
     // MARK: Coats and washes
 
+    /// Depth of a paint on the paper. However many coats, a paint never gets deeper than its swatch
+    /// (`Mixing.maxAmount`): further coats of the same paint add nothing, only another paint over it does.
+    private static func depth(_ amount: Double, limit: Double) -> Double {
+        Mixing.depth(min(Mixing.maxAmount, amount), limit: limit)
+    }
+
     /// Amount of paint in `coats` coats: the first of the given strength, every further one `ratio` times stronger.
     static func coatAmount(_ coats: Int, _ strength: Double, ratio: Double = 1) -> Double {
         abs(ratio - 1) < 1e-6 ? Double(coats) * strength : (strength * (pow(ratio, Double(coats)) - 1)) / (ratio - 1)
@@ -392,7 +399,7 @@ enum Layers {
 
     /// Depth a paint reaches with that many coats. The coats of one paint share the paint's limit.
     static func coatDepth(_ coats: Int, _ strength: Double, limit: Double, ratio: Double = 1) -> Double {
-        Mixing.depth(coatAmount(coats, strength, ratio: ratio), limit: limit)
+        depth(coatAmount(coats, strength, ratio: ratio), limit: limit)
     }
 
     /// How to prepare a wash of the given strength.
@@ -411,9 +418,9 @@ enum Layers {
     // `under` = amount of the same paint already on the paper (an accent over its own wash layer).
     private static func filterTable(_ a: Vec3, _ limit: Double, _ strength: Double, _ ratio: Double, _ top: Int, under: Double = 0) -> [Double] {
         var t = [Double](repeating: 0, count: (top + 1) * 3)
-        let below = Mixing.depth(under, limit: limit)
+        let below = depth(under, limit: limit)
         for c in 0...top {
-            let d = Mixing.depth(under + coatAmount(c, strength, ratio: ratio), limit: limit) - below
+            let d = depth(under + coatAmount(c, strength, ratio: ratio), limit: limit) - below
             t[c * 3] = exp(-d * a.x); t[c * 3 + 1] = exp(-d * a.y); t[c * 3 + 2] = exp(-d * a.z)
         }
         return t
@@ -978,7 +985,7 @@ enum Layers {
 
     // Whether one coat of this wash on white paper is dark enough for the accent for the darks.
     private static func isDarkCoat(_ candidate: Known, _ strength: Double) -> Bool {
-        let d = Mixing.depth(strength, limit: candidate.limit)
+        let d = depth(strength, limit: candidate.limit)
         return lab(exp(-d * candidate.a.x), exp(-d * candidate.a.y), exp(-d * candidate.a.z)).l < darkCoat
     }
 
@@ -1109,7 +1116,7 @@ enum Layers {
                 return Layer.Wash(strength: strength, dilution: Mixing.describeDilution(strength), water: guide.water, consistency: guide.consistency, guide: guide.guide)
             }
             let first = washAt(0)
-            let below = Mixing.depth(under, limit: layer.limit)
+            let below = depth(under, limit: layer.limit)
             // Of an accent over its own wash paint, `filters` is what it adds there; the colour to
             // prepare and to test on white paper is that of the wash by itself.
             let hexes: [String]
@@ -1132,7 +1139,7 @@ enum Layers {
                 guide: first.guide,
                 ratio: layer.ratio,
                 washes: (0..<maxCoats).map(washAt),
-                depths: (0...maxCoats).map { Mixing.depth(under + coatAmount(min($0, layer.top), layer.strength, ratio: layer.ratio), limit: layer.limit) - below },
+                depths: (0...maxCoats).map { depth(under + coatAmount(min($0, layer.top), layer.strength, ratio: layer.ratio), limit: layer.limit) - below },
                 hexes: hexes,
                 filters: filters
             )

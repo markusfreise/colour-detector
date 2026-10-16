@@ -101,7 +101,7 @@ final class Library {
     }
 
     let stock: [Paint]
-    let chart: [ChartColour]
+    let libraries: [PaintLibrary]
     private(set) var custom: [Paint] = []
     /// At least one.
     private(set) var boxes: [PaintBox] = []
@@ -113,14 +113,14 @@ final class Library {
 
     init() {
         stock = Storage.bundled("paints", as: [Paint].self) ?? []
-        chart = Storage.bundled("horadam", as: [ChartColour].self) ?? []
+        libraries = Storage.bundled("libraries", as: [PaintLibrary].self) ?? []
         let data = try? Data(contentsOf: file)
         if let data, let saved = try? JSONDecoder().decode(Saved.self, from: data), !saved.paintBoxes.isEmpty {
-            custom = saved.custom
+            custom = Self.renamedHouseVendor(saved.custom)
             boxes = saved.paintBoxes
             palette = saved.palette
         } else if let data, let old = try? JSONDecoder().decode(OldSaved.self, from: data), let active = old.boxes.first(where: { $0.id == old.activeID }) ?? old.boxes.first {
-            custom = old.custom
+            custom = Self.renamedHouseVendor(old.custom)
             palette = active.palette
             // Boxes saved before Auto existed: an untouched default selection counts as Auto.
             if active.autoMissing { palette.auto = Set(palette.paintIDs) == Set(defaultIDs) }
@@ -129,6 +129,15 @@ final class Library {
         } else {
             palette = Palette(paintIDs: defaultIDs, auto: true)
             boxes = seedBoxes()
+        }
+    }
+
+    /// Own paints saved while the house series was called "Schmincke" belong to it under its new name.
+    private static func renamedHouseVendor(_ paints: [Paint]) -> [Paint] {
+        paints.map { paint in
+            var paint = paint
+            if paint.vendor == Paint.oldHouseVendor { paint.vendor = Paint.houseVendor }
+            return paint
         }
     }
 
@@ -281,9 +290,9 @@ final class Library {
         return paint.id
     }
 
-    /// A colour of the Horadam chart into a box.
-    func addChartColour(_ colour: ChartColour, to boxID: String) {
-        addToBox(boxID, paint: paintID(vendor: Paint.houseVendor, number: colour.number, name: colour.name, hex: colour.hex, form: boxID == "tube" ? "tube" : "pan"))
+    /// A colour of a library's chart into a box.
+    func addChartColour(_ colour: ChartColour, of library: PaintLibrary, to boxID: String) {
+        addToBox(boxID, paint: paintID(vendor: library.name, number: colour.number, name: colour.name, hex: colour.hex, form: boxID == "tube" ? "tube" : "pan"))
     }
 
     /// A box as a JSON file to keep, as a backup or to take to the web app.
@@ -335,8 +344,16 @@ final class Library {
         changed()
     }
 
-    func chartColour(number: String) -> ChartColour? {
-        chart.first { $0.number == number.trimmingCharacters(in: .whitespaces) }
+    /// The library of a series, however it is capitalised or spaced; nil for a series of one's own.
+    func library(named name: String) -> PaintLibrary? {
+        let wanted = name.trimmingCharacters(in: .whitespaces).lowercased()
+        return libraries.first { $0.name.lowercased() == wanted }
+    }
+
+    /// The series on offer for a paint: the house series, the libraries and those in use, by name.
+    var seriesNames: [String] {
+        Set([Paint.houseVendor] + libraries.map(\.name) + all.map(\.vendor).filter { !$0.isEmpty })
+            .sorted { $0.localizedCompare($1) == .orderedAscending }
     }
 
     private func changed() {

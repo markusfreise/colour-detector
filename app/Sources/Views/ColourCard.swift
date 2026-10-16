@@ -31,21 +31,6 @@ struct ColourCard: View {
     }
 }
 
-/// Layer mode: the layers the tapped spot gets, in the same place as the colour card.
-struct SpotCard: View {
-    @Environment(Session.self) private var session
-
-    var body: some View {
-        if let spot = session.layerSpot {
-            FloatingCard(title: L("This Spot"), subtitle: nil, hex: nil) {
-                session.selectPoint(nil)
-            } content: {
-                LayerSpotView(spot: spot)
-            }
-        }
-    }
-}
-
 /// A card over the picture: on the floating layer, so on a material rather than a plain surface.
 struct FloatingCard<Content: View>: View {
     let title: String

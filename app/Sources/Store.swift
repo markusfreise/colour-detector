@@ -10,6 +10,8 @@ final class Store {
     static let freePictures = 1
 
     private(set) var unlocked = false
+    /// The purchase state has been read once: before that `unlocked` is not known yet.
+    private(set) var checked = false
     private(set) var price: String?
     private(set) var error: String?
     private(set) var busy = false
@@ -49,7 +51,12 @@ final class Store {
                 owned = true
             }
         }
+        #if DEBUG
+        // "-pro" at launch: the full version, for screenshots and checks.
+        if ProcessInfo.processInfo.arguments.contains("-pro") { owned = true }
+        #endif
         unlocked = owned
+        checked = true
     }
 
     func purchase() async {

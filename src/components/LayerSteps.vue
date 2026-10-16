@@ -11,7 +11,7 @@
           <strong>{{ t('Step {n} of {total}:', { n: analysis.layerStep + 1, total: result.steps.length }) }}</strong>
           {{ title }}
         </p>
-        <div class="segmented steps__view">
+        <div class="segmented segmented--text steps__view">
           <button
             v-for="v in views"
             :key="v.value"

@@ -40,7 +40,7 @@ In the settings, layer mode has its own controls:
 
 ## The layer list
 
-The list shows each layer in painting order, from light to dark, and the accents below it under **Accents, painted last**.
+In layer mode the button below **Settings** in the right column opens the layers instead of the colours: a card over the picture that you can move by its handle and close again, like the colour list. The **Paint box** button below it opens the paint box. The card shows each layer in painting order, from light to dark, and the accents below it under **Accents, painted last**. When you tap a spot in the picture, the card shows that spot at the top.
 
 Each row gives the paint, how to prepare its wash, and its coats. The wash is written as a ratio and a consistency, for example **1:9 with water, like coffee**: one part paint to nine parts water. The consistencies are the ones painters use:
 

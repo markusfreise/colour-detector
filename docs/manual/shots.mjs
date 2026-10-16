@@ -185,10 +185,12 @@ export const shots = [
   {
     id: 'layers',
     mode: 'layer',
+    collapsed: { palette: false },
   },
   {
     id: 'layer-solo',
     mode: 'layer',
+    collapsed: { palette: false },
     prepare: async (page) => {
       await page.locator('.layers__item').first().click()
     },

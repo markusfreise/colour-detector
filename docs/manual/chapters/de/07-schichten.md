@@ -40,7 +40,7 @@ In den Einstellungen hat die Methode eigene Regler:
 
 ## Die Schichtenliste
 
-Die Liste zeigt die Schichten in der Reihenfolge, in der du sie malst, von hell nach dunkel, und darunter die Akzente unter **Akzente, zuletzt gemalt**.
+Bei Schichten öffnet der Knopf unter **Einstellungen** in der rechten Spalte statt der Farben die Schichten: eine Karte über dem Bild, die du an ihrem Griff verschiebst und wieder schließt, genau wie die Farbliste. Der Knopf **Farbkasten** darunter öffnet den Farbkasten. Die Karte zeigt die Schichten in der Reihenfolge, in der du sie malst, von hell nach dunkel, und darunter die Akzente unter **Akzente, zuletzt gemalt**. Tippst du auf eine Stelle im Bild, zeigt die Karte diese Stelle oben an.
 
 Jede Zeile nennt die Farbe, wie du ihre Lasur ansetzt, und ihre Lasuren. Die Lasur steht als Verhältnis und als Konsistenz da, zum Beispiel **1:9 mit Wasser, wie Kaffee**: ein Teil Farbe auf neun Teile Wasser. Die Konsistenzen sind die, mit denen Maler sich verständigen:
 

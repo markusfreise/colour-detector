@@ -445,7 +445,7 @@ struct PaintEditorView: View {
                     }
                     ColorPicker("Colour", selection: Binding(get: { .from(hex: paint.hex) }, set: { paint.hex = $0.hex }), supportsOpacity: false)
                 } footer: {
-                    Text("Pick the colour of a medium wash on white paper, not the colour straight from the pan or tube. Schmincke Horadam numbers fill in name and colour.")
+                    Text("Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube. Schmincke Horadam numbers fill in name and colour.")
                 }
             }
             .formStyle(.grouped)

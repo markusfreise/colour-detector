@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 const MIGRATIONS = [
     1 => 'migrateCredits',
+    2 => 'migrateDeduction',
 ];
 
 function migrate(PDO $db): void
@@ -78,4 +79,10 @@ function migrateCredits(PDO $db): void
     // The prices shown, as Stripe has them, for an hour.
     $db->exec('CREATE TABLE stripe_prices (id TEXT PRIMARY KEY, amount INTEGER NOT NULL, currency TEXT NOT NULL, fetched_at INTEGER NOT NULL)');
     grantWelcomeCredits($db);
+}
+
+/** When the money paid for packs was taken off a first plan; once per account. */
+function migrateDeduction(PDO $db): void
+{
+    $db->exec('ALTER TABLE users ADD COLUMN deduction_used_at INTEGER');
 }

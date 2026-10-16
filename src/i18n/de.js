@@ -506,6 +506,7 @@ export default {
   'Unlock this picture for good? Afterwards you can unlock {left} more.': 'Dieses Bild dauerhaft freischalten? Danach kannst du noch {left} freischalten.',
   'Close-ups and changed settings stay part of it, and you can open and print it again at any time.': 'Ausschnitte und geänderte Einstellungen gehören dazu, und du kannst es jederzeit wieder öffnen und drucken.',
   'Unlock this picture': 'Dieses Bild freischalten',
+  "We'll deduct the {amount} you paid for pictures from your first payment.": 'Die {amount}, die du für Bilder bezahlt hast, ziehen wir von deiner ersten Zahlung ab.',
   'You can unlock {n} more': 'Du kannst noch {n} freischalten',
   'Unlock this picture or go Pro': 'Dieses Bild freischalten oder Pro werden',
   'You have no pictures left to unlock.': 'Du kannst keine weiteren Bilder freischalten.',

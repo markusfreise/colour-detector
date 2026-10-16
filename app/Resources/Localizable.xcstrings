@@ -3549,6 +3549,16 @@
           }
         }
       }
+    },
+    "Layered paint": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geschichtete Farbe"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

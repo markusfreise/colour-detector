@@ -50,8 +50,8 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
         }
     }
 
-    /// Layer mode shows the paint or the photo.
-    static let layerCases: [ViewMode] = [.mixed, .original]
+    /// Layer mode shows the layered paint, the photo over it, or the photo.
+    static let layerCases: [ViewMode] = [.mixed, .overlay, .original]
 }
 
 /// How the picture is painted: every colour mixed on the palette, or thin washes over each other.
@@ -685,20 +685,24 @@ final class Session {
     ///   - show: coats shown per layer.
     ///   - step: what that step paints stays in full colour and is outlined (see `StepView`).
     ///   - onPhoto: the photo instead of the layers, under lines.
-    func layerPicture(show: [Int], step: LayerStep? = nil, stepView: StepView = .paint, outlines: Bool = true, onPhoto: Bool = false) -> CGImage? {
+    /// `overlay` lays the photo at half strength over the layered paint, as the Overlay view does.
+    func layerPicture(show: [Int], step: LayerStep? = nil, stepView: StepView = .paint, outlines: Bool = true, onPhoto: Bool = false, overlay: Bool = false) -> CGImage? {
         guard let plan = layers else { return nil }
         let scale = Self.renderScale
         let w = plan.width, h = plan.height
         let outW = w * scale, outH = h * scale
         var out: [UInt8]
-        if onPhoto {
+        // The photo at the size of the picture, for the Photo and Overlay views.
+        func photo() -> [UInt8]? {
             if originalPixels == nil, let image {
                 originalPixels = Pictures.pixels(of: image, width: outW, height: outH).map {
                     ColorMath.adjust(rgba: $0, saturation: Double(settings.saturation) / 100, contrast: Double(settings.contrast) / 100)
                 }
             }
-            out = originalPixels ?? [UInt8](repeating: 255, count: outW * outH * 4)
-            if out.count != outW * outH * 4 { out = [UInt8](repeating: 255, count: outW * outH * 4) }
+            return originalPixels?.count == outW * outH * 4 ? originalPixels : nil
+        }
+        if onPhoto {
+            out = photo() ?? [UInt8](repeating: 255, count: outW * outH * 4)
         } else {
             var rgba = Layers.renderLayers(plan, coats: show)
             if let step {
@@ -766,6 +770,11 @@ final class Session {
                         }
                     }
                 }
+            }
+        }
+        if overlay, !onPhoto, let photo = photo() {
+            for i in stride(from: 0, to: out.count, by: 4) {
+                for c in 0..<3 { out[i + c] = UInt8((Int(out[i + c]) + Int(photo[i + c]) + 1) / 2) }
             }
         }
         return Pictures.image(rgba: out, width: outW, height: outH)
@@ -1129,7 +1138,7 @@ final class Session {
     /// Draws the areas (or the photo) with their outlines. Numbers are drawn by the view, at reading size.
     func render(selection: Bool = true) {
         if layerMode {
-            rendered = layerPicture(show: layerView, step: currentStep, stepView: layerStepView, outlines: settings.outlines, onPhoto: settings.view == .original)
+            rendered = layerPicture(show: layerView, step: currentStep, stepView: layerStepView, outlines: settings.outlines, onPhoto: settings.view == .original, overlay: settings.view == .overlay)
             return
         }
         rendered = makeImage(highlight: selection ? selectedEntry : nil)

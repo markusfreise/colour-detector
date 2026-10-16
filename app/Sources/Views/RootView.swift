@@ -394,10 +394,10 @@ struct RootView: View {
             frameButton
             SegmentedGroup(
                 options: viewModes, selection: session.settings.view,
-                title: { $0.title }, symbol: { $0.symbol },
+                title: { layered($0) ?? $0.title }, symbol: { $0.symbol },
                 choose: { session.settings.view = $0 },
                 size: toolSize,
-                hint: { $0.hint }
+                hint: { layered($0) ?? $0.hint }
             )
             // Their labels for Help alternate in height with those of the views beside them.
             IconButton(title: "Outlines", symbol: "squareshape.split.3x3", active: session.settings.outlines, size: toolSize, hintRow: viewModes.count % 2) {
@@ -409,6 +409,11 @@ struct RootView: View {
             }
         }
         .environment(\.hintSide, compact ? .above : .below)
+    }
+
+    /// In layer mode the paint is layered, not mixed.
+    private func layered(_ mode: ViewMode) -> String? {
+        session.layerMode && mode == .mixed ? "Layered paint" : nil
     }
 
     private var toolSize: CGFloat { compact ? 36 : Theme.iconButton }

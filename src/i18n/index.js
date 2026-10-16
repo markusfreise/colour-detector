@@ -38,7 +38,7 @@ export function regionOf(locale) {
 // The text pages next to the app, in each language (relative to the app, as its links are).
 const PAGES = {
   en: { privacy: 'privacy/', terms: 'terms/', imprint: 'imprint/', manual: 'manual/' },
-  de: { privacy: 'de/datenschutz/', terms: 'de/agb/', imprint: 'de/impressum/', manual: 'manual/' },
+  de: { privacy: 'de/datenschutz/', terms: 'de/agb/', imprint: 'de/impressum/', manual: 'de/handbuch/' },
 }
 
 /** The address of a text page (privacy, terms, imprint, manual) in that language. */

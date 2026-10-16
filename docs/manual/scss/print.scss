@@ -1,0 +1,48 @@
+// On paper: only the text and its pictures, no frame around it.
+@media print {
+    .header,
+    .layout__nav,
+    .pager,
+    .footer,
+    .anchor {
+        display: none !important;
+    }
+
+    body {
+        background: #fff;
+        color: #000;
+    }
+
+    .layout {
+        display: block;
+        padding: 0;
+    }
+
+    .content {
+        font-size: 11pt;
+    }
+
+    .shot__frame,
+    .pager__link {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+
+    .shot,
+    .photo,
+    .note,
+    .table-wrap {
+        break-inside: avoid;
+    }
+
+    h2,
+    h3 {
+        break-after: avoid;
+    }
+
+    .chapter + .chapter {
+        break-before: page;
+        border-top: 0;
+        margin-top: 0;
+    }
+}

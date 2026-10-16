@@ -16,7 +16,7 @@ The iOS, iPadOS and macOS app is also called **Watercolourlove** and lives in [`
 
 - **Colour areas:** the photo is reduced to 2–32 mixes and drawn as flat, numbered areas. Small but distinct colours (lips in a portrait, a red roof) keep a mix of their own instead of being lost among the shades of a large background. A second slider simplifies the shapes into bigger, calmer areas.
 - **Washes:** "Colours" counts mixes. A mix is painted in up to five washes, from very watery to concentrated, so colours that differ only in strength do not use up a mix each. On the picture a wash carries the number of its mix and a letter for the water level (W very watery, L light, M medium, R rich, C concentrated), for example 6L and 6R. In the list every mix shows its base colour, a bar with the paints in the proportions of the recipe, and a bar with its washes. Selecting a mix or a wash blanks the rest of the picture, so only the areas of that mix remain.
-- **Simplify areas:** 0 to 10, starting at 0; with Pro it goes down to -4, where the areas follow the photo ever more closely.
+- **Simplify areas:** 0 to 12 on the slider, starting at 0; with Pro it goes down to -2, where the areas follow the photo ever more closely (internally -4 to 10, `SIMPLIFY_ZERO` in `lib/segment.js`).
 - **Saturation and contrast:** adjust the photo before it is analysed. Saturation starts at 200%, which brings out the colours a painter would exaggerate anyway.
 - **Details** (formerly Variety): decides which colours share a mix when there are more than you asked for. Low keeps the picture as a whole as close as possible; high lets small areas of another hue keep their own mix while similar large colours share one.
 - **Layer mode:** a second method next to mixing, for glazing. A few base paints from the paint box become layers, each painted with one prepared wash over the dry layer before, from light to dark; an area gets one to three coats of a wash, and greens, oranges and darks come from the layers adding up. Up to three accents put a strong wash on small areas last: first for a colour the washes miss, then for the darks. Tick layers on and off to see what each one does, click a layer to see it alone with its coats as numbers, walk through the painting order step by step, or click a spot to see which layers it gets. The base paints are proposed by the app or chosen in the paint box, apart from the paints selected for mixing. Printing gives the finished picture and one sheet per layer.
@@ -95,6 +95,7 @@ The build uses a relative base path, so `dist/` works from any folder on any sta
 | `src/workers/` | Web Worker for the segmentation |
 | `resources/scss/` | SCSS, BEM: entry `site.scss`, tokens in `properties.scss`, one file per block in `components/` |
 | `src/data/paints.js` | The paint stock |
+| `docs/manual/` | The manual in English and German: chapters in Markdown, screenshots taken from the app, built into `public/manual/` and `public/de/handbuch/` (see its README) |
 | `deploy/` | GitHub webhook and deploy script for the server |
 | `app/` | Native app Watercolourlove (SwiftUI, XcodeGen) |
 

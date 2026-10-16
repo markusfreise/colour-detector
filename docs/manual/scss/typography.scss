@@ -1,0 +1,57 @@
+@use "functions" as *;
+
+body {
+    font-family: var(--ff-copy);
+    font-size: var(--fs-copy);
+    line-height: 1.5;
+    color: var(--c-copy);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: var(--ff-head);
+    color: var(--c-head);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.012em;
+    text-wrap: balance;
+}
+
+h1 {
+    font-size: var(--fs-h1);
+    letter-spacing: -0.02em;
+}
+
+h2 {
+    font-size: var(--fs-h2);
+}
+
+h3 {
+    font-size: var(--fs-h3);
+}
+
+a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+
+    &:hover {
+        text-decoration-thickness: 2px;
+    }
+}
+
+strong {
+    font-weight: 700;
+}
+
+code {
+    font-family: var(--ff-fixed);
+    font-size: 0.86em;
+    padding: #{pxtorem(1)} #{pxtorem(5)};
+    border-radius: var(--radius-small);
+    background: var(--c-corporate-soft);
+}

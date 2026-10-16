@@ -1,0 +1,241 @@
+@use "functions" as *;
+
+// Screenshots of the app: a frame with the numbered markers over it, the caption below. A narrow
+// part is shown no wider than it was on screen (--shot-width, set by the build).
+.shot {
+    margin: var(--gap-2x) 0;
+    max-width: var(--shot-width, 100%);
+    font-family: var(--ff-copy);
+
+    &__frame {
+        position: relative;
+        overflow: visible;
+        border-radius: var(--radius);
+        background: var(--c-background-raised);
+        box-shadow: var(--shadow);
+    }
+
+    &__zoom {
+        display: block;
+        overflow: hidden;
+        border-radius: var(--radius);
+    }
+
+    img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    &__marker {
+        position: absolute;
+        display: grid;
+        place-items: center;
+        width: #{pxtorem(28)};
+        height: #{pxtorem(28)};
+        translate: -50% -50%;
+        border: 2px solid var(--c-background-raised);
+        border-radius: 50%;
+        background: var(--c-marker);
+        color: var(--c-on-marker);
+        font-size: #{pxtorem(14)};
+        font-weight: 700;
+        line-height: 1;
+        box-shadow: var(--shadow-flat);
+        pointer-events: none;
+
+        @media (max-width: 760px) {
+            width: #{pxtorem(22)};
+            height: #{pxtorem(22)};
+            font-size: #{pxtorem(12)};
+        }
+    }
+
+    figcaption {
+        margin-top: var(--gap-075x);
+        font-size: var(--fs-small);
+        color: var(--c-copy-light);
+    }
+}
+
+// The list under a screenshot: its numbers in the same dark circles as the markers.
+.legend {
+    max-width: var(--article-width);
+    margin-top: var(--gap) !important;
+    padding: 0;
+    list-style: none;
+    counter-reset: legend;
+
+    > li {
+        position: relative;
+        padding-left: #{pxtorem(42)};
+        counter-increment: legend;
+
+        &::before {
+            content: counter(legend);
+            position: absolute;
+            left: 0;
+            top: 0.1em;
+            display: grid;
+            place-items: center;
+            width: #{pxtorem(26)};
+            height: #{pxtorem(26)};
+            border-radius: 50%;
+            background: var(--c-marker);
+            color: var(--c-on-marker);
+            font-family: var(--ff-copy);
+            font-size: #{pxtorem(13)};
+            font-weight: 700;
+        }
+
+        + li {
+            margin-top: var(--gap-05x);
+        }
+    }
+}
+
+// Photos of the painting process: 3:2, like a camera photo; until the photo is there, an empty
+// frame on the paper colour that says so.
+.photo {
+    margin: var(--gap-2x) 0;
+    font-family: var(--ff-copy);
+
+    &__frame {
+        overflow: hidden;
+        aspect-ratio: 3 / 2;
+        border-radius: var(--radius);
+        background: var(--c-border-light);
+
+        img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &--missing &__frame {
+        display: grid;
+        place-items: center;
+        max-width: var(--article-width);
+        aspect-ratio: 16 / 7;
+        border: 1px dashed var(--c-border);
+        background: transparent;
+    }
+
+    &--missing {
+        max-width: var(--article-width);
+    }
+
+    &__note {
+        font-size: var(--fs-mini);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--c-copy-light);
+    }
+
+    figcaption {
+        margin-top: var(--gap-075x);
+        font-size: var(--fs-small);
+        color: var(--c-copy-light);
+    }
+}
+
+// Tip, note and caution: told apart by their background and the word they begin with.
+.note {
+    margin-block: var(--gap-15x);
+    padding: var(--gap) var(--gap-15x);
+    border-radius: var(--radius);
+    background: var(--c-note-info);
+    font-size: 0.94em;
+
+    &--tip {
+        background: var(--c-note-tip);
+    }
+
+    &--warn {
+        background: var(--c-note-warn);
+    }
+
+    p:first-child > strong:first-child {
+        font-family: var(--ff-copy);
+        font-size: var(--fs-mini);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-right: var(--gap-025x);
+    }
+}
+
+.table-wrap {
+    overflow-x: auto;
+    margin-block: var(--gap-15x);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--ff-copy);
+    font-size: var(--fs-small);
+    line-height: 1.45;
+
+    th,
+    td {
+        text-align: left;
+        vertical-align: top;
+        padding: var(--gap-05x) var(--gap-075x);
+        border-bottom: 1px solid var(--c-border);
+    }
+
+    th {
+        font-size: var(--fs-mini);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--c-copy-light);
+        border-bottom-color: var(--c-copy);
+    }
+}
+
+// Previous and next chapter at the end of a chapter.
+.pager {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--gap);
+    max-width: var(--article-width);
+    margin-top: calc(var(--gap) * 4) !important;
+    font-family: var(--ff-copy);
+
+    &__link {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-025x);
+        min-width: 0;
+        overflow-wrap: anywhere;
+        padding: var(--gap) var(--gap-15x);
+        border-radius: var(--radius);
+        background: var(--c-background-raised);
+        box-shadow: var(--shadow-flat);
+        text-decoration: none;
+
+        &:hover {
+            box-shadow: var(--shadow);
+        }
+
+        &--next {
+            text-align: right;
+        }
+    }
+
+    &__label {
+        font-size: var(--fs-mini);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--c-copy-light);
+    }
+
+    &__title {
+        font-weight: 600;
+    }
+}

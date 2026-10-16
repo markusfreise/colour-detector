@@ -1,0 +1,16 @@
+{
+  "name": "watercolourlove-manual",
+  "private": true,
+  "type": "module",
+  "description": "The Watercolourlove manual in English and German: screenshots of the app, static HTML",
+  "scripts": {
+    "screenshots": "node tools/screenshots.mjs",
+    "build": "node tools/build.mjs"
+  },
+  "devDependencies": {
+    "marked": "^18.0.14",
+    "playwright": "^1.63.0",
+    "sass": "^1.105.0",
+    "sharp": "^0.35.5"
+  }
+}

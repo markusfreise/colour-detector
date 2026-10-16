@@ -3,351 +3,87 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Watercolourlove – Manual</title>
+<title>Welcome to Watercolourlove | Watercolourlove Manual</title>
+<meta name="description" content="Watercolourlove turns a photo into a plan for a real watercolour. It finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas you can transfer to paper.">
 <link rel="stylesheet" href="manual.css">
+<link rel="alternate" hreflang="de" href="../de/handbuch/index.html">
+<script>
+  // Dark or light as chosen in the app, else as the system says.
+  try { const p = JSON.parse(localStorage.getItem('colour-detector:preferences') || '{}'); if (p.theme === 'light' || p.theme === 'dark') document.documentElement.dataset.theme = p.theme } catch {}
+  // On a phone the chapter list starts folded; on a wider screen it is always open.
+  document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
+</script>
 </head>
 <body>
-<main class="manual">
-
-<header class="cover">
-  <p class="cover__kicker">Manual · Watercolourlove on the web, iPhone, iPad and Mac</p>
-  <h1 class="cover__title">From a photo to a watercolour, one mix at a time</h1>
-  <p class="cover__lead">The app finds the main colours in a photo, tells you how to mix each one from the paints you own, and turns the photo into a map of flat, numbered areas. This manual walks through one picture from the first tap to the last brush stroke.</p>
-  <nav class="cover__nav" aria-label="Contents">
-    <a class="cover__link" href="#how-to">How to use</a>
-    <a class="cover__link" href="#layers">Layer mode</a>
-    <a class="cover__link" href="#more">More options</a>
-    <a class="cover__link" href="#reference">Reference</a>
-    <a class="cover__link" href="#storyboard">Storyboard and shot list</a>
-  </nav>
-  <div class="cover__media">
-    <figure class="shot">
-      <img class="shot__image" src="img/app-overview.webp" alt="The app with the sample photo as numbered colour areas, the settings and the colour list">
-      <figcaption class="shot__caption"><span class="shot__tag">App</span>The picture as numbered areas, the settings and the list of mixes.</figcaption>
-    </figure>
-    <figure class="shot">
-      <img class="shot__image" src="img/storyboard-01.webp" alt="Storyboard: painter at a desk by the window with tablet, paint box and paper">
-      <figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 01</span>Opening picture: the desk, the paints, the plan on the screen.</figcaption>
-    </figure>
+<header class="header">
+  <div class="header__inner wrap">
+    <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M129.489 649.85C138.146 649.85 145.686 651.758 152.108 655.574C158.531 659.391 163.511 665.022 167.048 672.469C170.585 679.915 172.354 689.177 172.354 700.254C172.354 711.238 170.585 720.499 167.048 728.039C163.511 735.486 158.531 741.117 152.108 744.934C145.686 748.75 138.146 750.658 129.489 750.658C120.926 750.658 113.386 748.75 106.87 744.934C100.448 741.117 95.4678 735.486 91.9307 728.039C88.3935 720.499 86.625 711.238 86.625 700.254C86.625 689.177 88.3935 679.915 91.9307 672.469C95.4678 665.022 100.447 659.391 106.87 655.574C113.386 651.758 120.926 649.85 129.489 649.85ZM678.73 649.85C686.084 649.85 692.553 651.059 698.138 653.479C703.723 655.807 708.517 659.158 712.52 663.533L698.417 677.774C696.09 675.075 693.251 672.887 689.9 671.212C686.643 669.443 682.5 668.56 677.474 668.56C672.727 668.56 669.189 669.397 666.862 671.072C664.535 672.748 663.372 675.075 663.372 678.054C663.372 680.288 663.744 682.103 664.488 683.499C665.326 684.895 666.583 685.965 668.259 686.71C670.027 687.455 672.261 688.06 674.96 688.525L684.595 690.062C691.297 691.085 696.835 692.807 701.21 695.228C705.585 697.648 708.843 700.812 710.983 704.722C713.124 708.631 714.194 713.378 714.194 718.963C714.194 725.199 712.705 730.691 709.727 735.438C706.841 740.186 702.559 743.909 696.881 746.608C691.203 749.308 684.315 750.658 676.217 750.658C667.746 750.658 660.486 749.169 654.436 746.19C648.478 743.212 643.405 739.442 639.217 734.881L653.179 720.778C656.437 724.502 660.113 727.295 664.209 729.156C668.398 731.018 672.866 731.948 677.613 731.948C682.826 731.948 686.689 730.878 689.202 728.737C691.715 726.596 692.972 723.757 692.972 720.22C692.972 718.451 692.646 716.869 691.994 715.473C691.436 713.983 690.319 712.774 688.644 711.843C687.061 710.819 684.734 710.12 681.662 709.748L672.028 708.491C665.233 707.56 659.602 705.885 655.134 703.465C650.759 700.952 647.501 697.694 645.36 693.691C643.22 689.596 642.148 684.849 642.148 679.45C642.148 673.586 643.592 668.466 646.478 664.091C649.456 659.623 653.644 656.132 659.043 653.619C664.535 651.106 671.098 649.85 678.73 649.85ZM842.624 649.85C849.978 649.85 856.447 651.059 862.032 653.479C867.617 655.807 872.411 659.158 876.413 663.533L862.312 677.774C859.984 675.075 857.145 672.887 853.794 671.212C850.536 669.444 846.394 668.56 841.368 668.56C836.621 668.56 833.084 669.397 830.757 671.072C828.43 672.748 827.266 675.075 827.266 678.054C827.266 680.288 827.638 682.103 828.383 683.499C829.22 684.895 830.477 685.965 832.152 686.71C833.921 687.455 836.155 688.06 838.854 688.525L848.488 690.062C855.19 691.085 860.729 692.807 865.104 695.228C869.478 697.648 872.737 700.812 874.878 704.722C877.019 708.631 878.089 713.378 878.089 718.963C878.089 725.199 876.6 730.691 873.621 735.438C870.736 740.186 866.453 743.909 860.775 746.608C855.097 749.308 848.209 750.658 840.111 750.658C831.641 750.658 824.38 749.169 818.33 746.19C812.373 743.212 807.3 739.442 803.111 734.881L817.073 720.778C820.331 724.502 824.008 727.295 828.104 729.156C832.292 731.018 836.761 731.948 841.508 731.948C846.72 731.948 850.584 730.878 853.097 728.737C855.61 726.596 856.866 723.757 856.866 720.22C856.866 718.451 856.54 716.869 855.889 715.473C855.33 713.983 854.213 712.774 852.538 711.843C850.956 710.819 848.628 710.12 845.557 709.748L835.923 708.491C829.128 707.56 823.496 705.885 819.028 703.465C814.653 700.952 811.395 697.694 809.254 693.691C807.113 689.596 806.043 684.849 806.043 679.45C806.043 673.586 807.486 668.466 810.371 664.091C813.35 659.623 817.539 656.132 822.938 653.619C828.429 651.106 834.991 649.85 842.624 649.85ZM77.4561 670.374H34.0332V690.341H71.0332V709.05H34.0332V748.982H12.8105V651.525H77.4561V670.374ZM236.282 651.525C242.333 651.525 247.546 652.828 251.921 655.435C256.296 658.041 259.693 661.671 262.113 666.325C264.533 670.979 265.743 676.425 265.743 682.661C265.743 689.177 264.254 694.948 261.275 699.975C258.39 704.908 253.968 708.492 248.011 710.726L267.14 748.982H243.543L226.509 713.238H211.29V748.982H190.067V651.525H236.282ZM399.245 748.982H377.185L370.203 725.805H337.671L330.69 748.982H309.188L341.302 651.525H367.551L399.245 748.982ZM458.944 651.525C464.995 651.525 470.207 652.828 474.582 655.435C478.957 658.041 482.354 661.671 484.774 666.325C487.195 670.979 488.404 676.425 488.404 682.661C488.404 689.177 486.915 694.948 483.937 699.975C481.051 704.908 476.63 708.492 470.673 710.726L489.801 748.982H466.204L449.171 713.238H433.951V748.982H412.729V651.525H458.944ZM570.422 670.374H544.033V748.982H522.81V670.374H496.421V651.525H570.422V670.374ZM626.98 668.42H614.414V732.088H626.98V748.982H580.625V732.088H593.191V668.42H580.625V651.525H626.98V668.42ZM795.674 670.374H769.285V748.982H748.062V670.374H721.673V651.525H795.674V670.374ZM129.489 668.699C125.301 668.699 121.67 669.676 118.599 671.631C115.527 673.493 113.153 676.239 111.478 679.869C109.895 683.406 109.104 687.781 109.104 692.993V707.515C109.104 712.634 109.895 717.009 111.478 720.639C113.153 724.269 115.527 727.062 118.599 729.017C121.67 730.878 125.301 731.809 129.489 731.809C133.771 731.809 137.401 730.878 140.38 729.017C143.452 727.062 145.779 724.269 147.361 720.639C149.037 717.009 149.874 712.634 149.874 707.515V692.993C149.874 687.781 149.037 683.406 147.361 679.869C145.779 676.239 143.452 673.493 140.38 671.631C137.401 669.676 133.771 668.699 129.489 668.699ZM348.701 687.548L342.697 707.793H365.037L359.033 687.548L354.146 670.793H353.448L348.701 687.548ZM211.29 695.367H233.63C235.771 695.367 237.586 694.995 239.075 694.25C240.564 693.505 241.728 692.435 242.565 691.039C243.403 689.55 243.822 687.781 243.822 685.733V679.59C243.822 677.449 243.403 675.68 242.565 674.284C241.728 672.888 240.564 671.817 239.075 671.072C237.586 670.328 235.771 669.955 233.63 669.955H211.29V695.367ZM433.951 695.367H456.291C458.432 695.367 460.247 694.995 461.736 694.25C463.226 693.505 464.39 692.435 465.228 691.039C466.065 689.55 466.483 687.781 466.483 685.733V679.59C466.483 677.449 466.065 675.68 465.228 674.284C464.39 672.888 463.226 671.817 461.736 671.072C460.247 670.328 458.432 669.955 456.291 669.955H433.951V695.367ZM117.437 576.366C122.72 576.366 127.096 577.466 130.563 579.668C134.086 581.869 136.893 585.282 138.984 589.905L128.169 595.52C127.453 593.098 126.242 591.171 124.536 589.74C122.885 588.254 120.518 587.512 117.437 587.512C113.749 587.512 110.777 588.722 108.521 591.144C106.319 593.51 105.218 596.978 105.218 601.546V610.793C105.218 615.306 106.319 618.774 108.521 621.195C110.777 623.617 113.749 624.828 117.437 624.828C120.519 624.828 122.968 624.002 124.784 622.351C126.655 620.645 128.032 618.609 128.912 616.242L139.149 622.186C137.003 626.534 134.168 629.919 130.646 632.341C127.123 634.762 122.72 635.973 117.437 635.973C112.263 635.973 107.75 634.872 103.897 632.671C100.1 630.469 97.1549 627.195 95.0635 622.847C92.972 618.499 91.9258 613.077 91.9258 606.582C91.9258 600.088 92.972 594.611 95.0635 590.153C97.1549 585.64 100.1 582.228 103.897 579.916C107.75 577.549 112.263 576.366 117.437 576.366ZM169.999 576.366C175.117 576.366 179.575 577.495 183.373 579.751C187.171 582.008 190.116 585.337 192.207 589.74C194.299 594.143 195.345 599.62 195.345 606.17C195.345 612.664 194.298 618.141 192.207 622.599C190.116 627.002 187.171 630.331 183.373 632.588C179.575 634.844 175.118 635.973 169.999 635.973C164.936 635.973 160.478 634.844 156.625 632.588C152.827 630.331 149.882 627.002 147.791 622.599C145.7 618.141 144.653 612.664 144.653 606.17C144.653 599.62 145.7 594.143 147.791 589.74C149.882 585.337 152.827 582.008 156.625 579.751C160.478 577.494 164.936 576.366 169.999 576.366ZM269.407 576.366C274.526 576.366 278.985 577.494 282.782 579.751C286.58 582.007 289.524 585.337 291.615 589.74C293.707 594.143 294.753 599.62 294.753 606.17C294.753 612.664 293.707 618.141 291.615 622.599C289.524 627.002 286.58 630.331 282.782 632.588C278.985 634.844 274.526 635.973 269.407 635.973C264.344 635.973 259.886 634.844 256.033 632.588C252.236 630.331 249.291 627.002 247.199 622.599C245.108 618.141 244.063 612.664 244.062 606.17C244.062 599.62 245.108 594.143 247.199 589.74C249.291 585.337 252.236 582.008 256.033 579.751C259.886 577.494 264.344 576.366 269.407 576.366ZM317.115 612.691C317.115 615.388 317.445 617.646 318.105 619.462C318.821 621.223 319.95 622.571 321.491 623.507C323.032 624.387 325.041 624.828 327.518 624.828C329.994 624.828 331.976 624.387 333.462 623.507C335.003 622.571 336.131 621.223 336.847 619.462C337.562 617.646 337.92 615.388 337.92 612.691V577.356H350.139V611.371C350.139 617.04 349.395 621.691 347.909 625.323C346.423 628.956 344.029 631.653 340.727 633.414C337.424 635.12 333.021 635.973 327.518 635.973C322.014 635.973 317.611 635.12 314.309 633.414C311.006 631.653 308.612 628.956 307.126 625.323C305.64 621.691 304.897 617.04 304.896 611.371V577.356H317.115V612.691ZM66.6719 634.982H53.6279L49.5 621.277H30.2637L26.1357 634.982H13.4219L32.4102 577.356H47.9307L66.6719 634.982ZM218.367 623.837H240.328V634.982H205.818V577.356H218.367V623.837ZM389.877 577.356C393.454 577.356 396.536 578.127 399.123 579.668C401.71 581.209 403.719 583.356 405.15 586.108C406.581 588.86 407.297 592.08 407.297 595.768C407.297 599.62 406.415 603.033 404.654 606.005C402.948 608.922 400.334 611.04 396.812 612.361L408.122 634.982H394.17L384.098 613.848H375.099V634.982H362.55V577.356H389.877ZM439.149 592.052L445.589 604.354H445.754L452.111 592.052L459.707 577.356H473.081V634.982H461.275V597.171H461.027L456.817 605.592L445.589 625.983L434.609 605.674L430.233 596.593H429.985V634.982H418.18V577.356H431.472L439.149 592.052ZM511.003 587.347H503.573V624.993H511.003V634.982H483.594V624.993H491.024V587.347H483.594V577.356H511.003V587.347ZM543.171 596.841H543.419L554.812 577.356H568.352L550.602 605.427L569.342 634.982H554.812L542.346 613.765H542.098L529.962 634.982H516.422L534.915 605.179L517.33 577.356H531.943L543.171 596.841ZM615.232 588.502H589.557V600.308H611.435V611.371H589.557V634.982H577.008V577.356H615.232V588.502ZM650.481 587.347H643.051V624.993H650.481V634.982H623.072V624.993H630.502V587.347H623.072V577.356H650.481V587.347ZM690.41 604.601L695.941 616.159H696.188V577.356H707.994V634.982H694.29L678.521 607.738L672.99 596.18H672.742V634.982H660.937V577.356H674.641L690.41 604.601ZM742.391 577.356C747.509 577.356 751.968 578.43 755.766 580.576C759.563 582.723 762.508 585.943 764.6 590.236C766.691 594.474 767.736 599.786 767.736 606.17C767.736 612.554 766.691 617.893 764.6 622.186C762.508 626.424 759.563 629.616 755.766 631.763C751.968 633.909 747.509 634.982 742.391 634.982H720.679V577.356H742.391ZM817.458 588.502H790.792V600.308H813.661V611.371H790.792V623.837H817.458V634.982H778.243V577.356H817.458V588.502ZM855.718 577.356C859.295 577.356 862.377 578.127 864.964 579.668C867.551 581.209 869.56 583.356 870.991 586.108C872.422 588.86 873.138 592.08 873.138 595.768C873.138 599.62 872.256 603.033 870.495 606.005C868.789 608.922 866.175 611.04 862.652 612.361L873.963 634.982H860.011L849.938 613.848H840.939V634.982H828.391V577.356H855.718ZM169.999 587.512C167.522 587.512 165.376 588.089 163.56 589.245C161.743 590.346 160.339 591.97 159.349 594.116C158.413 596.208 157.945 598.795 157.945 601.877V610.463C157.945 613.49 158.413 616.076 159.349 618.223C160.339 620.369 161.743 622.021 163.56 623.177C165.376 624.277 167.522 624.828 169.999 624.828C172.531 624.828 174.677 624.277 176.438 623.177C178.255 622.021 179.631 620.369 180.566 618.223C181.557 616.076 182.053 613.49 182.053 610.463V601.877C182.053 598.795 181.557 596.208 180.566 594.116C179.631 591.97 178.255 590.346 176.438 589.245C174.677 588.089 172.531 587.512 169.999 587.512ZM269.407 587.512C266.931 587.512 264.784 588.089 262.968 589.245C261.152 590.346 259.748 591.97 258.758 594.116C257.822 596.208 257.354 598.795 257.354 601.877V610.463C257.355 613.49 257.822 616.076 258.758 618.223C259.748 620.369 261.152 622.021 262.968 623.177C264.784 624.277 266.931 624.828 269.407 624.828C271.939 624.828 274.086 624.277 275.847 623.177C277.663 622.021 279.039 620.369 279.975 618.223C280.965 616.076 281.461 613.49 281.461 610.463V601.877C281.461 598.795 280.965 596.208 279.975 594.116C279.039 591.97 277.663 590.346 275.847 589.245C274.085 588.089 271.939 587.512 269.407 587.512ZM733.228 623.837H742.391C744.867 623.837 747.015 623.369 748.831 622.434C750.647 621.498 752.023 620.067 752.959 618.141C753.95 616.159 754.444 613.655 754.444 610.628V601.712C754.444 598.63 753.95 596.125 752.959 594.198C752.023 592.272 750.647 590.841 748.831 589.905C747.015 588.97 744.867 588.502 742.391 588.502H733.228V623.837ZM36.7852 598.657L33.2354 610.628H46.4453L42.8945 598.657L40.0059 588.75H39.5928L36.7852 598.657ZM375.099 603.28H388.308C389.574 603.28 390.648 603.059 391.528 602.619C392.409 602.179 393.097 601.546 393.592 600.721C394.087 599.84 394.335 598.795 394.335 597.584V593.951C394.335 592.685 394.087 591.639 393.592 590.813C393.097 589.988 392.409 589.355 391.528 588.915C390.648 588.475 389.574 588.255 388.308 588.255H375.099V603.28ZM840.939 603.28H854.149C855.415 603.28 856.489 603.059 857.369 602.619C858.25 602.179 858.937 601.546 859.433 600.721C859.928 599.84 860.176 598.795 860.176 597.584V593.951C860.176 592.685 859.928 591.639 859.433 590.813C858.937 589.988 858.25 589.355 857.369 588.915C856.489 588.475 855.415 588.255 854.149 588.255H840.939V603.28ZM81.4482 33.9775H70.3633L98.5576 116.39L118.076 59.2793L108.438 33.9775H97.1113V0H180.006V33.9775H168.198L159.041 58.3154L178.561 116.39L206.754 33.9775H195.188V0H275.19V20.0205L282.634 0H346.251L398.06 140.005H411.555V140.246H425.53V32.7725H416.614C410.108 32.7725 409.385 33.0141 408.903 40.2432L408.181 55.1826H366.975V0H778.583C820.753 0 840.754 19.76 840.754 48.4355C840.754 64.0987 831.597 81.9304 815.693 89.6416C826.778 96.1478 829.669 108.92 832.079 126.27C833.766 138.318 835.453 140.487 842.683 140.487C843.646 140.487 844.611 140.487 853.767 140.005L856.899 171.813C848.355 173.824 837.48 175.133 829.136 175.746C844.494 183.164 851.915 196.468 851.915 213.08C851.915 227.246 843.633 243.374 829.249 250.348C839.274 256.232 841.889 267.782 844.068 283.474C845.594 294.371 847.12 296.332 853.658 296.332C854.53 296.332 855.402 296.332 863.684 295.896L864.701 306.232H872.192L873.89 380.901L812.797 381.919L811.439 366.307C810.421 354.088 810.081 353.749 794.469 353.749H746.613V407.374H767.996V392.102H820.942V463.715H767.996V448.103H746.613V503.765H793.111C810.081 503.765 811.1 503.086 811.778 491.207L813.137 473.897L874.907 474.915L872.532 551.281H652.938V503.765H673.981V354.088H656.378L583.406 551.281H503.986L444.115 389.491C447.723 401.943 449.573 415.161 449.573 428.757C449.573 503.086 395.268 555.693 320.939 555.693C275.966 555.693 240.119 537.668 217.809 508.499L216.019 551.281H12.0381V503.765H33.4199V353.749H12.0381V306.232H24.2129C11.4397 291.305 4.71682 270.563 4.7168 248.168C4.7168 204.117 28.6565 174.157 62.749 167.732L13.2529 33.9775H0V0H81.4482V33.9775ZM320.939 352.73C286.32 352.73 272.744 387.01 272.744 428.757C272.744 478.988 293.787 504.783 320.939 504.783C352.164 504.783 369.135 474.576 369.135 428.757C369.135 381.919 350.467 352.731 320.939 352.73ZM148.338 326.626H127.096V353.749H106.053V503.765H136.938C152.551 503.765 153.569 501.389 155.266 490.188L158.32 469.146L198.18 469.81C194.326 457.048 192.306 443.269 192.306 428.757C192.306 388.371 210.57 350.236 242.617 326.505C235.22 328.438 227.32 329.459 219.032 329.459C186.928 329.459 162.066 315.155 148.338 292.617V326.626ZM565.957 264.377C561.553 288.685 547.363 308.041 527.065 319.134V354.088H511.792L551.502 469.146L591.552 354.088H574.582V306.232H576.729C569.861 296.644 565.957 284.11 565.957 268.437V264.377ZM435.229 366.982C436.052 368.593 436.842 370.224 437.596 371.874L435.786 366.982H435.229ZM286.453 297.051C283.213 301.522 279.508 305.604 275.39 309.249C278.978 308.002 282.667 306.9 286.453 305.953V297.051ZM706.092 268.437C706.092 284.138 701.806 296.662 694.409 306.232H704.588V296.114H718.536V200.004H706.092V268.437ZM764.739 296.114H778.688V306.232H797.116C796.21 303.172 795.655 299.799 795.469 296.114L794.814 279.769C794.161 268 789.584 261.898 776.943 261.898H764.739V296.114ZM626.108 200.004H612.378V266.257C612.378 284.782 617.609 297.64 638.531 297.64C655.094 297.639 662.286 284.999 662.286 266.257V200.004H648.556V173.982H626.108V200.004ZM86.0078 198.696C66.3934 198.696 55.9326 220.49 55.9326 247.95C55.9327 275.41 66.3935 297.204 86.0078 297.204C99.0841 297.204 108.237 289.358 112.378 274.756H140.34C137.777 266.437 136.434 257.437 136.434 247.95C136.434 238.714 137.922 229.661 140.768 221.144H112.378C107.801 207.849 99.52 198.696 86.0078 198.696ZM219.032 199.132C196.803 199.132 188.085 221.144 188.085 247.95C188.085 280.205 201.597 296.769 219.032 296.769C239.082 296.768 249.979 277.372 249.979 247.95C249.979 217.875 237.993 199.132 219.032 199.132ZM484.806 199.132C462.576 199.132 453.858 221.144 453.858 247.95C453.858 280.205 467.371 296.768 484.806 296.769C504.856 296.769 515.753 277.372 515.753 247.95C515.753 217.875 503.766 199.132 484.806 199.132ZM300.184 264.371C298.029 276.267 293.531 286.978 287.12 296.114H300.184V264.371ZM360.334 199.785H346.822V296.114H366.654C376.679 296.114 377.333 294.588 378.423 287.396L380.385 273.885L405.979 274.311C403.505 266.116 402.207 257.268 402.207 247.95C402.207 216.567 419.382 187.302 448.633 173.982H360.334V199.785ZM764.739 232.694H784.79C796.776 232.694 800.481 224.631 800.481 215.695C800.481 208.721 796.34 199.785 784.354 199.785H764.739V232.694ZM287.372 199.785C293.778 209.135 298.098 219.944 300.184 231.535V199.785H287.372ZM553.294 200.004C559.617 209.303 563.887 220.032 565.957 231.531V200.004H553.294ZM119.295 169.274H148.338V204.75C156.295 191.595 168.023 180.738 182.858 173.982H159.041L138.317 116.631L119.295 169.274ZM256.425 173.982C268.932 179.607 279.012 188.094 286.453 198.476V173.982H256.425ZM477.099 140.246H492.28V166.701C519.218 168.602 539.553 180.791 552.228 198.476V173.982H532.398V140.246H547.339V33.7363H535.655V55.1826H494.449L493.726 40.2432C493.244 33.014 492.521 32.7725 486.015 32.7725H477.099V140.246ZM276.851 140.005H288.658V169.274H330.105V140.005H341.432L337.335 128.197H280.947L276.851 140.005ZM744.365 140.246H759.788V169.274H792.989C784.133 163.372 779.021 153.682 778.343 140.246L777.619 122.174C776.896 109.161 771.836 102.414 757.859 102.414H744.365V140.246ZM598.906 71.8105H614.088V60.9668H651.68V111.812H614.088V100.727H598.906V140.246H631.92C643.968 140.246 644.691 139.764 645.173 131.33L646.137 119.041L689.994 119.764L689.357 140.246H693.279V33.7363H688.833L689.271 53.0146L645.896 53.7373L644.933 42.6523C644.21 33.9774 643.968 33.7363 632.884 33.7363H598.906V71.8105ZM221.496 140.005H230.584L270.002 33.9775H260.731L221.496 140.005ZM292.514 94.4619H325.527L308.9 47.2305L292.514 94.4619ZM744.365 70.123H766.535C779.788 70.1229 783.885 61.2069 783.885 51.3271C783.885 43.6161 779.306 33.7363 766.053 33.7363H744.365V70.123Z" fill="currentColor"/>
+</svg>
+</span><span class="header__label">Manual</span></a>
+    <nav class="header__links">
+      <a class="header__link" href="../de/handbuch/index.html" hreflang="de" lang="de">Deutsch</a>
+      <a class="header__app" href="../">Open the app</a>
+    </nav>
   </div>
 </header>
-
-<section class="manual__section" id="about">
-  <h2 class="manual__title">About the pictures in this manual</h2>
-  <p class="manual__lead">Pictures marked <span class="shot__tag">App</span> are real screens of the current version with the sample photo. Pictures marked <span class="shot__tag shot__tag--mock">Storyboard</span> are generated sketches that stand in for the photos and video still to be shot. They propose angle and content only; the numbers match the shot list at the end.</p>
-  <div class="key">
-    <div class="key__item"><p class="key__term">You need</p><p class="key__text">A photo, your watercolours, watercolour paper (300 g/m²) taped to a board, two or three brushes, a palette with wells, two jars of water, a pencil and a printer or a second screen.</p></div>
-    <div class="key__item"><p class="key__term">Two methods</p><p class="key__text">Mix: every colour is mixed on the palette and each area is painted once. Layer: a few thin washes are glazed over each other. The step-by-step below uses Mix.</p></div>
-    <div class="key__item"><p class="key__term">Private</p><p class="key__text">Everything is worked out on your device and the photo is never uploaded. On the web you sign in with your e-mail address; the account holds only that address and your plan. Pictures, paint boxes and the collection stay in the browser on this device.</p></div>
+<div class="layout wrap">
+  <aside class="layout__nav"><nav class="nav" aria-label="Chapters"><details class="nav__details" open><summary class="nav__summary">Chapters: Introduction</summary><ol class="nav__list"><li class="nav__part">Getting started</li><li class="nav__item nav__item--active"><a href="index.html" aria-current="page"><span class="nav__number">1</span>Introduction</a><ul class="nav__sub"><li><a href="#the-idea">The idea</a></li><li><a href="#who-it-is-for">Who it is for</a></li><li><a href="#what-it-can-and-cannot-do">What it can and cannot do</a></li><li><a href="#two-ways-to-paint">Two ways to paint</a></li><li><a href="#what-you-need">What you need</a></li><li><a href="#how-this-manual-is-organised">How this manual is organised</a></li><li><a href="#your-pictures-stay-with-you">Your pictures stay with you</a></li></ul></li><li class="nav__item"><a href="quick-start.html"><span class="nav__number">2</span>Quick start</a></li><li class="nav__part">The app</li><li class="nav__item"><a href="pictures.html"><span class="nav__number">3</span>Pictures</a></li><li class="nav__item"><a href="paint-box.html"><span class="nav__number">4</span>Paint box and palette</a></li><li class="nav__item"><a href="colour-areas.html"><span class="nav__number">5</span>Colour areas</a></li><li class="nav__item"><a href="mixes.html"><span class="nav__number">6</span>Mixes and recipes</a></li><li class="nav__item"><a href="layer-mode.html"><span class="nav__number">7</span>Layer mode</a></li><li class="nav__item"><a href="values.html"><span class="nav__number">8</span>Values</a></li><li class="nav__item"><a href="printing.html"><span class="nav__number">9</span>Printing</a></li><li class="nav__item"><a href="account.html"><span class="nav__number">10</span>Account and data</a></li><li class="nav__part">Painting with watercolour</li><li class="nav__item"><a href="materials.html"><span class="nav__number">11</span>Materials</a></li><li class="nav__item"><a href="how-watercolour-works.html"><span class="nav__number">12</span>How watercolour works</a></li><li class="nav__item"><a href="mixing.html"><span class="nav__number">13</span>Mixing in practice</a></li><li class="nav__item"><a href="washes.html"><span class="nav__number">14</span>Washes</a></li><li class="nav__item"><a href="glazing.html"><span class="nav__number">15</span>Glazing</a></li><li class="nav__item"><a href="values-and-simplifying.html"><span class="nav__number">16</span>Values and simplifying</a></li><li class="nav__item"><a href="calibrating.html"><span class="nav__number">17</span>Calibrating your paints</a></li><li class="nav__part">Reference</li><li class="nav__item"><a href="glossary.html"><span class="nav__number">18</span>Glossary</a></li><li class="nav__item"><a href="troubleshooting.html"><span class="nav__number">19</span>Troubleshooting</a></li></ol><p class="nav__whole"><a href="all.html">All chapters on one page</a></p></details></nav></aside>
+  <main class="layout__main content">
+<article class="chapter"><p class="chapter__kicker"><span>Getting started</span><span>Chapter 1 of 19</span></p>
+<h1 class="chapter__title">Welcome to Watercolourlove</h1>
+<p class="chapter__lead">Watercolourlove turns a photo into a plan for a real watercolour. It finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas you can transfer to paper.</p>
+<h2 id="the-idea"><a class="anchor" href="#the-idea" aria-hidden="true" tabindex="-1">#</a>The idea</h2>
+<p>Every painter who works from a photo faces the same two questions. Which colours are really in this picture, once you look past the thousand small variations a camera records? And how do I mix each of them from the paints in my box, with how much water?</p>
+<p>Watercolourlove answers both. It reduces the photo to a manageable number of mixes, works out a recipe for every mix from your own paints, and shows you where each one goes. The result is a paint-by-numbers plan, but one that is made for watercolour: it knows that paint is transparent, that water makes a colour lighter, and that the white of the paper is the lightest thing you have.</p>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/overview.webp" title="Open the picture at full size"><img src="img/en/overview.webp" width="1440" height="900" alt="The app at a glance, with the sample photo Llyn Idwal" loading="lazy"></a><span class="shot__marker" style="left:5.97%;top:4.44%" aria-hidden="true">1</span><span class="shot__marker" style="left:35.76%;top:9.11%" aria-hidden="true">2</span><span class="shot__marker" style="left:43.33%;top:9%" aria-hidden="true">3</span><span class="shot__marker" style="left:94.03%;top:11.56%" aria-hidden="true">4</span><span class="shot__marker" style="left:94.03%;top:4.44%" aria-hidden="true">5</span><span class="shot__marker" style="left:94.03%;top:18.67%" aria-hidden="true">6</span><span class="shot__marker" style="left:94.03%;top:25.78%" aria-hidden="true">7</span></div><figcaption>The app at a glance, with the sample photo Llyn Idwal</figcaption></figure>
+<ol class="legend">
+<li><strong>New picture</strong> and the other buttons for the picture: samples, saving, the collection, printing, exporting.</li>
+<li>The tools of the picture: fit it to the window, look at a detail.</li>
+<li>The views: mixed paint, the colours of the photo, an overlay, the photo itself, the template to print.</li>
+<li><strong>Colours</strong>: every mix with its paints and its washes.</li>
+<li><strong>Settings</strong>: how many mixes, how simple the areas, the method.</li>
+<li><strong>Paint box</strong>: the paints you own and the palette of this picture.</li>
+<li><strong>Help</strong> shows the names of all buttons at once.</li>
+</ol>
+<h2 id="who-it-is-for"><a class="anchor" href="#who-it-is-for" aria-hidden="true" tabindex="-1">#</a>Who it is for</h2>
+<p>Watercolourlove is made for people who take watercolour seriously. Perhaps you have painted for years and want a faster, more reliable way from a reference photo to a plan. Perhaps you are learning and want to understand why a colour turns out the way it does, instead of guessing. Either way, the app does the measuring, and you keep the decisions.</p>
+<p>It is not a filter that makes a photo look painted. Nothing here paints for you. The app proposes; you choose the colours, the shapes and the order, and the brush is in your hand.</p>
+<h2 id="what-it-can-and-cannot-do"><a class="anchor" href="#what-it-can-and-cannot-do" aria-hidden="true" tabindex="-1">#</a>What it can and cannot do</h2>
+<p>The recipes are calculated, not measured on your paper. The app knows one reference colour for each paint and models how paints combine and how water thins them. That is a good estimate, often a very good one, but your paper, your water, your brush and the particular tube in front of you all have a say. Treat every recipe as a starting point and let a test strip on the same paper decide. The chapter <a href="calibrating.html">Calibrating your paints</a> shows how to bring the reference colours closer to your own.</p>
+<p>Two more limits worth knowing from the start:</p>
+<ul>
+<li>A paint is never used darker than its reference colour. Watercolour cannot get darker by adding more of the same paint beyond a certain point; it needs a second, darker paint. The recipes follow that rule.</li>
+<li>Very small, very dark details (an eye, a gap between stones) are easier to paint by eye at the end than to follow as areas. The app keeps them as separate small areas, but you decide how literally to take them.</li>
+</ul>
+<h2 id="two-ways-to-paint"><a class="anchor" href="#two-ways-to-paint" aria-hidden="true" tabindex="-1">#</a>Two ways to paint</h2>
+<p><strong>Mix.</strong> Every colour of the picture is mixed on the palette, and each area is painted once with its mix. One mix is used at up to five strengths of water, from a very watery wash to a concentrated one, so twenty mixes give you far more than twenty colours on paper. This is the method most of this manual describes, and the one to start with.</p>
+<p><strong>Layer.</strong> A few base paints are glazed over each other, light to dark, each as one prepared wash. Greens, oranges and darks appear where the layers overlap. It is the classic glazing technique, planned for you step by step. The chapter <a href="layer-mode.html">Layer mode</a> explains it.</p>
+<h2 id="what-you-need"><a class="anchor" href="#what-you-need" aria-hidden="true" tabindex="-1">#</a>What you need</h2>
+<ul>
+<li>A photo. Clear light and a few large shapes work best; the chapter <a href="pictures.html">Pictures</a> explains why.</li>
+<li>Your watercolours, and the knowledge of which ones you own. The <a href="paint-box.html">paint box</a> knows the colours of Schmincke Horadam, Winsor &amp; Newton Professional and Michael Harding, and takes any other paint as a colour of your own.</li>
+<li>Watercolour paper (300 g/m², ideally cotton), taped to a board, two or three brushes, a palette with wells, two jars of water and a pencil.</li>
+<li>A printer or a second screen beside your desk, for the plan.</li>
+</ul>
+<h2 id="how-this-manual-is-organised"><a class="anchor" href="#how-this-manual-is-organised" aria-hidden="true" tabindex="-1">#</a>How this manual is organised</h2>
+<p>The manual has four parts.</p>
+<ul>
+<li><strong>Getting started.</strong> This introduction, and <a href="quick-start.html">From photo to painting</a>: one picture from the first click to the last brush stroke, in fourteen steps. If you read only one chapter, read that one.</li>
+<li><strong>The app.</strong> Every part of the app in depth: <a href="pictures.html">pictures</a>, the <a href="paint-box.html">paint box</a>, the <a href="colour-areas.html">colour areas</a>, <a href="mixes.html">mixes and recipes</a>, <a href="layer-mode.html">layer mode</a>, <a href="values.html">values</a>, <a href="printing.html">printing</a> and your <a href="account.html">account</a>.</li>
+<li><strong>Painting with watercolour.</strong> What the app assumes and what you do at the desk: <a href="materials.html">materials</a>, <a href="how-watercolour-works.html">how watercolour works</a>, <a href="mixing.html">mixing</a>, <a href="washes.html">washes</a>, <a href="glazing.html">glazing</a>, <a href="values-and-simplifying.html">values and simplifying</a> and <a href="calibrating.html">calibrating your paints</a>. These chapters stand on their own, with or without the app.</li>
+<li><strong>Reference.</strong> The <a href="glossary.html">glossary</a> with every term in English and German, and <a href="troubleshooting.html">troubleshooting</a>.</li>
+</ul>
+<p>Throughout the manual you will see one picture: the sample photo <strong>Llyn Idwal</strong>, a lake below the mountains of Snowdonia in Wales, analysed with the Schmincke Horadam paints of the stock and twenty mixes. The app finds 52 colours in those 20 mixes. You can open the same photo under <strong>Samples</strong> and follow along.</p>
+<h2 id="your-pictures-stay-with-you"><a class="anchor" href="#your-pictures-stay-with-you" aria-hidden="true" tabindex="-1">#</a>Your pictures stay with you</h2>
+<p>Everything is worked out on your device. The photo is never uploaded, and your pictures, paint boxes and collection are kept in this browser on this device, not in your account.</p>
+<nav class="pager" aria-label="Chapters"><span></span><a class="pager__link pager__link--next" href="quick-start.html" rel="next"><span class="pager__label">Next</span><span class="pager__title">From photo to painting</span></a></nav></article>
+  </main>
+</div>
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <span>Watercolourlove by Markus Freise. Questions: <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
-</section>
-
-<section class="manual__section" id="how-to">
-  <h2 class="manual__title">How to use: step by step</h2>
-  <p class="manual__lead">Steps 1 to 7 happen in the app and take about ten minutes. Steps 8 to 14 happen at the desk.</p>
-
-  <p class="manual__part">Part 1 · Plan the picture in the app</p>
-
-  <article class="step" id="step-1">
-    <header class="step__head"><span class="step__number">1</span><h3 class="step__title">Choose a photo</h3></header>
-    <div class="step__text">
-      <p>On the web, sign in first: enter your e-mail address and open the link that arrives. Then press <strong>New picture</strong> and pick a photo; on a phone or tablet it also offers the camera. In the app the button is <strong>New Image</strong>. <strong>Samples</strong> opens five example photos if you want to try the app first.</p>
-      <p>Photos with clear light and shadow and a few large shapes work best. The app starts analysing at once; switch the view to <strong>Photo</strong> at any time to see the original again.</p>
-    </div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image" src="img/app-photo.webp" alt="The original photo in the app"><figcaption class="shot__caption"><span class="shot__tag">App</span>View "Photo": the original, with saturation raised to 200%.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/storyboard-02.webp" alt="Storyboard: hand holding a phone with a family snapshot"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 02</span>The photo on the phone, the paint box already in the background.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step" id="step-2">
-    <header class="step__head"><span class="step__number">2</span><h3 class="step__title">Tell the app which paints you own</h3></header>
-    <div class="step__text">
-      <p>Open <strong>Paint box</strong> from the list of colours. Every paint is a chip in its own colour with its number; P and T stand for pan and tube. The <strong>Palette</strong> at the top holds the paints the recipes may use for this picture, and it is saved with the picture. Below it are your paint boxes: Pans, Tubes, Travelbox and one box per series. Click a chip to move it into the palette or out of it.</p>
-      <ul>
-        <li><strong>Auto</strong> lets the app pick the small set of paints that suits this picture, from the boxes ticked <strong>Use for Auto</strong>. It switches off when you select by hand.</li>
-        <li>The <strong>+</strong> at the end of a box adds a colour to it: search by series, number or name, or enter a colour of your own. With Pro the search also covers the colour charts of Schmincke Horadam, Winsor &amp; Newton Professional and Michael Harding.</li>
-        <li><strong>New paint box</strong> starts a box for another set of paints, for example a travel set. <strong>Import paint box</strong> reads one that was exported before.</li>
-        <li>Under each box: <strong>Rename</strong>, <strong>Remove colours</strong>, <strong>Export</strong> (a file to keep or share) and <strong>Delete box</strong>.</li>
-      </ul>
-      <p>Press <strong>Update mixes</strong> after a change. The free version on the web mixes from up to eight paints.</p>
-    </div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image" src="img/app-paintbox.webp" alt="The paint box with selected paints at the top and pans and tubes below"><figcaption class="shot__caption"><span class="shot__tag">App</span>Selected paints at the top, the rest under Pans and Tubes.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/storyboard-04.webp" alt="Storyboard: open watercolour pan box next to the tablet, a finger on one pan"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 04</span>The real box next to the one on screen: same paints, same numbers.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step" id="step-3">
-    <header class="step__head"><span class="step__number">3</span><h3 class="step__title">Decide how detailed the picture should be</h3></header>
-    <div class="step__text">
-      <p>Three sliders set the amount of work:</p>
-      <ul>
-        <li><strong>Colours</strong> (2 to 32) is the number of mixes on your palette. Start with 12 to 20.</li>
-        <li><strong>Simplify areas</strong> (0 to 10) merges small shapes into bigger, calmer ones. It starts at 0; the higher, the fewer and larger the areas. With Pro it goes down to -4, where the areas follow the photo ever more closely.</li>
-        <li><strong>Max. paints</strong> limits a mix to one, two or three paints. Fewer paints give cleaner mixes.</li>
-      </ul>
-      <p><strong>Saturation</strong> (starts at 200%) and <strong>Contrast</strong> adjust the photo before it is analysed. <strong>Details</strong> (0 to 10) decides whether small areas of another hue (lips, a red roof) keep a mix of their own: low keeps the picture as a whole close to the photo, high saves a mix for the small accents.</p>
-    </div>
-    <div class="step__media step__media--three">
-      <figure class="shot"><img class="shot__image" src="img/app-map-detailed.webp" alt="Map with Simplify areas at 2: many small shapes"><figcaption class="shot__caption"><span class="shot__tag">App</span>Simplify areas 2: too many small shapes.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/app-map.webp" alt="Map with Simplify areas at 7: large calm shapes"><figcaption class="shot__caption"><span class="shot__tag">App</span>Simplify areas 7: the same 20 mixes in calm shapes.</figcaption></figure>
-      <figure class="shot"><img class="shot__image shot__image--tall" src="img/app-controls.webp" alt="The settings panel"><figcaption class="shot__caption"><span class="shot__tag">App</span>The settings.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step" id="step-4">
-    <header class="step__head"><span class="step__number">4</span><h3 class="step__title">Read the map</h3></header>
-    <div class="step__text">
-      <p>Every area carries a label such as <strong>3M</strong>. The number is the mix, the letter is how much water goes into it: <strong>W</strong> very watery, <strong>L</strong> light, <strong>M</strong> medium, <strong>R</strong> rich, <strong>C</strong> concentrated. So 3L and 3C are the same puddle of paint, once thinned and once strong. That is why 20 mixes give many more colours on the paper: 67 in this sample ("67 in 20 mixes" at the top of the list).</p>
-      <p>The list <strong>Colours</strong> shows one block per mix: its base colour, a bar with the paints in the proportions of the recipe, and a bar with its washes.</p>
-    </div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image shot__image--tall" src="img/app-colours.webp" alt="The colour list with recipe bars and wash bars"><figcaption class="shot__caption"><span class="shot__tag">App</span>One block per mix: paints as a bar, washes below.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/storyboard-03.webp" alt="Storyboard: over the shoulder onto the tablet with the picture as colour areas"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 03</span>Over the shoulder: the photo has become a map.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step" id="step-5">
-    <header class="step__head"><span class="step__number">5</span><h3 class="step__title">Look up a mix</h3></header>
-    <div class="step__text">
-      <p>Click an area in the picture. A card opens with the number of the colour, how much of the picture it covers and the recipe to mix it; on a computer the recipe also shows next to the pointer as you move over the picture. <strong>Full breakdown</strong> opens the <strong>Target</strong> colour next to <strong>Your mix</strong> and up to five recipes.</p>
-      <p>Click a mix in the list <strong>Colours</strong> instead and the rest of the picture goes blank, so you see exactly where this mix belongs. Click the blank part to bring the picture back.</p>
-      <p>A recipe reads like this: <strong>15.5 x P 230</strong> plus <strong>1 x P 662</strong> means 15.5 parts of pan 230 to 1 part of pan 662. <strong>Medium</strong> is the amount of water, and <strong>0.1 · excellent</strong> says how close the mix gets to the target. Click another recipe if you prefer its paints.</p>
-    </div>
-    <div class="step__media step__media--three">
-      <figure class="shot"><img class="shot__image" src="img/app-map-selected.webp" alt="The map with only the areas of the selected mix filled"><figcaption class="shot__caption"><span class="shot__tag">App</span>Only the areas of the selected mix stay filled.</figcaption></figure>
-      <figure class="shot"><img class="shot__image shot__image--tall" src="img/app-editor.webp" alt="The card of one colour with target, mix and five recipes"><figcaption class="shot__caption"><span class="shot__tag">App</span>Target, your mix and the recipes.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/storyboard-05.webp" alt="Storyboard: fingertip tapping an area on the tablet"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 05</span>Close on the tap that opens a recipe.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step" id="step-6">
-    <header class="step__head"><span class="step__number">6</span><h3 class="step__title">Change what you do not like</h3></header>
-    <div class="step__text">
-      <p>You are the painter, the photo is only a suggestion. In the full breakdown of a colour:</p>
-      <ul>
-        <li><strong>Change colour</strong> picks a new target, warmer, cooler or entirely different. The recipes follow.</li>
-        <li><strong>Edit only the clicked area</strong> detaches the clicked area from the others that share its colour.</li>
-        <li><strong>Reset to photo</strong> returns to the colour of the photo.</li>
-      </ul>
-      <p>Press <strong>Save</strong> to keep the picture with its settings, its palette and your changes in the <strong>Collection</strong> (app: <strong>Library</strong>).</p>
-    </div>
-  </article>
-
-  <article class="step" id="step-7">
-    <header class="step__head"><span class="step__number">7</span><h3 class="step__title">Print the sheet</h3></header>
-    <div class="step__text">
-      <p><strong>Export as JPG</strong> saves the picture exactly as it is shown, in the view you have chosen.</p>
-      <p><strong>Print / PDF</strong> gives the picture followed by every mix with its paints as bars. Print it for the desk, or choose "Save as PDF" in the print dialog and keep it on a tablet. The picture on the sheet carries the outlines and labels you need for transferring the drawing in step 9.</p>
-    </div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image shot__image--tall" src="img/app-print.webp" alt="The printed sheet: picture and legend of all mixes"><figcaption class="shot__caption"><span class="shot__tag">App</span>The printed sheet: picture and legend, grouped by mix.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/storyboard-06.webp" alt="Storyboard: hand pulling the printed sheet from a printer"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 06</span>The sheet comes out of the printer.</figcaption></figure>
-    </div>
-  </article>
-
-  <p class="manual__part">Part 2 · Paint it</p>
-
-  <article class="step" id="step-8">
-    <header class="step__head"><span class="step__number">8</span><h3 class="step__title">Lay out the desk</h3></header>
-    <div class="step__text">
-      <p>Tape the paper to a board on all four sides. Put the printed sheet where you can see it without reaching over wet paint, the paint box and palette on the side of your painting hand, and two jars of water behind them: one for rinsing, one that stays clean.</p>
-    </div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image" src="img/storyboard-08.webp" alt="Storyboard: top-down view of all materials laid out"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 08</span>Everything you need, from above.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step" id="step-9">
-    <header class="step__head"><span class="step__number">9</span><h3 class="step__title">Transfer the drawing</h3></header>
-    <div class="step__text">
-      <p>Copy the outlines onto the watercolour paper with a light pencil: trace them against a window or a light pad, or draw them by eye with the printed sheet beside you. Write the labels (3M, 6L) small inside the areas; a thin wash will still let you read them, so keep them faint.</p>
-      <p>You do not need every outline. Leave out what you would rather paint freely.</p>
-    </div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image" src="img/storyboard-07.webp" alt="Storyboard: hand tracing outlines onto taped watercolour paper"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 07</span>Pencil on the taped paper, the printed sheet at the side.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step" id="step-10">
-    <header class="step__head"><span class="step__number">10</span><h3 class="step__title">Mix the first colour and test it</h3></header>
-    <div class="step__text">
-      <p>Take the mix with the lightest washes first. Count the parts in brush loads: for 3 x 672 and 1 x 525, three loads of the first paint and one of the second into the same well. Then add water for the wash you need: a lot for W and L, little for R and C.</p>
-      <p>Paint a stroke on a scrap of the same paper, let it dry and hold it next to the chip on the sheet. Watercolour dries lighter than it looks wet. Too pale: more paint. Too strong: more water.</p>
-    </div>
-    <p class="step__tip">The recipes are estimates from one reference colour per paint. Trust the test strip more than the numbers.</p>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image" src="img/storyboard-09.webp" alt="Storyboard: brush mixing two paints on a porcelain palette"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 09</span>Two paints become one puddle.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/storyboard-10.webp" alt="Storyboard: test strip held next to the colour chips on the printed sheet"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 10</span>Test strip against the chip on the sheet.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step" id="step-11">
-    <header class="step__head"><span class="step__number">11</span><h3 class="step__title">Paint the light areas first</h3></header>
-    <div class="step__text">
-      <p>Fill every area of this mix and wash, then thin or strengthen the same puddle for its other letters. Select the mix in the app to see only its areas. Work from the lightest washes to the darkest, and from large areas to small ones.</p>
-      <p>Do not paint an area next to one that is still wet, unless you want the two to run into each other.</p>
-    </div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image" src="img/storyboard-11.webp" alt="Storyboard: flat brush laying the first pale wash over the pencil drawing"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 11</span>The first pale wash on white paper.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/storyboard-12.webp" alt="Storyboard: close view of the wet wash and the brush tip"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 12</span>Low and close: the wet shine of the wash.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step" id="step-12">
-    <header class="step__head"><span class="step__number">12</span><h3 class="step__title">Let it dry</h3></header>
-    <div class="step__text">
-      <p>Wait until the paper is flat and no longer cool to the back of your hand. Use the pause to mix the next colour and tick off the finished mixes on the sheet.</p>
-    </div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image" src="img/storyboard-13.webp" alt="Storyboard: painter leaning back with a cup while the painting dries"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 13</span>The pause. In the video: a time-lapse.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step" id="step-13">
-    <header class="step__head"><span class="step__number">13</span><h3 class="step__title">Work through the mixes down to the darks</h3></header>
-    <div class="step__text">
-      <p>Repeat steps 10 to 12 for every mix. The picture comes together with the middle tones; the darkest, most concentrated washes go on last with a small brush. They are the smallest areas and do the most for the likeness: eyes, mouths, the shadows under hair.</p>
-    </div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image" src="img/storyboard-14.webp" alt="Storyboard: painting half filled, the sheet with ticked mixes beside it"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 14</span>Halfway: mixes ticked off on the sheet.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/storyboard-15.webp" alt="Storyboard: fine brush placing small dark accents"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 15</span>The darks, last and small.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step" id="step-14">
-    <header class="step__head"><span class="step__number">14</span><h3 class="step__title">Compare, correct, take off the tape</h3></header>
-    <div class="step__text">
-      <p>Put the painting next to the screen in the view <strong>Mixed paint</strong>. Where an area is too pale, glaze it once more with the same mix. When everything is dry, pull the tape off flat and away from the picture.</p>
-    </div>
-    <div class="step__media step__media--three">
-      <figure class="shot"><img class="shot__image" src="img/storyboard-16.webp" alt="Storyboard: the painting next to the tablet with the colour plan"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 16</span>Painting and plan side by side.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/storyboard-17.webp" alt="Storyboard: fingers peeling masking tape from the edge of the paper"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 17</span>The tape comes off, a clean edge appears.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/storyboard-18.webp" alt="Storyboard: two hands holding up the finished watercolour with the original snapshot clipped to it"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 18</span>Final picture: the watercolour and the snapshot it came from.</figcaption></figure>
-    </div>
-  </article>
-</section>
-
-<section class="manual__section" id="layers">
-  <h2 class="manual__title">Layer mode: glazing instead of mixing</h2>
-  <p class="manual__lead">Set <strong>Method</strong> to <strong>Layer</strong>. Instead of twenty mixes you prepare a few thin washes, one per base paint, and paint them over each other from light to dark. Greens, oranges and darks appear where the layers add up.</p>
-
-  <article class="step">
-    <header class="step__head"><span class="step__number">1</span><h3 class="step__title">Check the layers</h3></header>
-    <div class="step__text">
-      <p>The list shows each layer with its paint, how to prepare the wash (for example 1:40 with water, like tea) and how many coats it gets. <strong>Accents</strong> are small strong touches painted last. Tick layers on and off to see what each one does, or click a layer to see it alone; the numbers in the picture are then coats.</p>
-      <p><strong>Layers</strong>, <strong>Max. coats</strong> and <strong>Accents</strong> set the amount of work. The base paints are proposed by the app or chosen in the paint box.</p>
-    </div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image shot__image--tall" src="img/app-layers.webp" alt="The list of layers with wash strength and coats"><figcaption class="shot__caption"><span class="shot__tag">App</span>Four layers and one accent for the sample photo.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/app-layer-solo.webp" alt="One layer alone, with coats as numbers"><figcaption class="shot__caption"><span class="shot__tag">App</span>One layer alone: paint all numbered areas, then the 2s again when dry.</figcaption></figure>
-    </div>
-  </article>
-
-  <article class="step">
-    <header class="step__head"><span class="step__number">2</span><h3 class="step__title">Paint step by step</h3></header>
-    <div class="step__text">
-      <p>Press <strong>Paint step by step</strong>. Each step names the wash to mix, shows where to paint it and tells you to let it dry. Switch between <strong>Where to paint</strong>, <strong>This wash</strong> and <strong>So far</strong>; <strong>Next</strong> moves on. The chip shows what one stroke of the wash looks like on white paper: test yours against it on a scrap.</p>
-      <p><strong>Print / PDF</strong> gives the finished picture and one sheet per layer.</p>
-    </div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image" src="img/app-step-1.webp" alt="Step 1 of 9: the first wash and where to paint it"><figcaption class="shot__caption"><span class="shot__tag">App</span>Step 1 of 9: the first wash.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/app-step-4.webp" alt="Step 4 of 9 in the view So far"><figcaption class="shot__caption"><span class="shot__tag">App</span>Step 4 of 9, "So far": two layers have already made greens.</figcaption></figure>
-    </div>
-    <p class="step__tip">For photos and video, shots 11 to 15 of the storyboard serve both methods: in layer mode each wash covers large parts of the paper, which films well from above.</p>
-  </article>
-</section>
-
-<section class="manual__section" id="more">
-  <h2 class="manual__title">More options</h2>
-  <p class="manual__lead">Things you can leave alone at first.</p>
-  <article class="step">
-    <header class="step__head"><span class="step__number">A</span><h3 class="step__title">Geometric areas</h3></header>
-    <div class="step__text"><p>Set <strong>Areas</strong> to <strong>Geometric</strong> and every area becomes a polygon with a few straight edges, laid over each other from large to small. It works in both methods and is quick to draw with a ruler. <strong>Simplify areas</strong> makes the edges longer and the shapes fewer.</p></div>
-    <div class="step__media">
-      <figure class="shot"><img class="shot__image" src="img/app-geometric.webp" alt="The sample photo as geometric areas"><figcaption class="shot__caption"><span class="shot__tag">App</span>The same picture with geometric areas.</figcaption></figure>
-      <figure class="shot"><img class="shot__image" src="img/app-map.webp" alt="The sample photo as organic areas"><figcaption class="shot__caption"><span class="shot__tag">App</span>Organic areas, for comparison.</figcaption></figure>
-    </div>
-  </article>
-  <article class="step">
-    <header class="step__head"><span class="step__number">B</span><h3 class="step__title">Values</h3></header>
-    <div class="step__text"><p>Press <strong>Values</strong> in the settings and the picture is worked out in grey: it is split into light and dark values, and each value is painted with a colour from your palette, whatever its hue. <strong>Colours</strong> still counts the mixes, and each mix covers several values as washes with more or less water. A good start for a picture in one or two colours.</p></div>
-  </article>
-  <article class="step">
-    <header class="step__head"><span class="step__number">C</span><h3 class="step__title">Details of the picture (Pro)</h3></header>
-    <div class="step__text"><p>Press <strong>Detail</strong> among the tools of the picture and drag a frame over a part of it, a face or a window. That part is cut from the photo at full size and analysed as a picture of its own, with finer areas and its own mixes. Each detail stays as a small picture under the main one: click it to go back to it, or <strong>Back</strong> to return to the whole picture. <strong>Fit</strong> fits the picture to the window again.</p></div>
-  </article>
-  <article class="step">
-    <header class="step__head"><span class="step__number">D</span><h3 class="step__title">Views</h3></header>
-    <div class="step__text"><p><strong>Mixed paint</strong> shows what your paints can reach, <strong>Photo colour</strong> what the photo asks for, <strong>Overlay</strong> the photo at half strength over the paint, <strong>Photo</strong> the original. <strong>Template to print</strong> leaves the areas empty and draws their outlines and numbers in light blue, which a printer prints without black ink: print it and paint on the sheet. <strong>Outlines</strong> and <strong>Numbers</strong> can be switched off for a clean look at the colours.</p></div>
-  </article>
-</section>
-
-<section class="manual__section" id="reference">
-  <h2 class="manual__title">Reference</h2>
-  <p class="manual__lead">The letters and numbers at a glance.</p>
-  <div class="table__wrap">
-  <table class="table">
-    <thead><tr><th>Label</th><th>Meaning</th><th>At the desk</th></tr></thead>
-    <tbody>
-      <tr><td>6L, 6R</td><td>Mix 6 as a light wash and as a rich wash</td><td>One puddle, thinned for L, strengthened for R</td></tr>
-      <tr><td>W · L · M · R · C</td><td>Very watery · light · medium · rich · concentrated</td><td>From tinted water to paint that barely flows</td></tr>
-      <tr><td>3 x P 672</td><td>Three parts of paint 672 from the pan (T: tube, P/T: you own both)</td><td>Count brush loads</td></tr>
-      <tr><td>0.8 · excellent</td><td>Distance between target and mix. Below 2 excellent, below 5 good, below 10 fair, from 10 rough</td><td>From "fair" on, compare with the view Photo colour or allow another paint</td></tr>
-      <tr><td>1:40 with water, like tea</td><td>Layer mode: one part paint to forty parts water</td><td>Test one stroke against the chip of the step</td></tr>
-      <tr><td>A1, A2</td><td>Layer mode: accents</td><td>Painted last, on small areas</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <div class="key key--after">
-    <div class="key__item"><p class="key__term">Free and Pro on the web</p><p class="key__text">A free account mixes from up to eight paints in one paint box. Pro adds saved pictures, Print / PDF, Export as JPG, details of the picture, more paint boxes, the manufacturers' colour charts and finer areas. Pro is 4.99 EUR a month, 29.99 EUR a year or 79 EUR once.</p></div>
-    <div class="key__item"><p class="key__term">Free and paid in the app</p><p class="key__text">Free with one saved picture and one paint box. A single purchase unlocks everything. No subscription.</p></div>
-    <div class="key__item"><p class="key__term">Where the data is</p><p class="key__text">Web: in the browser on this device, not in your account. App: on the device. Nothing is synchronised.</p></div>
-    <div class="key__item"><p class="key__term">If a colour looks wrong</p><p class="key__text">The stock holds one reference colour per paint. Your own swatch decides; change the target or pick another recipe.</p></div>
-  </div>
-</section>
-
-<section class="manual__section" id="storyboard">
-  <h2 class="manual__title">Storyboard and shot list</h2>
-  <p class="manual__lead">Eighteen proposed pictures for the shoot, in the order of the manual. "Photo" marks the stills the manual needs; everything is also a video shot. Replace <code>img/storyboard-NN.webp</code> with the real photo under the same name and the manual updates itself.</p>
-
-  <div class="board">
-    <article class="board__frame"><img class="board__image" src="img/storyboard-01.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">01 · Opening</span><span class="board__use">Video + Photo</span></div><p class="board__angle">Wide, from behind, eye level</p><p class="board__note">Desk at the window, tablet, paint box, blank paper. Slow push-in, 5 s. Title goes over this.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-02.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">02 · The photo</span><span class="board__use">Video + Photo · Step 1</span></div><p class="board__angle">Close, over the hand</p><p class="board__note">Phone with the snapshot, paint box out of focus behind. Cut to a screen recording of "New picture".</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-03.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">03 · The map appears</span><span class="board__use">Video + Photo · Step 4</span></div><p class="board__angle">Over the shoulder</p><p class="board__note">Tablet upright, the picture as numbered areas. In video: the moment the analysis finishes.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-04.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">04 · Paint box, real and on screen</span><span class="board__use">Video + Photo · Step 2</span></div><p class="board__angle">Top-down</p><p class="board__note">Open pan box beside the tablet showing the paint box. Finger points at a pan, then at its chip.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-05.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">05 · Tap for a recipe</span><span class="board__use">Video + Photo · Step 5</span></div><p class="board__angle">Close on the screen, slightly from the side</p><p class="board__note">Fingertip taps an area, the rest blanks. Use a screen recording for the recipe card so the text is sharp.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-06.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">06 · The sheet</span><span class="board__use">Video + Photo · Step 7</span></div><p class="board__angle">Medium, at printer height</p><p class="board__note">Hand takes the printed sheet. Alternative without a printer: the PDF on a second tablet.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-07.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">07 · Transfer</span><span class="board__use">Video + Photo · Step 9</span></div><p class="board__angle">Top-down</p><p class="board__note">Pencil on taped paper, sheet beside it. Time-lapse 6 s, then one real-time close of writing a label.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-08.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">08 · Materials</span><span class="board__use">Photo · Step 8</span></div><p class="board__angle">Top-down flat lay</p><p class="board__note">Paper on board, brushes, box, two jars, palette, sheet, cloth. Even soft light, no hard shadows.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-09.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">09 · Mixing</span><span class="board__use">Video + Photo · Step 10</span></div><p class="board__angle">Macro, 45 degrees</p><p class="board__note">Count the loads on camera: three of one paint, one of the other. Overlay the recipe line from the app.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-10.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">10 · Test strip</span><span class="board__use">Video + Photo · Step 10</span></div><p class="board__angle">Close, hand-held strip</p><p class="board__note">Dried swatch against the chip on the sheet. The honest moment of the film: show one that is off, then corrected.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-11.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">11 · First wash</span><span class="board__use">Video + Photo · Step 11</span></div><p class="board__angle">Top-down, locked off</p><p class="board__note">Main camera for all painting. Keep it fixed for the whole session so the stages can be cross-faded.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-12.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">12 · Wet paint</span><span class="board__use">Video · Step 11</span></div><p class="board__angle">Low side angle, macro</p><p class="board__note">Light from behind for the shine. Beauty shot, 3 to 4 s, slow motion if possible.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-13.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">13 · Drying</span><span class="board__use">Video · Step 12</span></div><p class="board__angle">Medium, from behind</p><p class="board__note">Pause with a cup. Carries the "let it dry" caption; time-lapse of the paper losing its shine.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-14.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">14 · Halfway</span><span class="board__use">Video + Photo · Step 13</span></div><p class="board__angle">Top-down, same position as 11</p><p class="board__note">Mid tones in, sheet with ticked mixes in frame. Take a still after every mix for a stage sequence.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-15.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">15 · The darks</span><span class="board__use">Video + Photo · Step 13</span></div><p class="board__angle">Macro on the brush tip</p><p class="board__note">Fine brush, concentrated wash, small areas. The picture snaps into place here.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-16.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">16 · Plan and painting</span><span class="board__use">Video + Photo · Step 14</span></div><p class="board__angle">Over the shoulder, high</p><p class="board__note">Painting beside the tablet on "Mixed paint". Dim the screen so both expose alike.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-17.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">17 · Tape</span><span class="board__use">Video · Step 14</span></div><p class="board__angle">Close, along the edge</p><p class="board__note">One continuous pull with sound. Short and satisfying, good for a social cut.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-18.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">18 · Result</span><span class="board__use">Video + Photo</span></div><p class="board__angle">Point of view, both hands</p><p class="board__note">Finished watercolour held to the window, snapshot clipped to the corner. End card and cover picture.</p></div></article>
-  </div>
-
-  <p class="manual__part">Notes for the shoot</p>
-  <div class="key">
-    <div class="key__item"><p class="key__term">Screens</p><p class="key__text">Record the app as a screen recording and film the device only for context (02 to 05). Filmed screens flicker and the text is too small.</p></div>
-    <div class="key__item"><p class="key__term">One fixed top-down camera</p><p class="key__text">Shots 07, 08, 11 and 14 share one position. Mark the board on the desk with tape so it does not move between sessions.</p></div>
-    <div class="key__item"><p class="key__term">Light</p><p class="key__text">Window from the side opposite the painting hand, a white card as fill. No lamp mixed in, or the paint colours shift.</p></div>
-    <div class="key__item"><p class="key__term">Which picture</p><p class="key__text">The frames show a group portrait as a stand-in. Choose the motif first, analyse it, and print the sheet before the shoot so the labels in the film are the real ones.</p></div>
-    <div class="key__item"><p class="key__term">Length</p><p class="key__text">As drawn: about 90 seconds for a short film (5 s per frame), or 4 to 5 minutes as a tutorial with screen recordings for steps 1 to 7.</p></div>
-    <div class="key__item"><p class="key__term">Stills</p><p class="key__text">Landscape 16:9 for the manual. Shoot 01, 08 and 18 also upright for the App Store and social formats.</p></div>
-  </div>
-</section>
-
-<footer class="manual__footer">
-  <p>Watercolourlove by Markus Freise. Questions: <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></p>
 </footer>
-
-</main>
 </body>
 </html>

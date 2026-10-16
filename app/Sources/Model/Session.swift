@@ -86,6 +86,8 @@ struct AnalysisSettings: Codable, Equatable {
     var view = ViewMode.mixed
     var outlines = true
     var numbers = true
+    /// Mix mode: Monochrome, the picture in grey, every value painted with one paint of the box (a value study).
+    var values = false
 
     init() {}
 
@@ -108,6 +110,7 @@ struct AnalysisSettings: Codable, Equatable {
         view = try values.decodeIfPresent(ViewMode.self, forKey: .view) ?? defaults.view
         outlines = try values.decodeIfPresent(Bool.self, forKey: .outlines) ?? defaults.outlines
         numbers = try values.decodeIfPresent(Bool.self, forKey: .numbers) ?? defaults.numbers
+        self.values = try values.decodeIfPresent(Bool.self, forKey: .values) ?? defaults.values
     }
 }
 
@@ -790,6 +793,9 @@ final class Session {
         var paintIDs: [String]?
     }
 
+    /// Monochrome belongs to mix mode: layers are fitted to colours.
+    var valueMode: Bool { settings.values && settings.mode != .layer }
+
     /// Builds the colours and their recipes from the analysis and the paint box, e.g. after the
     /// paint box changed. While the box is on Auto, the paints are picked for this picture first.
     func recomputeAllRecipes(edits: [EntryEdit] = []) {
@@ -801,13 +807,14 @@ final class Session {
         let maxPaints = settings.maxPaints
         let wanted = settings.colours
         let variety = settings.variety
+        let values = valueMode
         let old = entries
         let oldBase = baseEntries
         let oldRegionEntry = regionEntry
         busy = true
         Task {
             let palette = await Task.detached(priority: .userInitiated) {
-                Self.buildPalette(seg: seg, paints: paints, candidates: candidates, maxPaints: maxPaints, wanted: wanted, variety: variety, old: old, oldBase: oldBase, oldRegionEntry: oldRegionEntry)
+                Self.buildPalette(seg: seg, paints: paints, candidates: candidates, maxPaints: maxPaints, wanted: wanted, variety: variety, values: values, old: old, oldBase: oldBase, oldRegionEntry: oldRegionEntry)
             }.value
             guard run == recipeRun, seg.regions.count == segmentation?.regions.count else { return }
             if let ids = palette.paintIDs, Set(ids) != library.enabledIDs || !library.palette.auto { library.setEnabled(ids, auto: true) }
@@ -837,7 +844,7 @@ final class Session {
     /// water level are the same instruction for the painter, so they become one colour.
     /// Colours changed by hand, detached areas and picked recipes are carried over where they still fit.
     private nonisolated static func buildPalette(
-        seg: Segmentation, paints: [MixPaint], candidates: [MixPaint]?, maxPaints: Int, wanted: Int, variety: Int,
+        seg: Segmentation, paints: [MixPaint], candidates: [MixPaint]?, maxPaints: Int, wanted: Int, variety: Int, values: Bool,
         old: [PaletteEntry], oldBase: Int, oldRegionEntry: [Int]
     ) -> BuiltPalette {
         var box = paints
@@ -845,13 +852,32 @@ final class Session {
         if let candidates {
             // Every wash is a target: a wash its mix cannot reach needs paints for a mix of its own.
             let targets = seg.clusters.filter { $0.pixelCount > 0 }.map { (hex: $0.hex, weight: Double($0.pixelCount)) }
-            let ids = Mixing.proposePaints(targets: targets, paints: candidates, maxPaints: maxPaints)
+            let ids = Mixing.proposePaints(targets: targets, paints: candidates, maxPaints: maxPaints, values: values)
             box = candidates.filter { ids.contains($0.id) }
             picked = ids
         }
         let byID = Dictionary(box.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
         let total = Double(seg.width * seg.height)
-        func wash(_ recipe: Recipe, _ hex: String) -> Recipe { Mixing.washRecipe(recipe, target: hex, paints: byID) ?? recipe }
+        func wash(_ recipe: Recipe, _ hex: String) -> Recipe { Mixing.washRecipe(recipe, target: hex, paints: byID, values: values) ?? recipe }
+
+        // Monochrome with paints that do not get as dark as the picture (a yellow alone): the values
+        // of the picture are spread over what the paints reach, from blank paper for the lightest to
+        // the darkest paint for the darkest, so that the picture keeps all its steps instead of
+        // ending in one flat dark. Paints that reach the darks leave the values alone.
+        var clusters = seg.clusters
+        if values, !box.isEmpty {
+            let used = seg.clusters.filter { $0.pixelCount > 0 }.map { ColorMath.oklab(hex: $0.hex).x }
+            if let light = used.max(), let dark = used.min() {
+                let reach = Mixing.valueReach(paints: box, maxPaints: maxPaints)
+                if reach > dark && light > dark {
+                    clusters = seg.clusters.map { c in
+                        let L = ColorMath.oklab(hex: c.hex).x
+                        let hex = ColorMath.hex(oklab: Vec3(1 - (light - L) * (1 - reach) / (light - dark), 0, 0))
+                        return Segmentation.Cluster(index: c.index, group: c.group, level: c.level, hex: hex, pixelCount: c.pixelCount)
+                    }
+                }
+            }
+        }
 
         struct Item {
             var group: Int
@@ -863,7 +889,7 @@ final class Session {
         }
         var mixRecipes = [Int: [Recipe]]()
         var built: [Item] = []
-        for mix in Mixes.plan(clusters: seg.clusters, paints: box, maxPaints: maxPaints, wanted: wanted, variety: variety) {
+        for mix in Mixes.plan(clusters: clusters, paints: box, maxPaints: maxPaints, wanted: wanted, variety: variety, values: values) {
             mixRecipes[mix.group] = mix.recipes
             var items = mix.clusters.map { Item(group: mix.group, clusters: [$0.index], pixels: $0.pixelCount, lab: ColorMath.oklab(hex: $0.hex)) }
             // Merge washes until every water level of the mix occurs once.
@@ -871,7 +897,8 @@ final class Session {
                 var levels: [Item] = []
                 for var item in items {
                     item.hex = ColorMath.hex(oklab: item.lab)
-                    item.letter = mix.recipes.first.map { Mixing.washLetter(wash($0, item.hex).fullness) } ?? ""
+                    // A value study is painted in finer steps of water.
+                    item.letter = mix.recipes.first.map { Mixing.washLetter(wash($0, item.hex).fullness, fine: values) } ?? ""
                     if let same = levels.firstIndex(where: { $0.letter == item.letter }) {
                         let n = Double(levels[same].pixels + item.pixels)
                         levels[same].lab = (levels[same].lab * Double(levels[same].pixels) + item.lab * Double(item.pixels)) / n
@@ -928,7 +955,7 @@ final class Session {
         for i in entries.indices {
             if entries[i].overridden {
                 entries[i].family = "own-\(i)"
-                entries[i].recipes = Mixing.findRecipes(target: entries[i].targetHex, paints: box, maxPaints: maxPaints)
+                entries[i].recipes = Mixing.findRecipes(target: entries[i].targetHex, paints: box, maxPaints: maxPaints, values: values)
             } else {
                 entries[i].family = "mix-\(entries[i].group)"
                 entries[i].recipes = (mixRecipes[entries[i].group] ?? []).map { wash($0, entries[i].targetHex) }
@@ -945,12 +972,12 @@ final class Session {
         let paints = library.enabled.map(\.mixPaint)
         if entries[index].overridden {
             entries[index].family = "own-\(index)"
-            entries[index].recipes = Mixing.findRecipes(target: entries[index].targetHex, paints: paints, maxPaints: settings.maxPaints)
+            entries[index].recipes = Mixing.findRecipes(target: entries[index].targetHex, paints: paints, maxPaints: settings.maxPaints, values: valueMode)
         } else {
             let byID = Dictionary(paints.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
             let hex = entries[index].targetHex
             entries[index].family = "mix-\(entries[index].group)"
-            entries[index].recipes = (mixRecipes[entries[index].group] ?? []).map { Mixing.washRecipe($0, target: hex, paints: byID) ?? $0 }
+            entries[index].recipes = (mixRecipes[entries[index].group] ?? []).map { Mixing.washRecipe($0, target: hex, paints: byID, values: valueMode) ?? $0 }
         }
         entries[index].chosen = 0
     }

@@ -479,7 +479,9 @@ final class Session {
         // "Colours" counts mixes. The analysis is asked for more, and the planning joins them down
         // to the wanted number once the paints are known.
         let colours = Mixes.toRequest(wanted: settings.colours)
-        let simplify = settings.simplify
+        // The setting is Simplify as shown (0 = what a picture opens with); the analysis counts
+        // from Segmenter.finest, with the shown 0 at Segmenter.simplifyZero, as the web app does.
+        let simplify = settings.simplify + Segmenter.simplifyZero
         let geometric = settings.geometric
         let saturation = Double(settings.saturation) / 100
         let contrast = Double(settings.contrast) / 100

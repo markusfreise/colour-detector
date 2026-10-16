@@ -26,7 +26,7 @@ Tests run on an iOS simulator (`xcodebuild test`, or Cmd-U in Xcode). On macOS t
 
 | Path | Contents |
 |---|---|
-| `Sources/Core/` | Colour maths, mixing model, segmentation, mix planning and layer mode: ports of `src/lib/*.js`. Change both sides together; `Tests/CoreTests.swift` and `Tests/LayerTests.swift` check them against reference values from the web logic |
+| `Sources/Core/` | Colour maths, mixing model, segmentation (with its calm areas in `Smooth.swift` and focus boxes in `Details.swift`), Blocking, mix planning and layer mode: ports of `src/lib/*.js`. Change both sides together; the tests in `Tests/` check them against reference values from the web logic (`SegmentationSyncTests` and `BlockingTests` compare the areas pixel for pixel) |
 | `Sources/Model/` | `Library` (paints, paint boxes, the palette of the picture), `Session` (the picture being worked on), `PictureCollection` (saved pictures) |
 | `Sources/Views/` | SwiftUI screens, laid out as the web app rather than after Apple's guidelines: the picture fills the window, icon buttons at the top left (picture) and top right (panels), the view tools at the top centre (bottom on a phone), panels on floating cards. Tokens and building blocks in `Theme.swift` |
 | `Sources/Platform/` | Picture decoding, camera, PDF and printing, the chosen language (`Localization.swift`) |

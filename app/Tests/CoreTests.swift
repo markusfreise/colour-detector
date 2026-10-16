@@ -123,8 +123,8 @@ final class CoreTests: XCTestCase {
         let clusters = Segmenter.segment(rgba: rgba, width: width, height: height, colours: 2, simplify: 0).clusters
         XCTAssertEqual(clusters.map(\.group), [0, 1, 1, 1, 1, 1])
         XCTAssertEqual(clusters.map(\.level), [0, 0, 1, 2, 3, 4])
-        XCTAssertEqual(clusters.map(\.hex), ["#c83c32", "#d1e6f7", "#b1d2f0", "#83b3e4", "#4f88d2", "#2359b7"])
-        XCTAssertEqual(clusters.map(\.pixelCount), [1200, 360, 600, 840, 960, 840])
+        XCTAssertEqual(clusters.map(\.hex), ["#c83c32", "#cde3f6", "#a9cdee", "#7fb0e3", "#538bd3", "#265cb9"])
+        XCTAssertEqual(clusters.map(\.pixelCount), [1200, 480, 600, 720, 840, 960])
     }
 
     private func cluster(_ index: Int, _ hex: String, _ pixels: Int) -> Segmentation.Cluster {

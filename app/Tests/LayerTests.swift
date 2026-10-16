@@ -627,8 +627,8 @@ final class LayerTests: XCTestCase {
 
     func testGeometricMixesMatchTheWebLogic() {
         let expected: [(simplify: Int, map: String, regions: Int, pixels: String)] = [
-            (0, "2536265450", 112, "168 165 0 0 984 189 0 0 3434 3939 980 0 0 0 1492 1864 67 766 2318 103 1487 0 0 0 0 2670 94 0 0 0 98 193 0 0 0 295 1629 3086 2199 0 0 0 0 1780"),
-            (4, "1052538219", 60, "0 982 2080 4915 2527 0 1854 823 795 2832 0 850 3194 78 2749 0 495 0 0 0 1031 2461 759 0 214 203 1158"),
+            (0, "1114228175", 31, "4227 0 1980 4363 985 3057 5935 0 99 325 1995 0 1845 0 0 0 1450 3739"),
+            (4, "419052205", 29, "6197 0 0 4397 957 3060 5923 0 92 344 1990 0 1849 0 0 0 1452 3739"),
         ]
         for e in expected {
             let result = Segmenter.segment(rgba: scene(200, 150), width: 200, height: 150, colours: 12, simplify: e.simplify, geometric: true)

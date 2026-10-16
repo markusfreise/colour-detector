@@ -880,6 +880,17 @@
       },
       "extractionState": "manual"
     },
+    "concentrated (hardly any water)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "konzentriert (kaum Wasser)"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
     "Contrast": {
       "localizations": {
         "de": {

@@ -4,6 +4,7 @@ import SwiftUI
 /// their proportions, and its washes. Selecting a mix or a wash blanks the rest of the picture.
 struct PaletteView: View {
     @Environment(Session.self) private var session
+    @Environment(Store.self) private var store
 
     var body: some View {
         let mixes = session.mixBlocks
@@ -25,6 +26,10 @@ struct PaletteView: View {
                 }
             }
         }
+        // With Blocking at hand, the tones are worked out in the background, for the tone of every mix.
+        .task(id: store.unlocked && !session.entries.isEmpty ? session.blockingKey : nil) {
+            if store.unlocked, !session.entries.isEmpty, !session.layerMode { session.ensureBlocking() }
+        }
     }
 
     private func block(_ mix: MixBlock) -> some View {
@@ -45,6 +50,13 @@ struct PaletteView: View {
                     VStack(alignment: .leading, spacing: 1) {
                         paintsLine(mix).font(Theme.small).fixedSize(horizontal: false, vertical: true)
                         Text(meta(mix)).font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
+                        // Value matters more than hue: a mix that lands in another tone of the blocking.
+                        if let warning = toneWarning(mix) {
+                            Text(warning == .lighter ? "The mix is lighter than its tone in the blocking" : "The mix is darker than its tone in the blocking")
+                                .font(Theme.small)
+                                .foregroundStyle(.orange)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
                     Spacer(minLength: 0)
                 }
@@ -103,6 +115,17 @@ struct PaletteView: View {
         session.select(entry: session.selectedEntry == index ? nil : index)
     }
 
+    /// The tone of a mix (its largest wash) in the blocking, with the full version.
+    private func tone(_ mix: MixBlock) -> Int? {
+        guard store.unlocked, session.entries.indices.contains(mix.base) else { return nil }
+        return session.tone(of: session.entries[mix.base])
+    }
+
+    private func toneWarning(_ mix: MixBlock) -> Session.ToneWarning? {
+        guard store.unlocked, session.entries.indices.contains(mix.base) else { return nil }
+        return session.toneWarning(session.entries[mix.base])
+    }
+
     private func percent(_ share: Double) -> String {
         let percent = Int((share * 100).rounded())
         return percent == 0 ? "<1" : "\(percent)"
@@ -117,6 +140,8 @@ struct PaletteView: View {
         }
         parts.append(L("%@%% of image", percent(mix.share)))
         if mix.changed { parts.append(L("changed")) }
+        // Its tone in the blocking.
+        if let tone = tone(mix) { parts.append(L("tone %lld", tone)) }
         return parts.joined(separator: " · ")
     }
 }

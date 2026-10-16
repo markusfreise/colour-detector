@@ -49,6 +49,10 @@ final class Store {
                 owned = true
             }
         }
+        #if DEBUG
+        // "-pro" at launch: the full version, for screenshots and checks.
+        if ProcessInfo.processInfo.arguments.contains("-pro") { owned = true }
+        #endif
         unlocked = owned
     }
 

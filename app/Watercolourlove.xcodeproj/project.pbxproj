@@ -63,6 +63,7 @@
 		E8A029583A483531F59BA52E /* Layers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 165CA1E1603ED5BA38158387 /* Layers.swift */; };
 		ECCB8D93CC4A514AB72CDA59 /* Geometric.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB889F06AEE97A265871D42F /* Geometric.swift */; };
 		EE4F26E03C21508803337CB7 /* Words.swift in Sources */ = {isa = PBXBuildFile; fileRef = 919DBD58927AD003699BC82D /* Words.swift */; };
+		F33E90DB14D97620BE3B43B7 /* BlockingControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB7E0CB80CD6AE38F8E3337 /* BlockingControlsView.swift */; };
 		F7E4D190AA7CA705E3468947 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6DDE670EB3783ED7228C8E9 /* Localization.swift */; };
 		FB018294A7D84B17F7161832 /* Blocking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E834ABF1D0C866F84511F0 /* Blocking.swift */; };
 /* End PBXBuildFile section */
@@ -111,6 +112,7 @@
 		79497CE6AD636D741F37181B /* DebugSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSnapshot.swift; sourceTree = "<group>"; };
 		7ADD282308C8DE8CE23E59FE /* Chips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chips.swift; sourceTree = "<group>"; };
 		7B4498258ACA2B19115E41BB /* WatercolourloveTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WatercolourloveTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BB7E0CB80CD6AE38F8E3337 /* BlockingControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockingControlsView.swift; sourceTree = "<group>"; };
 		7D3D73F08E945C5A2A30550D /* ColourCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColourCard.swift; sourceTree = "<group>"; };
 		7FADB19296621E033CB8756C /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		81FDF902F81FD393A7F259FE /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 		2E2FB65C3411F264226C0140 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				7BB7E0CB80CD6AE38F8E3337 /* BlockingControlsView.swift */,
 				7ADD282308C8DE8CE23E59FE /* Chips.swift */,
 				9C777B965C01B3758A4A5B2F /* CollectionView.swift */,
 				7D3D73F08E945C5A2A30550D /* ColourCard.swift */,
@@ -404,6 +407,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FB018294A7D84B17F7161832 /* Blocking.swift in Sources */,
+				F33E90DB14D97620BE3B43B7 /* BlockingControlsView.swift in Sources */,
 				3D90C7B90DFD9C3DF278B498 /* CameraPicker.swift in Sources */,
 				BDB0867B356CC4F0C6F1471E /* Chips.swift in Sources */,
 				61A2BEE300B72FBFB9791742 /* Closeup.swift in Sources */,

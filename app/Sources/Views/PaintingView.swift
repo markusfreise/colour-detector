@@ -165,6 +165,10 @@ struct PaintingView: View {
         let x = Int(location.x / size.width * Double(working.width))
         let y = Int(location.y / size.height * Double(working.height))
         guard x >= 0, y >= 0, x < working.width, y < working.height else { return }
+        if session.settings.view == .blocking {
+            session.tapBlocking(x: x, y: y)
+            return
+        }
         if session.layerMode {
             session.selectPoint((x, y))
             return
@@ -234,6 +238,7 @@ extension Session {
     /// layer seen alone. Shared by the screen, the printed sheet and the exported picture.
     func pictureLabels() -> [NumberedPicture.Label] {
         guard settings.numbers else { return [] }
+        if settings.view == .blocking { return blockingLabels() }
         let onPhoto = settings.view == .original
         if layerMode {
             guard let plan = layers, let solo = layerSolo else { return [] }
@@ -265,6 +270,24 @@ extension Session {
                 y: Double(region.anchorY) + 0.5,
                 room: Double(region.anchorDist),
                 color: color
+            )
+        }
+    }
+}
+
+extension Session {
+    /// The numbers of the tones in their masses, as the picture shows them.
+    private func blockingLabels() -> [NumberedPicture.Label] {
+        guard let result = blockingResult else { return [] }
+        return result.regions.compactMap { region in
+            if let solo = blockingSolo, region.tone != solo { return nil }
+            let grey = Blocking.toneGrey(region.tone, tones: result.tones)
+            return NumberedPicture.Label(
+                text: "\(region.tone + 1)",
+                x: Double(region.anchorX) + 0.5,
+                y: Double(region.anchorY) + 0.5,
+                room: Double(region.anchorDist),
+                color: grey.r > 140 ? Color(hex: "#1d1b18") : .white
             )
         }
     }

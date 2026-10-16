@@ -47,11 +47,11 @@ A new text: write it in English in the code, build once, then add its German in 
 
 ## Free and paid
 
-Free: one saved picture and the paint boxes the app starts with. The purchase lifts the picture limit (`Store.freePictures`) and adds new and imported paint boxes. Everything else is free.
+Free: one saved picture and the paint boxes the app starts with. The purchase lifts the picture limit (`Store.freePictures`) and adds what the web app's `server/plans.json` lists under `native.locked`: new and imported paint boxes, the catalogues of the paint libraries (`Resources/Data/libraries.json`), close-ups, the Blocking view and Simplify below 0. Everything else is free, Monochrome included. The web's picture credits, plans and Starter box belong to its accounts; the app has none of them.
 
 ## Screenshots
 
-Debug builds accept launch arguments: `-screen paintbox|collection|editor|breakdown|samples|settings|colours|paywall|preferences` opens that screen, `-language de` and `-theme dark` set the preferences for that launch, `-switch de,theme:dark,en,auto` changes them while the app runs, one step every 4 seconds (with `-snapshot` on the Mac a PNG after each step), `-view mixed|target|overlay|original|template` sets what the picture shows, `-sample` steps to the next sample photo, `-auto` switches the paint box to Auto, `-geometric` switches to geometric areas, `-layer` switches to layer mode (`-step n` opens that step of the walk, `-stepview paint|wash|result` sets its picture, `-spot` selects the middle of the picture). On the Mac, `-snapshot` also writes every window as a PNG into the app's temporary folder, and `-pdf` the printed sheet as `sheet.pdf`.
+Debug builds accept launch arguments: `-screen paintbox|collection|editor|breakdown|samples|settings|colours|paywall|preferences` opens that screen, `-language de` and `-theme dark` set the preferences for that launch, `-switch de,theme:dark,en,auto` changes them while the app runs, one step every 4 seconds (with `-snapshot` on the Mac a PNG after each step), `-view mixed|target|overlay|original|template|blocking` sets what the picture shows, `-pro` acts as if the full version were bought, `-hints` turns Help on, `-monochrome` switches to Monochrome, `-sample` steps to the next sample photo, `-auto` switches the paint box to Auto, `-geometric` switches to geometric areas, `-layer` switches to layer mode (`-step n` opens that step of the walk, `-stepview paint|wash|result` sets its picture, `-spot` selects the middle of the picture). On the Mac, `-snapshot` also writes every window as a PNG into the app's temporary folder, and `-pdf` the printed sheet as `sheet.pdf`.
 
 ```bash
 xcrun simctl launch <device> de.markusfreise.watercolourlove -screen editor

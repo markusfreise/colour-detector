@@ -70,6 +70,10 @@ struct RootView: View {
         }
         #endif
         .onChange(of: photo) { loadPhoto() }
+        // A saved picture shown in Blocking opens in the paint without the full version.
+        .onChange(of: session.settings.view, initial: true) { _, view in
+            if view == .blocking, !store.unlocked { session.settings.view = .mixed }
+        }
         // A phone: the colour card comes up where the panel card was; one thing over the picture at a time.
         .onChange(of: session.selectedRegion) { _, region in
             if compact, region != nil { showingSettings = false; showingColours = false; menuOpen = false }
@@ -111,6 +115,8 @@ struct RootView: View {
         if arguments.contains("-sample") { session.loadSample() }
         // "-geometric" switches to areas with straight edges.
         if arguments.contains("-geometric") { session.settings.geometric = true }
+        // "-monochrome" paints the picture in grey, each value with one paint.
+        if arguments.contains("-monochrome") { session.settings.values = true }
         // "-layer" switches to layer mode; "-step n" opens that step of the walk, "-stepview paint|wash|result" its picture.
         if arguments.contains("-layer") { session.setMode(.layer) }
         while session.busy || (session.layerMode ? session.layers == nil : session.entries.isEmpty) { try? await Task.sleep(for: .milliseconds(100)) }
@@ -395,7 +401,7 @@ struct RootView: View {
             SegmentedGroup(
                 options: viewModes, selection: session.settings.view,
                 title: { layered($0) ?? $0.title }, symbol: { $0.symbol },
-                choose: { session.settings.view = $0 },
+                choose: choose,
                 size: toolSize,
                 hint: { layered($0) ?? $0.hint }
             )
@@ -409,6 +415,16 @@ struct RootView: View {
             }
         }
         .environment(\.hintSide, compact ? .above : .below)
+    }
+
+    /// Blocking is part of the full version.
+    private func choose(_ view: ViewMode) {
+        if view == .blocking, !store.unlocked {
+            paywallReason = "block in light and shadow"
+            showingPaywall = true
+            return
+        }
+        session.settings.view = view
     }
 
     /// In layer mode the paint is layered, not mixed.

@@ -6,6 +6,9 @@ import SwiftUI
 struct ControlsView: View {
     @Environment(Session.self) private var session
     @Environment(Library.self) private var library
+    @Environment(Store.self) private var store
+    @State private var showingPaywall = false
+    @State private var paywallReason = "make the areas finer than Simplify 0"
     // The sliders move freely; the analysis only runs when the finger lifts.
     @State private var colours = 20.0
     @State private var simplify = 0.0
@@ -19,9 +22,18 @@ struct ControlsView: View {
     @State private var maxCoats = 2.0
 
     var body: some View {
+        // In the Blocking view only its own settings; the colour settings come back with the other views.
+        if session.settings.view == .blocking {
+            BlockingControlsView()
+        } else {
+            colourSettings
+        }
+    }
+
+    private var colourSettings: some View {
         @Bindable var session = session
         let layerMode = session.settings.mode == .layer
-        VStack(alignment: .leading, spacing: 14) {
+        return VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: Theme.gap) {
                 SegmentedGroup(
                     options: [AnalysisMode.mix, .layer], selection: session.settings.mode,
@@ -35,6 +47,14 @@ struct ControlsView: View {
                     symbol: { $0 ? "triangle" : "square.grid.3x3" },
                     choose: { session.settings.geometric = $0 }
                 )
+                // Monochrome: the picture in grey, each value painted with one colour of the paint box.
+                IconButton(
+                    title: "Monochrome: the picture in grey, each value painted with one colour of the paint box",
+                    symbol: "circle.lefthalf.filled",
+                    active: session.valueMode,
+                    hint: "Monochrome"
+                ) { session.settings.values.toggle() }
+                .disabled(layerMode)
                 Spacer(minLength: 0)
                 if session.settings.saturation != 100 || session.settings.contrast != 100 {
                     IconButton(title: "Reset photo: saturation and contrast back to 100%", symbol: "arrow.counterclockwise") {
@@ -66,8 +86,16 @@ struct ControlsView: View {
                     }
                 }
             } else {
-                slider("Simplify areas", value: $simplify, range: 0...10, hint: "Higher = bigger, calmer shapes") {
-                    session.settings.simplify = Int(simplify.rounded())
+                // Shown from 0 to 12; the finer steps -1 and -2 come with the full version.
+                slider("Simplify areas", value: $simplify, range: Double(Self.finest)...Double(Self.coarsest), hint: store.unlocked ? "Higher = bigger, calmer shapes" : "Higher = bigger, calmer shapes. Below 0 with Pro") {
+                    let value = Int(simplify.rounded())
+                    if value < 0, !store.unlocked {
+                        session.settings.simplify = 0
+                        paywallReason = "make the areas finer than Simplify 0"
+                        showingPaywall = true
+                    } else {
+                        session.settings.simplify = value
+                    }
                 }
                 HStack(alignment: .top, spacing: Theme.gap) {
                     slider("Colours", value: $colours, range: 2...32, hint: "More colours = more detail") {
@@ -92,10 +120,15 @@ struct ControlsView: View {
             }
         }
         .tint(Theme.corporate)
+        .sheet(isPresented: $showingPaywall) { PaywallView(reason: paywallReason) }
         .onAppear(perform: sync)
         .onChange(of: session.settings) { sync() }
         .onChange(of: library.revision) { sync() }
     }
+
+    /// Simplify as shown: the analysis counts from Segmenter.finest, the shown 0 at Segmenter.simplifyZero.
+    static let finest = Segmenter.finest - Segmenter.simplifyZero
+    static let coarsest = Segmenter.topSimplify - Segmenter.simplifyZero
 
     private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, unit: String = "", hint: String? = nil, commit: @escaping () -> Void) -> some View {
         VStack(alignment: .leading, spacing: 2) {

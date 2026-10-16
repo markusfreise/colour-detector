@@ -4,7 +4,7 @@ import Observation
 
 enum ViewMode: String, Codable, CaseIterable, Identifiable {
     /// In the order of the web app's view switch. `template` leaves the areas empty, to print and paint into.
-    case mixed, target, overlay, original, template
+    case mixed, target, overlay, original, template, blocking
 
     var id: String { rawValue }
     var title: String {
@@ -14,6 +14,7 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
         case .original: "Photo"
         case .overlay: "Overlay: the photo at half strength over the paint"
         case .template: "Template to print: areas and numbers in light blue, nothing filled in"
+        case .blocking: "Blocking: light and shadow in large masses"
         }
     }
 
@@ -25,6 +26,7 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
         case .original: "Photo"
         case .overlay: "Overlay"
         case .template: "Template to print"
+        case .blocking: "Blocking"
         }
     }
 
@@ -36,6 +38,7 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
         case .original: "Photo"
         case .overlay: "Overlay"
         case .template: "Template"
+        case .blocking: "Blocking"
         }
     }
 
@@ -47,11 +50,12 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
         case .original: "photo"
         case .overlay: "photo.on.rectangle"
         case .template: "square.dashed"
+        case .blocking: "mountain.2"
         }
     }
 
     /// Layer mode shows the layered paint, the photo over it, or the photo.
-    static let layerCases: [ViewMode] = [.mixed, .overlay, .original]
+    static let layerCases: [ViewMode] = [.mixed, .overlay, .original, .blocking]
 }
 
 /// How the picture is painted: every colour mixed on the palette, or thin washes over each other.
@@ -88,6 +92,14 @@ struct AnalysisSettings: Codable, Equatable {
     var numbers = true
     /// Mix mode: Monochrome, the picture in grey, every value painted with one paint of the box (a value study).
     var values = false
+    /// Blocking: 2 = light and shadow, 3 = with a middle tone.
+    var blockingTones = 2
+    /// Blocking: the thresholds in L* set by hand; nil = where the photo divides.
+    var blockingSplit: [Double]?
+    /// Blocking: 0 = more detail ... 10 = the largest masses.
+    var blockingForms = Int(Blocking.defaultForms)
+    /// Blocking: percent, how strongly the tones cover the photo; 100 = the photo is not seen.
+    var blockingOpacity = 100
 
     init() {}
 
@@ -111,6 +123,10 @@ struct AnalysisSettings: Codable, Equatable {
         outlines = try values.decodeIfPresent(Bool.self, forKey: .outlines) ?? defaults.outlines
         numbers = try values.decodeIfPresent(Bool.self, forKey: .numbers) ?? defaults.numbers
         self.values = try values.decodeIfPresent(Bool.self, forKey: .values) ?? defaults.values
+        blockingTones = try values.decodeIfPresent(Int.self, forKey: .blockingTones) ?? defaults.blockingTones
+        blockingSplit = try values.decodeIfPresent([Double].self, forKey: .blockingSplit)
+        blockingForms = try values.decodeIfPresent(Int.self, forKey: .blockingForms) ?? defaults.blockingForms
+        blockingOpacity = try values.decodeIfPresent(Int.self, forKey: .blockingOpacity) ?? defaults.blockingOpacity
     }
 }
 
@@ -212,6 +228,9 @@ final class Session {
     static let workPixels = 800 * 600 // the analysis runs on about this many pixels, whatever the shape
     static let sourceSize = 1600 // longest side that is kept and saved
     static let renderScale = 2 // picture pixels per working pixel, keeps outlines crisp
+    /// Monochrome: the values a grey picture is split into at most, and the least factor of strength (log) between two of them.
+    static let valueSteps = 24
+    static let valueStep = 0.15
 
     /// Sample photos, chosen from the samples sheet; the first one loads at start. All are under
     /// the Unsplash License; `credit` names the photographer and links to the photo or the profile.
@@ -234,7 +253,11 @@ final class Session {
 
     @ObservationIgnored private let library: Library
     @ObservationIgnored private var nextSample = 0
-    @ObservationIgnored private var pixels: (rgba: [UInt8], width: Int, height: Int)?
+    @ObservationIgnored private var pixels: (rgba: [UInt8], width: Int, height: Int)? {
+        didSet { pixelsStamp += 1 }
+    }
+    /// Counts the pictures put in place, close-ups too: what a blocking belongs to.
+    @ObservationIgnored private var pixelsStamp = 0
     @ObservationIgnored private var originalPixels: [UInt8]? // the photo at render size, for the "Photo" view
     @ObservationIgnored private var analysisRun = 0
     @ObservationIgnored private var recipeRun = 0
@@ -250,7 +273,13 @@ final class Session {
         set { library.setPalette(newValue) }
     }
     private(set) var image: CGImage?
-    private(set) var segmentation: Segmentation?
+    private(set) var segmentation: Segmentation? {
+        didSet { segmentationStamp += 1 }
+    }
+    /// Counts the analyses, to know which one the areas at picture size belong to.
+    @ObservationIgnored private var segmentationStamp = 0
+    /// The colour of every pixel of the drawn picture, kept for the analysis and colours it was made for.
+    @ObservationIgnored private var canvasAreas: (stamp: Int, regionEntry: [Int], entryAt: [Int32])?
     private(set) var entries: [PaletteEntry] = []
     /// Entry indices in the order of their labels: mix by mix, lightest wash first.
     private(set) var order: [Int] = []
@@ -277,6 +306,15 @@ final class Session {
             layerPoint = nil
         }
     }
+    /// Blocking: the picture as tones in large masses, with the key of what it was made from (`blockingKey`).
+    private(set) var blocking: (key: String, picture: BlockedPicture)?
+    /// The tone shown on its own in the Blocking view.
+    var blockingSolo: Int? {
+        didSet { if blockingSolo != oldValue { render() } }
+    }
+    @ObservationIgnored private var blockingRunning: String?
+    /// The tones at the size of the drawn picture, kept per blocking.
+    @ObservationIgnored private var blockingAtPicture: (key: String, toneAt: [Int32])?
     /// Parts of the base picture, each analysed as a picture of its own.
     private(set) var closeups: [Closeup] = []
     /// The close-up on screen, nil for the base picture.
@@ -310,9 +348,9 @@ final class Session {
     var settings = AnalysisSettings() {
         didSet {
             guard settings != oldValue else { return }
-            if settings.saturation != oldValue.saturation || settings.contrast != oldValue.contrast { originalPixels = nil }
+            if settings.saturation != oldValue.saturation || settings.contrast != oldValue.contrast || settings.values != oldValue.values { originalPixels = nil }
             if settings.mode != oldValue.mode { return } // `setMode` takes care of the rest
-            if settings.geometric != oldValue.geometric {
+            if settings.geometric != oldValue.geometric || settings.values != oldValue.values {
                 analyse()
                 return
             }
@@ -376,7 +414,12 @@ final class Session {
         closeupID = nil
         base = nil
         framing = false
-        if let settings { self.settings = settings }
+        if let settings {
+            self.settings = settings
+        } else {
+            // A split of light and shadow set by hand belongs to the photo it was set for.
+            self.settings.blockingSplit = nil
+        }
         show(image: decoded, pixels: work, name: name, savedID: nil, edits: edits)
         return true
     }
@@ -388,6 +431,7 @@ final class Session {
         originalPixels = nil
         imageName = name
         self.savedID = savedID
+        blockingSolo = nil
         selectedEntry = nil
         selectedRegion = nil
         inspectedEntry = nil
@@ -478,18 +522,23 @@ final class Session {
         let key = mixKeyNow
         // "Colours" counts mixes. The analysis is asked for more, and the planning joins them down
         // to the wanted number once the paints are known.
-        let colours = Mixes.toRequest(wanted: settings.colours)
+        // Monochrome: a grey picture is one mix in the eyes of the analysis, split into up to
+        // valueSteps values at least valueStep (log strength) apart.
+        let values = valueMode
+        let colours = values ? 1 : Mixes.toRequest(wanted: settings.colours)
         // The setting is Simplify as shown (0 = what a picture opens with); the analysis counts
         // from Segmenter.finest, with the shown 0 at Segmenter.simplifyZero, as the web app does.
         let simplify = settings.simplify + Segmenter.simplifyZero
         let geometric = settings.geometric
-        let saturation = Double(settings.saturation) / 100
+        let saturation = analysisSaturation
         let contrast = Double(settings.contrast) / 100
         busy = true
         Task {
             let result = await Task.detached(priority: .userInitiated) {
                 let adjusted = ColorMath.adjust(rgba: pixels.rgba, saturation: saturation, contrast: contrast)
-                return Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify, geometric: geometric)
+                return values
+                    ? Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify, geometric: geometric, maxWashes: Self.valueSteps, washStep: Self.valueStep)
+                    : Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify, geometric: geometric)
             }.value
             guard run == analysisRun else { return } // a newer analysis superseded this one
             mixKey = key
@@ -510,7 +559,7 @@ final class Session {
     var layerMode: Bool { settings.mode == .layer }
 
     private var mixKeyNow: String {
-        "\(pictureSerial)/\(settings.colours)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)/\(settings.geometric)"
+        "\(pictureSerial)/\(settings.colours)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)/\(settings.geometric)/\(valueMode)"
     }
 
     /// Glazes of the base paints. On Auto the app proposes the paints from the palette's Auto
@@ -1166,6 +1215,11 @@ final class Session {
 
     /// Draws the areas (or the photo) with their outlines. Numbers are drawn by the view, at reading size.
     func render(selection: Bool = true) {
+        if settings.view == .blocking {
+            // Worked out in the background; until then the picture before stays.
+            if let picture = blockingPicture() { rendered = picture } else { ensureBlocking() }
+            return
+        }
         if layerMode {
             rendered = layerPicture(show: layerView, step: currentStep, stepView: layerStepView, outlines: settings.outlines, onPhoto: settings.view == .original, overlay: settings.view == .overlay)
             return
@@ -1185,14 +1239,15 @@ final class Session {
         let outW = w * scale, outH = h * scale
         var out: [UInt8]
 
-        // Entry index per working pixel.
-        let entryMap = seg.regionMap.map { regionEntry[Int($0)] }
+        // The colour of every pixel of the picture as drawn: the areas enlarged with their outlines as
+        // smooth lines (Smooth.upscaleAreas), as the web draws them, so a slanted outline is no staircase.
+        let entryAt = areasAtPictureSize(seg)
 
         let onPhoto = settings.view == .original || settings.view == .overlay
         if onPhoto, originalPixels == nil, let image {
             // The photo as the analysis sees it, with saturation and contrast applied.
             originalPixels = Pictures.pixels(of: image, width: outW, height: outH).map {
-                ColorMath.adjust(rgba: $0, saturation: Double(settings.saturation) / 100, contrast: Double(settings.contrast) / 100)
+                ColorMath.adjust(rgba: $0, saturation: analysisSaturation, contrast: Double(settings.contrast) / 100)
             }
         }
         let blank = [UInt8](repeating: 255, count: outW * outH * 4)
@@ -1209,21 +1264,17 @@ final class Session {
                 return (UInt8(c.x.rounded()), UInt8(c.y.rounded()), UInt8(c.z.rounded()))
             }
             if fill { out.withUnsafeMutableBufferPointer { out in
-                for y in 0..<h {
-                    for x in 0..<w {
-                        let c = colours[entryMap[y * w + x]]
-                        for dy in 0..<scale {
-                            for dx in 0..<scale {
-                                let o = ((y * scale + dy) * outW + x * scale + dx) * 4
-                                if keep == 0 {
-                                    out[o] = c.0; out[o + 1] = c.1; out[o + 2] = c.2
-                                } else {
-                                    out[o] = UInt8(Double(out[o]) * keep + Double(c.0) * (1 - keep))
-                                    out[o + 1] = UInt8(Double(out[o + 1]) * keep + Double(c.1) * (1 - keep))
-                                    out[o + 2] = UInt8(Double(out[o + 2]) * keep + Double(c.2) * (1 - keep))
-                                }
-                            }
-                        }
+                for p in 0..<(outW * outH) {
+                    let e = Int(entryAt[p])
+                    guard colours.indices.contains(e) else { continue }
+                    let c = colours[e]
+                    let o = p * 4
+                    if keep == 0 {
+                        out[o] = c.0; out[o + 1] = c.1; out[o + 2] = c.2
+                    } else {
+                        out[o] = UInt8(Double(out[o]) * keep + Double(c.0) * (1 - keep))
+                        out[o + 1] = UInt8(Double(out[o + 1]) * keep + Double(c.1) * (1 - keep))
+                        out[o + 2] = UInt8(Double(out[o + 2]) * keep + Double(c.2) * (1 - keep))
                     }
                 }
             } }
@@ -1231,6 +1282,7 @@ final class Session {
 
         // The template always has its outlines, in light blue: they are what is painted into. Full
         // blue and no yellow, so a printer uses no black ink, which water does not dissolve.
+        // An outline runs through the pixels that have another colour to their right or below.
         if settings.outlines || settings.view == .template {
             let line: (Double, Double, Double, Double) = switch settings.view {
             case .original: (255, 255, 255, 0.75)
@@ -1238,22 +1290,144 @@ final class Session {
             default: (40, 36, 30, 0.55)
             }
             out.withUnsafeMutableBufferPointer { out in
-                func blend(_ x: Int, _ y: Int) {
-                    let o = (y * outW + x) * 4
-                    out[o] = UInt8(Double(out[o]) * (1 - line.3) + line.0 * line.3)
-                    out[o + 1] = UInt8(Double(out[o + 1]) * (1 - line.3) + line.1 * line.3)
-                    out[o + 2] = UInt8(Double(out[o + 2]) * (1 - line.3) + line.2 * line.3)
-                }
-                for y in 0..<h {
-                    for x in 0..<w {
-                        let e = entryMap[y * w + x]
-                        if x < w - 1, entryMap[y * w + x + 1] != e {
-                            for dy in 0..<scale { blend((x + 1) * scale - 1, y * scale + dy) }
-                        }
-                        if y < h - 1, entryMap[(y + 1) * w + x] != e {
-                            for dx in 0..<scale { blend(x * scale + dx, (y + 1) * scale - 1) }
-                        }
+                for y in 0..<outH {
+                    for x in 0..<outW {
+                        let p = y * outW + x
+                        let e = entryAt[p]
+                        guard (x < outW - 1 && entryAt[p + 1] != e) || (y < outH - 1 && entryAt[p + outW] != e) else { continue }
+                        let o = p * 4
+                        out[o] = UInt8(Double(out[o]) * (1 - line.3) + line.0 * line.3)
+                        out[o + 1] = UInt8(Double(out[o + 1]) * (1 - line.3) + line.1 * line.3)
+                        out[o + 2] = UInt8(Double(out[o + 2]) * (1 - line.3) + line.2 * line.3)
                     }
+                }
+            }
+        }
+        return Pictures.image(rgba: out, width: outW, height: outH)
+    }
+
+    /// The colour (entry) of every pixel of the drawn picture, `renderScale` times the working size.
+    private func areasAtPictureSize(_ seg: Segmentation) -> [Int32] {
+        if let kept = canvasAreas, kept.stamp == segmentationStamp, kept.regionEntry == regionEntry { return kept.entryAt }
+        let entries = seg.regionMap.map { Int32(regionEntry[Int($0)]) }
+        let entryAt = Smooth.upscaleAreas(entries, seg.width, seg.height, scale: Self.renderScale)
+        canvasAreas = (segmentationStamp, regionEntry, entryAt)
+        return entryAt
+    }
+
+    /// Saturation as the analysis applies it: Monochrome turns the photo grey.
+    var analysisSaturation: Double { valueMode ? 0 : Double(settings.saturation) / 100 }
+}
+
+// MARK: Blocking
+
+extension Session {
+    /// What a blocking belongs to: the picture as analysed and the settings of the view.
+    var blockingKey: String {
+        let s = settings
+        let split = s.blockingSplit.map { $0.map { String($0) }.joined(separator: ",") } ?? ""
+        return "\(pixelsStamp)/\(analysisSaturation)/\(s.contrast)/\(s.blockingTones)/\(split)/\(s.blockingForms)"
+    }
+
+    /// The blocking of the picture on screen as it is set, or nil while it is worked out.
+    var blockingResult: BlockedPicture? {
+        guard let blocking, blocking.key == blockingKey else { return nil }
+        return blocking.picture
+    }
+
+    /// Works out the blocking of the picture as it is set, unless it is there or on its way.
+    func ensureBlocking() {
+        guard let pixels else { return }
+        let key = blockingKey
+        guard blocking?.key != key, blockingRunning != key else { return }
+        blockingRunning = key
+        let s = settings
+        let saturation = analysisSaturation
+        Task {
+            let picture = await Task.detached(priority: .userInitiated) {
+                let adjusted = ColorMath.adjust(rgba: pixels.rgba, saturation: saturation, contrast: Double(s.contrast) / 100)
+                return Blocking.blockImage(rgba: adjusted, width: pixels.width, height: pixels.height, tones: s.blockingTones, split: s.blockingSplit, forms: Double(s.blockingForms))
+            }.value
+            if blockingRunning == key { blockingRunning = nil }
+            guard key == blockingKey else { return }
+            // A tone on its own that the new blocking does not have any more is let go.
+            if let solo = blockingSolo, solo >= picture.tones { blockingSolo = nil }
+            blocking = (key, picture)
+            if settings.view == .blocking { render() }
+        }
+    }
+
+    /// How a mix stands to its tone in the blocking: lighter or darker when the mixed colour falls
+    /// in another tone than the colour of the photo, else nil. Value matters more than hue.
+    func toneWarning(_ entry: PaletteEntry) -> ToneWarning? {
+        guard let thresholds = blockingResult?.thresholds, let mixed = entry.recipe?.hex else { return nil }
+        let want = Blocking.toneOfHex(entry.targetHex, thresholds)
+        let got = Blocking.toneOfHex(mixed, thresholds)
+        return got == want ? nil : got < want ? .lighter : .darker
+    }
+
+    enum ToneWarning { case lighter, darker }
+
+    /// The tone (1 = the lightest) of a colour in the blocking, or nil without one.
+    func tone(of entry: PaletteEntry) -> Int? {
+        guard let thresholds = blockingResult?.thresholds else { return nil }
+        return Blocking.toneOfHex(entry.targetHex, thresholds) + 1
+    }
+
+    /// A tap on a tone shows it on its own; again, or on another, changes back.
+    func tapBlocking(x: Int, y: Int) {
+        guard let result = blockingResult, x >= 0, y >= 0, x < result.width, y < result.height else { return }
+        let tone = Int(result.toneMap[y * result.width + x])
+        blockingSolo = blockingSolo == tone ? nil : tone
+    }
+
+    /// Light and shadow as flat greys in large masses. With one tone on its own the others go pale;
+    /// with an opacity below 100 the photo shows through. Outlines in light blue, seen on the paper
+    /// white and on the dark.
+    private func blockingPicture() -> CGImage? {
+        guard let result = blockingResult, let key = blocking?.key else { return nil }
+        let scale = Self.renderScale
+        let outW = result.width * scale, outH = result.height * scale
+        let toneAt: [Int32]
+        if let kept = blockingAtPicture, kept.key == key {
+            toneAt = kept.toneAt
+        } else {
+            toneAt = Smooth.upscaleAreas(result.toneMap, result.width, result.height, scale: scale)
+            blockingAtPicture = (key, toneAt)
+        }
+        // The other tones while one is shown on its own: clearly not the paper.
+        let pale = (212.0, 206.0, 196.0)
+        let line: (UInt8, UInt8, UInt8) = (90, 150, 230)
+        let greys = (0..<result.tones).map { tone -> (Double, Double, Double) in
+            if let solo = blockingSolo, solo != tone { return pale }
+            let g = Blocking.toneGrey(tone, tones: result.tones)
+            return (Double(g.r), Double(g.g), Double(g.b))
+        }
+        let alpha = Double(settings.blockingOpacity) / 100
+        var out = [UInt8](repeating: 255, count: outW * outH * 4)
+        if alpha < 1 {
+            if originalPixels == nil, let image {
+                originalPixels = Pictures.pixels(of: image, width: outW, height: outH).map {
+                    ColorMath.adjust(rgba: $0, saturation: analysisSaturation, contrast: Double(settings.contrast) / 100)
+                }
+            }
+            if let photo = originalPixels, photo.count == out.count { out = photo }
+        }
+        let outlines = settings.outlines
+        out.withUnsafeMutableBufferPointer { out in
+            for y in 0..<outH {
+                for x in 0..<outW {
+                    let p = y * outW + x
+                    let tone = toneAt[p]
+                    let o = p * 4
+                    if outlines, (x < outW - 1 && toneAt[p + 1] != tone) || (y < outH - 1 && toneAt[p + outW] != tone) {
+                        out[o] = line.0; out[o + 1] = line.1; out[o + 2] = line.2
+                        continue
+                    }
+                    let g = greys[min(Int(tone), greys.count - 1)]
+                    out[o] = UInt8((g.0 * alpha + Double(out[o]) * (1 - alpha)).rounded())
+                    out[o + 1] = UInt8((g.1 * alpha + Double(out[o + 1]) * (1 - alpha)).rounded())
+                    out[o + 2] = UInt8((g.2 * alpha + Double(out[o + 2]) * (1 - alpha)).rounded())
                 }
             }
         }

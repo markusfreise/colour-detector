@@ -23,14 +23,26 @@ const VALUE_STEP = 0.15
 // Recipes count as the same mix when they use the same paints.
 const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+')
 // Sample pictures, offered in the sample library (SampleDialog.vue); the first one loads at start.
-// They are Markus Freise's own works (see public/imprint), no longer than 1024 px.
+// All are under the Unsplash License, no longer than 1024 px. `credit` names the photographer and
+// links to the photo, or to the profile until the photo is up there.
+const MARKUS = { name: 'Markus Freise', url: 'https://unsplash.com/@markusfreise' }
 export const SAMPLES = [
-  { file: 'sample-bielefeld.webp', name: 'Bielefeld' },
-  { file: 'sample-llyn-idwal.webp', name: 'Llyn Idwal' },
-  { file: 'sample-rooftops-dusk.webp', name: 'Rooftops at dusk' },
-  { file: 'sample-winter-fields.webp', name: 'Winter fields' },
-  { file: 'sample-old-town-snow.webp', name: 'Old town in snow' },
-].map((sample) => ({ url: `${import.meta.env.BASE_URL}${sample.file}`, name: sample.name, local: false }))
+  { file: 'sample-bielefeld.webp', name: 'Bielefeld', credit: MARKUS },
+  { file: 'sample-llyn-idwal.webp', name: 'Llyn Idwal', credit: MARKUS },
+  { file: 'sample-rooftops-dusk.webp', name: 'Rooftops at dusk', credit: MARKUS },
+  { file: 'sample-winter-fields.webp', name: 'Winter fields', credit: MARKUS },
+  { file: 'sample-old-town-snow.webp', name: 'Old town in snow', credit: MARKUS },
+  {
+    file: 'sample-red-train.webp',
+    name: 'Red train',
+    credit: { name: 'Markus Freise', url: 'https://unsplash.com/photos/red-and-white-train-on-train-station-Zi8T2OwJf44' },
+  },
+  {
+    file: 'sample-woman-white-wall.webp',
+    name: 'Woman by a white wall',
+    credit: { name: 'Ayo Ogunseinde', url: 'https://unsplash.com/photos/woman-looking-sideways-leaning-on-white-wall-6W4F62sN_yI' },
+  },
+].map((sample) => ({ url: `${import.meta.env.BASE_URL}${sample.file}`, name: sample.name, credit: sample.credit, local: false }))
 // Pictures in `local-samples/` exist only in this checkout: the folder is not in the repo, and the
 // list is filled by the dev server only (vite.config.js). "white-dress.webp" → "White dress".
 for (const file of __LOCAL_SAMPLES__) {

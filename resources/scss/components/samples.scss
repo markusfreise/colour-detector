@@ -71,6 +71,15 @@
         font-size: var(--fs-small);
     }
 
+    &__credit {
+        display: block;
+        margin-top: #{pxtorem(4)};
+        padding-inline: var(--gap-05x);
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+        @include ellipsis;
+    }
+
     &__note {
         margin-top: #{pxtorem(14)};
         color: var(--c-copy-light);

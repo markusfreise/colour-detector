@@ -2351,12 +2351,12 @@
       },
       "extractionState": "manual"
     },
-    "Sample images © Markus Freise. For personal use only, not for commercial use.": {
+    "Sample photos by Markus Freise, under the Unsplash License.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Beispielbilder © Markus Freise. Nur für den persönlichen Gebrauch, nicht für kommerzielle Zwecke."
+            "value": "Beispielfotos von Markus Freise, unter der Unsplash-Lizenz."
           }
         }
       }

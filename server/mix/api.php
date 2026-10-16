@@ -30,7 +30,7 @@ function handleMix(string $name): never
         fail(404, 'Not found.');
     }
     $user = appUser();
-    $request = body();
+    $request = body($user === null);
     checkMixRequest($request);
     // Monochrome (value mode) comes with a plan.
     $values = !empty($request['values']) || in_array(true, array_map(fn ($job) => !empty($job['values']), (array) ($request['jobs'] ?? [])), true);

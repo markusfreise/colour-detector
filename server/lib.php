@@ -167,8 +167,12 @@ function cookiePath(): string
     return parse_url((string) config('app_url'), PHP_URL_PATH) ?: '/';
 }
 
-/** The JSON body of a request that changes something. Only the app itself may send one. */
-function body(): array
+/**
+ * The JSON body of a request that changes something. Only the app itself may send one; on an open
+ * development instance (`open` in config.php) the mixing service also answers the app on another
+ * address than app_url, as there is no account to protect.
+ */
+function body(bool $anyOrigin = false): array
 {
     // The tests hand in the body of the request they play.
     if (defined('ACCOUNT_TESTS') && array_key_exists('testBody', $GLOBALS)) {
@@ -177,7 +181,7 @@ function body(): array
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
     $app = parse_url((string) config('app_url'));
     $expected = ($app['scheme'] ?? '') . '://' . ($app['host'] ?? '') . (isset($app['port']) ? ':' . $app['port'] : '');
-    if ($origin !== '' && $origin !== $expected) {
+    if ($origin !== '' && $origin !== $expected && !$anyOrigin) {
         fail(403, 'Request from another site.');
     }
     // A form on another site cannot send this content type without asking first.
@@ -320,7 +324,7 @@ function sendAppFile(string $name): never
 {
     method('GET');
     appUser();
-    $dir = is_dir(__DIR__ . '/bundle') ? __DIR__ . '/bundle' : dirname(__DIR__) . '/dist/api/app';
+    $dir = config('bundle') ?: (is_dir(__DIR__ . '/bundle') ? __DIR__ . '/bundle' : dirname(__DIR__) . '/dist/api/app');
     $file = $dir . '/' . $name;
     if (!preg_match('/^[A-Za-z0-9_.-]+\.js$/', $name) || !is_file($file)) {
         fail(404, 'Not found.');

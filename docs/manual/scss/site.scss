@@ -1,0 +1,13 @@
+// The manual. Reset, functions and design tokens come from the app (resources/scss, load path in
+// tools/build.mjs), so that the manual looks like Watercolourlove; the rest is its own.
+@use "reset";
+@use "properties" as app-properties;
+@use "manual-properties";
+@use "typography";
+@use "scaffold";
+@use "header";
+@use "footer";
+@use "nav";
+@use "content";
+@use "ui";
+@use "print";

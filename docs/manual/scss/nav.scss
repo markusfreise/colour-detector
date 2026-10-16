@@ -1,0 +1,112 @@
+@use "functions" as *;
+
+// The chapter list: parts as small headings, chapters numbered, the sections of the open chapter
+// below it. Folded behind its summary on a narrow screen.
+.nav {
+    font-size: var(--fs-small);
+
+    &__summary {
+        display: flex;
+        align-items: center;
+        min-height: #{pxtorem(48)};
+        padding: 0 var(--gap);
+        border-radius: var(--radius-medium);
+        background: var(--c-background-raised);
+        box-shadow: var(--shadow-flat);
+        font-weight: 600;
+        cursor: pointer;
+
+        @media (min-width: 1024px) {
+            display: none;
+        }
+    }
+
+    &__list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        @media (max-width: 1023px) {
+            margin-top: var(--gap);
+        }
+    }
+
+    &__part {
+        margin: var(--gap-15x) 0 var(--gap-05x);
+        padding-left: var(--gap-05x);
+        font-size: var(--fs-mini);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--c-copy-light);
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    &__item > a {
+        display: flex;
+        align-items: baseline;
+        gap: var(--gap-075x);
+        padding: #{pxtorem(6)} var(--gap-05x);
+        border-radius: var(--radius-medium);
+        color: var(--c-copy);
+        text-decoration: none;
+        line-height: 1.35;
+
+        &:hover {
+            background: var(--c-border-light);
+        }
+    }
+
+    &__number {
+        flex: none;
+        width: 1.4em;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        color: var(--c-copy-light);
+    }
+
+    &__item--active > a {
+        background: var(--c-background-raised);
+        box-shadow: var(--shadow-flat);
+        font-weight: 700;
+
+        .nav__number {
+            color: var(--c-copy);
+        }
+    }
+
+    &__sub {
+        margin: var(--gap-025x) 0 var(--gap-05x);
+        padding: 0 0 0 calc(1.4em + var(--gap-075x) + var(--gap-05x));
+        list-style: none;
+
+        a {
+            display: block;
+            padding: #{pxtorem(5)} 0;
+            color: var(--c-copy-light);
+            text-decoration: none;
+            line-height: 1.35;
+
+            &:hover {
+                color: var(--c-copy);
+            }
+        }
+    }
+
+    &__whole {
+        margin-top: var(--gap-15x);
+        padding: var(--gap) var(--gap-05x) 0;
+        border-top: 1px solid var(--c-border);
+
+        a {
+            color: var(--c-copy-light);
+
+            &:hover {
+                color: var(--c-copy);
+            }
+        }
+    }
+}

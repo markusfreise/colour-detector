@@ -1,0 +1,81 @@
+@use "functions" as *;
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: var(--header-height);
+    background: var(--c-background-raised);
+    box-shadow: var(--shadow-flat);
+
+    &__inner {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--gap);
+    }
+
+    &__brand {
+        display: flex;
+        align-items: center;
+        gap: var(--gap);
+        color: var(--c-head);
+        text-decoration: none;
+    }
+
+    // The logo in the colour of the text, so it reads in light and dark.
+    &__logo {
+        display: block;
+        width: auto;
+        height: calc(var(--header-height) - #{pxtorem(22)});
+
+        svg {
+            display: block;
+            width: auto;
+            height: 100%;
+        }
+    }
+
+    &__label {
+        font-size: var(--fs-medium);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+
+        @media (max-width: 480px) {
+            display: none;
+        }
+    }
+
+    &__links {
+        display: flex;
+        align-items: center;
+        gap: var(--gap-05x);
+    }
+
+    &__link,
+    &__app {
+        display: inline-flex;
+        white-space: nowrap;
+        align-items: center;
+        min-height: #{pxtorem(44)};
+        padding: 0 var(--gap-075x);
+        border-radius: var(--radius-medium);
+        font-size: var(--fs-small);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    &__link {
+        color: var(--c-copy-light);
+
+        &:hover {
+            color: var(--c-copy);
+        }
+    }
+
+    &__app {
+        background: var(--c-corporate);
+        color: var(--c-on-corporate);
+    }
+}

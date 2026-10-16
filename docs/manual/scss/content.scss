@@ -1,0 +1,117 @@
+@use "functions" as *;
+
+// The text of a chapter: a book face in a reading measure; pictures may be wider.
+.content {
+    font-family: var(--ff-book);
+    font-size: var(--fs-book);
+    line-height: 1.62;
+
+    .chapter > * + *,
+    .note > * + *,
+    li > * + * {
+        margin-top: var(--gap);
+    }
+
+    p,
+    ul,
+    ol:not(.legend),
+    h2,
+    h3,
+    h4,
+    .note,
+    .table-wrap,
+    .chapter__lead {
+        max-width: var(--article-width);
+    }
+
+    ul {
+        list-style: disc;
+    }
+
+    ol:not(.legend) {
+        list-style: decimal;
+    }
+
+    ul,
+    ol {
+        padding-left: var(--gap-15x);
+    }
+
+    li + li {
+        margin-top: var(--gap-025x);
+    }
+
+    li::marker {
+        color: var(--c-copy-light);
+    }
+
+    h2 {
+        margin-top: calc(var(--gap) * 3.5);
+        padding-top: var(--gap-2x);
+        border-top: 1px solid var(--c-border);
+    }
+
+    h3 {
+        margin-top: var(--gap-2x);
+    }
+
+    h4 {
+        margin-top: var(--gap-15x);
+        font-size: var(--fs-copy);
+    }
+
+    h2 + *,
+    h3 + *,
+    h4 + * {
+        margin-top: var(--gap-075x);
+    }
+
+    .anchor {
+        float: left;
+        margin-left: -1em;
+        width: 1em;
+        color: var(--c-copy-light);
+        font-weight: 400;
+        text-decoration: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+
+    h2:hover .anchor,
+    h3:hover .anchor {
+        opacity: 1;
+    }
+}
+
+.chapter {
+    &__kicker {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--gap-05x) var(--gap);
+        font-family: var(--ff-copy);
+        font-size: var(--fs-mini);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--c-copy-light);
+    }
+
+    &__title {
+        margin-top: var(--gap-05x);
+    }
+
+    // The lead in the book face, larger and lighter.
+    &__lead {
+        margin-top: var(--gap) !important;
+        font-size: var(--fs-lead);
+        line-height: 1.45;
+        color: var(--c-copy-light);
+    }
+
+    // On the page with every chapter, a clear break between them.
+    & + & {
+        margin-top: calc(var(--gap) * 5);
+        padding-top: var(--gap-3x);
+        border-top: 2px solid var(--c-copy);
+    }
+}

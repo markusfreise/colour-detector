@@ -1,0 +1,54 @@
+@use "functions" as *;
+
+// What the manual adds to the tokens of the app: a book face for the running text, the reading
+// measure, and the sizes of the frame.
+:root {
+    // Running text in a serif that every system has; headings, navigation and captions stay in the
+    // sans of the app.
+    --ff-book: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+
+    --fs-book: #{pxtorem(19)};
+    --fs-lead: #{pxtorem(23)};
+    --fs-h1: #{pxtorem(40)};
+    --fs-h2: #{pxtorem(28)};
+    --fs-h3: #{pxtorem(21)};
+
+    --article-width: #{pxtorem(720)};
+    --width-nav: #{pxtorem(280)};
+    --header-height: #{pxtorem(72)};
+    --max-width: #{pxtorem(1320)};
+    --gap-075x: calc(var(--gap) * 0.75);
+
+    // The number markers on screenshots: dark on the light app, so they read on every screen.
+    --c-marker: var(--c-corporate);
+    --c-on-marker: var(--c-on-corporate);
+
+    // Boxes: colour by background, never by a coloured edge.
+    --c-note-info: var(--c-corporate-soft);
+    --c-note-tip: #e7efe6;
+    --c-note-warn: #f6e9dc;
+
+    @media (max-width: 760px) {
+        --fs-book: #{pxtorem(18)};
+        --fs-lead: #{pxtorem(20)};
+        --fs-h1: #{pxtorem(32)};
+        --fs-h2: #{pxtorem(24)};
+        --fs-h3: #{pxtorem(19)};
+        --header-height: #{pxtorem(60)};
+    }
+}
+
+@mixin dark-manual {
+    --c-note-tip: #24302a;
+    --c-note-warn: #3a2e24;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        @include dark-manual;
+    }
+}
+
+:root[data-theme="dark"] {
+    @include dark-manual;
+}

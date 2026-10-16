@@ -1,0 +1,70 @@
+@use "../functions" as *;
+
+// The settings of the Blocking view (BlockingControls.vue): tones, light / shadow, forms, the tones on their own.
+
+.blocking {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-05x);
+
+    &__count .segmented__option {
+        min-width: #{pxtorem(48)};
+        font-weight: 700;
+    }
+
+    &__reset {
+        align-self: flex-start;
+        color: var(--c-corporate);
+        font-size: var(--fs-small);
+        text-decoration: underline;
+    }
+
+    &__tones {
+        display: flex;
+        flex-direction: column;
+        gap: #{pxtorem(4)};
+        margin-top: var(--gap-05x);
+    }
+
+    &__tone {
+        display: flex;
+        align-items: center;
+        gap: var(--gap-05x);
+        width: 100%;
+        padding: #{pxtorem(6)} #{pxtorem(8)};
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius-small);
+        background: var(--c-background-raised);
+        color: var(--c-copy);
+        text-align: left;
+
+        &--active {
+            border-color: var(--c-corporate);
+            background: var(--c-background);
+        }
+    }
+
+    &__swatch {
+        width: #{pxtorem(22)};
+        height: #{pxtorem(22)};
+        flex: none;
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius-small);
+    }
+
+    &__tone-name {
+        flex: 1;
+    }
+
+    &__share {
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+    }
+
+    &__advice {
+        padding: #{pxtorem(8)};
+        border-radius: var(--radius-small);
+        background: var(--c-background);
+        font-size: var(--fs-small);
+    }
+}

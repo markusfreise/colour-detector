@@ -42,3 +42,12 @@ export function stopAnalytics(id) {
     })
   }
 }
+
+/**
+ * One event of the app (credit_unlock, upsell_shown, blocking_opened, ...). Sent only once
+ * Analytics runs, which is after consent; without it nothing is recorded, not even locally.
+ */
+export function trackEvent(name, params = {}) {
+  if (!started || typeof window === 'undefined' || !window.gtag) return
+  window.gtag('event', name, params)
+}

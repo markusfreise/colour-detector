@@ -13,6 +13,9 @@
               <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
             </svg>
           </button>
+          <!-- In the Blocking view only its own settings; the colour settings come back with the other views. -->
+          <BlockingControls v-if="blocking" />
+          <template v-else>
           <div class="field__label">
             <div class="segmented__group">
               <div class="segmented segmented--fill">
@@ -182,6 +185,7 @@
             />
           </label>
         </div>
+          </template>
     </div>
   </section>
 </template>
@@ -196,6 +200,7 @@ import PanelToggle from './PanelToggle.vue'
 import { FINEST, SIMPLIFY_ZERO } from '../lib/segment.js'
 import { useProStore } from '../stores/pro.js'
 import AiPanel from './AiPanel.vue'
+import BlockingControls from './BlockingControls.vue'
 import { useFloating } from './floating.js'
 import AppIcon from './AppIcon.vue'
 import { icons } from './icons.js'
@@ -208,6 +213,7 @@ const layout = useLayoutStore()
 const collapsed = computed(() => !!layout.collapsed.controls)
 const { panel, style, dragging, startDrag } = useFloating('settings')
 const paints = usePaintsStore()
+const blocking = computed(() => analysis.settings.view === 'blocking')
 const areas = [
   { value: false, label: 'Organic', icon: 'organic', title: 'Organic: areas follow the outlines in the photo' },
   { value: true, label: 'Geometric', icon: 'geometric', title: 'Geometric: areas as polygons with a few straight edges that overlap' }

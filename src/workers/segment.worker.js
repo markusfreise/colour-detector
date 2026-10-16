@@ -1,6 +1,7 @@
 import { segmentImage } from '../lib/segment.js'
 import { colouringSketch } from '../lib/sketch.js'
 import { layerImage } from '../lib/layers.js'
+import { blockImage } from '../lib/blocking.js'
 
 self.onmessage = (event) => {
   const { jobId, kind, rgba, width, height } = event.data
@@ -11,6 +12,13 @@ self.onmessage = (event) => {
       const result = layerImage(rgba, width, height, paints, { count, paintIds, maxCoats, simplify, accents, geometric })
       const buffers = [result.comboMap.buffer, ...result.layers.flatMap((l) => [l.coatMap.buffer, l.regionMap.buffer])]
       self.postMessage({ jobId, result }, buffers)
+      return
+    }
+    if (kind === 'blocking') {
+      // Blocking: light and shadow in large masses.
+      const { tones, split, forms } = event.data
+      const result = blockImage(rgba, width, height, { tones, split, forms })
+      self.postMessage({ jobId, result }, [result.toneMap.buffer, result.regionMap.buffer])
       return
     }
     if (kind === 'sketch') {

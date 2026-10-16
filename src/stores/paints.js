@@ -116,8 +116,12 @@ export const usePaintsStore = defineStore('paints', {
     enabled() {
       return this.all.filter((p) => this.enabledIds.has(p.id))
     },
-    byId() {
-      return Object.fromEntries(this.all.map((p) => [p.id, p]))
+    // Every paint the app knows, not only those mixed with now: the colours on screen can still name
+    // paints of the other source for a moment (a picture switched between the Starter box and one's
+    // own paints is mixed again a tick later).
+    byId(state) {
+      const known = [...stockPaints, ...state.custom, ...starterPaints, ...(state.showcase?.paints ?? [])]
+      return Object.fromEntries(known.map((p) => [p.id, p]))
     },
     // Paint box: the selected paints as one list, the rest grouped by form.
     selected() {

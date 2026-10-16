@@ -29,7 +29,11 @@ enum Mixes {
     ///   - variety: 0...10, what decides which mixes are joined: at 0 the error times the area it
     ///     covers (the picture as a whole stays as accurate as possible), at 10 the error in hue alone
     ///     (a small area of a different hue keeps its mix, at the price of similar large colours sharing one)
-    static func plan(clusters: [Segmentation.Cluster], paints: [MixPaint], maxPaints: Int = 3, wanted: Int = .max, variety: Int = 5) -> [PlannedMix] {
+    ///   - values: value mode (see `Mixing.findRecipes`): every colour of the analysis (a value of the
+    ///     grey picture) looks for a mix of its own, and only lightness counts. Joined down to `wanted`,
+    ///     a mix then paints the values around its own with more or less water: its washes.
+    ///     The `group` of a mix is then the `index` of the colour it started from.
+    static func plan(clusters: [Segmentation.Cluster], paints: [MixPaint], maxPaints: Int = 3, wanted: Int = .max, variety: Int = 5, values: Bool = false) -> [PlannedMix] {
         let byID = Dictionary(paints.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
         let white = ColorMath.oklab(hex: "#ffffff")
         let level = Double(min(10, max(0, variety))) / 10
@@ -40,6 +44,13 @@ enum Mixes {
         func miss(_ mix: PlannedMix, _ cluster: Segmentation.Cluster) -> Double {
             guard let base = mix.recipes.first else { return 0 }
             let target = ColorMath.oklab(hex: cluster.hex)
+            if values {
+                // Value mode: how far the value is missed, and how much water has to change for it. A mix
+                // reaches every lighter value with more water (water is its white), so what tells two
+                // mixes apart is how far each is from the strength it has by itself.
+                guard let wash = Mixing.washRecipe(base, target: cluster.hex, paints: byID, values: true) else { return abs(white.x - target.x) * 100 }
+                return wash.deltaE + Mixing.valueWaterPenalty * abs(log(wash.strength))
+            }
             let reached = Mixing.washRecipe(base, target: cluster.hex, paints: byID).map { ColorMath.oklab(hex: $0.hex) } ?? white
             return ColorMath.deltaE(Vec3(reached.x * lightness, reached.y, reached.z), Vec3(target.x * lightness, target.y, target.z))
         }
@@ -49,8 +60,9 @@ enum Mixes {
         var total = 0
         for c in clusters where c.pixelCount > 0 {
             total += c.pixelCount
-            if found[c.group] == nil { order.append(c.group) }
-            found[c.group, default: []].append(c)
+            let group = values ? c.index : c.group
+            if found[group] == nil { order.append(group) }
+            found[group, default: []].append(c)
         }
 
         // The same paints in about the same ratio are the same mix, whatever the analysis called them.
@@ -63,7 +75,7 @@ enum Mixes {
         for group in order {
             let members = found[group] ?? []
             guard let anchor = members.max(by: { $0.pixelCount < $1.pixelCount }) else { continue }
-            let recipes = Mixing.findRecipes(target: anchor.hex, paints: paints, maxPaints: maxPaints, limit: 5)
+            let recipes = Mixing.findRecipes(target: anchor.hex, paints: paints, maxPaints: maxPaints, limit: 5, values: values)
             let key = mixKey(recipes.first)
             let pixels = members.reduce(0) { $0 + $1.pixelCount }
             if let same = byKey[key] {

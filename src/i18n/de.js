@@ -100,7 +100,9 @@ export default {
   // Samples
   'Samples': 'Beispiele',
   'Only on this machine': 'Nur auf diesem Rechner',
-  'Sample images © Markus Freise. For personal use only, not for commercial use.': 'Beispielbilder © Markus Freise. Nur für den privaten Gebrauch, nicht für kommerzielle Zwecke.',
+  'Sample photos under the Unsplash License.': 'Beispielfotos unter der Unsplash-Lizenz.',
+  'Photo: {name} / Unsplash': 'Foto: {name} / Unsplash',
+  'Woman by a white wall': 'Frau an weißer Wand',
   'Rooftops at dusk': 'Dächer in der Dämmerung',
   'Winter fields': 'Winterfelder',
   'Old town in snow': 'Altstadt im Schnee',

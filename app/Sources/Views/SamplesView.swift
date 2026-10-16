@@ -31,7 +31,7 @@ struct SamplesView: View {
                     }
                 }
                 .padding()
-                Text("Sample images © Markus Freise. For personal use only, not for commercial use.")
+                Text("Sample photos by Markus Freise, under the Unsplash License.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .padding([.horizontal, .bottom])

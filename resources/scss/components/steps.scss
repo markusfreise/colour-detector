@@ -5,6 +5,16 @@
 .steps {
     margin-bottom: #{pxtorem(10)};
 
+    // While walking through the steps: a card over the picture, like the other panels.
+    &--active {
+        width: min(#{pxtorem(760)}, 100%);
+        padding: var(--gap) var(--gap-15x) var(--gap-15x);
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius);
+        background: var(--c-background-raised);
+        box-shadow: var(--shadow);
+    }
+
     &__bar {
         display: flex;
         flex-wrap: wrap;
@@ -21,6 +31,12 @@
         margin-left: auto;
     }
 
+    // Where to paint / This wash / So far: as tall as the buttons beside it, never stretched.
+    &__view {
+        flex: none;
+        align-self: center;
+    }
+
     &__body {
         display: flex;
         align-items: flex-start;
@@ -28,27 +44,32 @@
         margin-top: var(--gap-05x);
     }
 
+    // The chip of the wash, wide enough for its caption on one or two lines.
     &__target {
         flex: none;
-        width: #{pxtorem(150)};
-        min-height: #{pxtorem(54)};
+        width: #{pxtorem(180)};
+        min-height: #{pxtorem(72)};
+
+        .chip__text {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+        }
     }
 
+    // Label and text in two columns; the labels' column as wide as the longest word in any language.
     &__lines {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
+        display: grid;
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 2px var(--gap-075x, #{pxtorem(12)});
         margin: 0;
         font-size: var(--fs-note);
 
         div {
-            display: flex;
-            gap: #{pxtorem(6)};
+            display: contents;
         }
 
         dt {
-            flex: none;
-            width: #{pxtorem(40)};
             font-weight: 650;
         }
 

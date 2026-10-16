@@ -55,10 +55,7 @@
       <ColourInspector v-if="!analysis.layerMode" @breakdown="breakdown.open()" />
       <aside class="app__sidebar">
         <ControlsPanel />
-        <template v-if="analysis.layerMode">
-          <LayerArea />
-          <LayerList @show-paintbox="paintBox.open()" />
-        </template>
+        <LayerList v-if="analysis.layerMode" @show-paintbox="paintBox.open()" />
         <template v-else>
           <PaletteList @show-paintbox="paintBox.open()" />
         </template>
@@ -109,7 +106,6 @@ import PaletteList from './components/PaletteList.vue'
 import LayerList from './components/LayerList.vue'
 import LayerSteps from './components/LayerSteps.vue'
 import LayerStrip from './components/LayerStrip.vue'
-import LayerArea from './components/LayerArea.vue'
 import LayerSheets from './components/LayerSheets.vue'
 import PaintBox from './components/PaintBox.vue'
 import ConsentBanner from './components/ConsentBanner.vue'

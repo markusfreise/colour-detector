@@ -1,8 +1,11 @@
-import { describe, it, expect } from 'vitest'
-import { colourSet, pictureColours, proposeLayerPaints, fitLayers, layerImage, compositeColours, renderLayers, coatDepth, washGuide } from '../lib/layers.js'
+import { describe, it, expect, beforeAll } from 'vitest'
+import { pictureColours, layerImage as layerImageWith, compositeColours, renderLayers } from '../lib/layers.js'
+import { colourSet, proposeLayerPaints, fitLayers, coatDepth, washGuide, planLayersFor } from '../lib/layerPlan.js'
 import { absorbanceFromHex, depthLimit, depth, mixHex } from '../lib/mixing.js'
 import { hexToRgb, hexToOklab, rgbToHex, linearToRgb, deltaE } from '../lib/color.js'
 import { mulberry32 } from '../lib/segment.js'
+
+const layerImage = (rgba, width, height, paints, options) => layerImageWith(rgba, width, height, paints, options, planLayersFor)
 
 const yellow = { id: 'y', hex: '#fae409' }
 const blue = { id: 'b', hex: '#2b61ab' }
@@ -124,8 +127,8 @@ describe('proposing base paints', () => {
 })
 
 describe('layers of a picture', () => {
-  it('turns bands of one, two and three coats into nested coats', () => {
-    const res = layerImage(bandImage(), 80, 40, [blue], { paintIds: ['b'], simplify: 0 })
+  it('turns bands of one, two and three coats into nested coats', async () => {
+    const res = await layerImage(bandImage(), 80, 40, [blue], { paintIds: ['b'], simplify: 0 })
     const [layer] = res.layers
     expect(layer.strength).toBeCloseTo(WASH, 1)
     for (let x = 0; x < 80; x++) expect(layer.coatMap[10 * 80 + x]).toBe(Math.floor(x / 20))
@@ -144,11 +147,11 @@ describe('layers of a picture', () => {
     expect(res.deltaE.mean).toBeLessThan(1)
   })
 
-  it('leaves white paper unpainted and lists the combinations that occur', () => {
+  it('leaves white paper unpainted and lists the combinations that occur', async () => {
     const green = hexToRgb(glaze([yellow, 0.5], [blue, 0.3]))
     const cells = [[255, 255, 255], hexToRgb(glaze([yellow, 0.5])), hexToRgb(glaze([blue, 0.3])), green]
     const rgba = makeImage(40, 40, (x, y) => cells[(x < 20 ? 0 : 1) + (y < 20 ? 0 : 2)])
-    const res = layerImage(rgba, 40, 40, [yellow, blue, red], { count: 2, simplify: 0 })
+    const res = await layerImage(rgba, 40, 40, [yellow, blue, red], { count: 2, simplify: 0 })
     expect(res.paintIds).toEqual(['y', 'b'])
     expect(res.layers[0].coatMap[0]).toBe(0)
     expect(res.layers[1].coatMap[0]).toBe(0)
@@ -163,19 +166,19 @@ describe('layers of a picture', () => {
     expect(res.deltaE.p95).toBeLessThan(2)
   })
 
-  it('merges specks into the area around them, layer by layer', () => {
+  it('merges specks into the area around them, layer by layer', async () => {
     const wash = hexToRgb(glaze([blue, 0.6]))
     const rgba = makeImage(60, 60, (x, y) => ((x * 7 + y * 13) % 97 === 0 ? [255, 255, 255] : wash))
-    const res = layerImage(rgba, 60, 60, [blue], { paintIds: ['b'], simplify: 4 })
+    const res = await layerImage(rgba, 60, 60, [blue], { paintIds: ['b'], simplify: 4 })
     expect(res.layers[0].regions).toHaveLength(1)
     expect(res.combos).toHaveLength(1)
   })
 
-  it('is deterministic', () => {
+  it('is deterministic', async () => {
     const rand = mulberry32(3)
     const rgba = makeImage(64, 48, (x, y) => [40 + ((x * 3) % 200) + rand() * 15, 60 + y * 3 + rand() * 15, 220 - x * 2])
     const run = () => layerImage(rgba, 64, 48, [yellow, blue, red, black], { count: 3, simplify: 2, accents: 0 })
-    const a = run(), b = run()
+    const a = await run(), b = await run()
     expect(a.paintIds).toEqual(b.paintIds)
     expect(a.layers.map((l) => l.strength)).toEqual(b.layers.map((l) => l.strength))
     expect(a.comboMap).toEqual(b.comboMap)
@@ -185,10 +188,10 @@ describe('layers of a picture', () => {
     expect(proposeLayerPaints(pictureColours(rgba, 64, 48), [yellow, blue, red, black], { count: 3, accents: 0 })).toEqual(a.paintIds)
   })
 
-  it('shows any subset of the layers', () => {
+  it('shows any subset of the layers', async () => {
     const rand = mulberry32(5)
     const rgba = makeImage(48, 48, (x, y) => [250 - x * 3 + rand() * 10, 240 - y * 2, 60 + x * 2 + y])
-    const res = layerImage(rgba, 48, 48, [yellow, blue, red], { paintIds: ['y', 'b', 'r'], simplify: 2 })
+    const res = await layerImage(rgba, 48, 48, [yellow, blue, red], { paintIds: ['y', 'b', 'r'], simplify: 2 })
     const hexAt = (img, p) => rgbToHex([img[p * 4], img[p * 4 + 1], img[p * 4 + 2]])
     const all = renderLayers(res)
     const none = renderLayers(res, [false, false, false])
@@ -297,12 +300,12 @@ describe('accents', () => {
     expect(fit.coats[2]).toEqual([wash.top, 1])
   })
 
-  it('keeps thin dark lines that the blur of the washes wipes out', () => {
+  it('keeps thin dark lines that the blur of the washes wipes out', async () => {
     const pale = hexToRgb(glaze([blue, 0.2])), dark = hexToRgb(glaze([blue, 0.2], [black, 1]))
     // 3 px lines, 40 px apart: a few percent of the picture.
     const rgba = makeImage(120, 120, (x, y) => ((x + 2 * y) % 80 < 3 ? dark : pale))
-    const plain = layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, accents: 0 })
-    const res = layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, accents: 2 })
+    const plain = await layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, accents: 0 })
+    const res = await layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, accents: 2 })
     expect(plain.layers.some((l) => l.kind === 'accent')).toBe(false)
     const accent = res.layers.find((l) => l.kind === 'accent' && l.role === 'dark')
     expect(accent.paintId).toBe('k')
@@ -332,7 +335,10 @@ describe('what a plan says about itself', () => {
   const one = hexToRgb(glaze([blue, 0.3])), two = hexToRgb(glaze([blue, 0.6]))
   const inside = (x, y, x0, y0, size) => x >= x0 && x < x0 + size && y >= y0 && y < y0 + size
   const rgba = makeImage(80, 40, (x, y) => (inside(x, y, 10, 10, 20) ? two : inside(x, y, 5, 5, 30) || inside(x, y, 45, 5, 30) ? one : [255, 255, 255]))
-  const res = layerImage(rgba, 80, 40, [blue, red], { paintIds: ['b', 'r'], maxCoats: 2, simplify: 0, accents: 0 })
+  let res
+  beforeAll(async () => {
+    res = await layerImage(rgba, 80, 40, [blue, red], { paintIds: ['b', 'r'], maxCoats: 2, simplify: 0, accents: 0 })
+  })
 
   it('counts the separate shapes of every step', () => {
     expect(res.steps.map((s) => [s.paintId, s.coat, s.shapes])).toEqual([['b', 1, 2], ['b', 2, 1]])
@@ -359,18 +365,18 @@ describe('what a plan says about itself', () => {
     expect(res.steps.every((s) => s.paintId === 'b')).toBe(true)
   })
 
-  it('proposes the same paints whatever the size of the areas', () => {
+  it('proposes the same paints whatever the size of the areas', async () => {
     const rand = mulberry32(11)
     const picture = makeImage(96, 64, (x, y) => (x < 48 ? [235 - y + rand() * 12, 190 + rand() * 12, 60 + x] : [70 + rand() * 12, 110 + y, 190 - x + rand() * 12]))
     const pool = [yellow, blue, red, black]
-    const ids = [0, 4, 8].map((simplify) => layerImage(picture, 96, 64, pool, { count: 3, simplify }).paintIds)
+    const ids = await Promise.all([0, 4, 8].map(async (simplify) => (await layerImage(picture, 96, 64, pool, { count: 3, simplify })).paintIds))
     expect(ids[1]).toEqual(ids[0])
     expect(ids[2]).toEqual(ids[0])
     // Every proposed paint has something to paint, and planning the proposal again with its
     // paints uses the same paints.
-    const first = layerImage(picture, 96, 64, pool, { count: 3, simplify: 4 })
+    const first = await layerImage(picture, 96, 64, pool, { count: 3, simplify: 4 })
     expect(new Set(first.steps.map((s) => s.paintId)).size).toBe(first.paintIds.length)
-    const again = layerImage(picture, 96, 64, pool, { paintIds: first.paintIds, count: 3, simplify: 4 })
+    const again = await layerImage(picture, 96, 64, pool, { paintIds: first.paintIds, count: 3, simplify: 4 })
     expect(again.paintIds.slice().sort()).toEqual(first.paintIds.slice().sort())
   })
 })
@@ -414,14 +420,14 @@ describe('what accents are for', () => {
     expect(fit.layers.map((l) => l.paintId)).toEqual(['r', 'k'])
   })
 
-  it('stays off print on white paper', () => {
+  it('stays off print on white paper', async () => {
     const ink = hexToRgb(glaze([black, 1])), tint = hexToRgb(glaze([blue, 0.3]))
     // Left: white with thin black strokes (a caption). Right: a blue field with dark strokes.
     const rgba = makeImage(160, 80, (x, y) => {
       const stroke = y > 20 && y < 60 && x % 9 < 2
       return x < 80 ? (stroke ? ink : [255, 255, 255]) : stroke ? ink : tint
     })
-    const res = layerImage(rgba, 160, 80, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 2, accents: 2 })
+    const res = await layerImage(rgba, 160, 80, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 2, accents: 2 })
     const accent = res.layers.find((l) => l.kind === 'accent')
     let caption = 0, field = 0
     for (let y = 0; y < 80; y++) for (let x = 0; x < 160; x++) if (accent.coatMap[y * 160 + x]) { if (x < 70) caption++; else if (x >= 90) field++ }
@@ -462,11 +468,11 @@ describe('the accent for the darks', () => {
     }
   })
 
-  it('goes on the dark parts of a picture only', () => {
+  it('goes on the dark parts of a picture only', async () => {
     const light = hexToRgb(glaze([pale, 1])), mid = hexToRgb(glaze([blue, 0.5])), deep = hexToRgb(glaze([blue, 0.5], [black, 1]))
     // A light field, a mid-blue band, and dark strokes in both.
     const rgba = makeImage(120, 120, (x, y) => ((x + 2 * y) % 80 < 3 ? deep : y < 80 ? light : mid))
-    const res = layerImage(rgba, 120, 120, [pale, blue, black], { paintIds: ['p', 'b', 'k'], maxCoats: 2, simplify: 2, accents: 2 })
+    const res = await layerImage(rgba, 120, 120, [pale, blue, black], { paintIds: ['p', 'b', 'k'], maxCoats: 2, simplify: 2, accents: 2 })
     const dark = res.layers.find((l) => l.role === 'dark')
     expect(hexToOklab(dark.hexes[1])[0]).toBeLessThan(0.46)
     let on = 0, onDark = 0

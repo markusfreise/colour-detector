@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { layerImage, fitLayers, proposeLayerPaints, colourSet, renderLayers, compositeColours } from '../lib/layers.js'
+import { layerImage as layerImageWith, renderLayers, compositeColours } from '../lib/layers.js'
+import { fitLayers, proposeLayerPaints, colourSet, planLayersFor } from '../lib/layerPlan.js'
+
+const layerImage = (rgba, width, height, paints, options) => layerImageWith(rgba, width, height, paints, options, planLayersFor)
 
 const yellow = { id: 'y', hex: '#fae409' }
 const blue = { id: 'b', hex: '#2b61ab' }
@@ -41,14 +44,14 @@ function consistent(result, pixels) {
 }
 
 describe('layers of a picture, edge cases', () => {
-  it('handles a picture of one pixel', () => {
-    const result = layerImage(image(1, 1, () => [40, 90, 160]), 1, 1, [yellow, blue], { paintIds: ['y', 'b'], simplify: 4 })
+  it('handles a picture of one pixel', async () => {
+    const result = await layerImage(image(1, 1, () => [40, 90, 160]), 1, 1, [yellow, blue], { paintIds: ['y', 'b'], simplify: 4 })
     consistent(result, 1)
     transfer(result)
   })
 
-  it('leaves an all-white picture unpainted: layers without coats and no steps', () => {
-    const result = layerImage(image(12, 8, () => [255, 255, 255]), 12, 8, [yellow, blue], { paintIds: ['y', 'b'] })
+  it('leaves an all-white picture unpainted: layers without coats and no steps', async () => {
+    const result = await layerImage(image(12, 8, () => [255, 255, 255]), 12, 8, [yellow, blue], { paintIds: ['y', 'b'] })
     consistent(result, 96)
     expect(result.steps).toEqual([])
     expect(result.combos).toHaveLength(1)
@@ -56,22 +59,22 @@ describe('layers of a picture, edge cases', () => {
     for (const layer of result.layers) expect(layer.coats.every((c) => c.share === 0)).toBe(true)
   })
 
-  it('works with a single paint and a single coat', () => {
-    const result = layerImage(image(16, 8, (x) => (x < 8 ? [255, 255, 255] : [60, 110, 180])), 16, 8, [blue], { paintIds: ['b'], maxCoats: 1, simplify: 0 })
+  it('works with a single paint and a single coat', async () => {
+    const result = await layerImage(image(16, 8, (x) => (x < 8 ? [255, 255, 255] : [60, 110, 180])), 16, 8, [blue], { paintIds: ['b'], maxCoats: 1, simplify: 0 })
     consistent(result, 128)
     expect(result.layers).toHaveLength(1)
     expect(result.steps).toHaveLength(1)
     expect(result.steps[0]).toMatchObject({ layer: 0, coat: 1, paintId: 'b' })
   })
 
-  it('skips base paints that are not in the pool', () => {
-    const result = layerImage(image(8, 8, () => [60, 110, 180]), 8, 8, [blue], { paintIds: ['gone', 'b'] })
+  it('skips base paints that are not in the pool', async () => {
+    const result = await layerImage(image(8, 8, () => [60, 110, 180]), 8, 8, [blue], { paintIds: ['gone', 'b'] })
     expect(result.paintIds).toEqual(['b'])
     consistent(result, 64)
   })
 
-  it('gives white paper when none of the base paints exists', () => {
-    const result = layerImage(image(8, 8, () => [60, 110, 180]), 8, 8, [blue], { paintIds: ['gone'] })
+  it('gives white paper when none of the base paints exists', async () => {
+    const result = await layerImage(image(8, 8, () => [60, 110, 180]), 8, 8, [blue], { paintIds: ['gone'] })
     expect(result.layers).toEqual([])
     expect(result.paintIds).toEqual([])
     expect(result.steps).toEqual([])
@@ -80,16 +83,16 @@ describe('layers of a picture, edge cases', () => {
     transfer(result)
   })
 
-  it('proposes no more paints than the pool has, whatever count asks for', () => {
+  it('proposes no more paints than the pool has, whatever count asks for', async () => {
     const pool = [yellow, blue, red]
-    const result = layerImage(image(16, 8, (x, y) => [x * 15, 120, y * 30]), 16, 8, pool, { count: 9, maxCoats: 1 })
+    const result = await layerImage(image(16, 8, (x, y) => [x * 15, 120, y * 30]), 16, 8, pool, { count: 9, maxCoats: 1 })
     expect(result.paintIds.length).toBeLessThanOrEqual(3)
     expect(new Set(result.paintIds).size).toBe(result.paintIds.length)
     consistent(result, 128)
   })
 
-  it('keeps its typed arrays through the transfer out of the worker', () => {
-    const result = transfer(layerImage(image(16, 8, (x) => (x < 8 ? [250, 228, 20] : [60, 110, 180])), 16, 8, [yellow, blue], { paintIds: ['y', 'b'] }))
+  it('keeps its typed arrays through the transfer out of the worker', async () => {
+    const result = transfer(await layerImage(image(16, 8, (x) => (x < 8 ? [250, 228, 20] : [60, 110, 180])), 16, 8, [yellow, blue], { paintIds: ['y', 'b'] }))
     consistent(result, 128)
     expect(result.layers[0].filters).toBeInstanceOf(Float64Array)
   })

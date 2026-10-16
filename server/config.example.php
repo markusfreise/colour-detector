@@ -17,6 +17,19 @@ return [
         'transport' => 'mail',
     ],
 
+    // Invitation codes: anybody may sign up as a free account; a code entered when signing up makes
+    // the account one with a lifetime licence. Each code works once; case does not matter.
+    // 'invitation' => ['codes' => ['SPRING-PAINTERS']],
+
+    // A personal key per address: entered in the code field, it signs that address in at once, as
+    // paid, without a link by e-mail. Anybody who knows address and key is in that account.
+    // 'keys' => ['someone@example.org' => 'secret'],
+
+    // Only for a local run (app_url on localhost or *.test, requests from this machine): these
+    // addresses are signed in at once without a link, 'paid' with a licence without end, 'free'
+    // without one. For any other address the sign-in link is shown in the app instead of mailed.
+    // 'local_test' => ['accounts' => ['someone@example.org' => 'paid', 'other@example.org' => 'free']],
+
     'google' => ['client_id' => '', 'client_secret' => ''],
     'meta' => ['client_id' => '', 'client_secret' => ''],
     'apple' => [

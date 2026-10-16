@@ -10,7 +10,7 @@ struct ColourCard: View {
 
     var body: some View {
         if let entry = session.inspected {
-            FloatingCard(title: "Colour \(entry.label)", subtitle: "\(percent(entry.share))% of image", hex: entry.recipe?.hex ?? entry.targetHex) {
+            FloatingCard(title: L("Colour %@", entry.label), subtitle: L("%@%% of image", percent(entry.share)), hex: entry.recipe?.hex ?? entry.targetHex) {
                 session.inspect(region: nil)
             } content: {
                 if let recipe = entry.recipe {
@@ -37,7 +37,7 @@ struct SpotCard: View {
 
     var body: some View {
         if let spot = session.layerSpot {
-            FloatingCard(title: "This Spot", subtitle: nil, hex: nil) {
+            FloatingCard(title: L("This Spot"), subtitle: nil, hex: nil) {
                 session.selectPoint(nil)
             } content: {
                 LayerSpotView(spot: spot)
@@ -67,7 +67,7 @@ struct FloatingCard<Content: View>: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(title).font(.headline)
                     if let subtitle {
-                        Text(subtitle).font(.subheadline).foregroundStyle(.secondary)
+                        Text(subtitle).font(.subheadline).foregroundStyle(Theme.copyLight)
                     }
                 }
                 Spacer(minLength: 8)
@@ -77,23 +77,23 @@ struct FloatingCard<Content: View>: View {
         }
         .padding(16)
         .frame(maxWidth: 400, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
-        .shadow(color: .black.opacity(0.14), radius: 16, y: 6)
+        .foregroundStyle(Theme.copy)
+        .background(Theme.raised, in: RoundedRectangle(cornerRadius: Theme.radius))
+        .overlay(RoundedRectangle(cornerRadius: Theme.radius).strokeBorder(Theme.border))
+        .floatShadow()
         .accessibilityElement(children: .contain)
     }
 }
 
-/// The system's Close button: the xmark in a circle, with "Close" for VoiceOver.
+/// The cross that closes a card, as on the web, with "Close" for VoiceOver.
 struct CloseButton: View {
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             Image(systemName: "xmark")
-                .font(.body.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .frame(width: 30, height: 30)
-                .background(.quaternary, in: Circle())
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Theme.copyLight)
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }
@@ -115,7 +115,7 @@ struct BreakdownSheet: View {
                     EntryEditorView(index: index, stacked: sizeClass == .compact).padding()
                 }
             }
-            .navigationTitle("Colour \(session.inspected?.label ?? "")")
+            .navigationTitle(L("Colour %@", session.inspected?.label ?? ""))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif

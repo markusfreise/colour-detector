@@ -1,4 +1,4 @@
-name: Tintmap
+name: Watercolourlove
 options:
   bundleIdPrefix: de.markusfreise
   deploymentTarget:
@@ -6,6 +6,8 @@ options:
     macOS: "14.0"
   createIntermediateGroups: true
   developmentLanguage: en
+  # English and German; the texts are in Resources/Localizable.xcstrings and InfoPlist.xcstrings.
+  knownRegions: [en, de]
 
 settings:
   base:
@@ -16,28 +18,36 @@ settings:
     CURRENT_PROJECT_VERSION: "1"
 
 targets:
-  Tintmap:
+  Watercolourlove:
     type: application
     supportedDestinations: [iOS, macOS]
     sources:
       - Sources
       - Resources/Assets.xcassets
+      # What the app collects (nothing), for the App Store.
+      - Resources/PrivacyInfo.xcprivacy
+      # Every text of the app, in English and German.
+      - Resources/Localizable.xcstrings
+      - Resources/InfoPlist.xcstrings
       # Paint stock, colour chart and sample photos, exported from the web app's data (npm run app:data).
       - path: Resources/Data
         buildPhase: resources
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: de.markusfreise.tintmap
+        PRODUCT_BUNDLE_IDENTIFIER: de.markusfreise.watercolourlove
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_HARDENED_RUNTIME: YES
+        # The texts of Text(), Button() and String(localized:) are collected for Localizable.xcstrings.
+        SWIFT_EMIT_LOC_STRINGS: YES
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES
         # The analysis is number crunching; without optimisation a debug build takes seconds per picture.
         SWIFT_OPTIMIZATION_LEVEL: -O
-        "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]": Sources/Tintmap-macOS.entitlements
+        "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]": Sources/Watercolourlove-macOS.entitlements
     info:
       path: Sources/Info.plist
       properties:
-        CFBundleDisplayName: Tintmap
+        CFBundleDisplayName: Watercolourlove
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         # No own encryption: no export compliance questions on upload.
@@ -55,31 +65,31 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
 
-  TintmapTests:
+  WatercolourloveTests:
     type: bundle.unit-test
     supportedDestinations: [iOS, macOS]
     sources:
       - Tests
     dependencies:
-      - target: Tintmap
+      - target: Watercolourlove
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: de.markusfreise.tintmap.tests
+        PRODUCT_BUNDLE_IDENTIFIER: de.markusfreise.watercolourlove.tests
         GENERATE_INFOPLIST_FILE: YES
         ENABLE_TESTABILITY: YES
         # The executable sits deeper in a Mac app bundle than in an iOS one.
-        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Tintmap.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tintmap
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Watercolourlove.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Watercolourlove
         BUNDLE_LOADER: $(TEST_HOST)
 
 schemes:
-  Tintmap:
+  Watercolourlove:
     build:
       targets:
-        Tintmap: all
-        TintmapTests: [test]
+        Watercolourlove: all
+        WatercolourloveTests: [test]
     test:
       targets:
-        - TintmapTests
+        - WatercolourloveTests
     run:
       # Local purchases without App Store Connect.
-      storeKitConfiguration: Tintmap.storekit
+      storeKitConfiguration: Watercolourlove.storekit

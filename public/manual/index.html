@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Watercolourlove and Tintmap – Manual</title>
+<title>Watercolourlove – Manual</title>
 <link rel="stylesheet" href="manual.css">
 </head>
 <body>
 <main class="manual">
 
 <header class="cover">
-  <p class="cover__kicker">Manual · Watercolourlove (web) and Tintmap (iPhone, iPad, Mac)</p>
+  <p class="cover__kicker">Manual · Watercolourlove on the web, iPhone, iPad and Mac</p>
   <h1 class="cover__title">From a photo to a watercolour, one mix at a time</h1>
   <p class="cover__lead">The app finds the main colours in a photo, tells you how to mix each one from the paints you own, and turns the photo into a map of flat, numbered areas. This manual walks through one picture from the first tap to the last brush stroke.</p>
   <nav class="cover__nav" aria-label="Contents">
@@ -38,7 +38,7 @@
   <div class="key">
     <div class="key__item"><p class="key__term">You need</p><p class="key__text">A photo, your watercolours, watercolour paper (300 g/m²) taped to a board, two or three brushes, a palette with wells, two jars of water, a pencil and a printer or a second screen.</p></div>
     <div class="key__item"><p class="key__term">Two methods</p><p class="key__text">Mix: every colour is mixed on the palette and each area is painted once. Layer: a few thin washes are glazed over each other. The step-by-step below uses Mix.</p></div>
-    <div class="key__item"><p class="key__term">Private</p><p class="key__text">Everything is worked out on your device. The photo is not uploaded and there is no account. Only the optional AI help in the web app sends a small copy of the picture, and only after you agree.</p></div>
+    <div class="key__item"><p class="key__term">Private</p><p class="key__text">Everything is worked out on your device and the photo is never uploaded. On the web you sign in with your e-mail address; the account holds only that address and your plan. Pictures, paint boxes and the collection stay in the browser on this device.</p></div>
   </div>
 </section>
 
@@ -51,8 +51,8 @@
   <article class="step" id="step-1">
     <header class="step__head"><span class="step__number">1</span><h3 class="step__title">Choose a photo</h3></header>
     <div class="step__text">
-      <p>Press <strong>Choose photo</strong> and pick a picture, or <strong>Take photo</strong> on a phone or tablet. In Tintmap the button is <strong>New Image</strong>. <strong>Samples</strong> opens the built-in examples if you want to try the app first.</p>
-      <p>Photos with clear light and shadow and a few large shapes work best. The app starts analysing at once; set <strong>Show</strong> to <strong>Photo</strong> at any time to see the original again.</p>
+      <p>On the web, sign in first: enter your e-mail address and open the link that arrives. Then press <strong>New picture</strong> and pick a photo; on a phone or tablet it also offers the camera. In the app the button is <strong>New Image</strong>. <strong>Samples</strong> opens five example photos if you want to try the app first.</p>
+      <p>Photos with clear light and shadow and a few large shapes work best. The app starts analysing at once; switch the view to <strong>Photo</strong> at any time to see the original again.</p>
     </div>
     <div class="step__media">
       <figure class="shot"><img class="shot__image" src="img/app-photo.webp" alt="The original photo in the app"><figcaption class="shot__caption"><span class="shot__tag">App</span>View "Photo": the original, with saturation raised to 200%.</figcaption></figure>
@@ -63,13 +63,14 @@
   <article class="step" id="step-2">
     <header class="step__head"><span class="step__number">2</span><h3 class="step__title">Tell the app which paints you own</h3></header>
     <div class="step__text">
-      <p>Open <strong>Show paint box</strong> (Tintmap: <strong>Paint box</strong>). Every paint is a chip in its own colour with its number; P and T stand for pan and tube. The paints in the box at the top are the ones the recipes may use. Click a chip to move it in or out.</p>
+      <p>Open <strong>Paint box</strong> from the list of colours. Every paint is a chip in its own colour with its number; P and T stand for pan and tube. The <strong>Palette</strong> at the top holds the paints the recipes may use for this picture, and it is saved with the picture. Below it are your paint boxes: Pans, Tubes, Travelbox and one box per series. Click a chip to move it into the palette or out of it.</p>
       <ul>
-        <li><strong>Auto</strong> lets the app pick the small set of paints that suits this picture. It is on for a new paint box and switches off when you select by hand.</li>
-        <li><strong>Your own paints</strong> adds paints of any brand with their own colour.</li>
-        <li><strong>New box</strong> keeps a separate selection, for example studio and travel.</li>
+        <li><strong>Auto</strong> lets the app pick the small set of paints that suits this picture, from the boxes ticked <strong>Use for Auto</strong>. It switches off when you select by hand.</li>
+        <li>The <strong>+</strong> at the end of a box adds a colour to it: search by series, number or name, or enter a colour of your own. With Pro the search also covers the colour charts of Schmincke Horadam, Winsor &amp; Newton Professional and Michael Harding.</li>
+        <li><strong>New paint box</strong> starts a box for another set of paints, for example a travel set. <strong>Import paint box</strong> reads one that was exported before.</li>
+        <li>Under each box: <strong>Rename</strong>, <strong>Remove colours</strong>, <strong>Export</strong> (a file to keep or share) and <strong>Delete box</strong>.</li>
       </ul>
-      <p>Press <strong>Update mixes</strong> after a change.</p>
+      <p>Press <strong>Update mixes</strong> after a change. The free version on the web mixes from up to eight paints.</p>
     </div>
     <div class="step__media">
       <figure class="shot"><img class="shot__image" src="img/app-paintbox.webp" alt="The paint box with selected paints at the top and pans and tubes below"><figcaption class="shot__caption"><span class="shot__tag">App</span>Selected paints at the top, the rest under Pans and Tubes.</figcaption></figure>
@@ -83,10 +84,10 @@
       <p>Three sliders set the amount of work:</p>
       <ul>
         <li><strong>Colours</strong> (2 to 32) is the number of mixes on your palette. Start with 12 to 20.</li>
-        <li><strong>Simplify areas</strong> (0 to 12) merges small shapes into bigger, calmer ones. At 0 the map follows nearly every speck of the photo; around 7 it becomes paintable. With Pro it goes down to -2, where the areas follow the photo even more closely.</li>
+        <li><strong>Simplify areas</strong> (0 to 10) merges small shapes into bigger, calmer ones. It starts at 0; the higher, the fewer and larger the areas. With Pro it goes down to -4, where the areas follow the photo ever more closely.</li>
         <li><strong>Max. paints</strong> limits a mix to one, two or three paints. Fewer paints give cleaner mixes.</li>
       </ul>
-      <p><strong>Saturation</strong> and <strong>Contrast</strong> adjust the photo before it is analysed, and <strong>Variety</strong> decides whether small areas of another hue (lips, a red roof) keep a mix of their own.</p>
+      <p><strong>Saturation</strong> (starts at 200%) and <strong>Contrast</strong> adjust the photo before it is analysed. <strong>Details</strong> (0 to 10) decides whether small areas of another hue (lips, a red roof) keep a mix of their own: low keeps the picture as a whole close to the photo, high saves a mix for the small accents.</p>
     </div>
     <div class="step__media step__media--three">
       <figure class="shot"><img class="shot__image" src="img/app-map-detailed.webp" alt="Map with Simplify areas at 2: many small shapes"><figcaption class="shot__caption"><span class="shot__tag">App</span>Simplify areas 2: too many small shapes.</figcaption></figure>
@@ -110,7 +111,8 @@
   <article class="step" id="step-5">
     <header class="step__head"><span class="step__number">5</span><h3 class="step__title">Look up a mix</h3></header>
     <div class="step__text">
-      <p>Click an area in the picture or a mix in the list. The rest of the picture goes blank, so you see exactly where this mix belongs. The card shows the <strong>Target</strong> colour next to <strong>Your mix</strong> and up to five recipes.</p>
+      <p>Click an area in the picture. A card opens with the number of the colour, how much of the picture it covers and the recipe to mix it; on a computer the recipe also shows next to the pointer as you move over the picture. <strong>Full breakdown</strong> opens the <strong>Target</strong> colour next to <strong>Your mix</strong> and up to five recipes.</p>
+      <p>Click a mix in the list <strong>Colours</strong> instead and the rest of the picture goes blank, so you see exactly where this mix belongs. Click the blank part to bring the picture back.</p>
       <p>A recipe reads like this: <strong>15.5 x P 230</strong> plus <strong>1 x P 662</strong> means 15.5 parts of pan 230 to 1 part of pan 662. <strong>Medium</strong> is the amount of water, and <strong>0.1 · excellent</strong> says how close the mix gets to the target. Click another recipe if you prefer its paints.</p>
     </div>
     <div class="step__media step__media--three">
@@ -123,20 +125,20 @@
   <article class="step" id="step-6">
     <header class="step__head"><span class="step__number">6</span><h3 class="step__title">Change what you do not like</h3></header>
     <div class="step__text">
-      <p>You are the painter, the photo is only a suggestion. With a colour selected:</p>
+      <p>You are the painter, the photo is only a suggestion. In the full breakdown of a colour:</p>
       <ul>
         <li><strong>Change colour</strong> picks a new target, warmer, cooler or entirely different. The recipes follow.</li>
         <li><strong>Edit only the clicked area</strong> detaches the clicked area from the others that share its colour.</li>
         <li><strong>Reset to photo</strong> returns to the colour of the photo.</li>
       </ul>
-      <p>Press <strong>Save</strong> to keep the picture with its settings and changes in the collection (Tintmap: <strong>Library</strong>).</p>
+      <p>Press <strong>Save</strong> to keep the picture with its settings, its palette and your changes in the <strong>Collection</strong> (app: <strong>Library</strong>).</p>
     </div>
   </article>
 
   <article class="step" id="step-7">
     <header class="step__head"><span class="step__number">7</span><h3 class="step__title">Print the sheet</h3></header>
     <div class="step__text">
-      <p><strong>Export</strong> saves the picture as a JPG exactly as it is shown, in the view you have chosen.</p>
+      <p><strong>Export as JPG</strong> saves the picture exactly as it is shown, in the view you have chosen.</p>
       <p><strong>Print / PDF</strong> gives the picture followed by every mix with its paints as bars. Print it for the desk, or choose "Save as PDF" in the print dialog and keep it on a tablet. The picture on the sheet carries the outlines and labels you need for transferring the drawing in step 9.</p>
     </div>
     <div class="step__media">
@@ -217,7 +219,7 @@
   <article class="step" id="step-14">
     <header class="step__head"><span class="step__number">14</span><h3 class="step__title">Compare, correct, take off the tape</h3></header>
     <div class="step__text">
-      <p>Put the painting next to the screen with <strong>Show</strong> on <strong>Mixed paint</strong>. Where an area is too pale, glaze it once more with the same mix. When everything is dry, pull the tape off flat and away from the picture.</p>
+      <p>Put the painting next to the screen in the view <strong>Mixed paint</strong>. Where an area is too pale, glaze it once more with the same mix. When everything is dry, pull the tape off flat and away from the picture.</p>
     </div>
     <div class="step__media step__media--three">
       <figure class="shot"><img class="shot__image" src="img/storyboard-16.webp" alt="Storyboard: the painting next to the tablet with the colour plan"><figcaption class="shot__caption"><span class="shot__tag shot__tag--mock">Storyboard 16</span>Painting and plan side by side.</figcaption></figure>
@@ -259,7 +261,7 @@
 
 <section class="manual__section" id="more">
   <h2 class="manual__title">More options</h2>
-  <p class="manual__lead">Three things you can leave alone at first.</p>
+  <p class="manual__lead">Things you can leave alone at first.</p>
   <article class="step">
     <header class="step__head"><span class="step__number">A</span><h3 class="step__title">Geometric areas</h3></header>
     <div class="step__text"><p>Set <strong>Areas</strong> to <strong>Geometric</strong> and every area becomes a polygon with a few straight edges, laid over each other from large to small. It works in both methods and is quick to draw with a ruler. <strong>Simplify areas</strong> makes the edges longer and the shapes fewer.</p></div>
@@ -269,12 +271,16 @@
     </div>
   </article>
   <article class="step">
-    <header class="step__head"><span class="step__number">B</span><h3 class="step__title">Views</h3></header>
-    <div class="step__text"><p><strong>Mixed paint</strong> shows what your paints can reach, <strong>Photo colour</strong> what the photo asks for, <strong>Photo</strong> the original. <strong>Template to print</strong> leaves the areas empty and draws their outlines and numbers in light grey: print it and paint on the sheet. Tintmap adds <strong>Overlay</strong>: the areas at half strength over the photo. <strong>Outlines</strong> and <strong>Numbers</strong> can be switched off for a clean look at the colours.</p></div>
+    <header class="step__head"><span class="step__number">B</span><h3 class="step__title">Values</h3></header>
+    <div class="step__text"><p>Press <strong>Values</strong> in the settings and the picture is worked out in grey: it is split into light and dark values, and each value is painted with a colour from your palette, whatever its hue. <strong>Colours</strong> still counts the mixes, and each mix covers several values as washes with more or less water. A good start for a picture in one or two colours.</p></div>
   </article>
   <article class="step">
-    <header class="step__head"><span class="step__number">C</span><h3 class="step__title">AI help (web app, optional)</h3></header>
-    <div class="step__text"><p>With your own API key, an AI model looks at a small copy of the picture and chooses the colours to mix and the paints for them; the app still works out the areas and recipes. It asks only when you press the button and shows what the call costs. Without a key nothing is sent anywhere.</p></div>
+    <header class="step__head"><span class="step__number">C</span><h3 class="step__title">Details of the picture (Pro)</h3></header>
+    <div class="step__text"><p>Press <strong>Detail</strong> among the tools of the picture and drag a frame over a part of it, a face or a window. That part is cut from the photo at full size and analysed as a picture of its own, with finer areas and its own mixes. Each detail stays as a small picture under the main one: click it to go back to it, or <strong>Back</strong> to return to the whole picture. <strong>Fit</strong> fits the picture to the window again.</p></div>
+  </article>
+  <article class="step">
+    <header class="step__head"><span class="step__number">D</span><h3 class="step__title">Views</h3></header>
+    <div class="step__text"><p><strong>Mixed paint</strong> shows what your paints can reach, <strong>Photo colour</strong> what the photo asks for, <strong>Overlay</strong> the photo at half strength over the paint, <strong>Photo</strong> the original. <strong>Template to print</strong> leaves the areas empty and draws their outlines and numbers in light blue, which a printer prints without black ink: print it and paint on the sheet. <strong>Outlines</strong> and <strong>Numbers</strong> can be switched off for a clean look at the colours.</p></div>
   </article>
 </section>
 
@@ -295,8 +301,9 @@
   </table>
   </div>
   <div class="key key--after">
-    <div class="key__item"><p class="key__term">Tintmap: free and paid</p><p class="key__text">Free with one saved picture and one paint box. A single purchase lifts both limits. No subscription.</p></div>
-    <div class="key__item"><p class="key__term">Where the data is</p><p class="key__text">Web: in the browser on this device. Tintmap: on the device. Nothing is synchronised.</p></div>
+    <div class="key__item"><p class="key__term">Free and Pro on the web</p><p class="key__text">A free account mixes from up to eight paints in one paint box. Pro adds saved pictures, Print / PDF, Export as JPG, details of the picture, more paint boxes, the manufacturers' colour charts and finer areas. Pro is 4.99 EUR a month, 29.99 EUR a year or 79 EUR once.</p></div>
+    <div class="key__item"><p class="key__term">Free and paid in the app</p><p class="key__text">Free with one saved picture and one paint box. A single purchase unlocks everything. No subscription.</p></div>
+    <div class="key__item"><p class="key__term">Where the data is</p><p class="key__text">Web: in the browser on this device, not in your account. App: on the device. Nothing is synchronised.</p></div>
     <div class="key__item"><p class="key__term">If a colour looks wrong</p><p class="key__text">The stock holds one reference colour per paint. Your own swatch decides; change the target or pick another recipe.</p></div>
   </div>
 </section>
@@ -307,7 +314,7 @@
 
   <div class="board">
     <article class="board__frame"><img class="board__image" src="img/storyboard-01.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">01 · Opening</span><span class="board__use">Video + Photo</span></div><p class="board__angle">Wide, from behind, eye level</p><p class="board__note">Desk at the window, tablet, paint box, blank paper. Slow push-in, 5 s. Title goes over this.</p></div></article>
-    <article class="board__frame"><img class="board__image" src="img/storyboard-02.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">02 · The photo</span><span class="board__use">Video + Photo · Step 1</span></div><p class="board__angle">Close, over the hand</p><p class="board__note">Phone with the snapshot, paint box out of focus behind. Cut to a screen recording of "Choose photo".</p></div></article>
+    <article class="board__frame"><img class="board__image" src="img/storyboard-02.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">02 · The photo</span><span class="board__use">Video + Photo · Step 1</span></div><p class="board__angle">Close, over the hand</p><p class="board__note">Phone with the snapshot, paint box out of focus behind. Cut to a screen recording of "New picture".</p></div></article>
     <article class="board__frame"><img class="board__image" src="img/storyboard-03.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">03 · The map appears</span><span class="board__use">Video + Photo · Step 4</span></div><p class="board__angle">Over the shoulder</p><p class="board__note">Tablet upright, the picture as numbered areas. In video: the moment the analysis finishes.</p></div></article>
     <article class="board__frame"><img class="board__image" src="img/storyboard-04.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">04 · Paint box, real and on screen</span><span class="board__use">Video + Photo · Step 2</span></div><p class="board__angle">Top-down</p><p class="board__note">Open pan box beside the tablet showing the paint box. Finger points at a pan, then at its chip.</p></div></article>
     <article class="board__frame"><img class="board__image" src="img/storyboard-05.webp" alt=""><div class="board__body"><div class="board__head"><span class="board__number">05 · Tap for a recipe</span><span class="board__use">Video + Photo · Step 5</span></div><p class="board__angle">Close on the screen, slightly from the side</p><p class="board__note">Fingertip taps an area, the rest blanks. Use a screen recording for the recipe card so the text is sharp.</p></div></article>
@@ -338,7 +345,7 @@
 </section>
 
 <footer class="manual__footer">
-  <p>Watercolourlove and Tintmap by Markus Freise. Questions: <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></p>
+  <p>Watercolourlove by Markus Freise. Questions: <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></p>
 </footer>
 
 </main>

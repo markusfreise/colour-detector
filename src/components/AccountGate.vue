@@ -12,7 +12,24 @@
       <!-- Always in the page, so that every photo fades in, the first one too. -->
       <img class="gate__photo" :class="{ 'gate__photo--shown': photoShown }" :src="photo ?? undefined" alt="" />
     </div>
-    <section class="panel gate__card" aria-labelledby="gate-title">
+    <!-- Once the link is sent, the card is only the logo, the message and the links at the bottom. -->
+    <section class="card panel gate__card" :class="{ 'gate__card--sent': account.sentTo && !account.user }" aria-labelledby="gate-title">
+      <!-- The language, before anything else is read. Each under its own name. -->
+      <div class="gate__languages" role="group" :aria-label="t('Language')">
+        <button
+          v-for="language in ['en', 'de']"
+          :key="language"
+          class="gate__language"
+          :class="{ 'gate__language--active': preferences.locale === language }"
+          type="button"
+          :lang="language"
+          :aria-pressed="preferences.locale === language"
+          :title="language === 'de' ? 'Deutsch' : 'English'"
+          @click="preferences.set({ language })"
+        >
+          {{ language.toUpperCase() }}
+        </button>
+      </div>
       <div class="gate__main">
       <!-- The logo in the colour of the text, so it reads in light and dark. -->
       <h1 id="gate-title" class="gate__title">
@@ -22,72 +39,103 @@
         {{ account.notice.text }}
       </p>
 
-      <p v-if="!account.loaded" class="gate__text">One moment…</p>
+      <p v-if="!account.loaded" class="gate__text">{{ t('One moment…') }}</p>
 
       <!-- Signed in: the two statements the app needs before it opens. -->
       <template v-else-if="account.user">
-        <p class="gate__text">Signed in as <strong>{{ account.user.email }}</strong>. Before you start:</p>
+        <p class="gate__text">{{ t('Signed in as') }} <strong>{{ account.user.email }}</strong>{{ t('. Before you start:') }}</p>
         <label class="checkbox gate__check">
           <input v-model="privacy" type="checkbox" />
-          <span>I have read the <a href="privacy/" target="_blank" rel="noopener">privacy policy</a> and the <a href="terms/" target="_blank" rel="noopener">terms</a> and agree to them.</span>
+          <span>
+            {{ t('I have read the') }} <a :href="legalPage('privacy')" target="_blank" rel="noopener">{{ t('privacy policy') }}</a> {{ t('and the') }}
+            <a :href="legalPage('terms')" target="_blank" rel="noopener">{{ t('terms') }}</a> {{ t('and agree to them.') }}
+          </span>
         </label>
         <label class="checkbox gate__check">
           <input v-model="local" type="checkbox" />
           <span>
-            I understand that my pictures, paint boxes and collection are stored only in this browser on this device and not in
-            the cloud. They are not part of my account, and they are gone if I clear the browser's data.
+            {{
+              t(
+                "I understand that my pictures, paint boxes and collection are stored only in this browser on this device and not in the cloud. They are not part of my account, and they are gone if I clear the browser's data.",
+              )
+            }}
           </span>
         </label>
         <div class="gate__actions">
-          <button class="button" type="button" :disabled="!privacy || !local || account.busy" @click="account.agree()">Continue</button>
-          <button class="button button--ghost" type="button" :disabled="account.busy" @click="account.signOut()">Sign out</button>
+          <button class="button" type="button" :disabled="!privacy || !local || account.busy" @click="account.agree()">{{ t('Continue') }}</button>
+          <button class="button button--ghost" type="button" :disabled="account.busy" @click="account.signOut()">{{ t('Sign out') }}</button>
         </div>
       </template>
 
       <template v-else>
-        <p class="gate__text">
-          Sign in to use the app. Your account is only your e-mail address; your pictures stay in this browser and are never uploaded.
+        <p v-if="!account.sentTo" class="gate__text">
+          {{ t('Sign in to use the app. Your account is only your e-mail address; your pictures stay in this browser and are never uploaded.') }}
         </p>
-        <div v-if="buttons.length" class="gate__providers">
+        <div v-if="buttons.length && !account.sentTo" class="gate__providers">
           <button v-for="p in buttons" :key="p.id" class="button button--secondary gate__provider" type="button" @click="account.signInWith(p.id)">
-            Continue with {{ p.name }}
+            {{ t('Continue with {name}', { name: p.name }) }}
           </button>
         </div>
-        <p v-if="account.sentTo" class="gate__text">
-          A sign-in link is on its way to <strong>{{ account.sentTo }}</strong>. Open it on this device; it works for 15 minutes.
-          <button class="gate__link" type="button" @click="account.sentTo = ''">Use another address</button>
+        <p v-if="account.sentTo && account.testLink" class="gate__text">
+          {{ t('Local test, no mail sent. The sign-in link for') }} <strong>{{ account.sentTo }}</strong>:
+          <a :href="account.testLink">{{ account.testLink }}</a>
         </p>
-        <form v-else class="gate__form" @submit.prevent="account.sendLink(email)">
+        <p v-else-if="account.sentTo" class="gate__text">
+          {{ t('A sign-in link is on its way to') }} <strong>{{ account.sentTo }}</strong>{{ t('. Open it on this device; it works for 15 minutes.') }}
+        </p>
+        <div v-if="account.sentTo" class="gate__actions">
+          <button class="button" type="button" @click="account.sentTo = ''">{{ t('Use different address') }}</button>
+        </div>
+        <!-- Signing in and signing up are the same link by e-mail; the second form is there for
+             people who look for one. Only signing up asks for an invitation code. -->
+        <form v-else-if="!signingUp" class="gate__form" @submit.prevent="account.sendLink(email)">
           <label class="field gate__field">
-            <span class="field__label">{{ buttons.length ? 'Or with a link by e-mail' : 'Your e-mail address' }}</span>
-            <input v-model.trim="email" class="input" type="email" required autocomplete="email" placeholder="you@example.org" />
+            <span class="field__label">{{ t('Sign in with e-mail') }}</span>
+            <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
           </label>
-          <button class="button" type="submit" :disabled="account.busy || !email">Send me a sign-in link</button>
+          <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Send me a sign-in link') }}</button>
+          <button class="gate__link gate__switch" type="button" @click="signingUp = true">{{ t('Sign up') }}</button>
+        </form>
+        <form v-else class="gate__form" @submit.prevent="account.sendLink(email, code)">
+          <label class="field gate__field">
+            <span class="field__label">{{ t('Sign up with e-mail') }}</span>
+            <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
+          </label>
+          <!-- Optional: a code unlocks everything for good. Without one the account is a free one. -->
+          <label v-if="account.invitation" class="field gate__field">
+            <span class="field__label">{{ t('Invitation code (optional)') }}</span>
+            <input v-model.trim="code" class="input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+          </label>
+          <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Create my account') }}</button>
+          <button class="gate__link gate__switch" type="button" @click="signingUp = false">{{ t('Sign in with account') }}</button>
         </form>
       </template>
 
       <p v-if="account.error" class="gate__error">{{ account.error }}</p>
       <p v-if="account.loaded && !account.user && account.error" class="gate__actions">
-        <button class="button button--ghost" type="button" @click="account.refresh()">Try again</button>
+        <button class="button button--ghost" type="button" @click="account.refresh()">{{ t('Try again') }}</button>
       </p>
-      <footer class="gate__footer">
-        <a href="privacy/">Privacy</a>
-        <a href="terms/">Terms</a>
-        <a href="imprint/">Imprint</a>
-      </footer>
       </div>
 
       <!-- What the app does, in three steps. The pictures are hand-drawn sketches for now, to be
            replaced by screenshots taken after them. -->
-      <aside class="gate__how" aria-labelledby="how-title">
-        <h2 id="how-title" class="gate__how-title">How this works</h2>
+      <aside v-if="!account.sentTo || account.user" class="gate__how" aria-labelledby="how-title">
+        <h2 id="how-title" class="gate__how-title">{{ t('How this works') }}</h2>
         <ol class="gate__steps">
           <li v-for="step in steps" :key="step.title" class="gate__step">
-            <h3 class="gate__step-title">{{ step.title }}</h3>
-            <img class="gate__step-image" :src="step.image" :alt="step.alt" loading="lazy" />
+            <h3 class="gate__step-title">{{ t(step.title) }}</h3>
+            <img class="gate__step-image" :src="step.image" :alt="t(step.alt)" loading="lazy" />
           </li>
         </ol>
       </aside>
+
+      <!-- Below both columns, in one row. -->
+      <footer class="gate__footer">
+        <a :href="legalPage('privacy')">{{ t('Privacy') }}</a>
+        <a :href="legalPage('terms')">{{ t('Terms') }}</a>
+        <a :href="legalPage('imprint')">{{ t('Imprint') }}</a>
+        <button v-if="consent.available" class="gate__settings" type="button" @click="consent.review()">{{ t('Cookies') }}</button>
+      </footer>
     </section>
   </main>
 </template>
@@ -105,16 +153,24 @@ import background from '../../resources/background.webp'
 import stepPhoto from '../../resources/howto/step-1-photo.svg'
 import stepPaints from '../../resources/howto/step-2-paints.svg'
 import stepMixes from '../../resources/howto/step-3-mixes.svg'
+import { useConsentStore } from '../stores/consent.js'
+import { usePreferencesStore } from '../stores/preferences.js'
+import { useText } from '../i18n/index.js'
 
+const { t, legalPage } = useText()
+const consent = useConsentStore()
+const preferences = usePreferencesStore()
 const steps = [
-  { title: 'Choose a reference photo', image: stepPhoto, alt: 'A photo chosen from the device opens in the app' },
-  { title: 'Pick the paints you own', image: stepPaints, alt: 'The paint box with the paints you own ticked' },
-  { title: 'Get a recipe for every colour', image: stepMixes, alt: 'The photo as numbered areas, with the recipe of one area' },
+  { title: 'Choose your reference photo you want to paint with watercolours and need mixes for.', image: stepPhoto, alt: 'A photo chosen from the device opens in the app' },
+  { title: 'Add the colours and paints you use for your art. Presets for known vendors are included.', image: stepPaints, alt: 'The paint box with the paints you own ticked' },
+  { title: 'Image is analysed and recipes for colours calculated. Refine with powerful settings.', image: stepMixes, alt: 'The photo as numbered areas, with the recipe of one area' },
 ]
 
 const account = useAccountStore()
 const logo = logoSvg.replace(/fill="black"/g, 'fill="currentColor"')
 const email = ref('')
+const code = ref('')
+const signingUp = ref(false)
 const privacy = ref(false)
 const local = ref(false)
 

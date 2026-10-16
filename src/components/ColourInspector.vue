@@ -2,21 +2,21 @@
   <!-- The colour of the area tapped in the picture: which one it is, how much of the picture it
        covers, and the recipe to mix it. The whole breakdown opens from here. The card lies over
        the picture and is moved up and down by its handle; where it was put is remembered. -->
-  <aside v-if="entry" ref="card" class="inspector" :class="{ 'inspector--dragging': dragging }" :style="style" aria-label="The colour tapped in the picture">
-    <div class="flyout__handle" :title="wide ? 'Drag to move the colour' : 'Drag to move the colour up or down'" @pointerdown="startDrag"></div>
+  <aside v-if="entry" ref="card" class="inspector" :class="{ 'inspector--dragging': dragging }" :style="style" :aria-label="t('The colour tapped in the picture')">
+    <div class="flyout__handle" :title="wide ? t('Drag to move the colour') : t('Drag to move the colour up or down')" @pointerdown="startDrag"></div>
     <div class="inspector__head">
       <span class="swatch inspector__swatch" :style="{ background: recipe?.hex ?? entry.targetHex }"></span>
-      <h2 class="inspector__title">Colour {{ entry.label }}</h2>
-      <span class="inspector__share">{{ share }}% of image</span>
-      <button class="flyout__close inspector__close" type="button" title="Close" aria-label="Close the colour" @click="analysis.inspect(null)">
+      <h2 class="inspector__title">{{ t('Colour {label}', { label: entry.label }) }}</h2>
+      <span class="inspector__share">{{ t('{percent}% of image', { percent: share }) }}</span>
+      <button class="flyout__close inspector__close" type="button" :title="t('Close')" :aria-label="t('Close the colour')" @click="analysis.inspect(null)">
         <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
           <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
         </svg>
       </button>
     </div>
     <RecipeLine v-if="recipe" :recipe="recipe" full />
-    <p v-else class="inspector__paper">No paints selected in the paint box</p>
-    <button class="button button--secondary inspector__more" type="button" @click="emit('breakdown')">Full breakdown</button>
+    <p v-else class="inspector__paper">{{ t('No paints selected in the paint box') }}</p>
+    <button class="button button--secondary inspector__more" type="button" @click="emit('breakdown')">{{ t('Full breakdown') }}</button>
   </aside>
 </template>
 
@@ -25,7 +25,9 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { useLayoutStore } from '../stores/layout.js'
 import RecipeLine from './RecipeLine.vue'
+import { useText } from '../i18n/index.js'
 
+const { t } = useText()
 const emit = defineEmits(['breakdown'])
 const analysis = useAnalysisStore()
 const layout = useLayoutStore()

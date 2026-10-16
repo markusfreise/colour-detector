@@ -13,10 +13,19 @@
         right: max(var(--gap), env(safe-area-inset-right));
         bottom: max(var(--gap), env(safe-area-inset-bottom));
 
-        // In a narrow window the links are centred under the buttons of the picture.
+        // In a narrow window the links are centred under the buttons of the picture, in one
+        // line: the buttons keep room for one only. The manual is in the menu there.
         @media (max-width: 760px) {
             left: max(var(--gap), env(safe-area-inset-left));
             justify-content: center;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+        }
+    }
+
+    &__footer-manual {
+        @media (max-width: 760px) {
+            display: none;
         }
     }
 

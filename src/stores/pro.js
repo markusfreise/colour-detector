@@ -3,7 +3,6 @@ import { isNative, onNative, sendNative } from '../lib/native.js'
 import { useAccountStore } from './account.js'
 
 // What the free version includes; a purchase lifts the limits.
-export const FREE_BOXES = 1
 // The app from the App Store keeps one picture for free; a free account in the browser saves none.
 export const FREE_IMAGES = isNative ? 1 : 0
 // A free account mixes from at most this many paints, and does not print.

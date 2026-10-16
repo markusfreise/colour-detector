@@ -1,23 +1,41 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
-/// The paints in the active box on top (tap removes), all other paints below (tap adds), and the user's own paints.
+/// The palette of the picture on top (tap removes), then the paint boxes (tap adds to the palette;
+/// the + at the end adds a colour to the box), then the user's own paints.
 struct PaintBoxView: View {
     @Environment(Library.self) private var library
     @Environment(Session.self) private var session
     @Environment(Store.self) private var store
     @Environment(\.dismiss) private var dismiss
 
-    @State private var editedPaint: Paint?
+    @State private var editedPaint: EditedPaint?
     @State private var boxName = ""
-    @State private var namingBox: BoxNaming?
-    @State private var confirmingBoxDelete = false
+    @State private var naming: BoxNaming?
+    @State private var boxToDelete: PaintBox?
     @State private var paintToDelete: Paint?
     @State private var showingPaywall = false
+    /// The box a colour is being added to, and what is typed into its search.
+    @State private var addingTo: String?
+    @State private var query = ""
+    /// The box whose colours are being taken out.
+    @State private var removing: String?
+    @State private var exporting: BoxDocument?
+    @State private var importing = false
+    @State private var importError: String?
 
-    private enum BoxNaming: Identifiable {
-        case new, rename
+    private enum BoxNaming: Identifiable, Hashable {
+        case new
+        case rename(String)
 
         var id: Self { self }
+    }
+
+    /// A paint in the editor, and the box a new one goes into.
+    struct EditedPaint: Identifiable {
+        var paint: Paint
+        var box: String?
+        var id: String { paint.id }
     }
 
     private let columns = [GridItem(.adaptive(minimum: 116), spacing: 6)]
@@ -26,35 +44,41 @@ struct PaintBoxView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    boxBar
+                    paletteBar
                     if layerMode {
-                        Text("Layer mode paints with a few base paints, one layer each (\(selected.count) of \(Library.maxLayerPaints)). They are kept apart from the paints selected for mixing.\(full ? " \(Library.maxLayerPaints) layers at most: remove one before adding another." : "")")
+                        Text(L("Layer mode paints with a few base paints, one layer each (%lld of %lld). They are kept apart from the paints selected for mixing.", selected.count, Library.maxLayerPaints)
+                            + (full ? " " + L("%lld layers at most: remove one before adding another.", Library.maxLayerPaints) : ""))
                             .font(Theme.small)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
-                    group(title: nil, highlighted: true) {
+                    group(title: L(layerMode ? "Base paints" : "Palette"), highlighted: true) {
                         if selected.isEmpty {
-                            Text(layerMode ? "No base paints chosen. Tap a paint below to add it, or press Auto." : "No paints selected. Tap a paint below to add it.").foregroundStyle(.secondary)
+                            Text(L(layerMode ? "No base paints chosen. Tap a paint below to add it, or press Auto." : "No paints selected. Tap a paint below to add it.")).foregroundStyle(.secondary)
                         } else {
                             grid(selected, selected: true)
                         }
-                    }
-                    ForEach(available) { available in
-                        group(title: available.title, autoKey: available.id) {
-                            if available.paints.isEmpty {
-                                Text("All of these are selected.").foregroundStyle(.secondary)
-                            } else {
-                                grid(available.paints, selected: false)
-                            }
+                        if !layerMode {
+                            Text("The palette is saved with the picture.").font(Theme.small).foregroundStyle(.secondary)
                         }
                     }
-                    ownPaints
+                    HStack(spacing: 6) {
+                        Button("New Paint Box", systemImage: "plus") { if mayAddBox() { boxName = ""; naming = .new } }
+                        Button("Import Paint Box", systemImage: "square.and.arrow.down") { if mayAddBox() { importError = nil; importing = true } }
+                    }
+                    .buttonStyle(.bordered)
+                    if let importError {
+                        Text(importError).font(Theme.small).foregroundStyle(.red)
+                    }
+                    ForEach(library.boxes) { box in
+                        boxGroup(box)
+                    }
+                    if !library.custom.isEmpty { ownPaints }
                 }
                 .padding()
             }
             .background(Theme.page)
-            .navigationTitle(layerMode ? "Paint Box: Base Paints" : "Paint Box")
+            .navigationTitle(L(layerMode ? "Paint Box: Base Paints" : "Paint Box"))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -63,24 +87,41 @@ struct PaintBoxView: View {
                     Button("Done") { dismiss() }
                 }
             }
-            .sheet(item: $editedPaint) { PaintEditorView(paint: $0) }
-            .sheet(isPresented: $showingPaywall) { PaywallView(reason: "keep more than one paint box") }
-            .alert(namingBox == .new ? "New Paint Box" : "Rename Paint Box", isPresented: Binding(get: { namingBox != nil }, set: { if !$0 { namingBox = nil } })) {
+            .sheet(item: $editedPaint) { PaintEditorView(paint: $0.paint, box: $0.box) }
+            .sheet(isPresented: $showingPaywall) { PaywallView(reason: "add paint boxes of your own") }
+            .alert(L(naming == .new ? "New Paint Box" : "Rename Paint Box"), isPresented: Binding(get: { naming != nil }, set: { if !$0 { naming = nil } })) {
                 TextField("Name", text: $boxName)
                 Button("Cancel", role: .cancel) {}
-                Button(namingBox == .new ? "Create" : "Save") {
-                    if namingBox == .new { library.addBox(named: boxName) } else { library.renameBox(library.activeBox.id, to: boxName) }
+                Button(L(naming == .new ? "Create" : "Save")) {
+                    switch naming {
+                    case .new: library.addBox(named: boxName)
+                    case .rename(let id): library.renameBox(id, to: boxName)
+                    case nil: break
+                    }
                 }
             }
-            .confirmationDialog("Delete the box \"\(library.activeBox.name)\"?", isPresented: $confirmingBoxDelete, titleVisibility: .visible) {
-                Button("Delete Box", role: .destructive) { library.deleteBox(library.activeBox.id) }
-            } message: {
+            .confirmationDialog(L("Delete the box “%@”?", boxToDelete?.displayName ?? ""), isPresented: Binding(get: { boxToDelete != nil }, set: { if !$0 { boxToDelete = nil } }), titleVisibility: .visible, presenting: boxToDelete) { box in
+                Button("Delete Box", role: .destructive) { library.deleteBox(box.id) }
+            } message: { _ in
                 Text("The paints stay in your library.")
             }
             .confirmationDialog("Delete this paint?", isPresented: Binding(get: { paintToDelete != nil }, set: { if !$0 { paintToDelete = nil } }), titleVisibility: .visible, presenting: paintToDelete) { paint in
-                Button("Delete \(paint.name)", role: .destructive) { library.deletePaint(paint.id) }
+                Button(L("Delete %@", paint.displayName), role: .destructive) { library.deletePaint(paint.id) }
             } message: { _ in
                 Text("It is removed from every paint box.")
+            }
+            .fileExporter(isPresented: Binding(get: { exporting != nil }, set: { if !$0 { exporting = nil } }), document: exporting, contentType: .json, defaultFilename: exporting?.name) { _ in
+                exporting = nil
+            }
+            .fileImporter(isPresented: $importing, allowedContentTypes: [.json]) { result in
+                guard case .success(let url) = result else { return }
+                let access = url.startAccessingSecurityScopedResource()
+                defer { if access { url.stopAccessingSecurityScopedResource() } }
+                do {
+                    try library.importBox(Data(contentsOf: url))
+                } catch {
+                    importError = L("This is not a paint box file.")
+                }
             }
         }
         #if os(macOS)
@@ -88,78 +129,51 @@ struct PaintBoxView: View {
         #endif
     }
 
-    /// In layer mode the screen edits the base paints of the box instead of its selection for mixing.
+    /// In layer mode the screen edits the base paints of the palette instead of its selection for mixing.
     private var layerMode: Bool { session.settings.mode == .layer }
-    private var autoOn: Bool { layerMode ? library.activeBox.layerAuto : library.activeBox.auto }
+    private var autoOn: Bool { layerMode ? library.palette.layerAuto : library.palette.auto }
     private var selected: [Paint] { layerMode ? library.layerPaints.sortedForBox() : library.selected }
-    private var available: [PaintGroup] {
-        guard layerMode else { return library.available }
-        let base = Set(library.activeBox.layerIDs)
-        return library.all.groupedByForm { !base.contains($0.id) }
-    }
-    private var full: Bool { layerMode && library.activeBox.layerIDs.count >= Library.maxLayerPaints }
+    private var inPalette: Set<String> { layerMode ? Set(library.palette.layerIDs) : library.enabledIDs }
+    private var full: Bool { layerMode && library.palette.layerIDs.count >= Library.maxLayerPaints }
 
-    // MARK: Boxes
+    // MARK: Palette
 
-    /// The boxes as buttons with what can be done to them, then what can be done to the selection.
-    private var boxBar: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    ForEach(library.boxes) { box in
-                        Button(box.name) { library.selectBox(box.id) }
-                            .borderedStyle(selected: box.id == library.activeBox.id)
-                            .accessibilityAddTraits(box.id == library.activeBox.id ? .isSelected : [])
-                    }
-                    Button("New Box", systemImage: "plus", action: newBox)
-                    Button("Rename") {
-                        boxName = library.activeBox.name
-                        namingBox = .rename
-                    }
-                    if library.boxes.count > 1 {
-                        Button("Delete Box") { confirmingBoxDelete = true }
-                    }
-                }
-                .buttonStyle(.bordered)
-                .padding(1)
+    /// What can be done to the palette.
+    private var paletteBar: some View {
+        HStack(spacing: 6) {
+            Button("Auto", systemImage: "wand.and.stars", action: auto)
+                .borderedStyle(selected: autoOn)
+                .fixedSize()
+                .disabled(session.image == nil)
+                .help(L(layerMode ? "Let the app choose the base paints for this picture" : "Let the app select the paints that suit each picture"))
+                .accessibilityAddTraits(autoOn ? .isSelected : [])
+            if !layerMode {
+                Button("Revert") { library.revert() }
+                    .help("Back to the default selection")
             }
-            HStack(spacing: 6) {
-                Button("Auto", systemImage: "wand.and.stars", action: auto)
-                    .borderedStyle(selected: autoOn)
-                    .fixedSize()
-                    .disabled(session.image == nil)
-                    .help(layerMode ? "Let the app choose the base paints for this picture" : "Let the app select the paints that suit each picture")
-                    .accessibilityAddTraits(autoOn ? .isSelected : [])
-                if !layerMode {
-                    Button("Revert") { library.revert() }
-                        .help("Back to the default selection")
-                }
-                Button("Clear") {
-                    if layerMode { library.setLayerPaints([]) } else { library.clear() }
-                }
-                Spacer(minLength: 8)
-                Text("\(selected.count) selected").font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
+            Button("Clear") {
+                if layerMode { library.setLayerPaints([]) } else { library.clear() }
             }
-            .buttonStyle(.bordered)
+            Spacer(minLength: 8)
+            Text(L("%lld selected", selected.count)).font(Theme.small).foregroundStyle(.secondary).lineLimit(1)
         }
+        .buttonStyle(.bordered)
     }
 
-    private func newBox() {
-        guard store.unlocked || library.boxes.count < Store.freeBoxes else {
-            showingPaywall = true
-            return
-        }
-        boxName = ""
-        namingBox = .new
+    /// Boxes of one's own are part of the full version.
+    private func mayAddBox() -> Bool {
+        if store.unlocked { return true }
+        showingPaywall = true
+        return false
     }
 
-    /// A group joins or leaves the paints Auto chooses from; with Auto on, the choice is made again.
-    private func setAutoGroup(_ key: String, on: Bool) {
-        library.setAutoGroup(key, on: on)
+    /// A box joins or leaves the paints Auto chooses from; with Auto on, the choice is made again.
+    private func setAutoBox(_ id: String, on: Bool) {
+        library.setAutoBox(id, on: on)
         if autoOn, session.image != nil { auto() }
     }
 
-    /// Lets the app pick the paints for each picture, from the groups ticked for Auto.
+    /// Lets the app pick the paints for the picture, from the boxes ticked for Auto.
     private func auto() {
         if layerMode {
             // The proposal needs the picture, so it is made while the layers are planned again.
@@ -170,9 +184,161 @@ struct PaintBoxView: View {
         session.recomputeAllRecipes()
     }
 
+    // MARK: Boxes
+
+    private func boxGroup(_ box: PaintBox) -> some View {
+        let all = library.paints(in: box)
+        // While colours are being taken out, all of them, those in the palette too.
+        let listed = removing == box.id ? all : all.filter { !inPalette.contains($0.id) }
+        return group(title: box.displayName, autoKey: box.id) {
+            if removing == box.id {
+                Text("Tap a colour to take it out of this box.").font(Theme.small).foregroundStyle(.secondary)
+            }
+            LazyVGrid(columns: columns, spacing: 6) {
+                ForEach(listed) { paint in
+                    Button {
+                        if removing == box.id {
+                            library.removeFromBox(box.id, paint: paint.id)
+                        } else if layerMode {
+                            library.toggleLayerPaint(paint.id)
+                        } else {
+                            library.toggle(paint.id)
+                        }
+                    } label: {
+                        PaintChip(paint: paint, showForm: false, used: false)
+                            .overlay { if removing == box.id { Image(systemName: "minus.circle.fill").font(.title3).foregroundStyle(.white, .red).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing).padding(4) } }
+                    }
+                    .buttonStyle(.plain)
+                    // A full set of base paints takes no more; the note above says why.
+                    .disabled(removing != box.id && full)
+                    .opacity(removing != box.id && full ? 0.45 : 1)
+                    .accessibilityHint(L(removing == box.id ? "Takes the colour out of this box" : "Adds the paint to the palette"))
+                }
+                // An empty place at the end: a colour more for this box.
+                if removing != box.id {
+                    Button {
+                        addingTo = addingTo == box.id ? nil : box.id
+                        query = ""
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.title3)
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                            .foregroundStyle(addingTo == box.id ? Color.accentColor : .secondary)
+                            .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(addingTo == box.id ? Color.accentColor : Color.secondary.opacity(0.5), style: StrokeStyle(lineWidth: 1.5, dash: [5, 4])))
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(L("Add a colour to %@", box.displayName))
+                }
+            }
+            if !all.isEmpty && listed.isEmpty {
+                Text("All of these are selected.").foregroundStyle(.secondary)
+            }
+            if addingTo == box.id { colourSearch(box) }
+            boxActions(box)
+        }
+    }
+
+    /// Type a part of the series, number or name; the matching colours are listed below.
+    private func colourSearch(_ box: PaintBox) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            TextField("Series, number or name", text: $query)
+                .textFieldStyle(.roundedBorder)
+                #if os(iOS)
+                .textInputAutocapitalization(.never)
+                #endif
+                .autocorrectionDisabled()
+            ForEach(matches(for: box)) { option in
+                Button {
+                    switch option.kind {
+                    case .paint(let id): library.addToBox(box.id, paint: id)
+                    case .chart(let colour): library.addChartColour(colour, to: box.id)
+                    }
+                    query = ""
+                } label: {
+                    HStack(spacing: 10) {
+                        RoundedRectangle(cornerRadius: 4).fill(Color(hex: option.hex)).frame(width: 28, height: 28)
+                        Text(option.label).frame(maxWidth: .infinity, alignment: .leading)
+                        if option.isChart { Text("Colour chart").font(Theme.small).foregroundStyle(.secondary) }
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+            if !query.trimmingCharacters(in: .whitespaces).isEmpty && matches(for: box).isEmpty {
+                Text("No colour found").foregroundStyle(.secondary)
+            }
+            Button("Or enter a colour of your own") {
+                editedPaint = EditedPaint(paint: Paint(id: "custom-\(UUID().uuidString.prefix(8))", vendor: Paint.houseVendor, number: "", name: "", hex: "#c88c5f", forms: [box.id == "tube" ? "tube" : "pan"], source: "custom", custom: true), box: box.id)
+            }
+            .buttonStyle(.borderless)
+        }
+        .padding(.top, 4)
+    }
+
+    private struct ColourOption: Identifiable {
+        enum Kind {
+            case paint(String)
+            case chart(ChartColour)
+        }
+
+        let id: String
+        let kind: Kind
+        let label: String
+        let hex: String
+        let search: String
+        var isChart: Bool {
+            guard case .chart = kind else { return false }
+            return true
+        }
+    }
+
+    /// What the search offers: every paint the app knows that is not in the box yet, and the
+    /// colours of the Horadam chart that are not among the paints.
+    private func matches(for box: PaintBox) -> [ColourOption] {
+        let words = query.lowercased().split(separator: " ").map(String.init)
+        guard !words.isEmpty else { return [] }
+        let inBox = Set(box.paintIDs)
+        var options: [ColourOption] = library.all.filter { !inBox.contains($0.id) }.map { paint -> ColourOption in
+            let label = "\(paint.vendor) \(paint.displayNumber) \(paint.displayName)"
+            return ColourOption(id: paint.id, kind: .paint(paint.id), label: label, hex: paint.hex, search: "\(label) \(paint.name) \(paint.nameDe)".lowercased())
+        }
+        let known = Set(library.all.filter { $0.vendor == Paint.houseVendor }.map(\.number))
+        options += library.chart.filter { !known.contains($0.number) }.map { colour -> ColourOption in
+            let label = "\(Paint.houseVendor) \(colour.number) \(colour.name)"
+            return ColourOption(id: "chart-\(colour.number)", kind: .chart(colour), label: label, hex: colour.hex, search: label.lowercased())
+        }
+        return Array(options.filter { option in words.allSatisfy { option.search.contains($0) } }.prefix(30))
+    }
+
+    /// Under a box: what is done with the box itself.
+    private func boxActions(_ box: PaintBox) -> some View {
+        HStack(spacing: 14) {
+            Button("Rename") {
+                boxName = box.displayName
+                naming = .rename(box.id)
+            }
+            if !box.paintIDs.isEmpty {
+                Button(L(removing == box.id ? "Done" : "Remove Colours")) {
+                    removing = removing == box.id ? nil : box.id
+                    if removing != nil { addingTo = nil }
+                }
+                Button("Export") {
+                    if let data = library.exportBox(box.id) { exporting = BoxDocument(data: data, name: box.displayName) }
+                }
+            }
+            if library.boxes.count > 1 {
+                Button("Delete Box", role: .destructive) { boxToDelete = box }
+            }
+        }
+        .buttonStyle(.borderless)
+        .font(Theme.small)
+        .padding(.top, 4)
+    }
+
     // MARK: Paints
 
-    /// `autoKey`: the group can be ticked as a source for Auto.
+    /// `autoKey`: the box can be ticked as a source for Auto.
     private func group(title: String?, highlighted: Bool = false, autoKey: String? = nil, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             if let title {
@@ -180,12 +346,12 @@ struct PaintBoxView: View {
                     Text(title).font(Theme.title)
                     Spacer(minLength: 8)
                     if let autoKey {
-                        Toggle("Use for Auto", isOn: Binding(get: { !library.activeBox.autoOff.contains(autoKey) }, set: { setAutoGroup(autoKey, on: $0) }))
+                        Toggle("Use for Auto", isOn: Binding(get: { !library.palette.autoOff.contains(autoKey) }, set: { setAutoBox(autoKey, on: $0) }))
                             #if os(macOS)
                             .toggleStyle(.checkbox)
                             #endif
                             .fixedSize()
-                            .help("Let Auto choose from \(title)")
+                            .help(L("Let Auto choose from %@", title))
                     }
                 }
             }
@@ -209,34 +375,47 @@ struct PaintBoxView: View {
                     PaintChip(paint: paint, showForm: selected, used: selected && used.contains(paint.id))
                 }
                 .buttonStyle(.plain)
-                // A full set of base paints takes no more; the note above says why.
-                .disabled(!selected && full)
-                .opacity(!selected && full ? 0.45 : 1)
-                .accessibilityHint(selected ? "Removes the paint from the box" : "Adds the paint to the box")
+                .accessibilityHint(L("Removes the paint from the palette"))
             }
         }
     }
 
+    /// One's own paints, edited here; they go into boxes with the + of a box.
     private var ownPaints: some View {
-        group(title: "Your own paints") {
-            if library.custom.isEmpty {
-                Text("Add paints of any brand that are not in the lists above.").foregroundStyle(.secondary)
-            }
+        group(title: L("Your own paints")) {
             ForEach(library.custom) { paint in
                 HStack(spacing: 10) {
                     PaintChip(paint: paint, showForm: true).frame(width: 150)
                     Text(paint.vendor).foregroundStyle(.secondary).lineLimit(1)
                     Spacer()
-                    Button("Edit") { editedPaint = paint }
+                    Button("Edit") { editedPaint = EditedPaint(paint: paint, box: nil) }
                     Button("Delete") { paintToDelete = paint }
                 }
                 .buttonStyle(.bordered)
             }
-            Button("Add Paint", systemImage: "plus") {
-                editedPaint = Paint(id: "custom-\(UUID().uuidString.prefix(8))", vendor: "Schmincke", number: "", name: "", hex: "#c88c5f", forms: ["pan"], source: "custom", custom: true)
-            }
-            .buttonStyle(.borderedProminent)
         }
+    }
+}
+
+/// A paint box as a JSON file for the file exporter.
+struct BoxDocument: FileDocument {
+    static let readableContentTypes: [UTType] = [.json]
+
+    var data: Data
+    var name: String
+
+    init(data: Data, name: String) {
+        self.data = data
+        self.name = name
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        data = configuration.file.regularFileContents ?? Data()
+        name = configuration.file.filename ?? ""
+    }
+
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: data)
     }
 }
 
@@ -245,6 +424,8 @@ struct PaintEditorView: View {
     @Environment(Library.self) private var library
     @Environment(\.dismiss) private var dismiss
     @State var paint: Paint
+    /// The box a new paint goes into.
+    var box: String? = nil
 
     private var isNew: Bool { !library.custom.contains { $0.id == paint.id } }
     private var complete: Bool {
@@ -268,7 +449,7 @@ struct PaintEditorView: View {
                 }
             }
             .formStyle(.grouped)
-            .navigationTitle(isNew ? "Add Paint" : "Edit Paint")
+            .navigationTitle(L(isNew ? "Add Paint" : "Edit Paint"))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -279,7 +460,7 @@ struct PaintEditorView: View {
                         paint.vendor = paint.vendor.trimmingCharacters(in: .whitespaces)
                         paint.number = paint.number.trimmingCharacters(in: .whitespaces)
                         paint.name = paint.name.trimmingCharacters(in: .whitespaces)
-                        library.savePaint(paint)
+                        library.savePaint(paint, into: box)
                         dismiss()
                     }
                     .disabled(!complete)

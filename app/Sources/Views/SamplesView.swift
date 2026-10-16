@@ -19,7 +19,7 @@ struct SamplesView: View {
                         } label: {
                             VStack(alignment: .leading, spacing: 6) {
                                 thumbnail(index)
-                                Text(sample.name.replacingOccurrences(of: " (sample)", with: ""))
+                                Text(L(sample.name).replacingOccurrences(of: L(" (sample)"), with: ""))
                                     .font(.subheadline)
                                     .foregroundStyle(.primary)
                                     .lineLimit(2)
@@ -27,7 +27,7 @@ struct SamplesView: View {
                             .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                        .accessibilityLabel("Open \(sample.name)")
+                        .accessibilityLabel(L("Open %@", L(sample.name)))
                     }
                 }
                 .padding()

@@ -1,13 +1,12 @@
 import Observation
 import StoreKit
 
-/// The one-time purchase that lifts the limits on saved pictures and paint boxes.
+/// The one-time purchase that lifts the limit on saved pictures and adds paint boxes of one's own.
 @MainActor
 @Observable
 final class Store {
-    static let productID = "de.markusfreise.tintmap.pro"
+    static let productID = "de.markusfreise.watercolourlove.pro"
     /// What the free version holds.
-    static let freeBoxes = 1
     static let freePictures = 1
 
     private(set) var unlocked = false
@@ -59,7 +58,7 @@ final class Store {
         defer { busy = false }
         if product == nil { await loadProduct() }
         guard let product else {
-            error = "The App Store is not reachable right now. Please try again later."
+            error = L("The App Store is not reachable right now. Please try again later.")
             return
         }
         do {
@@ -69,17 +68,17 @@ final class Store {
                     await transaction.finish()
                     await refresh()
                 } else {
-                    error = "The purchase could not be verified."
+                    error = L("The purchase could not be verified.")
                 }
             case .pending:
-                error = "The purchase is waiting for approval."
+                error = L("The purchase is waiting for approval.")
             case .userCancelled:
                 break
             @unknown default:
                 break
             }
         } catch {
-            self.error = "The purchase did not go through: \(error.localizedDescription)"
+            self.error = L("The purchase did not go through: %@", error.localizedDescription)
         }
     }
 
@@ -90,7 +89,7 @@ final class Store {
         do {
             try await AppStore.sync()
             await refresh()
-            if !unlocked { error = "No earlier purchase was found for this Apple Account." }
+            if !unlocked { error = L("No earlier purchase was found for this Apple Account.") }
         } catch {
             // The user closed the sign-in sheet: nothing to report.
         }

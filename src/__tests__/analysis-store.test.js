@@ -55,14 +55,14 @@ async function toLayerMode() {
 
 describe('layer mode in the analysis store', () => {
   it('plans layers with paints proposed by the app and writes them into the paint box', async () => {
-    const mix = [...paints.activeBox.paintIds]
+    const mix = [...paints.palette.paintIds]
     await toLayerMode()
     expect(analysis.error).toBeNull()
     expect(analysis.busy).toBe(false)
     expect(analysis.layers.layers.length).toBeGreaterThan(0)
-    expect(paints.activeBox.layerIds).toEqual(analysis.layers.paintIds)
-    expect(paints.activeBox.layerAuto).toBe(true)
-    expect(paints.activeBox.paintIds).toEqual(mix)
+    expect(paints.palette.layerIds).toEqual(analysis.layers.paintIds)
+    expect(paints.palette.layerAuto).toBe(true)
+    expect(paints.palette.paintIds).toEqual(mix)
     expect(analysis.layerShown).toEqual(analysis.layers.layers.map(() => true))
   })
 
@@ -72,7 +72,7 @@ describe('layer mode in the analysis store', () => {
     await toLayerMode()
     expect(analysis.error).toBeNull()
     expect([...analysis.layers.paintIds].sort()).toEqual([...ids].sort())
-    expect(paints.activeBox.layerAuto).toBe(false)
+    expect(paints.palette.layerAuto).toBe(false)
   })
 
   it('stays busy until the latest of several analyses is done', async () => {
@@ -101,8 +101,8 @@ describe('layer mode in the analysis store', () => {
     expect(analysis.renderVersion).toBeGreaterThan(version)
     await answer()
     expect(analysis.layers).toBeNull()
-    expect(paints.activeBox.layerIds).toEqual([])
-    expect(paints.activeBox.layerAuto).toBe(false)
+    expect(paints.palette.layerIds).toEqual([])
+    expect(paints.palette.layerAuto).toBe(false)
   })
 
   it('does not apply a result to the other mode', async () => {
@@ -121,15 +121,16 @@ describe('layer mode in the analysis store', () => {
     expect(analysis.entries.length).toBeGreaterThan(0)
   })
 
-  it('writes a proposal into the box it was made for', async () => {
+  it('writes a proposal into the palette it was made for', async () => {
     analysis.setMode('layer')
-    paints.addBox('Second')
+    const first = paints.palette
+    paints.setPalette({ paintIds: [] })
     const ids = stockIds(2)
     paints.setLayerPaints(ids)
     await answer()
-    expect(paints.activeBox.layerIds).toEqual(ids)
-    expect(paints.activeBox.layerAuto).toBe(false)
-    expect(paints.boxes[0].layerIds).toEqual(analysis.layers.paintIds)
+    expect(paints.palette.layerIds).toEqual(ids)
+    expect(paints.palette.layerAuto).toBe(false)
+    expect(first.layerIds).toEqual(analysis.layers.paintIds)
   })
 
   it('brings the mixes back unchanged after a visit to layer mode', async () => {
@@ -270,40 +271,41 @@ describe('looking at the layers', () => {
 
 describe('base paints in the paint box', () => {
   it('keeps the base paints and the mix selection apart', () => {
-    const mix = [...paints.activeBox.paintIds]
+    const mix = [...paints.palette.paintIds]
     const [a, b] = stockIds(2)
     paints.toggleLayerPaint(a)
     paints.toggleLayerPaint(b, true)
     paints.toggleLayerPaint(b, true)
-    expect(paints.activeBox.layerIds).toEqual([a, b])
-    expect(paints.activeBox.layerAuto).toBe(false)
-    expect(paints.activeBox.paintIds).toEqual(mix)
-    expect(paints.activeBox.auto).toBe(true)
+    expect(paints.palette.layerIds).toEqual([a, b])
+    expect(paints.palette.layerAuto).toBe(false)
+    expect(paints.palette.paintIds).toEqual(mix)
+    expect(paints.palette.auto).toBe(true)
     paints.toggle(a, false)
-    expect(paints.activeBox.layerIds).toEqual([a, b])
+    expect(paints.palette.layerIds).toEqual([a, b])
     paints.toggleLayerPaint(a)
-    expect(paints.activeBox.layerIds).toEqual([b])
+    expect(paints.palette.layerIds).toEqual([b])
     paints.setLayerPaints([])
-    expect(paints.activeBox.paintIds).toEqual(mix.filter((id) => id !== a))
+    expect(paints.palette.paintIds).toEqual(mix.filter((id) => id !== a))
   })
 
-  it('takes six base paints at most and gives every box its own', () => {
+  it('takes six base paints at most and gives every palette its own', () => {
     paints.setLayerPaints(paints.all.slice(0, 9).map((p) => p.id))
-    expect(paints.activeBox.layerIds).toHaveLength(MAX_LAYER_PAINTS)
-    paints.addBox('Second')
-    expect(paints.activeBox.layerIds).toEqual([])
-    expect(paints.activeBox.layerAuto).toBe(true)
-    expect(paints.boxes[0].layerIds).toHaveLength(MAX_LAYER_PAINTS)
+    const first = paints.palette
+    expect(first.layerIds).toHaveLength(MAX_LAYER_PAINTS)
+    paints.setPalette({ paintIds: [] })
+    expect(paints.palette.layerIds).toEqual([])
+    expect(paints.palette.layerAuto).toBe(true)
+    expect(first.layerIds).toHaveLength(MAX_LAYER_PAINTS)
   })
 
-  it('removes a deleted own paint from the base paints of every box', () => {
-    paints.savePaint({ vendor: 'X', number: '1', name: 'Own', form: 'pan', hex: '#336699' })
+  it('removes a deleted own paint from the palette and from every box', () => {
+    const box = paints.addBox('Own')
+    paints.savePaint({ vendor: 'X', number: '1', name: 'Own', form: 'pan', hex: '#336699' }, box.id)
     const own = paints.custom[0].id
+    expect(box.paintIds).toEqual([own])
     paints.setLayerPaints([own, stockIds(1)[0]])
-    paints.addBox('Second')
-    paints.setLayerPaints([own])
     paints.deletePaint(own)
-    expect(paints.boxes.map((b) => b.layerIds)).toEqual([[stockIds(1)[0]], []])
-    expect(paints.layerPaints).toEqual([])
+    expect(paints.palette.layerIds).toEqual([stockIds(1)[0]])
+    expect(paints.boxes.find((b) => b.id === box.id).paintIds).toEqual([])
   })
 })

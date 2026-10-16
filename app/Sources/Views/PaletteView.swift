@@ -9,12 +9,12 @@ struct PaletteView: View {
         let mixes = session.mixBlocks
         VStack(alignment: .leading, spacing: 8) {
             if !session.entries.isEmpty {
-                Text("\(session.entries.count) in \(session.mixCount) \(session.mixCount == 1 ? "mix" : "mixes")")
+                Text(L(session.mixCount == 1 ? "%lld in %lld mix" : "%lld in %lld mixes", session.entries.count, session.mixCount))
                     .font(Theme.small)
                     .foregroundStyle(.secondary)
             }
             if session.mixCount < session.entries.count {
-                Text(Mixing.washLetters.map { "\($0.letter) \($0.label)" }.joined(separator: "   "))
+                Text(Mixing.washLetters.map { "\($0.letter) \(L($0.label))" }.joined(separator: "   "))
                     .font(Theme.small)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -51,7 +51,7 @@ struct PaletteView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Mix \(mix.number), \(mix.names)")
+            .accessibilityLabel(L("Mix %@, %@", mix.number, mix.names))
             if !mix.paints.isEmpty {
                 RecipeBar(parts: mix.paints).frame(height: 16).padding(.leading, 40)
             }
@@ -69,7 +69,7 @@ struct PaletteView: View {
     private func paintsLine(_ mix: MixBlock) -> Text {
         guard !mix.paints.isEmpty else { return Text(mix.names) }
         return mix.paints.enumerated().reduce(Text("")) { line, item in
-            line + Text(item.offset > 0 ? " + " : "") + Text(item.element.paint.displayNumber).bold() + Text(" " + item.element.paint.name)
+            line + Text(item.offset > 0 ? " + " : "") + Text(item.element.paint.displayNumber).bold() + Text(" " + item.element.paint.displayName)
         }
     }
 
@@ -91,8 +91,8 @@ struct PaletteView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Wash \(wash.label), \(wash.dilution)")
-                .help("\(wash.label): \(wash.dilution), \(percent(wash.share))% of image")
+                .accessibilityLabel(L("Wash %@, %@", wash.label, Words.shortDilution(wash.dilution)))
+                .help(L("%@: %@, %@%% of image", wash.label, Words.shortDilution(wash.dilution), percent(wash.share)))
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 4))
@@ -111,12 +111,12 @@ struct PaletteView: View {
     private func meta(_ mix: MixBlock) -> String {
         var parts: [String] = []
         if mix.washes.count > 1 {
-            parts.append("\(mix.washes.count) washes")
+            parts.append(L("%lld washes", mix.washes.count))
         } else if !mix.dilution.isEmpty {
-            parts.append(mix.dilution)
+            parts.append(Words.shortDilution(mix.dilution))
         }
-        parts.append("\(percent(mix.share))% of image")
-        if mix.changed { parts.append("changed") }
+        parts.append(L("%@%% of image", percent(mix.share)))
+        if mix.changed { parts.append(L("changed")) }
         return parts.joined(separator: " · ")
     }
 }
@@ -140,7 +140,7 @@ struct RecipeBar: View {
                         .background(Color(hex: part.paint.hex))
                         .foregroundStyle(Color.ink(on: part.paint.hex))
                         .clipped()
-                        .help("\(part.parts) x \(part.paint.displayNumber) \(part.paint.name)")
+                        .help("\(part.parts) x \(part.paint.displayNumber) \(part.paint.displayName)" as String)
                 }
             }
             .frame(width: geometry.size.width, alignment: .leading)
@@ -148,6 +148,6 @@ struct RecipeBar: View {
         .clipShape(RoundedRectangle(cornerRadius: 4))
         .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(.primary.opacity(0.15)))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Recipe: " + parts.map { "\($0.parts) x \($0.paint.name)" }.joined(separator: ", "))
+        .accessibilityLabel(L("Recipe: %@", parts.map { "\($0.parts) x \($0.paint.displayName)" }.joined(separator: ", ")))
     }
 }

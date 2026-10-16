@@ -2,12 +2,12 @@
   <div v-if="entry" ref="tip" class="tip" :style="style" role="tooltip">
     <div class="tip__header">
       <span class="swatch swatch--small" :style="{ background: recipe?.hex ?? entry.targetHex }"></span>
-      <strong>Colour {{ entry.label }}</strong>
-      <span class="tip__share">{{ Math.round(entry.share * 100) || '<1' }}% of image</span>
+      <strong>{{ t('Colour {label}', { label: entry.label }) }}</strong>
+      <span class="tip__share">{{ t('{percent}% of image', { percent: Math.round(entry.share * 100) || '<1' }) }}</span>
     </div>
     <!-- The recommended recipe as in the recipe panel: wash and match, the paints with their parts, the ratio as a bar. -->
     <RecipeLine v-if="recipe" :recipe="recipe" full />
-    <p v-else class="tip__paper">No paints selected in the paint box</p>
+    <p v-else class="tip__paper">{{ t('No paints selected in the paint box') }}</p>
   </div>
 </template>
 
@@ -15,7 +15,9 @@
 import { computed, onMounted, onUpdated, reactive, ref } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import RecipeLine from './RecipeLine.vue'
+import { useText } from '../i18n/index.js'
 
+const { t } = useText()
 const props = defineProps({
   // The palette entry under the pointer, or null.
   index: { type: Number, default: null },

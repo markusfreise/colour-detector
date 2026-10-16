@@ -6,3 +6,16 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+// Dark mode: follows the system unless the visitor chose light or dark ("data-theme" on <html>,
+// set from the preferences). Used inside a rule; "&" is that rule.
+@mixin dark {
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) & {
+            @content;
+        }
+    }
+    :root[data-theme="dark"] & {
+        @content;
+    }
+}

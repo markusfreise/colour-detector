@@ -79,6 +79,15 @@ function db(): PDO
         created_at INTEGER NOT NULL,
         redeemed_at INTEGER
     )');
+    // An invitation code is a lifetime licence for the first account that signs in with it:
+    // 'pending' between asking for the link and opening it, 'used' after that.
+    $db->exec('CREATE TABLE IF NOT EXISTS invitations (
+        code TEXT NOT NULL,
+        email TEXT NOT NULL,
+        asked_at INTEGER NOT NULL,
+        used_at INTEGER,
+        PRIMARY KEY (code, email)
+    )');
     $db->exec('CREATE TABLE IF NOT EXISTS stripe_events (id TEXT PRIMARY KEY, at INTEGER NOT NULL)');
     return $db;
 }

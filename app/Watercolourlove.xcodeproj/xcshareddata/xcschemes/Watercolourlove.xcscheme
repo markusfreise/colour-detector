@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5A6004A10E0B3758E931ABBF"
-               BuildableName = "Tintmap.app"
-               BlueprintName = "Tintmap"
-               ReferencedContainer = "container:Tintmap.xcodeproj">
+               BlueprintIdentifier = "F1994E33AFD65B5D3BCCF813"
+               BuildableName = "Watercolourlove.app"
+               BlueprintName = "Watercolourlove"
+               ReferencedContainer = "container:Watercolourlove.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,10 +29,10 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "54EB15EA69EBBE6855348B58"
-               BuildableName = "TintmapTests.xctest"
-               BlueprintName = "TintmapTests"
-               ReferencedContainer = "container:Tintmap.xcodeproj">
+               BlueprintIdentifier = "9DAFA9061FBC2D4D6CF4201B"
+               BuildableName = "WatercolourloveTests.xctest"
+               BlueprintName = "WatercolourloveTests"
+               ReferencedContainer = "container:Watercolourlove.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,10 +46,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5A6004A10E0B3758E931ABBF"
-            BuildableName = "Tintmap.app"
-            BlueprintName = "Tintmap"
-            ReferencedContainer = "container:Tintmap.xcodeproj">
+            BlueprintIdentifier = "F1994E33AFD65B5D3BCCF813"
+            BuildableName = "Watercolourlove.app"
+            BlueprintName = "Watercolourlove"
+            ReferencedContainer = "container:Watercolourlove.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -58,10 +58,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "54EB15EA69EBBE6855348B58"
-               BuildableName = "TintmapTests.xctest"
-               BlueprintName = "TintmapTests"
-               ReferencedContainer = "container:Tintmap.xcodeproj">
+               BlueprintIdentifier = "9DAFA9061FBC2D4D6CF4201B"
+               BuildableName = "WatercolourloveTests.xctest"
+               BlueprintName = "WatercolourloveTests"
+               ReferencedContainer = "container:Watercolourlove.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -82,16 +82,16 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5A6004A10E0B3758E931ABBF"
-            BuildableName = "Tintmap.app"
-            BlueprintName = "Tintmap"
-            ReferencedContainer = "container:Tintmap.xcodeproj">
+            BlueprintIdentifier = "F1994E33AFD65B5D3BCCF813"
+            BuildableName = "Watercolourlove.app"
+            BlueprintName = "Watercolourlove"
+            ReferencedContainer = "container:Watercolourlove.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
       </CommandLineArguments>
       <StoreKitConfigurationFileReference
-         identifier = "../../Tintmap.storekit">
+         identifier = "../../Watercolourlove.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
@@ -104,10 +104,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5A6004A10E0B3758E931ABBF"
-            BuildableName = "Tintmap.app"
-            BlueprintName = "Tintmap"
-            ReferencedContainer = "container:Tintmap.xcodeproj">
+            BlueprintIdentifier = "F1994E33AFD65B5D3BCCF813"
+            BuildableName = "Watercolourlove.app"
+            BlueprintName = "Watercolourlove"
+            ReferencedContainer = "container:Watercolourlove.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

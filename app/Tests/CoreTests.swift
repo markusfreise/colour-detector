@@ -1,5 +1,5 @@
 import XCTest
-@testable import Tintmap
+@testable import Watercolourlove
 
 /// The same checks as the web app's Vitest suite, so both implementations stay in step.
 final class CoreTests: XCTestCase {

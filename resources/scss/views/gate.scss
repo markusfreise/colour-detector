@@ -1,4 +1,5 @@
 @use "../functions" as *;
+@use "../mixins" as *;
 
 // Signing in and the two statements, before the app opens.
 
@@ -22,7 +23,7 @@
         pointer-events: auto;
 
         // In dark mode the light picture is dimmed, so it does not glare around the card.
-        @media (prefers-color-scheme: dark) {
+        @include dark {
             &::after {
                 content: "";
                 position: absolute;
@@ -102,13 +103,52 @@
         @media (max-width: 760px) {
             grid-template-columns: minmax(0, 1fr);
             width: min(#{pxtorem(400)}, 100%);
+            // Room above the logo for the language switch.
+            padding-top: calc(var(--gap-15x) + #{pxtorem(20)});
+        }
+
+        // The link is sent: one column, as wide as the left one.
+        &--sent {
+            grid-template-columns: minmax(0, 1fr);
+            width: min(#{pxtorem(352)} + var(--gap-15x) * 2, 100%);
         }
         padding: var(--gap-15x);
-        border: 1px solid var(--c-border);
-        border-radius: var(--radius);
-        background: var(--c-background-raised);
-        color: var(--c-copy);
-        box-shadow: var(--shadow);
+    }
+
+    // EN | DE in the top right corner of the card.
+    &__languages {
+        position: absolute;
+        top: var(--gap-05x);
+        right: var(--gap-05x);
+        display: flex;
+        gap: #{pxtorem(2)};
+    }
+
+    &__language {
+        padding: #{pxtorem(5)} #{pxtorem(8)};
+        line-height: 1.25;
+        border: 0;
+        border-radius: var(--radius-small);
+        background: none;
+        color: var(--c-copy-light);
+        font: inherit;
+        font-size: var(--fs-small);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+
+        &:hover {
+            color: var(--c-copy);
+        }
+
+        &--active {
+            background: var(--c-corporate);
+            color: var(--c-on-corporate);
+
+            &:hover {
+                color: var(--c-on-corporate);
+            }
+        }
     }
 
     &__title {
@@ -159,7 +199,6 @@
 
     &__provider {
         justify-content: center;
-        padding-block: #{pxtorem(9)};
     }
 
     &__form {
@@ -169,7 +208,6 @@
 
         .button {
             justify-content: center;
-            padding-block: #{pxtorem(9)};
         }
     }
 
@@ -196,6 +234,12 @@
         margin-top: #{pxtorem(6)};
     }
 
+    // "Sign up" under the button, and back.
+    &__switch {
+        align-self: center;
+        font-size: var(--fs-small);
+    }
+
     &__link {
         padding: 0;
         border: 0;
@@ -212,18 +256,36 @@
     }
 
     &__footer {
+        grid-column: 1 / -1;
         display: flex;
-        gap: var(--gap);
-        margin-top: #{pxtorem(20)};
+        flex-wrap: wrap;
+        gap: var(--gap-05x) var(--gap);
+        white-space: nowrap;
         padding-top: #{pxtorem(14)};
         border-top: 1px solid var(--c-border);
         font-size: var(--fs-small);
+    }
+
+    // The sign-in link of a local test is one long word.
+    &__text a[href*="#magic="] {
+        word-break: break-all;
     }
 
     &__footer a,
     &__text a,
     &__check a {
         color: var(--c-corporate);
+    }
+
+    // "Privacy settings" opens the cookie banner; it looks like the links beside it.
+    &__settings {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--c-corporate);
+        font: inherit;
+        text-decoration: underline;
+        cursor: pointer;
     }
 
     &__how {

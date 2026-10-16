@@ -4,8 +4,8 @@
   <dialog ref="dialog" class="breakdown" aria-labelledby="breakdown-title" @click="onBackdrop">
     <div class="breakdown__body">
       <header class="breakdown__header">
-        <h2 id="breakdown-title" class="panel__title">Colour {{ entry?.label }}</h2>
-        <button class="button button--ghost breakdown__close" type="button" @click="dialog.close()">Close</button>
+        <h2 id="breakdown-title" class="panel__title">{{ t('Colour {label}', { label: entry?.label ?? '' }) }}</h2>
+        <button class="button button--ghost breakdown__close" type="button" @click="dialog.close()">{{ t('Close') }}</button>
       </header>
       <EntryEditor />
     </div>
@@ -16,7 +16,9 @@
 import { computed, ref, watch } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import EntryEditor from './EntryEditor.vue'
+import { useText } from '../i18n/index.js'
 
+const { t } = useText()
 const analysis = useAnalysisStore()
 const dialog = ref(null)
 const entry = computed(() => analysis.inspectedColour)

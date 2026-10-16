@@ -1,6 +1,6 @@
 # Everything goes through index.php; the configuration is never served.
 RewriteEngine On
-RewriteRule ^(config(\.example)?|voucher)\.php$ - [F,L]
+RewriteRule ^(config(\.example)?|voucher|stripe-setup)\.php$ - [F,L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [QSA,L]
 # The Authorization and signature headers must reach PHP.

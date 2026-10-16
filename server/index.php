@@ -37,6 +37,8 @@ switch ($route) {
             'providers' => enabledProviders(),
             'plans' => enabledPlans(),
             'consentVersion' => config('consent_version'),
+            // Whether invitation codes exist: the sign-in shows the optional field.
+            'invitation' => !empty(config('invitation')['codes']),
         ]);
 
     case 'auth/magic':

@@ -1,11 +1,11 @@
-# Tintmap – the native app
+# Watercolourlove – the native app
 
 The iOS, iPadOS and macOS app of Watercolourlove. SwiftUI, one multiplatform target, no third-party code.
 
 | | |
 |---|---|
-| Bundle ID | `de.markusfreise.tintmap` |
-| In-app purchase | `de.markusfreise.tintmap.pro` (non-consumable, 4,99 EUR) |
+| Bundle ID | `de.markusfreise.watercolourlove` |
+| In-app purchase | `de.markusfreise.watercolourlove.pro` (non-consumable, 4,99 EUR) |
 | Minimum system | iOS 17, macOS 14 |
 | Project | generated with XcodeGen from `project.yml` |
 
@@ -15,7 +15,7 @@ The iOS, iPadOS and macOS app of Watercolourlove. SwiftUI, one multiplatform tar
 npm run app:data          # in the repo root: paint stock, colour chart and samples -> Resources/Data
 cd app
 xcodegen generate
-open Tintmap.xcodeproj
+open Watercolourlove.xcodeproj
 ```
 
 Run `npm run app:data` again whenever `src/data/` or the sample photos change.
@@ -27,32 +27,53 @@ Tests run on an iOS simulator (`xcodebuild test`, or Cmd-U in Xcode). On macOS t
 | Path | Contents |
 |---|---|
 | `Sources/Core/` | Colour maths, mixing model, segmentation, mix planning and layer mode: ports of `src/lib/*.js`. Change both sides together; `Tests/CoreTests.swift` and `Tests/LayerTests.swift` check them against reference values from the web logic |
-| `Sources/Model/` | `Library` (paints and paint boxes), `Session` (the picture being worked on), `PictureCollection` (saved pictures) |
-| `Sources/Views/` | SwiftUI screens |
-| `Sources/Platform/` | Picture decoding, camera, PDF and printing |
+| `Sources/Model/` | `Library` (paints, paint boxes, the palette of the picture), `Session` (the picture being worked on), `PictureCollection` (saved pictures) |
+| `Sources/Views/` | SwiftUI screens, laid out as the web app rather than after Apple's guidelines: the picture fills the window, icon buttons at the top left (picture) and top right (panels), the view tools at the top centre (bottom on a phone), panels on floating cards. Tokens and building blocks in `Theme.swift` |
+| `Sources/Platform/` | Picture decoding, camera, PDF and printing, the chosen language (`Localization.swift`) |
 | `Sources/Store.swift` | StoreKit 2 purchase |
 | `Tests/` | The web app's logic tests, in XCTest |
-| `Tintmap.storekit` | Local purchase for runs from Xcode |
+| `Watercolourlove.storekit` | Local purchase for runs from Xcode |
 | `AppStore/` | Store texts (`metadata.md`) and screenshots |
 
-Data is stored in Application Support/Tintmap: `library.json` (own paints, paint boxes) and `Collection/<id>/` (photo, thumbnail, settings).
+Data is stored in Application Support/Watercolourlove: `library.json` (own paints, paint boxes, the palette on screen) and `Collection/<id>/` (photo, thumbnail, settings with the palette of the picture). A paint box exports to a JSON file of the same format as the web app's, and imports from one.
+
+## Languages and look
+
+English and German. Every text is in `Resources/Localizable.xcstrings` (the camera prompt in `InfoPlist.xcstrings`): the key is the English text, German is the translation. Literals in `Text`, `Button`, `Label` and so on are collected by the compiler; texts built as a `String` go through `L("...")` (`Platform/Localization.swift`), with plurals as two keys (`L(count: n, "%lld coat", "%lld coats")`). The colour logic in `Sources/Core/` stays English, because its tests compare it with the web; `Views/Words.swift` turns its words (dilution, match, consistency, the wash recipe) into the chosen language. In German the paints show their German chart name (`Paint.displayName`).
+
+The person button at the bottom of the left column opens Preferences, as on the web: language (Automatic, English, Deutsch) and look (Automatic, Light, Dark), kept in UserDefaults. Both switch at once, without a restart: `Localization.apply` points `Bundle.main` at the chosen `.lproj`, the screen is drawn again (`.id(language)`), and the open cards stay open (`@SceneStorage`).
+
+A new text: write it in English in the code, build once, then add its German in `Localizable.xcstrings` (Xcode shows it as new).
 
 ## Free and paid
 
-Free: one saved picture, one paint box. The purchase lifts both limits (`Store.freePictures`, `Store.freeBoxes`). Everything else is free.
+Free: one saved picture and the paint boxes the app starts with. The purchase lifts the picture limit (`Store.freePictures`) and adds new and imported paint boxes. Everything else is free.
 
 ## Screenshots
 
-Debug builds accept launch arguments: `-screen paintbox|collection|editor|breakdown|samples|settings|colours|paywall` opens that screen, `-view mixed|target|overlay|original|template` sets what the picture shows, `-sample` steps to the next sample photo, `-auto` switches the paint box to Auto, `-geometric` switches to geometric areas, `-layer` switches to layer mode (`-step n` opens that step of the walk, `-stepview paint|wash|result` sets its picture, `-spot` selects the middle of the picture). On the Mac, `-snapshot` also writes every window as a PNG into the app's temporary folder, and `-pdf` the printed sheet as `sheet.pdf`.
+Debug builds accept launch arguments: `-screen paintbox|collection|editor|breakdown|samples|settings|colours|paywall|preferences` opens that screen, `-language de` and `-theme dark` set the preferences for that launch, `-switch de,theme:dark,en,auto` changes them while the app runs, one step every 4 seconds (with `-snapshot` on the Mac a PNG after each step), `-view mixed|target|overlay|original|template` sets what the picture shows, `-sample` steps to the next sample photo, `-auto` switches the paint box to Auto, `-geometric` switches to geometric areas, `-layer` switches to layer mode (`-step n` opens that step of the walk, `-stepview paint|wash|result` sets its picture, `-spot` selects the middle of the picture). On the Mac, `-snapshot` also writes every window as a PNG into the app's temporary folder, and `-pdf` the printed sheet as `sheet.pdf`.
 
 ```bash
-xcrun simctl launch <device> de.markusfreise.tintmap -screen editor
+xcrun simctl launch <device> de.markusfreise.watercolourlove -screen editor
 xcrun simctl io <device> screenshot AppStore/screenshots/iphone-2-editor.png
 ```
 
-## Before the first upload
+## Website
 
-1. App Store Connect: create the app with the bundle ID above, then the in-app purchase with the product ID above, and enter the texts from `AppStore/metadata.md`.
-2. Put the support and privacy pages online (URLs in `metadata.md`).
-3. Replace the temporary icon in `Resources/Assets.xcassets/AppIcon.appiconset`.
-4. Archive in Xcode for iOS and for macOS, upload both, submit together with the purchase.
+The app's pages are part of the web app: `public/app/` (overview, support, privacy) at https://watercolourlove.de/app/, with the web's imprint. These are the URLs in `metadata.md`. They go online with every deploy of the web app.
+
+## TestFlight and release
+
+```bash
+scripts/release.sh               # archive iOS and macOS, upload both to App Store Connect
+scripts/release.sh --export-only # the same, signed packages in build/release/ without uploading
+```
+
+Signing is automatic: Xcode must be signed in to the team account (Xcode > Settings > Accounts); the distribution certificate and profiles are made in the cloud. The build number is the number of commits, the version is `MARKETING_VERSION` in `project.yml`. The app sends nothing anywhere (`Resources/PrivacyInfo.xcprivacy`, no network entitlement), so the App Privacy answer in App Store Connect is "Data Not Collected".
+
+### Once, before the first upload
+
+1. App Store Connect: create the app (iOS and macOS, bundle ID `de.markusfreise.watercolourlove`, SKU `watercolourlove`), then the in-app purchase `de.markusfreise.watercolourlove.pro` (non-consumable), with the texts from `AppStore/metadata.md`.
+2. App Privacy: "Data Not Collected". Age rating questionnaire: all "None".
+3. TestFlight: internal testers need nothing more. For external testers fill in the beta description, feedback address `support@markus-freise.de` and the privacy URL; the first external build goes to Beta App Review.
+4. Run `scripts/release.sh`. Builds show up in TestFlight after Apple's processing, usually within half an hour.

@@ -1,10 +1,10 @@
 <template>
   <section v-if="sheets" class="layersheet">
-    <h2 class="legend__title">{{ analysis.imageName }}: layers</h2>
-    <img class="layersheet__picture layersheet__picture--finished" :src="sheets.finished" alt="The finished picture, all layers" />
+    <h2 class="legend__title">{{ t('{name}: layers', { name: analysis.imageName }) }}</h2>
+    <img class="layersheet__picture layersheet__picture--finished" :src="sheets.finished" :alt="t('The finished picture, all layers')" />
     <table class="layersheet__table">
       <thead>
-        <tr><th>Layer</th><th>Paint</th><th>Wash</th><th>Coats</th><th>Of image</th></tr>
+        <tr><th>{{ t('Layer') }}</th><th>{{ t('Paint@@column') }}</th><th>{{ t('Wash') }}</th><th>{{ t('Coats') }}</th><th>{{ t('Of image') }}</th></tr>
       </thead>
       <tbody>
         <tr v-for="row in sheets.rows" :key="row.number">
@@ -18,14 +18,15 @@
     </table>
     <figure v-for="row in sheets.rows" :key="`sheet-${row.number}`" class="layersheet__layer">
       <figcaption class="layersheet__caption">
-        <strong>{{ typeof row.number === 'number' ? 'Layer' : 'Accent' }} {{ row.number }}: {{ row.name }}, {{ row.dilution }}</strong>
+        <strong>{{ t('{kind} {n}: {name}, {wash}', { kind: t(typeof row.number === 'number' ? 'Layer' : 'Accent'), n: row.number, name: row.name, wash: row.dilution }) }}</strong>
         <span>{{ row.instruction }}</span>
       </figcaption>
-      <img class="layersheet__picture" :src="row.image" :alt="`Layer ${row.number}: ${row.name}`" />
+      <img class="layersheet__picture" :src="row.image" :alt="t('Layer {n}: {name}', { n: row.number, name: row.name })" />
     </figure>
     <p class="layersheet__note">
-      The colours are estimates from one swatch per paint. Opaque or granulating paints glaze less cleanly than shown: test
-      every wash on a scrap first.
+      {{
+        t('The colours are estimates from one swatch per paint. Opaque or granulating paints glaze less cleanly than shown: test every wash on a scrap first.')
+      }}
     </p>
   </section>
 </template>
@@ -36,7 +37,9 @@ import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
 import { paintNumber } from '../lib/paintbox.js'
 import { drawLayerView } from './layerView.js'
+import { useText, washGuideText } from '../i18n/index.js'
 
+const { t, paintName } = useText()
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 // Built when printing starts: one picture per layer costs too much to keep up to date all the time.
@@ -60,17 +63,19 @@ function build() {
       const paint = paints.byId[layer.paintId]
       const accent = layer.kind === 'accent'
       const used = layer.coats.filter((c) => c.share > 0).length
-      const more = Array.from({ length: Math.max(0, used - 1) }, (_, i) => `Coat ${i + 2} on the ${Array.from({ length: used - i - 1 }, (__, j) => `${i + 2 + j}s`).join(' and ')}.`)
+      const more = Array.from({ length: Math.max(0, used - 1) }, (_, i) =>
+        t('Coat {n} on the {numbers}.', { n: i + 2, numbers: Array.from({ length: used - i - 1 }, (__, j) => t('{n}s', { n: i + 2 + j })).join(t(' and ')) }),
+      )
       return {
         number: analysis.layerNumbers[k],
-        name: `${paint ? `${paintNumber(paint.number)} ${paint.name}` : layer.paintId}${accent ? ' (accent)' : ''}`,
+        name: ((name) => (accent ? t('{name} (accent)', { name }) : name))(paint ? `${paintNumber(paint.number)} ${paintName(paint)}` : layer.paintId),
         hex: layer.hexes[1],
-        dilution: layer.guide ?? layer.dilution.replace(/ \(.*\)$/, ''),
+        dilution: layer.guide ? washGuideText(t, layer) : t(layer.dilution).replace(/ \(.*\)$/, ''),
         coats: used,
         share: percent(layer.coats[0]?.share ?? 0),
         instruction: accent
-          ? 'A strong wash on the numbered shapes, painted last, when everything else is dry.'
-          : ['Coat 1 on every numbered area.', ...more, 'Let each coat dry.'].join(' '),
+          ? t('A strong wash on the numbered shapes, painted last, when everything else is dry.')
+          : [t('Coat 1 on every numbered area.'), ...more, t('Let each coat dry.')].join(' '),
         image: picture({ show: result.layers.map((_, j) => j === k), outlines: true, numbers: true }),
       }
     }),

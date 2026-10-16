@@ -168,9 +168,9 @@ enum StepView: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .paint: "Where to paint"
-        case .wash: "This wash"
-        case .result: "So far"
+        case .paint: L("Where to paint")
+        case .wash: L("This wash")
+        case .result: L("So far")
         }
     }
 }
@@ -220,6 +220,11 @@ final class Session {
     var imageName = ""
     /// Id in the collection when the picture was saved or opened from it.
     var savedID: String?
+    /// The paints chosen for this picture, saved with it (PictureCollection).
+    var palette: Palette {
+        get { library.palette }
+        set { library.setPalette(newValue) }
+    }
     private(set) var image: CGImage?
     private(set) var segmentation: Segmentation?
     private(set) var entries: [PaletteEntry] = []
@@ -322,23 +327,23 @@ final class Session {
         let sample = Self.samples[index % Self.samples.count]
         nextSample = (index + 1) % Self.samples.count
         guard let url = Bundle.main.url(forResource: sample.file, withExtension: "webp"), let data = try? Data(contentsOf: url) else {
-            error = "The sample photo is missing."
+            error = L("The sample photo is missing.")
             return
         }
-        load(data, name: sample.name)
+        load(data, name: L(sample.name))
     }
 
     /// Opens a new photo. Returns false when the data is not a picture.
     @discardableResult
     func load(_ data: Data, name: String, settings: AnalysisSettings? = nil, edits: [EntryEdit] = []) -> Bool {
         guard let decoded = Pictures.decode(data, maxSide: Self.sourceSize) else {
-            error = "Could not open this picture."
+            error = L("Could not open this picture.")
             return false
         }
         let scale = min(1, (Double(Self.workPixels) / Double(decoded.width * decoded.height)).squareRoot())
         let side = Int((Double(max(decoded.width, decoded.height)) * scale).rounded())
         guard let work = Pictures.pixels(of: decoded, maxSide: max(1, side)) else {
-            error = "Could not open this picture."
+            error = L("Could not open this picture.")
             return false
         }
         error = nil
@@ -399,12 +404,12 @@ final class Session {
         let cut = Closeups.size(sourceWidth: source.width, sourceHeight: source.height, rect: closeup.rect, workPixels: Self.workPixels)
         guard let part = source.cropping(to: CGRect(x: cut.sx, y: cut.sy, width: cut.sw, height: cut.sh)),
               let rgba = Pictures.pixels(of: part, width: cut.width, height: cut.height) else {
-            error = "Could not cut out this part of the picture."
+            error = L("Could not cut out this part of the picture.")
             return
         }
         framing = false
         closeupID = id
-        show(image: part, pixels: (rgba, cut.width, cut.height), name: "\(base.name) – detail \(id)", savedID: nil, edits: closeup.edits)
+        show(image: part, pixels: (rgba, cut.width, cut.height), name: L("%@ – detail %lld", base.name, id), savedID: nil, edits: closeup.edits)
     }
 
     func showBase() {
@@ -482,21 +487,21 @@ final class Session {
         "\(pictureSerial)/\(settings.colours)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)/\(settings.geometric)"
     }
 
-    /// Glazes of the base paints. On Auto the app proposes the paints from the paint box's Auto
+    /// Glazes of the base paints. On Auto the app proposes the paints from the palette's Auto
     /// pool, otherwise the ones chosen in the paint box are fitted.
     private func analyseLayers() {
         guard let pixels else { return }
         analysisRun += 1
         let run = analysisRun
-        let box = library.activeBox
+        let chosen = library.palette
         let s = settings
         let serial = pictureSerial
-        let proposalKey = "\(serial)/\(box.id)/\(s.layerCount)/\(s.maxCoats)/\(s.layerAccents)"
-        // Propose only when there is nothing to keep: a new picture or box, another number of layers,
+        let proposalKey = "\(serial)/\(s.layerCount)/\(s.maxCoats)/\(s.layerAccents)"
+        // Propose only when there is nothing to keep: a new picture, another number of layers,
         // coats or accents (the best paints depend on those), or Auto pressed.
-        let propose = box.layerAuto && !(layerProposal == proposalKey && !box.layerIDs.isEmpty)
+        let propose = chosen.layerAuto && !(layerProposal == proposalKey && !chosen.layerIDs.isEmpty)
         let pool = (propose ? library.autoCandidates : library.layerPaints).map(\.mixPaint)
-        let paintIDs = propose ? nil : box.layerIDs
+        let paintIDs = propose ? nil : chosen.layerIDs
         layerStep = nil
         layerPoint = nil
         guard !pool.isEmpty else {
@@ -513,15 +518,15 @@ final class Session {
                 let plan = Layers.layerImage(
                     rgba: adjusted, width: pixels.width, height: pixels.height, paints: pool,
                     // Auto: the number of wash layers (accent paints come on top). By hand: every chosen paint may be one.
-                    count: box.layerAuto ? s.layerCount : nil,
+                    count: chosen.layerAuto ? s.layerCount : nil,
                     paintIDs: paintIDs, maxCoats: s.maxCoats, simplify: s.layerSimplify, accents: s.layerAccents, geometric: s.geometric
                 )
                 return (plan, adjusted)
             }.value
             guard run == analysisRun, layerMode else { return } // superseded
-            // The proposal goes to the box it was made for, also when another box was opened meanwhile.
+            // A newer picture would have superseded the run above, so the palette is still the picture's.
             if propose {
-                library.setLayerPaints(plan.paintIDs, auto: true, box: box.id)
+                library.setLayerPaints(plan.paintIDs, auto: true)
                 layerProposal = proposalKey
             }
             layers = plan
@@ -537,14 +542,14 @@ final class Session {
     /// Lets the app choose the base paints for this picture (again).
     func proposeLayers() {
         layerProposal = nil
-        library.setLayerPaints(library.activeBox.layerIDs, auto: true)
+        library.setLayerPaints(library.palette.layerIDs, auto: true)
         if layerMode { analyse() }
     }
 
     /// The paint box was closed: the layers follow its base paints.
     func layerPaintsChanged() {
         guard layerMode, !busy else { return }
-        if (layers?.paintIDs ?? []) != library.activeBox.layerIDs || library.activeBox.layerAuto && layerProposal == nil { analyse() }
+        if (layers?.paintIDs ?? []) != library.palette.layerIDs || library.palette.layerAuto && layerProposal == nil { analyse() }
     }
 
     func setMode(_ mode: AnalysisMode) {
@@ -762,7 +767,7 @@ final class Session {
         recipeRun += 1
         let run = recipeRun
         let paints = library.enabled.map(\.mixPaint)
-        let candidates = library.activeBox.auto ? library.autoCandidates.map(\.mixPaint) : nil
+        let candidates = library.palette.auto ? library.autoCandidates.map(\.mixPaint) : nil
         let maxPaints = settings.maxPaints
         let wanted = settings.colours
         let variety = settings.variety
@@ -775,7 +780,7 @@ final class Session {
                 Self.buildPalette(seg: seg, paints: paints, candidates: candidates, maxPaints: maxPaints, wanted: wanted, variety: variety, old: old, oldBase: oldBase, oldRegionEntry: oldRegionEntry)
             }.value
             guard run == recipeRun, seg.regions.count == segmentation?.regions.count else { return }
-            if let ids = palette.paintIDs, Set(ids) != library.enabledIDs || !library.activeBox.auto { library.setEnabled(ids, auto: true) }
+            if let ids = palette.paintIDs, Set(ids) != library.enabledIDs || !library.palette.auto { library.setEnabled(ids, auto: true) }
             mixRecipes = palette.mixRecipes
             entries = palette.entries
             baseEntries = palette.baseEntries
@@ -950,7 +955,7 @@ final class Session {
     var mixBlocks: [MixBlock] {
         let paints = library.byID
         func short(_ recipe: Recipe) -> String { recipe.dilution.replacingOccurrences(of: " (layer/glaze)", with: "") }
-        func parts(_ n: Double) -> String { n.formatted(.number.precision(.fractionLength(n == n.rounded() ? 0 : 1))) }
+        func parts(_ n: Double) -> String { Words.number(n) }
         var families: [String] = []
         var members: [String: [Int]] = [:]
         for index in order {
@@ -973,7 +978,7 @@ final class Session {
                 number: String(entry.label.prefix { $0.isNumber }),
                 base: base,
                 hex: recipe?.hex ?? entry.targetHex,
-                names: recipe == nil ? "No paints selected" : used.isEmpty ? "Paper white" : used.map(\.paint.name).joined(separator: " + "),
+                names: recipe == nil ? L("No paints selected") : used.isEmpty ? L("Paper white") : used.map(\.paint.displayName).joined(separator: " + "),
                 paints: used,
                 dilution: entry.recipe.map { $0.paints.isEmpty ? "" : short($0) } ?? "",
                 share: indices.reduce(0) { $0 + entries[$1].share },
@@ -1165,11 +1170,12 @@ final class Session {
             } }
         }
 
-        // The template always has its outlines, in light grey: they are what is painted into.
+        // The template always has its outlines, in light blue: they are what is painted into. Full
+        // blue and no yellow, so a printer uses no black ink, which water does not dissolve.
         if settings.outlines || settings.view == .template {
             let line: (Double, Double, Double, Double) = switch settings.view {
             case .original: (255, 255, 255, 0.75)
-            case .template: (150, 150, 150, 0.8)
+            case .template: (205, 230, 255, 1)
             default: (40, 36, 30, 0.55)
             }
             out.withUnsafeMutableBufferPointer { out in

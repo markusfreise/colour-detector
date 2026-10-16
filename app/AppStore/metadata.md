@@ -1,4 +1,4 @@
-# Tintmap – App Store texts
+# Watercolourlove – App Store texts
 
 Everything App Store Connect asks for, in English (primary) and German. Character limits are checked by `scripts/check-metadata.py`.
 
@@ -6,21 +6,22 @@ Everything App Store Connect asks for, in English (primary) and German. Characte
 
 | Field | Value |
 |---|---|
-| Bundle ID | `de.markusfreise.tintmap` |
-| SKU | `tintmap` |
+| Bundle ID | `de.markusfreise.watercolourlove` |
+| SKU | `watercolourlove` |
 | Primary language | English (U.K.) |
 | Category | Graphics & Design (secondary: Photo & Video) |
 | Price | Free |
 | Age rating | 4+ (no restricted content, no web access, no user-generated content shared with others) |
 | Copyright | 2026 Markus Freise |
-| Support URL | https://tintmap.markus-freise.de/support (to be set up) |
-| Privacy policy URL | https://tintmap.markus-freise.de/privacy (to be set up) |
-| Marketing URL | https://tintmap.markus-freise.de (optional) |
+| Support URL | https://watercolourlove.de/app/support/ (German: https://watercolourlove.de/app/de/support/) |
+| Privacy policy URL | https://watercolourlove.de/app/privacy/ (German: https://watercolourlove.de/app/de/datenschutz/) |
+| Marketing URL | https://watercolourlove.de/app/ |
+| App languages | English and German; in the app under Preferences (person button), "Automatic" follows the device |
 
 ## English
 
 ### Name
-Tintmap
+Watercolourlove
 
 ### Subtitle
 Watercolour mixes from photos
@@ -29,7 +30,7 @@ Watercolour mixes from photos
 Turn any photo into a plan for a watercolour: the main colours as numbered areas, and for each one the mix from the paints you actually own.
 
 ### Description
-Tintmap looks at a photo, finds its main colours and tells you how to mix every one of them from your own watercolours.
+Watercolourlove looks at a photo, finds its main colours and tells you how to mix every one of them from your own watercolours.
 
 The photo becomes a calm map of flat, numbered areas, like a paint-by-numbers plan you made yourself. Tap an area and you see which paints to combine, in what ratio, with how much water, and how close the mix gets to the colour in the photo.
 
@@ -57,22 +58,22 @@ PRIVATE BY DESIGN
 Everything is worked out on your device. Your photos are not uploaded, there is no account, no advertising and no tracking.
 
 FREE, WITH ONE PURCHASE
-Tintmap is free to use with one saved picture and one paint box. A single purchase unlocks any number of pictures and paint boxes. No subscription.
+Watercolourlove is free to use with one saved picture and one paint box. A single purchase unlocks any number of pictures and paint boxes. No subscription.
 
 Recipes come from a model of how transparent paint behaves on white paper. Real paint varies with pigment, paper and water, so treat every recipe as a starting point and test it on a scrap first.
 
-Tintmap is an independent app and is not affiliated with Schmincke.
+Watercolourlove is an independent app and is not affiliated with Schmincke.
 
 ### Keywords
 watercolor,watercolour,paint,mixing,mix,palette,recipe,pigment,painting,artist,aquarelle,swatch,hue
 
 ### What's New (1.0)
-The first version of Tintmap.
+The first version of Watercolourlove.
 
 ## German
 
 ### Name
-Tintmap
+Watercolourlove
 
 ### Subtitle
 Aquarell mischen nach Foto
@@ -81,7 +82,7 @@ Aquarell mischen nach Foto
 Aus jedem Foto wird ein Plan für ein Aquarell: die wichtigsten Farben als nummerierte Flächen, und zu jeder die Mischung aus den Farben, die du wirklich besitzt.
 
 ### Description
-Tintmap sieht sich ein Foto an, findet die wichtigsten Farben und sagt dir, wie du jede davon aus deinen eigenen Aquarellfarben mischst.
+Watercolourlove sieht sich ein Foto an, findet die wichtigsten Farben und sagt dir, wie du jede davon aus deinen eigenen Aquarellfarben mischst.
 
 Aus dem Foto wird eine ruhige Karte aus nummerierten Farbflächen, wie eine Malen-nach-Zahlen-Vorlage, die du selbst gemacht hast. Tippe eine Fläche an und du siehst, welche Farben du mischst, in welchem Verhältnis, mit wie viel Wasser, und wie nah die Mischung an die Farbe im Foto kommt.
 
@@ -109,11 +110,11 @@ PRIVAT
 Alles wird auf deinem Gerät berechnet. Deine Fotos werden nicht hochgeladen, es gibt kein Konto, keine Werbung und kein Tracking.
 
 KOSTENLOS, MIT EINEM KAUF
-Tintmap ist kostenlos mit einem gespeicherten Bild und einem Malkasten. Ein einmaliger Kauf schaltet beliebig viele Bilder und Malkästen frei. Kein Abo.
+Watercolourlove ist kostenlos mit einem gespeicherten Bild und einem Malkasten. Ein einmaliger Kauf schaltet beliebig viele Bilder und Malkästen frei. Kein Abo.
 
 Die Rezepte stammen aus einem Modell dafür, wie sich lasierende Farbe auf weißem Papier verhält. Echte Farbe hängt von Pigment, Papier und Wasser ab. Nimm jedes Rezept als Ausgangspunkt und probiere es zuerst auf einem Reststück.
 
-Tintmap ist eine unabhängige App und steht in keiner Verbindung zu Schmincke.
+Watercolourlove ist eine unabhängige App und steht in keiner Verbindung zu Schmincke.
 
 Die App selbst ist derzeit auf Englisch.
 
@@ -121,7 +122,7 @@ Die App selbst ist derzeit auf Englisch.
 aquarell,aquarellfarben,mischen,farben,malen,palette,rezept,pigment,malkasten,wasserfarben,farbton
 
 ### What's New (1.0)
-Die erste Version von Tintmap.
+Die erste Version von Watercolourlove.
 
 ## In-app purchase
 
@@ -129,18 +130,18 @@ Die erste Version von Tintmap.
 |---|---|
 | Type | Non-consumable |
 | Reference name | Full Version |
-| Product ID | `de.markusfreise.tintmap.pro` |
+| Product ID | `de.markusfreise.watercolourlove.pro` |
 | Price | 4,99 EUR (tier with 4.99 USD) |
 | Family Sharing | On |
 
 ### Display name (EN)
-Tintmap Full Version
+Watercolourlove Full Version
 
 ### IAP description (EN)
 Save any number of pictures and boxes.
 
 ### Display name (DE)
-Tintmap Vollversion
+Watercolourlove Vollversion
 
 ### IAP description (DE)
 Beliebig viele Bilder und Malkästen.
@@ -150,7 +151,7 @@ The purchase removes two limits: more than one saved picture (More > Save to Col
 
 ## App Review notes
 
-Tintmap needs no account and no network connection apart from the App Store purchase. All image analysis runs on the device.
+Watercolourlove needs no account and no network connection apart from the App Store purchase. All image analysis runs on the device.
 
 To see the main function: the app opens with a sample photo. Tap any area of the picture to see the recipes for that colour. The palette button opens the paint box.
 
@@ -166,9 +167,9 @@ The app contains no analytics, no advertising and no third-party SDKs. Photos, p
 
 ### English
 
-**Privacy policy for Tintmap**
+**Privacy policy for Watercolourlove**
 
-Tintmap does not collect, store or share any personal data.
+Watercolourlove does not collect, store or share any personal data.
 
 - Photos you open or take are analysed on your device. They are not uploaded.
 - Saved pictures, paint boxes and your own paints are stored in the app on your device. Deleting the app deletes them.
@@ -180,9 +181,9 @@ Contact: Markus Freise, support@markus-freise.de
 
 ### German
 
-**Datenschutzerklärung für Tintmap**
+**Datenschutzerklärung für Watercolourlove**
 
-Tintmap erhebt, speichert und teilt keine personenbezogenen Daten.
+Watercolourlove erhebt, speichert und teilt keine personenbezogenen Daten.
 
 - Fotos, die du öffnest oder aufnimmst, werden auf deinem Gerät ausgewertet. Sie werden nicht hochgeladen.
 - Gespeicherte Bilder, Malkästen und eigene Farben liegen in der App auf deinem Gerät. Wenn du die App löschst, sind sie gelöscht.
@@ -201,4 +202,4 @@ Kontakt: Markus Freise, support@markus-freise.de
 | HueBuddy: Paint Mixer | Recipes from paints you own, custom kits; acrylic, oil, gouache, miniatures | Not aimed at watercolour |
 | Color Study | Simplifies images, studies colour and value, paint matching | Study tool, broader and more technical |
 
-The name "Tintmap" returned no app of that name in the US and German App Store search on that day. Not checked: trademark registers.
+The name "Watercolourlove" returned no app of that name in the US and German App Store search on that day. Not checked: trademark registers.

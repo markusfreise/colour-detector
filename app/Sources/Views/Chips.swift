@@ -10,6 +10,9 @@ extension Color {
     static func ink(on hex: String) -> Color {
         ColorMath.prefersDarkText(on: hex) ? Color(hex: "#1d1b18") : .white
     }
+
+    /// Numbers of the template: light blue without yellow, so a printer uses no black ink.
+    static let templateNumber = Color(hex: "#96c3ff")
 }
 
 extension CGColor {
@@ -60,12 +63,13 @@ struct PaintChip: View {
                     Spacer(minLength: 0)
                     if showForm { Text(paint.formLabel) }
                 }
-                Text(paint.name).fontWeight(used ? .bold : .regular)
+                Text(paint.displayName).fontWeight(used ? .bold : .regular)
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(paint.vendor) \(paint.displayNumber), \(paint.name)")
-        .help([paint.vendor, paint.line, paint.nameDe, paint.source == "estimate" ? "colour estimated" : ""].filter { !$0.isEmpty }.joined(separator: " · "))
+        .accessibilityLabel("\(paint.vendor) \(paint.displayNumber), \(paint.displayName)" as String)
+        // The name in the other language as well, as on the web.
+        .help([paint.vendor, paint.line, paint.displayName == paint.name ? paint.nameDe : paint.name, paint.source == "estimate" ? L("colour estimated") : ""].filter { !$0.isEmpty }.joined(separator: " · "))
     }
 }
 
@@ -84,10 +88,7 @@ struct RecipeView: View {
     /// The grid shows complete rows of slots; unused ones are drawn dashed.
     private var slots: Int { wide ? max(recipe.paints.count, 1) : stacked ? max(recipe.paints.count, 2) : 4 }
     /// "very concentrated (layer/glaze)" -> "Very concentrated": the tile has no room for the aside.
-    private var dilution: String {
-        let short = recipe.dilution.split(separator: "(").first.map { $0.trimmingCharacters(in: .whitespaces) } ?? recipe.dilution
-        return short.prefix(1).uppercased() + short.dropFirst()
-    }
+    private var dilution: String { Words.dilutionTitle(recipe.dilution) }
 
     var body: some View {
         if wide || bar.count < 2 {
@@ -114,7 +115,7 @@ struct RecipeView: View {
                     Text(dilution).bold()
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
-                    Text("\(recipe.deltaE.formatted(.number.precision(.fractionLength(1)))) • \(recipe.quality)")
+                    Text("\(recipe.deltaE.formatted(.number.precision(.fractionLength(1)).locale(Localization.locale))) • \(Words.term(recipe.quality))" as String)
                 }
             }
             .frame(width: wide ? 140 : 112)
@@ -144,7 +145,7 @@ struct RecipeView: View {
                 Text("\(Text(parts(recipe.parts[index])).bold()) \(paint.formLabel)")
                     .fixedSize()
                 Spacer(minLength: 0)
-                Text("\(Text(paint.displayNumber).bold()) \(paint.name)")
+                Text("\(Text(paint.displayNumber).bold()) \(paint.displayName)")
                     .truncationMode(.tail)
             }
             .font(Theme.chip)
@@ -155,7 +156,7 @@ struct RecipeView: View {
             .foregroundStyle(Color.ink(on: paint.hex))
             .clipShape(RoundedRectangle(cornerRadius: 6))
             .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(.primary.opacity(0.35), lineWidth: 1))
-            .help(paint.name)
+            .help(paint.displayName)
         } else if wide {
             Color.clear.frame(maxWidth: .infinity, minHeight: rowHeight)
         } else {
@@ -167,6 +168,6 @@ struct RecipeView: View {
     }
 
     private func parts(_ n: Double) -> String {
-        "\(n.formatted(.number.precision(.fractionLength(n == n.rounded() ? 0 : 1)))) x"
+        "\(Words.number(n)) x"
     }
 }

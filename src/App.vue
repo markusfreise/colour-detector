@@ -1,21 +1,47 @@
 <template>
   <!-- With accounts on, the app opens after signing in and agreeing to the two statements. -->
   <AccountGate v-if="!account.ready" />
-  <div v-else class="app" :class="{ 'app--layer': analysis.layerMode }">
+  <div v-else class="app" :class="{ 'app--layer': analysis.layerMode, 'app--hints': hints }">
     <p v-if="account.notice" class="app__notice">
       {{ account.notice.text }}
-      <button class="app__footer-link" type="button" @click="account.notice = null">Hide</button>
+      <button class="app__footer-link" type="button" @click="account.notice = null">{{ t('Hide') }}</button>
     </p>
     <main class="app__main">
       <!-- The picture is the background of the window; everything else lies over it. -->
       <div class="app__stage">
         <PaintingCanvas ref="painting" @show-samples="sampleDialog.open()" />
       </div>
-      <div class="app__left">
-        <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
-        <button v-if="account.enabled" class="button button--ghost" type="button" title="Account" @click="account.open = true">
-          <AppIcon name="user" label="Account" />
-        </button>
+      <!-- On a phone the column is folded away behind a menu button; "Get pro" comes with it. -->
+      <div class="app__left" :class="{ 'app__left--open': menuOpen }">
+        <div class="app__menu">
+          <button class="button button--ghost app__burger" type="button" :aria-expanded="menuOpen" :data-hint="t('Menu')" @click="menuOpen = !menuOpen">
+            <AppIcon name="menu" :label="t('Menu')" />
+          </button>
+          <button v-if="!pro.active" class="button button--secondary app__menu-pro" type="button" @click="getPro">{{ t('Get pro') }}</button>
+        </div>
+        <div class="app__left-buttons" @click="menuOpen = false">
+          <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
+          <!-- Phone: the template to print is here instead of in the tools at the bottom. -->
+          <button
+            v-if="!analysis.layerMode"
+            class="button button--ghost app__template"
+            :class="{ 'button--active': analysis.settings.view === 'template' }"
+            type="button"
+            :aria-pressed="analysis.settings.view === 'template'"
+            :data-hint="t('Template to print')"
+            @click="analysis.settings.view = analysis.settings.view === 'template' ? 'mixed' : 'template'"
+          >
+            <AppIcon name="template" :label="t('Template to print')" />
+          </button>
+          <!-- The account, and the preferences (language, light or dark) with or without one. -->
+          <button class="button button--ghost" type="button" :data-hint="account.enabled ? t('Account') : t('Preferences')" @click="account.open = true">
+            <AppIcon name="user" :label="account.enabled ? t('Account') : t('Preferences')" />
+          </button>
+          <!-- Phone: the manual is here instead of in the footer, which then fits in one line. -->
+          <a v-if="!isNative" class="button button--ghost app__manual" :href="legalPage('manual')" :data-hint="t('Manual')">
+            <AppIcon name="manual" :label="t('Manual')" />
+          </a>
+        </div>
       </div>
       <div class="app__top">
         <LayerSteps />
@@ -36,25 +62,37 @@
         <template v-else>
           <PaletteList @show-paintbox="paintBox.open()" />
         </template>
+        <!-- Help: the labels of all buttons at once, for screens without a pointer to hover with. -->
+        <button
+          class="button button--ghost app__help"
+          :class="{ 'button--active': hints }"
+          type="button"
+          :aria-pressed="hints"
+          :data-hint="t('Help')"
+          @click="toggleHints"
+        >
+          <AppIcon name="help" :label="t('Help')" />
+        </button>
       </aside>
     </main>
     <LayerSheets v-if="analysis.layerMode" />
     <PrintLegend v-else />
     <footer v-if="!isNative" class="app__footer">
-      <a class="app__footer-link" href="manual/">Manual</a>
-      <a class="app__footer-link" href="privacy/">Privacy</a>
-      <a class="app__footer-link" href="terms/">Terms</a>
-      <a class="app__footer-link" href="imprint/">Imprint</a>
-      <button v-if="consent.available" class="app__footer-link" type="button" @click="consent.review()">Privacy settings</button>
+      <a class="app__footer-link app__footer-manual" :href="legalPage('manual')">{{ t('Manual') }}</a>
+      <a class="app__footer-link" :href="legalPage('privacy')">{{ t('Privacy') }}</a>
+      <a class="app__footer-link" :href="legalPage('terms')">{{ t('Terms') }}</a>
+      <a class="app__footer-link" :href="legalPage('imprint')">{{ t('Imprint') }}</a>
+      <button v-if="consent.available" class="app__footer-link" type="button" @click="consent.review()">{{ t('Cookies') }}</button>
     </footer>
     <ColourBreakdown ref="breakdown" />
     <PaintBox ref="paintBox" />
     <CollectionDialog ref="collectionDialog" />
     <SampleDialog ref="sampleDialog" />
     <ProDialog />
-    <AccountDialog v-if="account.enabled" />
-    <ConsentBanner />
+    <AccountDialog />
   </div>
+  <!-- Over the app and over the sign-in alike. -->
+  <ConsentBanner />
 </template>
 
 <script setup>
@@ -87,7 +125,9 @@ import { useAccountStore } from './stores/account.js'
 import { isNative } from './lib/native.js'
 import { useProStore } from './stores/pro.js'
 import { useCollectionStore } from './stores/collection.js'
+import { useText } from './i18n/index.js'
 
+const { t, legalPage } = useText()
 const analysis = useAnalysisStore()
 const consent = useConsentStore()
 const account = useAccountStore()
@@ -96,8 +136,20 @@ const painting = ref(null)
 const breakdown = ref(null)
 const collectionDialog = ref(null)
 const sampleDialog = ref(null)
+// Phone: the left column is shown with the menu button.
+const menuOpen = ref(false)
+// Help: every button shows its label. On a phone the left column opens with it.
+const hints = ref(false)
+function toggleHints() {
+  hints.value = !hints.value
+  if (hints.value) menuOpen.value = true
+}
 // Right after signing in (and agreeing, the first time) the plans come up once, unless they are paid for.
 const pro = useProStore()
+function getPro() {
+  menuOpen.value = false
+  pro.require(false, 'use everything')
+}
 watch(
   () => account.ready && account.welcome && account.loaded,
   (show) => {

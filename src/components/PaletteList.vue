@@ -46,6 +46,11 @@
               <template v-else-if="mix.dilution">{{ mix.dilution }} · </template>
               {{ t('{percent}% of image', { percent: percent(mix.share) }) }}
               <template v-if="mix.changed">{{ t(' · changed') }}</template>
+              <!-- Its tone in the blocking, and a warning when the mix lands in another one: value matters more than hue. -->
+              <template v-if="toneOf(mix)"> · {{ t('tone {n}', { n: toneOf(mix).tone }) }}</template>
+            </span>
+            <span v-if="toneOf(mix)?.warning" class="palette__tone-warning">
+              {{ toneOf(mix).warning === 'lighter' ? t('The mix is lighter than its tone in the blocking') : t('The mix is darker than its tone in the blocking') }}
             </span>
           </span>
         </button>
@@ -84,7 +89,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
+import { useProStore } from '../stores/pro.js'
+import { toneOf as toneOfLightness, lightnessOf } from '../lib/blocking.js'
+import { hexToRgb } from '../lib/color.js'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
 import { WASH_LETTERS } from '../lib/mixing.js'
@@ -101,6 +109,24 @@ const emit = defineEmits(['show-paintbox'])
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 const layout = useLayoutStore()
+const pro = useProStore()
+// With Blocking at hand, the tones are worked out in the background, for the tone of every mix.
+watch(
+  () => pro.can('blocking') && analysis.entries.length > 0 && !analysis.layerMode,
+  (wanted) => wanted && analysis.ensureBlocking(),
+  { immediate: true },
+)
+watch(
+  () => analysis.blockingKey,
+  () => pro.can('blocking') && analysis.entries.length && !analysis.layerMode && analysis.ensureBlocking(),
+)
+// { tone, warning } of a mix (its largest wash), or null without a blocking.
+function toneOf(mix) {
+  const thresholds = analysis.blockingResult?.thresholds
+  const entry = analysis.entries[mix.base]
+  if (!thresholds || !entry || !pro.can('blocking')) return null
+  return { tone: toneOfLightness(lightnessOf(...hexToRgb(entry.targetHex)), thresholds) + 1, warning: analysis.toneWarning(entry) }
+}
 const collapsed = computed(() => !!layout.collapsed.palette)
 const { panel, style, dragging, startDrag } = useFloating('colours')
 

@@ -12,6 +12,7 @@ import { toOklabPixels, SIMPLIFY_ZERO } from '../lib/segment.js'
 import { closeupSize } from '../lib/closeup.js'
 import { useProStore } from './pro.js'
 import { hashOf } from '../lib/picture.js'
+import { DEFAULT_FORMS, toneOfHex } from '../lib/blocking.js'
 import { t } from '../i18n/index.js'
 
 // Working resolution: the picture is scaled down to about this many pixels, whatever its shape.
@@ -62,6 +63,7 @@ let layerProposal = null // "picture/count" the current proposal was made for
 // The settings the mix analysis (`segmentation`) was made with, see `mixCurrent`.
 let mixKey = null
 let sketchRunning = null // the picture a sketch is being worked out for
+let blockingRunning = null // the blocking being worked out (its key)
 let loadSerial = 0 // counts the pictures asked for, see loadFromSource
 const mixKeyOf = ({ saturation, contrast, simplify, colours, geometric, values }, plan = 0) => [saturation, contrast, simplify, colours, !!geometric, plan].join('/') + (values ? '/values' : '')
 
@@ -149,6 +151,8 @@ export const useAnalysisStore = defineStore('analysis', {
     aiDetails: null, // { key, mask, hex, paintId, dilution, pixels, shapes } the final wash of details (raw)
     aiMatch: null, // { key, on, off } distance to the photo with and without the AI's choices, per method
     sketch: null, // { key, paths, width, height } the pencil sketch as lines of points, see lib/sketch.js (raw)
+    blocking: null, // { key, ...blockImage } the picture as tones in large masses, see lib/blocking.js (raw)
+    blockingSolo: null, // the tone shown on its own in the Blocking view, or null
     aiBusy: false,
     aiError: null,
     pictureStamp: 0, // counts the pictures opened
@@ -175,7 +179,12 @@ export const useAnalysisStore = defineStore('analysis', {
       values: false, // mix mode: the picture in grey, every value painted with one paint of the box (a value study)
       saturation: 200, // percent, applied to the photo before the analysis
       contrast: 100,
-      view: 'mixed', // mixed | target | overlay | original | template
+      view: 'mixed', // mixed | target | overlay | original | template | blocking
+      // Blocking: light and shadow in large masses (lib/blocking.js).
+      blockingTones: 2, // 2 = light and shadow, 3 = with a middle tone
+      blockingSplit: null, // thresholds in L* set by hand; null = where the photo divides
+      blockingForms: DEFAULT_FORMS, // 0 = more detail .. 10 = the largest masses
+      blockingOpacity: 100, // percent: the tones over the photo, 100 = the photo is not seen
       outlines: true,
       numbers: true,
     },
@@ -190,6 +199,30 @@ export const useAnalysisStore = defineStore('analysis', {
     // Monochrome (setting `values`) belongs to mix mode: layers are fitted to colours. It is a Pro
     // feature, so a picture saved with it opens in colour without Pro.
     valueMode: (state) => !!state.settings.values && state.settings.mode !== 'layer' && useProStore().can('monochrome'),
+    /** What a blocking belongs to: the picture as analysed and the settings of the view. */
+    blockingKey(state) {
+      const s = state.settings
+      const source = state.adjusted ?? state.pixels
+      return [state.pictureStamp, source?.width, source?.height, s.saturation, s.contrast, s.blockingTones, s.blockingSplit?.join(',') ?? '', s.blockingForms].join('/')
+    },
+    /** The blocking of the picture on screen as it is set, or null while it is worked out. */
+    blockingResult(state) {
+      return state.blocking?.key === this.blockingKey ? state.blocking : null
+    },
+    /**
+     * How a mix stands to its tone in the blocking: 'lighter' or 'darker' when the mixed colour
+     * falls in another tone than the colour of the photo, else null. Value matters more than hue.
+     */
+    toneWarning() {
+      const thresholds = this.blockingResult?.thresholds
+      return (entry) => {
+        const mixed = entry?.recipes[entry.chosen]?.hex
+        if (!thresholds || !mixed) return null
+        const want = toneOfHex(entry.targetHex, thresholds)
+        const got = toneOfHex(mixed, thresholds)
+        return got === want ? null : got < want ? 'lighter' : 'darker'
+      }
+    },
     /** What a sketch belongs to: the picture, and the AI's answer for it once there is one. */
     sketchKey(state) {
       return `${state.pictureStamp}/${state.aiPlan?.key === this.aiKey ? state.aiPlan.serial : 0}`
@@ -261,12 +294,15 @@ export const useAnalysisStore = defineStore('analysis', {
     /** Load a sample picture by its place in the list; the first one is used at start. */
     async loadSample(index = 0) {
       const sample = SAMPLES[index] ?? SAMPLES[0]
+      // A split of light and shadow set by hand belongs to the photo it was set for.
+      this.settings.blockingSplit = null
       await this.loadFromSource(sample.url, t('{name} (sample)', { name: t(sample.name) }), { sample: true, hash: null })
     },
     async loadFile(file) {
       const url = URL.createObjectURL(file)
       // The bytes of the photo as they came: the same file is the same picture, whenever it is opened.
       const hash = await hashOf(file).catch(() => null)
+      this.settings.blockingSplit = null
       await this.loadFromSource(url, file.name, { sample: false, hash })
     },
     /** Open a picture from the collection with its saved settings and colour changes. */
@@ -447,6 +483,7 @@ export const useAnalysisStore = defineStore('analysis', {
     forgetPicture() {
       pictureSerial++
       this.pictureStamp = pictureSerial
+      this.blockingSolo = null
       mixKey = null
       this.pendingEdits = null
       if (this.layerMode) {
@@ -761,6 +798,27 @@ export const useAnalysisStore = defineStore('analysis', {
         this.error = t('Sketch failed: {reason}', { reason: t(e.message) })
       } finally {
         if (sketchRunning === key) sketchRunning = null
+      }
+    },
+
+    /** Works out the blocking of the picture as it is set (in the worker), unless it is there or on its way. */
+    async ensureBlocking() {
+      const source = this.adjusted ?? this.pixels
+      const key = this.blockingKey
+      if (!source || this.blocking?.key === key || blockingRunning === key) return
+      blockingRunning = key
+      const { blockingTones: tones, blockingSplit: split, blockingForms: forms } = this.settings
+      try {
+        const { result } = await runSegmentation({ kind: 'blocking', rgba: source.rgba.slice(), width: source.width, height: source.height, tones, split: split ? [...split] : null, forms })
+        if (key !== this.blockingKey) return
+        // A tone on its own that the new blocking does not have any more is let go.
+        if (this.blockingSolo != null && this.blockingSolo >= result.tones) this.blockingSolo = null
+        this.blocking = markRaw({ key, ...result })
+        this.renderVersion++
+      } catch (e) {
+        this.error = t('Blocking failed: {reason}', { reason: t(e.message) })
+      } finally {
+        if (blockingRunning === key) blockingRunning = null
       }
     },
 

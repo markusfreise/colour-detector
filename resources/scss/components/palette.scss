@@ -103,6 +103,13 @@
         font-size: var(--fs-small);
     }
 
+    // A mix that lands in another tone of the blocking than its area.
+    &__tone-warning {
+        color: var(--c-danger);
+        font-size: var(--fs-small);
+        font-weight: 600;
+    }
+
     &__bar {
         grid-column: 2;
         display: flex;

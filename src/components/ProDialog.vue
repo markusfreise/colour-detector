@@ -71,6 +71,8 @@
           <li>{{ t('Print the sheet or save it as a PDF') }}</li>
           <li>{{ t('Keep a paint box for every set of paints you own') }}</li>
         </ul>
+        <!-- What was paid for pictures lately comes off the first plan (server/plans.json, credits.deduction_days). -->
+        <p v-if="deduction" class="pro__deduction">{{ t("We'll deduct the {amount} you paid for pictures from your first payment.", { amount: deduction }) }}</p>
         <ul v-if="plans.length" class="pro__plans">
           <li v-for="plan in plans" :key="plan.key" class="pro__plan">
             <span class="pro__plan-text">
@@ -107,6 +109,7 @@ import { useProStore } from '../stores/pro.js'
 import { useAccountStore } from '../stores/account.js'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { formatPrice } from '../lib/account.js'
+import { PLANS } from '../lib/entitlements.js'
 import { isNative } from '../lib/native.js'
 import { useText } from '../i18n/index.js'
 
@@ -125,6 +128,10 @@ const intro = computed(() => {
   if (pictureOption.value) return t('To {reason}, unlock this picture or choose a plan.', { reason })
   if (pro.feature) return t('To {reason}, choose a plan. A picture unlocked with a credit does not include this.', { reason })
   return t('The free version mixes from the Starter box of 12 colours, and does not save pictures or print. To {reason}, unlock a picture or choose a plan.', { reason })
+})
+const deduction = computed(() => {
+  const cents = account.user?.plan ? 0 : (account.user?.deduction ?? 0)
+  return cents > 0 ? formatPrice({ amount: cents, currency: plans.value[0]?.price?.currency ?? PLANS.currency }, region.value) : ''
 })
 // The price as Stripe has it; "Choose" while it is not known.
 const priceText = (product) => (product.price ? formatPrice(product.price, region.value) : t('Choose'))

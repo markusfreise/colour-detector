@@ -100,6 +100,12 @@
         font-weight: 700;
     }
 
+    &__deduction {
+        margin: #{pxtorem(8)} 0;
+        color: var(--c-corporate);
+        font-weight: 600;
+    }
+
     &__confirm {
         margin-bottom: #{pxtorem(10)};
         padding: #{pxtorem(10)};

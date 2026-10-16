@@ -73,6 +73,22 @@ function startCheckout(): never
     } elseif ($vat !== '') {
         $fields['subscription_data'] = ['default_tax_rates' => [$vat]];
     }
+    // What was paid for pictures lately comes off the first plan, as a coupon for this one checkout.
+    // Stripe takes either a discount or promotion codes, not both.
+    $deduction = $pack ? 0 : deductionOn(packDeduction($user), (int) (priceOf($price)['amount'] ?? 0));
+    if ($deduction > 0) {
+        $coupon = stripe('POST', 'coupons', [
+            'amount_off' => $deduction,
+            'currency' => plans()['currency'] ?? 'eur',
+            'duration' => 'once',
+            'max_redemptions' => 1,
+            'name' => $german ? 'Bezahlte Bilder' : 'Pictures paid for',
+            'metadata' => ['user' => (string) $user['id']],
+        ]);
+        $fields['discounts'] = [['coupon' => $coupon['id']]];
+        unset($fields['allow_promotion_codes']);
+        $fields['metadata']['deduction'] = (string) $deduction;
+    }
     if ($user['stripe_customer']) {
         $fields['customer'] = $user['stripe_customer'];
     } else {
@@ -145,6 +161,10 @@ function handleStripeEvent(array $event): never
     switch ($event['type'] ?? '') {
         case 'checkout.session.completed':
             $userId = (int) ($object['client_reference_id'] ?? 0);
+            // The deduction for packs is used up with the plan it went into.
+            if ((int) ($object['metadata']['deduction'] ?? 0) > 0 && in_array($object['payment_status'] ?? '', ['paid', 'no_payment_required'], true)) {
+                run('UPDATE users SET deduction_used_at = ? WHERE id = ? AND deduction_used_at IS NULL', [time(), $userId]);
+            }
             if ($object['customer'] ?? null) {
                 run('UPDATE users SET stripe_customer = ? WHERE id = ?', [$object['customer'], $userId]);
             }

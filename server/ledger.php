@@ -155,9 +155,37 @@ function describeCredits(array $user): array
     return [
         'credits' => creditBalance((int) $user['id']),
         'pictureSalt' => $user['picture_salt'],
+        // Money paid for packs that comes off the first plan (TASK-51), in cents.
+        'deduction' => packDeduction($user),
         'unlocks' => array_map(
             fn (array $u) => ['key' => $u['picture_key'], 'at' => (int) $u['created_at']],
             run('SELECT picture_key, created_at FROM picture_unlocks WHERE user_id = ? ORDER BY created_at', [$user['id']])->fetchAll(),
         ),
     ];
+}
+
+/**
+ * What comes off the first plan of an account: the money paid for packs in the last
+ * credits.deduction_days days, less refunds; nothing once a plan was had or the deduction used.
+ * In cents.
+ */
+function packDeduction(array $user): int
+{
+    if ($user['deduction_used_at'] || $user['sub_id'] || (int) $user['lifetime'] === 1) {
+        return 0;
+    }
+    $days = (int) (plans()['credits']['deduction_days'] ?? 0);
+    if ($days <= 0) {
+        return 0;
+    }
+    return max(0, (int) run(
+        'SELECT COALESCE(SUM(amount - refunded_amount), 0) FROM purchases WHERE user_id = ? AND created_at >= ?',
+        [$user['id'], time() - $days * 86400],
+    )->fetchColumn());
+}
+
+/** The deduction on a price: never so much that less than Stripe's least charge (0.50) is left. */
+function deductionOn(int $deduction, int $price): int
+{
+    return max(0, min($deduction, $price - 50));
 }

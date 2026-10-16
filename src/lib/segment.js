@@ -15,6 +15,11 @@ import { geometricAreas } from './geometric.js'
 import { boxMask } from './details.js'
 import { compactPatches, settlePatches, patchColours, findDetails, mergeAreas, roundOutlines } from './smooth.js'
 
+/** How many mixes to ask the analysis for, so that the mixing service has something to join. */
+export function mixesToRequest(wanted) {
+  return Math.min(48, Math.max(wanted + 4, wanted * 2))
+}
+
 export function mulberry32(seed) {
   let a = seed >>> 0
   return () => {

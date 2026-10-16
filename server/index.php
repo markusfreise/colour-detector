@@ -1,9 +1,10 @@
 <?php
 /**
- * Account API for Watercolourlove, served under <app>/api/.
+ * Account API and mixing service for Watercolourlove, served under <app>/api/.
  *
  * Pictures never come here: the app keeps them in the browser. An account is an e-mail address,
- * the consent given and what was paid for.
+ * the consent given and what was paid for. The mixing service (mix/) gets the colours the app
+ * found in a picture, never the picture.
  *
  * Local test: php -S 127.0.0.1:8787 server/index.php (the Vite dev server passes /api on).
  */
@@ -23,6 +24,15 @@ set_exception_handler(function (Throwable $error): void {
 $path = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 $at = strrpos($path, '/api/');
 $route = trim($at === false ? $path : substr($path, $at + 5), '/');
+
+if (str_starts_with($route, 'mix/')) {
+    require __DIR__ . '/mix/api.php';
+    handleMix(substr($route, 4));
+}
+if ($route === 'charts') {
+    require __DIR__ . '/mix/api.php';
+    handleCharts();
+}
 
 if (preg_match('#^auth/(google|meta|apple)/(start|callback)$#', $route, $match)) {
     $match[2] === 'start' ? startOauth($match[1]) : finishOauth($match[1]);

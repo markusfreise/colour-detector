@@ -199,7 +199,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { useProStore } from '../stores/pro.js'
@@ -207,6 +207,7 @@ import { STARTER_BOX_NAME } from '../data/starter.js'
 import { chipStyle } from '../lib/color.js'
 import { paintNumber, paintForms, sortPaints, sortBoxPaints, seriesNames, HOUSE_VENDOR } from '../lib/paintbox.js'
 import { PAINT_LIBRARIES, libraryByName } from '../data/libraries.js'
+import { useChartsStore } from '../stores/charts.js'
 import { isNative } from '../lib/native.js'
 import PaintChip from './PaintChip.vue'
 import PaintForm from './PaintForm.vue'
@@ -218,6 +219,9 @@ const { t, paintName } = useText()
 const paints = usePaintsStore()
 const analysis = useAnalysisStore()
 const pro = useProStore()
+const charts = useChartsStore()
+// The colour charts come with Pro, from the account API.
+watch(() => pro.can('brand_charts'), (may) => may && charts.load(), { immediate: true })
 const dirty = ref(false)
 const dialog = ref(null)
 const newBox = ref(false) // the name field of a new box is open
@@ -268,7 +272,7 @@ const searchOptions = computed(() => {
   })
   if (pro.can('brand_charts')) {
     for (const library of PAINT_LIBRARIES) {
-      for (const colour of library.catalogue) {
+      for (const colour of charts.of(library.id)) {
         if (known.has(`${library.name.toLowerCase()}|${String(colour.number).toLowerCase()}`)) continue
         options.push({
           key: `${library.id}:${colour.number}`,
@@ -321,6 +325,7 @@ function setAutoBox(id, on) {
 }
 
 // Let the app pick the paints for the current picture, from the boxes ticked for Auto.
+let proposing = null
 function auto() {
   if (layerMode.value) {
     // The proposal needs the picture, so it is made while the layers are planned again.
@@ -328,7 +333,7 @@ function auto() {
     dirty.value = false
     return
   }
-  analysis.autoPaints(true)
+  proposing = analysis.autoPaints(true)
   dirty.value = true
 }
 
@@ -343,9 +348,11 @@ function reset() {
   dirty.value = true
 }
 
-function apply() {
-  analysis.recomputeAllRecipes()
+async function apply() {
   dirty.value = false
+  // A proposal still on its way comes first, so the mixes are made with its paints.
+  await proposing
+  analysis.recomputeAllRecipes()
 }
 
 // With Auto on, what the boxes hold is what it chooses from.
@@ -461,7 +468,10 @@ function startPaint(paint, at) {
 // The series already in use and those that come with the app.
 const series = computed(() => seriesNames(paints.all, PAINT_LIBRARIES))
 // The library the series belongs to: its numbers fill in name and colour.
-const library = computed(() => libraryByName(paintForm.value?.vendor))
+const library = computed(() => {
+  const found = libraryByName(paintForm.value?.vendor)
+  return found && { ...found, catalogue: charts.of(found.id) }
+})
 
 function savePaint() {
   paints.savePaint(paintForm.value, formAt.value === 'own' ? null : formAt.value)

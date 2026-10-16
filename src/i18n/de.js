@@ -447,6 +447,9 @@ export default {
   'the file is not a picture this browser can read': 'die Datei ist kein Bild, das dieser Browser lesen kann',
   'Analysis failed: {reason}': 'Die Analyse ist fehlgeschlagen: {reason}',
   'Sketch failed: {reason}': 'Die Skizze ist fehlgeschlagen: {reason}',
+  'Mixing failed: {reason}': 'Das Mischen ist fehlgeschlagen: {reason}',
+  'The mixing service cannot be reached. Check the connection.': 'Der Mischdienst ist nicht erreichbar. Prüfe die Verbindung.',
+  'The mixing service did not answer as expected.': 'Der Mischdienst hat nicht wie erwartet geantwortet.',
   // Plan labels as set on the server (config.php, stripe-setup.php)
   '4.99 EUR per month': '4,99 EUR pro Monat',
   '29.99 EUR per year': '29,99 EUR pro Jahr',

@@ -16,7 +16,7 @@
     <canvas
       ref="canvas"
       class="painting__canvas"
-      :class="{ 'painting__canvas--busy': analysis.busy && !backdrop, 'painting__canvas--framing': framing }"
+      :class="{ 'painting__canvas--busy': (analysis.busy || analysis.mixing > 0) && !backdrop, 'painting__canvas--framing': framing }"
       :style="canvasStyle"
       @mousemove="onMove"
       @mouseleave="hover = null"

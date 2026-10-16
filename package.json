@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:server": "php server/tests/run.php",
-    "app:data": "node app/scripts/export-data.mjs"
+    "app:data": "node app/scripts/export-data.mjs",
+    "charts": "node tools/export-charts.mjs"
   },
   "dependencies": {
     "pinia": "^2.3.1",

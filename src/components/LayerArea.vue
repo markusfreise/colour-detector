@@ -46,7 +46,7 @@ import { computed } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
 import { chipStyle } from '../lib/color.js'
-import { matchQuality } from '../lib/mixing.js'
+import { matchQuality } from '../lib/recipeText.js'
 import { useText } from '../i18n/index.js'
 
 const { t, paintName, region } = useText()

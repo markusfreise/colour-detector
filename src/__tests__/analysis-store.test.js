@@ -2,6 +2,9 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { segmentImage } from '../lib/segment.js'
 import { layerImage } from '../lib/layers.js'
+import { planLayersFor } from '../lib/layerPlan.js'
+import { MIX_ROUTES } from '../lib/mixService.js'
+import { setMixTransport } from '../lib/mixClient.js'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 
@@ -16,10 +19,13 @@ class FakeWorker {
 }
 globalThis.Worker = FakeWorker
 
+// The mixing service answers from its reference, a moment later, with what came through JSON.
+setMixTransport(async (route, body) => MIX_ROUTES[route](JSON.parse(JSON.stringify(body))))
+
 // Answer the oldest waiting job.
 async function answer() {
   const { jobId, kind, rgba, width, height, ...options } = FakeWorker.queue.shift()
-  const result = kind === 'layers' ? layerImage(rgba, width, height, options.paints, options) : segmentImage(rgba, width, height, options)
+  const result = kind === 'layers' ? await layerImage(rgba, width, height, options.paints, options, planLayersFor) : segmentImage(rgba, width, height, options)
   for (const fn of [...FakeWorker.listeners]) fn({ data: { jobId, result } })
   await new Promise((resolve) => setTimeout(resolve))
 }
@@ -136,10 +142,10 @@ describe('layer mode in the analysis store', () => {
   it('brings the mixes back unchanged after a visit to layer mode', async () => {
     analysis.analyse()
     await answer()
-    analysis.setTarget(0, '#123456')
+    await analysis.setTarget(0, '#123456')
     const labels = analysis.entries.map((e) => e.label)
     await toLayerMode()
-    analysis.setMode('mix')
+    await analysis.setMode('mix')
     expect(waiting()).toBe(0)
     expect(analysis.busy).toBe(false)
     expect(analysis.entries[0]).toMatchObject({ targetHex: '#123456', overridden: true })
@@ -150,7 +156,7 @@ describe('layer mode in the analysis store', () => {
   it('analyses the mixes again when the picture was changed in layer mode', async () => {
     analysis.analyse()
     await answer()
-    analysis.setTarget(0, '#123456')
+    await analysis.setTarget(0, '#123456')
     await toLayerMode()
     expect(analysis.exportEdits()).toHaveLength(1)
     analysis.settings.simplify = 3
@@ -167,7 +173,7 @@ describe('layer mode in the analysis store', () => {
   it('drops the mixes of the picture before when a new one comes in layer mode', async () => {
     analysis.analyse()
     await answer()
-    analysis.setTarget(0, '#123456')
+    await analysis.setTarget(0, '#123456')
     await toLayerMode()
     analysis.pixels = picture(20, 10, 1)
     analysis.forgetPicture()

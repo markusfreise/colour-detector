@@ -4,7 +4,7 @@ import { translate, nameIn, pageIn, washGuideText } from '../i18n/index.js'
 import de from '../i18n/de.js'
 import { browserLanguage } from '../stores/preferences.js'
 import { describeDilution, matchQuality, WASH_LETTERS } from '../lib/mixing.js'
-import { washGuide } from '../lib/layers.js'
+import { washGuide } from '../lib/layerPlan.js'
 
 describe('German texts', () => {
   // Every t('...') with a plain text in the code, and the words the colour logic hands to the screen.

@@ -9,10 +9,7 @@
 import { findRecipes, washRecipe, VALUE_WATER_PENALTY } from './mixing.js'
 import { hexToOklab, deltaE } from './color.js'
 
-/** How many mixes to ask the analysis for, so there is something to choose from. */
-export function mixesToRequest(wanted) {
-  return Math.min(48, Math.max(wanted + 4, wanted * 2))
-}
+export { mixesToRequest } from './segment.js'
 
 /**
  * @param {Array<{index:number, group:number, hex:string, pixelCount:number}>} clusters  from segmentImage

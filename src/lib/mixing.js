@@ -21,6 +21,9 @@
 // absorbance space, followed by a small perceptual (OKLab) refinement.
 
 import { hexToRgb, rgbToLinear, linearToRgb, rgbToHex, linearToOklab, deltaE } from './color.js'
+import { WASH_LETTERS } from './recipeText.js'
+
+export { WASH_LETTERS, matchQuality } from './recipeText.js'
 
 const MIN_REFLECTANCE = 0.0005
 // The most of one paint in a mix or on the paper: the paint as its swatch shows it. Water only
@@ -421,15 +424,6 @@ export function describeDilution(fullness) {
   return 'concentrated (hardly any water)'
 }
 
-// Letter for the water level of a wash, used in the labels on the picture (6L = mix 6 as a light wash).
-export const WASH_LETTERS = [
-  { letter: 'W', label: 'very watery' },
-  { letter: 'L', label: 'light' },
-  { letter: 'M', label: 'medium' },
-  { letter: 'R', label: 'rich' },
-  { letter: 'C', label: 'concentrated' },
-]
-
 // A value study needs more steps of water than five: with `fine` every level is split in this many.
 const WASH_FINE = 5
 
@@ -448,12 +442,4 @@ export function washLetter(strength, fine = false) {
   const lo = Math.log(WASH_LIMITS[level]), hi = Math.log(WASH_LIMITS[level + 1])
   const step = Math.min(WASH_FINE - 1, Math.max(0, Math.floor(((Math.log(strength) - lo) / (hi - lo)) * WASH_FINE)))
   return `${letter}${step + 1}`
-}
-
-/** Match quality label for a ΔE (OKLab ×100) value. */
-export function matchQuality(dE) {
-  if (dE < 2) return 'excellent'
-  if (dE < 5) return 'good'
-  if (dE < 10) return 'fair'
-  return 'rough'
 }

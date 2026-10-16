@@ -42,7 +42,7 @@
 <script setup>
 import { computed } from 'vue'
 import { usePaintsStore } from '../stores/paints.js'
-import { matchQuality } from '../lib/mixing.js'
+import { matchQuality } from '../lib/recipeText.js'
 import { chipStyle, contrastText } from '../lib/color.js'
 import { paintNumber, paintForms } from '../lib/paintbox.js'
 import { useText } from '../i18n/index.js'

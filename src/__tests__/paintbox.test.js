@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { chartsForServer } from '../data/charts.js'
 import { colourFamily } from '../lib/color.js'
 import { paintNumber, paintForms, groupPaints, sortPaints, paintGroupKeys, seriesNames, HOUSE_VENDOR } from '../lib/paintbox.js'
 import { stockPaints } from '../data/paints.js'
@@ -103,10 +105,16 @@ describe('groupPaints', () => {
 })
 
 describe('paint libraries', () => {
+  const chart = (id) => chartsForServer().charts[id]
+
+  it('hands the server the same charts as src/data has (npm run charts)', () => {
+    expect(JSON.parse(readFileSync(new URL('../../server/mix/charts.json', import.meta.url), 'utf8'))).toEqual(chartsForServer())
+  })
+
   it('ships Schmincke Horadam as the series of the stock', () => {
     const horadam = libraryByName(HOUSE_VENDOR)
     expect(horadam).toBe(PAINT_LIBRARIES[0])
-    expect(horadam.catalogue.find((c) => c.number === '347').name).toBe('Kadmiumrot mittel')
+    expect(chart('horadam').find((c) => c.number === '347').name).toBe('Kadmiumrot mittel')
     // However it is written in the form.
     expect(libraryByName('  schmincke horadam ')).toBe(horadam)
     expect(libraryByName('My own series')).toBe(null)
@@ -115,18 +123,18 @@ describe('paint libraries', () => {
 
   it('ships Winsor & Newton Professional with its chart', () => {
     const wn = libraryByName('winsor & newton professional')
-    expect(wn.catalogue).toHaveLength(116)
-    expect(new Set(wn.catalogue.map((c) => c.number)).size).toBe(116)
-    expect(wn.catalogue.every((c) => /^\d{3}$/.test(c.number) && /^#[0-9a-f]{6}$/.test(c.hex) && c.name)).toBe(true)
-    expect(wn.catalogue.find((c) => c.number === '263').name).toBe('French Ultramarine')
+    expect(chart(wn.id)).toHaveLength(116)
+    expect(new Set(chart(wn.id).map((c) => c.number)).size).toBe(116)
+    expect(chart(wn.id).every((c) => /^\d{3}$/.test(c.number) && /^#[0-9a-f]{6}$/.test(c.hex) && c.name)).toBe(true)
+    expect(chart(wn.id).find((c) => c.number === '263').name).toBe('French Ultramarine')
   })
 
   it('ships Michael Harding with its range, under the name the stock uses', () => {
     const mh = libraryByName('Michael Harding')
-    expect(mh.catalogue).toHaveLength(136)
-    expect(new Set(mh.catalogue.map((c) => c.number)).size).toBe(136)
-    expect(mh.catalogue.every((c) => /^W\d{3}$/.test(c.number) && /^#[0-9a-f]{6}$/.test(c.hex) && c.name)).toBe(true)
-    expect(mh.catalogue.find((c) => c.number === 'W311').name).toBe('Quinacridone Bronze')
+    expect(chart(mh.id)).toHaveLength(136)
+    expect(new Set(chart(mh.id).map((c) => c.number)).size).toBe(136)
+    expect(chart(mh.id).every((c) => /^W\d{3}$/.test(c.number) && /^#[0-9a-f]{6}$/.test(c.hex) && c.name)).toBe(true)
+    expect(chart(mh.id).find((c) => c.number === 'W311').name).toBe('Quinacridone Bronze')
   })
 
   it('offers the series in use and those of the libraries, for the autocomplete', () => {

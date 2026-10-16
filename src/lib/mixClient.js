@@ -29,7 +29,7 @@ export async function postMix(url, body) {
     throw new MixError('The mixing service cannot be reached. Check the connection.', 0)
   }
   const answer = await response.json().catch(() => null)
-  if (!response.ok) throw new MixError(answer?.error ?? `The mixing service answered with status ${response.status}.`, response.status)
+  if (!response.ok) throw new MixError(answer?.error ?? 'The mixing service did not answer as expected.', response.status)
   return answer
 }
 
@@ -43,7 +43,8 @@ export function setMixBase(url) {
 
 /** The address of a route of the service, absolute: a worker resolves addresses against its own. */
 export function mixUrl(route) {
-  return new URL(`${base}/mix/${route}`, globalThis.location?.href).href
+  const path = `${base}/mix/${route}`
+  return globalThis.location ? new URL(path, globalThis.location.href).href : path
 }
 
 /** Tests answer with the reference in mixService.js instead of the server. */

@@ -264,7 +264,6 @@ function resetAdjustment(...keys) {
 
 function setMaxPaints(n) {
   analysis.settings.maxPaints = n
-  analysis.autoPaints()
-  analysis.recomputeAllRecipes()
+  analysis.refreshMixes()
 }
 </script>

@@ -170,8 +170,7 @@ watch(
   () => paints.starter,
   () => {
     if (analysis.busy || !analysis.pixels) return
-    analysis.autoPaints()
-    analysis.recomputeAllRecipes()
+    analysis.refreshMixes()
   },
 )
 onMounted(() => {

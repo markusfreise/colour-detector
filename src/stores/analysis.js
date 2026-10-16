@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia'
 import { markRaw } from 'vue'
-import { findRecipes, proposePaints, washRecipe, washLetter, valueReach } from '../lib/mixing.js'
 import { adjustImage, hexToOklab, oklabToHex, rgbToHex, deltaE } from '../lib/color.js'
-import { planMixes, mixesToRequest } from '../lib/mixes.js'
+import { mix, mixUrl } from '../lib/mixClient.js'
 import { usePaintsStore } from './paints.js'
+import { useAccountStore } from './account.js'
 import { renderLayers } from '../lib/layers.js'
 import { useAiStore } from './ai.js'
 import { aiRequest, readAiAnswer, aiCost, aiImageSize } from '../lib/ai.js'
 import { boxMask, detailWash } from '../lib/details.js'
-import { toOklabPixels, SIMPLIFY_ZERO } from '../lib/segment.js'
+import { toOklabPixels, SIMPLIFY_ZERO, mixesToRequest } from '../lib/segment.js'
 import { closeupSize } from '../lib/closeup.js'
 import { useProStore } from './pro.js'
 import { hashOf } from '../lib/picture.js'
@@ -24,6 +24,8 @@ const VALUE_STEP = 0.15
 
 // Recipes count as the same mix when they use the same paints.
 const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+')
+// Paints as the mixing service knows them: an id and a colour.
+const plainPaints = (list) => list.map(({ id, hex }) => ({ id, hex }))
 // Sample pictures, offered in the sample library (SampleDialog.vue); the first one loads at start.
 // All are under the Unsplash License, no longer than 1024 px. `credit` names the photographer and
 // links to the photo, or to the profile until the photo is up there.
@@ -65,6 +67,8 @@ let mixKey = null
 let sketchRunning = null // the picture a sketch is being worked out for
 let blockingRunning = null // the blocking being worked out (its key)
 let loadSerial = 0 // counts the pictures asked for, see loadFromSource
+let recipeSerial = 0 // every planning of the mixes takes a number; only the latest may write its result
+let detailSerial = 0 // the same for the final wash of the AI's details
 const mixKeyOf = ({ saturation, contrast, simplify, colours, geometric, values }, plan = 0) => [saturation, contrast, simplify, colours, !!geometric, plan].join('/') + (values ? '/values' : '')
 
 // A small JPEG of the picture for the AI model: enough to judge colours, cheap to send, and
@@ -99,7 +103,7 @@ function runSegmentation(payload) {
     const onMessage = (event) => {
       if (event.data.jobId !== jobId) return
       w.removeEventListener('message', onMessage)
-      if (event.data.error) reject(new Error(event.data.error))
+      if (event.data.error) reject(Object.assign(new Error(event.data.error), { status: event.data.status }))
       else resolve({ jobId, result: event.data.result })
     }
     w.addEventListener('message', onMessage)
@@ -135,6 +139,7 @@ export const useAnalysisStore = defineStore('analysis', {
     regionEntry: null, // Int32Array region -> entry index (raw)
     mixRecipes: {}, // mix (group) -> its recipes, fitted to the largest wash of the mix (raw)
     renderVersion: 0, // bumped whenever the canvas needs a redraw
+    mixing: 0, // questions to the mixing service still open (recipes, mixes, Auto)
     selectedEntry: null,
     selectedRegion: null,
     // The colour being looked at: { entry, region } of the area tapped in the picture, or of the
@@ -522,14 +527,14 @@ export const useAnalysisStore = defineStore('analysis', {
       const focus = plan?.details.length ? plan.details.map((d) => [...d.box]) : undefined
       const key = mixKeyOf(this.settings, anchors ? this.aiPlan.serial : 0)
       try {
-        // "Colours" counts mixes. The analysis is asked for more, and planMixes joins them down to
-        // the wanted number once the paints are known.
+        // "Colours" counts mixes. The analysis is asked for more, and the mixing service joins them
+        // down to the wanted number once the paints are known.
         const { result } = await runSegmentation({
           rgba: rgba.slice(),
           width,
           height,
           // A grey picture is one mix in the eyes of the analysis: it is split into values, and
-          // "Colours" still counts the mixes those are painted with (planMixes).
+          // "Colours" still counts the mixes those are painted with.
           colours: values ? 1 : mixesToRequest(this.settings.colours),
           maxWashes: values ? VALUE_STEPS : undefined,
           washStep: values ? VALUE_STEP : undefined,
@@ -540,14 +545,15 @@ export const useAnalysisStore = defineStore('analysis', {
         })
         if (token !== analysisToken || this.layerMode) return // a newer analysis superseded this one
         mixKey = key
-        this.applySegmentation(result)
+        await this.applySegmentation(result)
+        if (token !== analysisToken || this.layerMode) return
         // Colour changes of a picture that was opened in layer mode.
         const pending = this.pendingEdits
         this.pendingEdits = null
         if (pending?.key === key) this.applyEdits(pending.edits)
         this.noteMatch()
       } catch (e) {
-        if (token === analysisToken) this.error = t('Analysis failed: {reason}', { reason: t(e.message) })
+        if (token === analysisToken) this.failed('Analysis failed: {reason}', e)
       } finally {
         // A superseded analysis leaves `busy` to the one that is still running.
         if (token === analysisToken) this.busy = false
@@ -592,6 +598,7 @@ export const useAnalysisStore = defineStore('analysis', {
           simplify: this.settings.layerSimplify,
           geometric: this.settings.geometric,
           accents: this.settings.layerAccents,
+          planUrl: mixUrl('layers'),
         })
         if (token !== analysisToken || !this.layerMode) return // superseded
         // The proposal goes to the palette it was made for, also when another picture was opened meanwhile.
@@ -607,7 +614,7 @@ export const useAnalysisStore = defineStore('analysis', {
         this.renderVersion++
         this.noteMatch()
       } catch (e) {
-        if (token === analysisToken) this.error = t('Analysis failed: {reason}', { reason: t(e.message) })
+        if (token === analysisToken) this.failed('Analysis failed: {reason}', e)
       } finally {
         if (token === analysisToken) this.busy = false
       }
@@ -639,8 +646,7 @@ export const useAnalysisStore = defineStore('analysis', {
         analysisToken++
         this.busy = false
         this.error = null
-        this.recomputeAllRecipes()
-        return
+        return this.recomputeAllRecipes()
       }
       this.analyse()
     },
@@ -679,7 +685,7 @@ export const useAnalysisStore = defineStore('analysis', {
       this.renderVersion++
     },
 
-    applySegmentation(result) {
+    async applySegmentation(result) {
       this.segmentation = markRaw(result)
       this.entries = []
       this.baseEntries = 0
@@ -687,8 +693,22 @@ export const useAnalysisStore = defineStore('analysis', {
       this.selectedEntry = null
       this.selectedRegion = null
       this.inspected = null
-      this.autoPaints()
-      this.recomputeAllRecipes()
+      await this.refreshMixes()
+    },
+
+    /** On Auto the paints for the picture first, then the mixes and their recipes. */
+    async refreshMixes() {
+      await this.autoPaints()
+      await this.recomputeAllRecipes()
+    },
+
+    /**
+     * What went wrong, in words. A session that has ended shows the sign-in again; a picture is
+     * never sent anywhere, only its colours, so the message names the mixing.
+     */
+    failed(text, error) {
+      if (error?.status === 401) useAccountStore().refresh()
+      this.error = t(text, { reason: t(error?.message ?? String(error)) })
     },
 
     /**
@@ -744,7 +764,8 @@ export const useAnalysisStore = defineStore('analysis', {
      * The final wash: the fine dark shapes inside the boxes the AI named, taken from the picture
      * itself, in the colour its dark paint gives there.
      */
-    findDetails() {
+    async findDetails() {
+      const serial = ++detailSerial
       const plan = this.aiPlan?.key === this.aiKey ? this.aiPlan.plan : null
       const source = this.adjusted ?? this.pixels
       this.aiDetails = null
@@ -758,9 +779,17 @@ export const useAnalysisStore = defineStore('analysis', {
       // The paint the AI named, or the darkest one at hand.
       const paint = paints.byId[plan.detailPaint] ?? candidates.reduce((x, y) => (hexToOklab(y.hex)[0] < hexToOklab(x.hex)[0] ? y : x), candidates[0])
       if (!paint) return
-      const recipe = findRecipes(oklabToHex(wash.lab), [paint], { maxPaints: 1, limit: 1 })[0]
+      const key = this.aiKey
+      let recipe
+      try {
+        const { results } = await mix('recipes', { paints: plainPaints([paint]), jobs: [{ hex: oklabToHex(wash.lab), maxPaints: 1, limit: 1 }] })
+        recipe = results[0][0]
+      } catch (e) {
+        this.failed('Mixing failed: {reason}', e)
+      }
+      if (serial !== detailSerial) return // asked again meanwhile
       this.aiDetails = markRaw({
-        key: this.aiKey,
+        key,
         mask: wash.mask,
         width,
         height,
@@ -770,6 +799,7 @@ export const useAnalysisStore = defineStore('analysis', {
         pixels: wash.pixels,
         shapes: wash.shapes,
       })
+      this.renderVersion++
     },
 
     /**
@@ -855,165 +885,186 @@ export const useAnalysisStore = defineStore('analysis', {
     },
 
     /** While the paint box is on Auto, pick the paints that suit the colours of this picture. */
-    autoPaints(force = false) {
+    async autoPaints(force = false) {
       const paints = usePaintsStore()
-      if (!this.segmentation || !(force || paints.palette.auto)) return
+      const segmentation = this.segmentation
+      if (!segmentation || !(force || paints.palette.auto)) return
       if (!force && this.aiPaints) return // the AI chose them
       // Every wash is a target: a wash its mix cannot reach needs paints for a mix of its own.
-      const targets = this.segmentation.clusters.filter((c) => c.pixelCount).map((c) => ({ hex: c.hex, weight: c.pixelCount }))
-      paints.setEnabled(proposePaints(targets, paints.autoCandidates, { maxPaints: this.settings.maxPaints, values: this.valueMode }), true)
+      const targets = segmentation.clusters.filter((c) => c.pixelCount).map((c) => ({ hex: c.hex, weight: c.pixelCount }))
+      this.mixing++
+      try {
+        const { paintIds } = await mix('propose', { targets, paints: plainPaints(paints.autoCandidates), maxPaints: this.settings.maxPaints, values: this.valueMode })
+        // A newer picture or analysis proposes for itself.
+        if (segmentation === this.segmentation) paints.setEnabled(paintIds, true)
+      } catch (e) {
+        if (segmentation === this.segmentation) this.failed('Mixing failed: {reason}', e)
+      } finally {
+        this.mixing--
+      }
     },
 
     /**
      * Build the colours and their recipes from the analysis and the paint box.
      *
-     * The analysis delivers mixes, each split into washes. A mix gets its recipes from its largest
-     * wash; every other wash is that recipe with more or less water. Washes that end up on the same
-     * water level are the same instruction for the painter, so they become one colour.
+     * The analysis delivers mixes, each split into washes. The mixing service joins them into the
+     * wanted number of mixes and gives every mix its recipes, fitted to its largest wash; every
+     * other wash is that recipe with more or less water. Washes that end up on the same water
+     * level are the same instruction for the painter, so they come back as one colour.
      * Colours changed by hand, detached areas and picked recipes are carried over where they still fit.
      */
-    recomputeAllRecipes() {
+    async recomputeAllRecipes() {
       // Layer mode has no recipes: a changed paint box means the layers are planned again.
       if (this.layerMode) return this.analyse()
       const seg = this.segmentation
       if (!seg) return
-      // With an AI plan its paints are mixed with; the paint box is left alone.
-      const paints = this.aiPaints ?? usePaintsStore().enabled
-      const byId = usePaintsStore().byId
-      const total = seg.width * seg.height
-      const old = this.entries
-      const oldRegionEntry = this.regionEntry
-
-      const values = this.valueMode
-      const washOf = (recipe, hex) => (recipe.paints.length ? washRecipe(recipe, hex, byId, { values }) : recipe)
-      // Value mode with paints that do not get as dark as the picture (a yellow alone): the values
-      // of the picture are spread over what the paints reach, from blank paper for the lightest to
-      // the darkest paint for the darkest, so that the picture keeps all its steps instead of
-      // ending in one flat dark. Paints that reach the darks leave the values alone.
-      let clusters = seg.clusters
-      if (values && paints.length) {
-        const used = seg.clusters.filter((c) => c.pixelCount).map((c) => hexToOklab(c.hex)[0])
-        const light = Math.max(...used), dark = Math.min(...used)
-        const reach = valueReach(paints, { maxPaints: this.settings.maxPaints })
-        if (reach > dark && light > dark) {
-          clusters = seg.clusters.map((c) => {
-            const L = hexToOklab(c.hex)[0]
-            return { ...c, hex: oklabToHex([1 - ((light - L) * (1 - reach)) / (light - dark), 0, 0]) }
-          })
-        }
-      }
-      const groups = planMixes(clusters, paints, {
-        maxPaints: this.settings.maxPaints,
-        // The AI's colours are the mixes: none of them is joined with another.
-        wanted: this.aiActive?.mixes.length ? Math.max(this.settings.colours, this.aiActive.mixes.length) : this.settings.colours,
-        variety: this.settings.variety,
-        values,
-      })
-      const mixRecipes = {}
-      const built = []
-      for (const { group, clusters, recipes } of groups) {
-        mixRecipes[group] = recipes
-        let items = clusters.map((c) => ({ clusters: [c.index], pixels: c.pixelCount, lab: hexToOklab(c.hex) }))
-        // Merge washes until every water level of the mix occurs once.
-        for (;;) {
-          const levels = new Map()
-          for (const item of items) {
-            item.hex = oklabToHex(item.lab)
-            // A value study is painted in finer steps of water.
-            item.letter = recipes.length ? washLetter(washOf(recipes[0], item.hex).fullness, values) : ''
-            const same = levels.get(item.letter)
-            if (same) {
-              const n = same.pixels + item.pixels
-              same.lab = same.lab.map((v, j) => (v * same.pixels + item.lab[j] * item.pixels) / n)
-              same.pixels = n
-              same.clusters.push(...item.clusters)
-            } else {
-              levels.set(item.letter, item)
-            }
-          }
-          if (levels.size === items.length) break
-          items = [...levels.values()]
-        }
-        for (const item of items) built.push({ group, ...item })
-      }
-
-      // Largest first, so the entry numbers used in saved pictures stay meaningful.
-      built.sort((x, y) => y.pixels - x.pixels)
-      const clusterToEntry = new Map()
-      const entries = built.map((item, i) => {
-        item.clusters.forEach((c) => clusterToEntry.set(c, i))
-        return {
-          id: i,
-          group: item.group,
-          letter: item.letter,
-          sourceHex: item.hex,
-          targetHex: item.hex,
-          overridden: false,
-          share: item.pixels / total,
-          recipes: [],
-          chosen: 0,
-          family: `mix-${item.group}`,
-          label: '',
-        }
-      })
-      const regionEntry = Int32Array.from(seg.regions, (r) => clusterToEntry.get(r.cluster))
-
-      // Carry over what the user changed.
-      const pickedPaints = {}
-      for (const e of old) if (!e.overridden && e.chosen && e.recipes[e.chosen]) pickedPaints[e.group] = paintKey(e.recipes[e.chosen])
-      old.slice(0, this.baseEntries).forEach((e) => {
-        if (!e.overridden) return
-        const match = entries.find((n) => n.group === e.group && n.letter === e.letter)
-        if (match) Object.assign(match, { targetHex: e.targetHex, overridden: true, kept: e.chosen ? paintKey(e.recipes[e.chosen]) : null })
-      })
-      const baseEntries = entries.length
-      old.slice(this.baseEntries).forEach((e, n) => {
-        const id = entries.length
-        const oldIndex = this.baseEntries + n
-        let size = 0
-        seg.regions.forEach((region, r) => {
-          if (oldRegionEntry[r] !== oldIndex) return
-          const from = entries[regionEntry[r]]
-          if (from) from.share -= region.size / total
-          regionEntry[r] = id
-          size += region.size
-        })
-        entries.push({ ...e, id, share: size / total, recipes: [], kept: e.chosen ? paintKey(e.recipes[e.chosen]) : null })
-      })
-
-      this.mixRecipes = markRaw(mixRecipes)
-      this.entries = entries
-      this.baseEntries = baseEntries
-      this.regionEntry = markRaw(regionEntry)
-      this.entries.forEach((entry, i) => {
-        this.recomputeRecipes(i, false)
-        const wanted = entry.overridden ? entry.kept : pickedPaints[entry.group]
-        if (wanted) entry.chosen = Math.max(0, entry.recipes.findIndex((r) => paintKey(r) === wanted))
-        delete entry.kept
-      })
-      if (this.selectedEntry != null && !this.entries[this.selectedEntry]) this.selectedEntry = null
-      if (this.inspected && !this.entries[this.inspected.entry]) this.inspected = null
-      this.relabel()
-      this.renderVersion++
-    },
-
-    /** Recipes of one colour: washes of its mix, or recipes of its own once its colour was changed by hand. */
-    recomputeRecipes(index, redraw = true) {
+      const serial = ++recipeSerial
       const store = usePaintsStore()
-      const entry = this.entries[index]
-      if (entry.overridden) {
-        entry.family = `own-${index}`
-        entry.recipes = findRecipes(entry.targetHex, store.enabled, { maxPaints: this.settings.maxPaints, limit: 5, values: this.valueMode })
-      } else {
-        entry.family = `mix-${entry.group}`
-        entry.recipes = (this.mixRecipes[entry.group] ?? []).map((r) =>
-          r.paints.length ? washRecipe(r, entry.targetHex, store.byId, { values: this.valueMode }) : r,
-        )
-      }
-      entry.chosen = 0
-      if (redraw) {
+      // With an AI plan its paints are mixed with; the paint box is left alone.
+      const paints = this.aiPaints ?? store.enabled
+      const enabled = store.enabled
+      const values = this.valueMode
+      const { maxPaints } = this.settings
+      this.mixing++
+      try {
+        const { mixes } = await mix('plan', {
+          clusters: seg.clusters.map(({ index, group, hex, pixelCount }) => ({ index, group, hex, pixelCount })),
+          paints: plainPaints(paints),
+          maxPaints,
+          // The AI's colours are the mixes: none of them is joined with another.
+          wanted: this.aiActive?.mixes.length ? Math.max(this.settings.colours, this.aiActive.mixes.length) : this.settings.colours,
+          variety: this.settings.variety,
+          values,
+        })
+        if (serial !== recipeSerial || seg !== this.segmentation) return // superseded
+        const total = seg.width * seg.height
+        const old = this.entries
+        const oldRegionEntry = this.regionEntry
+
+        const mixRecipes = {}
+        const built = []
+        for (const { group, recipes, items } of mixes) {
+          mixRecipes[group] = recipes
+          for (const item of items) built.push({ group, ...item })
+        }
+        // Largest first, so the entry numbers used in saved pictures stay meaningful.
+        built.sort((x, y) => y.pixels - x.pixels)
+        const clusterToEntry = new Map()
+        const entries = built.map((item, i) => {
+          item.clusters.forEach((c) => clusterToEntry.set(c, i))
+          return {
+            id: i,
+            group: item.group,
+            letter: item.letter,
+            sourceHex: item.hex,
+            targetHex: item.hex,
+            overridden: false,
+            share: item.pixels / total,
+            recipes: item.washes,
+            chosen: 0,
+            family: `mix-${item.group}`,
+            label: '',
+          }
+        })
+        const regionEntry = Int32Array.from(seg.regions, (r) => clusterToEntry.get(r.cluster))
+
+        // Carry over what the user changed.
+        const pickedPaints = {}
+        for (const e of old) if (!e.overridden && e.chosen && e.recipes[e.chosen]) pickedPaints[e.group] = paintKey(e.recipes[e.chosen])
+        old.slice(0, this.baseEntries).forEach((e) => {
+          if (!e.overridden) return
+          const match = entries.find((n) => n.group === e.group && n.letter === e.letter)
+          if (match) Object.assign(match, { targetHex: e.targetHex, overridden: true, kept: e.chosen ? paintKey(e.recipes[e.chosen]) : null })
+        })
+        const baseEntries = entries.length
+        old.slice(this.baseEntries).forEach((e, n) => {
+          const id = entries.length
+          const oldIndex = this.baseEntries + n
+          let size = 0
+          seg.regions.forEach((region, r) => {
+            if (oldRegionEntry[r] !== oldIndex) return
+            const from = entries[regionEntry[r]]
+            if (from) from.share -= region.size / total
+            regionEntry[r] = id
+            size += region.size
+          })
+          entries.push({ ...e, id, share: size / total, recipes: [], kept: e.chosen ? paintKey(e.recipes[e.chosen]) : null })
+        })
+
+        // Colours changed by hand get recipes of their own, detached areas the washes of their mix.
+        const jobs = []
+        const waiting = []
+        entries.forEach((entry, i) => {
+          entry.family = entry.overridden ? `own-${i}` : `mix-${entry.group}`
+          if (!entry.overridden && i < baseEntries) return
+          waiting.push(entry)
+          jobs.push(this.recipeJob(entry, mixRecipes, enabled))
+        })
+        if (jobs.length) {
+          const { results } = await mix('recipes', { paints: plainPaints(this.paintsFor(jobs, enabled)), jobs })
+          if (serial !== recipeSerial || seg !== this.segmentation) return
+          waiting.forEach((entry, n) => (entry.recipes = results[n]))
+        }
+
+        this.mixRecipes = markRaw(mixRecipes)
+        this.entries = entries
+        this.baseEntries = baseEntries
+        this.regionEntry = markRaw(regionEntry)
+        this.entries.forEach((entry) => {
+          entry.chosen = 0
+          const wanted = entry.overridden ? entry.kept : pickedPaints[entry.group]
+          if (wanted) entry.chosen = Math.max(0, entry.recipes.findIndex((r) => paintKey(r) === wanted))
+          delete entry.kept
+        })
+        if (this.selectedEntry != null && !this.entries[this.selectedEntry]) this.selectedEntry = null
+        if (this.inspected && !this.entries[this.inspected.entry]) this.inspected = null
         this.relabel()
         this.renderVersion++
+      } catch (e) {
+        if (serial === recipeSerial) this.failed('Mixing failed: {reason}', e)
+      } finally {
+        this.mixing--
+      }
+    },
+
+    /**
+     * The question for the recipes of one colour: recipes of its own once its colour was changed
+     * by hand (from the paint box, also while an AI plan is on), otherwise the washes of its mix.
+     */
+    recipeJob(entry, mixRecipes = this.mixRecipes, enabled = usePaintsStore().enabled) {
+      const values = this.valueMode
+      if (entry.overridden) return { hex: entry.targetHex, maxPaints: this.settings.maxPaints, limit: 5, values, only: enabled.map((p) => p.id) }
+      return { hex: entry.targetHex, wash: mixRecipes[entry.group] ?? [], values }
+    },
+
+    // The paints the jobs name: the paint box and the paints of the recipes to dilute.
+    paintsFor(jobs, enabled) {
+      const byId = usePaintsStore().byId
+      const ids = new Set(enabled.map((p) => p.id))
+      for (const job of jobs) for (const recipe of job.wash ?? []) for (const p of recipe.paints) ids.add(p.paintId)
+      return [...ids].map((id) => byId[id]).filter(Boolean)
+    },
+
+    /** Recipes of one colour, after its colour was changed by hand or set back. */
+    async recomputeRecipes(index) {
+      const entry = this.entries[index]
+      if (!entry) return
+      entry.family = entry.overridden ? `own-${index}` : `mix-${entry.group}`
+      const job = this.recipeJob(entry)
+      const asked = `${entry.targetHex}/${entry.overridden}`
+      this.mixing++
+      try {
+        const { results } = await mix('recipes', { paints: plainPaints(this.paintsFor([job], usePaintsStore().enabled)), jobs: [job] })
+        // The colour was changed again, or the mixes planned anew, meanwhile.
+        if (this.entries[index] !== entry || `${entry.targetHex}/${entry.overridden}` !== asked) return
+        entry.recipes = results[0]
+        entry.chosen = 0
+        this.relabel()
+        this.renderVersion++
+      } catch (e) {
+        this.failed('Mixing failed: {reason}', e)
+      } finally {
+        this.mixing--
       }
     },
 
@@ -1078,11 +1129,11 @@ export const useAnalysisStore = defineStore('analysis', {
       const entry = this.entries[index]
       entry.targetHex = hex
       entry.overridden = hex.toLowerCase() !== entry.sourceHex.toLowerCase()
-      this.recomputeRecipes(index)
+      return this.recomputeRecipes(index)
     },
 
     resetTarget(index) {
-      this.setTarget(index, this.entries[index].sourceHex)
+      return this.setTarget(index, this.entries[index].sourceHex)
     },
 
     /** A recipe is picked for the whole mix: all its washes change with it. */

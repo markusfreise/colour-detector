@@ -180,7 +180,15 @@ function body(): array
     if (!str_starts_with($_SERVER['CONTENT_TYPE'] ?? '', 'application/json')) {
         fail(415, 'JSON expected.');
     }
-    $data = json_decode(file_get_contents('php://input') ?: '{}', true);
+    $raw = (string) file_get_contents('php://input');
+    // The mixing service gets the colours of a picture compressed (lib/mixClient.js).
+    if (strtolower($_SERVER['HTTP_CONTENT_ENCODING'] ?? '') === 'gzip') {
+        $raw = @gzdecode($raw, 32 * 1024 * 1024);
+        if ($raw === false) {
+            fail(400, 'The request could not be read.');
+        }
+    }
+    $data = json_decode($raw ?: '{}', true);
     return is_array($data) ? $data : [];
 }
 

@@ -43,7 +43,7 @@ describe('paint names, pages and washes', () => {
   it('links the text pages in the language shown', () => {
     expect(pageIn('en', 'privacy')).toBe('privacy/')
     expect(pageIn('de', 'privacy')).toBe('de/datenschutz/')
-    expect(pageIn('de', 'manual')).toBe('manual/')
+    expect(pageIn('de', 'manual')).toBe('de/handbuch/')
   })
 
   it('says the water of a wash in German', () => {

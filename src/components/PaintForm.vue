@@ -33,7 +33,7 @@
       <input v-model="paint.hex" class="input input--colour" type="color" />
     </label>
     <p class="paintbox__note">
-      {{ t('Pick the colour of a medium wash on white paper, not the colour straight from the pan or tube.') }}
+      {{ t('Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube.') }}
       <template v-if="library && pro">{{ t('{library} numbers fill in name and colour.', { library: library.name }) }}</template>
     </p>
     <div class="paintbox__form-actions">

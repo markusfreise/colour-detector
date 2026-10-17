@@ -15,7 +15,7 @@
     </label>
     <label class="paintbox__input">
       <span>{{ t('Number') }}</span>
-      <input v-model="paint.number" class="input" type="text" maxlength="8" required @change="lookUp" />
+      <input v-model="paint.number" class="input" type="text" maxlength="12" required @change="lookUp" />
     </label>
     <label class="paintbox__input">
       <span>{{ t('Form') }}</span>
@@ -36,6 +36,10 @@
       {{ t('Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube.') }}
       <template v-if="library && pro">{{ t('{library} numbers fill in name and colour.', { library: library.name }) }}</template>
     </p>
+    <p v-if="found" class="paintbox__note">
+      {{ [`${library.name} ${found.number}`, ...chartDetails(found, t)].join(' · ') }}.
+      <template v-if="!found.hex">{{ t('The chart gives no reliable colour for this paint: set it by hand.') }}</template>
+    </p>
     <div class="paintbox__form-actions">
       <button class="button button--secondary" type="submit">{{ paint.id ? t('Save paint') : t('Add paint') }}</button>
       <button class="button button--ghost" type="button" @click="emit('cancel')">{{ t('Cancel') }}</button>
@@ -45,6 +49,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { chartColour, chartDetails } from '../data/libraries.js'
 import { useText } from '../i18n/index.js'
 
 const { t } = useText()
@@ -66,11 +71,15 @@ const seriesPick = computed({
   },
 })
 
-// A number that is on the colour chart of its library fills in the rest.
+// The colour of the chart the number entered stands for, with Pro.
+const found = computed(() => (props.pro ? chartColour(props.library, paint.value.number) : null))
+
+// A number that is on the colour chart of its library fills in the rest: the name, and the colour
+// where the chart gives one.
 function lookUp() {
   const form = paint.value
-  if (form.id || form.name || !props.pro) return
-  const known = props.library?.catalogue.find((c) => c.number === form.number.trim())
-  if (known) Object.assign(form, { name: known.name, hex: known.hex })
+  if (form.id || form.name || !found.value) return
+  form.name = found.value.name
+  if (found.value.hex) form.hex = found.value.hex
 }
 </script>

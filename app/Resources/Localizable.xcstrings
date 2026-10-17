@@ -544,6 +544,56 @@
         }
       }
     },
+    "Opaque" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deckend"
+          }
+        }
+      }
+    },
+    "Semi-opaque" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halb deckend"
+          }
+        }
+      }
+    },
+    "Semi-transparent" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halb lasierend"
+          }
+        }
+      }
+    },
+    "The chart gives no reliable colour for this paint: set it by hand." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Farbkarte gibt für diese Farbe keinen verlässlichen Farbton an: bitte von Hand einstellen."
+          }
+        }
+      }
+    },
+    "Transparent" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasierend"
+          }
+        }
+      }
+    },
     "add colours from the catalogues of known manufacturers" : {
       "localizations" : {
         "de" : {

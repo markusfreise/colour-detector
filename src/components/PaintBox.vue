@@ -206,7 +206,7 @@ import { useProStore } from '../stores/pro.js'
 import { STARTER_BOX_NAME } from '../data/starter.js'
 import { chipStyle } from '../lib/color.js'
 import { paintNumber, paintForms, sortPaints, sortBoxPaints, seriesNames, HOUSE_VENDOR } from '../lib/paintbox.js'
-import { PAINT_LIBRARIES, libraryByName } from '../data/libraries.js'
+import { PAINT_LIBRARIES, chartDetails, chartNames, libraryByName } from '../data/libraries.js'
 import { isNative } from '../lib/native.js'
 import PaintChip from './PaintChip.vue'
 import PaintForm from './PaintForm.vue'
@@ -270,13 +270,17 @@ const searchOptions = computed(() => {
     for (const library of PAINT_LIBRARIES) {
       for (const colour of library.catalogue) {
         if (known.has(`${library.name.toLowerCase()}|${String(colour.number).toLowerCase()}`)) continue
+        // A colour without a reliable value is added through the form, where its colour is set by hand.
+        if (!colour.hex) continue
+        const text = label(library.name, colour.number, colour.name)
         options.push({
           key: `${library.id}:${colour.number}`,
           kind: 'colour',
           colour: { vendor: library.name, number: colour.number, name: colour.name, hex: colour.hex },
           hex: colour.hex,
-          label: label(library.name, colour.number, colour.name),
-          note: t('Catalogue'),
+          label: text,
+          note: [t('Catalogue'), ...chartDetails(colour, t)].join(' · '),
+          search: [text, ...chartNames(colour), ...(colour.pigments ?? [])].join(' ').toLowerCase(),
         })
       }
     }

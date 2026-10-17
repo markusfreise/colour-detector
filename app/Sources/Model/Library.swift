@@ -291,8 +291,10 @@ final class Library {
     }
 
     /// A colour of a library's chart into a box.
+    /// The search offers only colours with a value; one without is entered through the form.
     func addChartColour(_ colour: ChartColour, of library: PaintLibrary, to boxID: String) {
-        addToBox(boxID, paint: paintID(vendor: library.name, number: colour.number, name: colour.name, hex: colour.hex, form: boxID == "tube" ? "tube" : "pan"))
+        guard let hex = colour.hex else { return }
+        addToBox(boxID, paint: paintID(vendor: library.name, number: colour.number, name: colour.name, hex: hex, form: boxID == "tube" ? "tube" : "pan"))
     }
 
     /// A box as a JSON file to keep, as a backup or to take to the web app.

@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { usePaintsStore } from '../stores/paints.js'
 import { HOUSE_VENDOR } from '../lib/paintbox.js'
+import { libraryByName, chartColour } from '../data/libraries.js'
+import { findRecipes, mixHex, proposePaints } from '../lib/mixing.js'
 
 describe('paints store: boxes used for Auto', () => {
   let paints
@@ -66,6 +68,29 @@ describe('paints store: paint boxes', () => {
     paints.addColourToBox(box.id, { vendor: 'Winsor & Newton Professional', number: '1', name: 'Test Red', hex: '#cc2222' })
     expect(paints.custom).toHaveLength(1)
     expect(box.paintIds[1]).toBe(paints.custom[0].id)
+  })
+
+  it('lets Auto choose and mix the colours of a library put into a box', () => {
+    const sennelier = libraryByName("Sennelier L'Aquarelle")
+    const box = paints.addBox('Sennelier')
+    for (const number of ['314', '501', '211']) {
+      const c = chartColour(sennelier, number)
+      paints.addColourToBox(box.id, { vendor: sennelier.name, number: c.number, name: c.name, hex: c.hex })
+    }
+    const added = box.paintIds.map((id) => paints.byId[id])
+    expect(added.map((p) => p.name)).toEqual(['French Ultramarine Blue', 'Lemon Yellow', 'Burnt Sienna'])
+    // Saved paints keep the fields they always had: pigments and the like stay on the chart.
+    expect(Object.keys(added[0]).sort()).toEqual(Object.keys(paints.custom[0]).sort())
+    expect(added[0].pigments).toBe(undefined)
+    expect(paints.autoCandidates.map((p) => p.id)).toEqual(expect.arrayContaining(box.paintIds))
+
+    // Its own colour is found as that paint, a green as ultramarine and lemon yellow.
+    const own = added.map((p) => ({ id: p.id, hex: p.hex }))
+    expect(proposePaints([{ hex: added[2].hex, weight: 1 }], own)).toEqual([added[2].id])
+    const green = mixHex([own[0], own[1]], [1, 1])
+    const [recipe] = findRecipes(green, own)
+    expect(recipe.paints.map((p) => p.paintId).sort()).toEqual([own[0].id, own[1].id].sort())
+    expect(recipe.deltaE).toBeLessThan(1)
   })
 
   it('exports a box and imports it again as a new box', () => {

@@ -2,7 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { colourFamily } from '../lib/color.js'
 import { paintNumber, paintForms, groupPaints, sortPaints, paintGroupKeys, seriesNames, HOUSE_VENDOR } from '../lib/paintbox.js'
 import { stockPaints } from '../data/paints.js'
-import { PAINT_LIBRARIES, libraryByName } from '../data/libraries.js'
+import { readFileSync } from 'node:fs'
+import { librariesReport } from '../lib/librariesReport.js'
+import { PAINT_LIBRARIES, TRANSPARENCY, chartColour, chartDetails, chartNames, libraryByName } from '../data/libraries.js'
 
 describe('colourFamily', () => {
   it('maps paints to their colour-wheel family', () => {
@@ -129,12 +131,50 @@ describe('paint libraries', () => {
     expect(mh.catalogue.find((c) => c.number === 'W311').name).toBe('Quinacridone Bronze')
   })
 
+  it('lists the sources and the unverified colours in docs/libraries.md (npm run libraries)', () => {
+    expect(readFileSync(new URL('../../docs/libraries.md', import.meta.url), 'utf8')).toBe(librariesReport(PAINT_LIBRARIES))
+    for (const library of PAINT_LIBRARIES) expect(library.source, library.id).toBeTruthy()
+  })
+
+  it('keeps every chart in the same shape: unique numbers, a colour or a reason why not, pigments by Colour Index', () => {
+    expect(new Set(PAINT_LIBRARIES.map((l) => l.id)).size).toBe(PAINT_LIBRARIES.length)
+    for (const library of PAINT_LIBRARIES) {
+      const numbers = library.catalogue.map((c) => c.number.toLowerCase())
+      expect(new Set(numbers).size, library.id).toBe(numbers.length)
+      for (const c of library.catalogue) {
+        expect(c.name, `${library.id} ${c.number}`).toBeTruthy()
+        if (c.hex === null) expect(c.unverified, `${library.id} ${c.number}`).toBeTruthy()
+        else expect(c.hex, `${library.id} ${c.number}`).toMatch(/^#[0-9a-f]{6}$/)
+        for (const p of c.pigments ?? []) expect(p, `${library.id} ${c.number}`).toMatch(/^P(Y|O|R|V|B|G|Br|Bk|W|M)\d+(:\d+)?$/)
+        if (c.transparency !== undefined) expect(Object.keys(TRANSPARENCY), `${library.id} ${c.number}`).toContain(c.transparency)
+      }
+    }
+  })
+
+  it('ships Sennelier L\'Aquarelle with pigments, transparency and French names from its chart', () => {
+    const sennelier = libraryByName("sennelier l'aquarelle")
+    expect(sennelier.catalogue).toHaveLength(98)
+    expect(sennelier.catalogue.every((c) => /^\d{3}$/.test(c.number))).toBe(true)
+    const ultramarine = chartColour(sennelier, ' 314 ')
+    expect(ultramarine).toMatchObject({ name: 'French Ultramarine Blue', pigments: ['PB29', 'PV15'], transparency: 'T' })
+    expect(chartNames(ultramarine)).toEqual(['French Ultramarine Blue', 'Bleu Outremer Français'])
+    expect(chartDetails(ultramarine)).toEqual(['PB29 PV15', 'Transparent'])
+    // The granulating list of 2022 overrules the chart of 2012.
+    expect(chartColour(sennelier, '755').transparency).toBe('O')
+    // Unverified: the name is known, the colour is not.
+    const dioxazine = chartColour(sennelier, '917')
+    expect(dioxazine.hex).toBe(null)
+    expect(dioxazine.unverified).toMatch(/hue/)
+    expect(chartColour(sennelier, '999')).toBe(null)
+    expect(chartColour(null, '314')).toBe(null)
+  })
+
   it('offers the series in use and those of the libraries, for the autocomplete', () => {
     const names = seriesNames(
       [paint('W311', '#c88c5f', ['tube 15 ml'], 'Michael Harding'), paint('347', '#e2544d', ['half pan'])],
       PAINT_LIBRARIES,
     )
-    expect(names).toEqual(['Michael Harding', HOUSE_VENDOR, 'Winsor & Newton Professional'])
+    expect(names).toEqual(['Michael Harding', HOUSE_VENDOR, "Sennelier L'Aquarelle", 'Winsor & Newton Professional'])
     expect(new Set(names).size).toBe(names.length)
     expect(seriesNames(stockPaints, PAINT_LIBRARIES)).toContain('Travelbox')
   })

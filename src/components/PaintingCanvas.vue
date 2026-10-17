@@ -39,12 +39,8 @@
     <div v-if="frame" class="painting__frame" :style="frameStyle"></div>
     <!-- The spot whose colour is being looked at, blinking under the card. -->
     <span v-if="spot && !backdrop" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
-    <div v-if="!backdrop" class="painting__tools">
-      <!-- Until everything is unlocked: the plans, one click away. -->
-      <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(null, 'use everything')">
-        {{ t('Get pro') }}
-        <CreditCount />
-      </button>
+    <div v-if="!backdrop" class="painting__tools toolbar">
+      <GetPro class="painting__pro" @open="pro.require(null, 'use everything')" />
       <button class="button button--ghost painting__tool" type="button" :data-hint="t('Fit')" @click="fit">
         <AppIcon name="zoom" :label="t('Fit the picture to the window')" />
       </button>
@@ -59,6 +55,17 @@
         @click="framing = !framing"
       >
         <AppIcon name="frame" :label="framing ? t('Cancel choosing a part of the picture') : t('Zoom in on a part of the picture')" />
+      </button>
+      <!-- The settings, beside the views they belong to; their card floats at the top right. -->
+      <button
+        class="button painting__tool"
+        :class="{ 'button--active': !layout.collapsed.controls }"
+        type="button"
+        :aria-expanded="!layout.collapsed.controls"
+        :data-hint="t('Settings')"
+        @click="layout.toggle('controls')"
+      >
+        <AppIcon name="settings" :label="t(layout.collapsed.controls ? 'Show {what}' : 'Hide {what}', { what: t('the settings') })" />
       </button>
       <ViewSwitch />
       <!-- What is drawn over the picture. -->
@@ -96,6 +103,7 @@ import { computed, reactive, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
 import { useProStore } from '../stores/pro.js'
+import { useLayoutStore } from '../stores/layout.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
 import { drawLayerView, labelFont, paintPixels } from './layerView.js'
 import { smoothCurve } from '../lib/sketch.js'
@@ -103,7 +111,7 @@ import { upscaleAreas } from '../lib/smooth.js'
 import { toneGrey } from '../lib/blocking.js'
 import RecipeTip from './RecipeTip.vue'
 import AppIcon from './AppIcon.vue'
-import CreditCount from './CreditCount.vue'
+import GetPro from './GetPro.vue'
 import ViewSwitch from './ViewSwitch.vue'
 import { closeupRect } from '../lib/closeup.js'
 import { APP_NAME } from '../config.js'
@@ -132,6 +140,7 @@ function onWelcomeFile(event) {
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 const pro = useProStore()
+const layout = useLayoutStore()
 // The paint box in use holds no paint: none to paint with, or in layer mode none to glaze with.
 const noPaints = computed(() => !!analysis.image && (analysis.layerMode ? !analysis.busy && !analysis.layers : paints.enabled.length === 0))
 const canvas = ref(null)
@@ -300,10 +309,10 @@ function drawBlocking(el) {
   if (alpha < 255) drawPhoto(ctx, el)
   paintPixels(ctx, el, img, w, h)
   if (numbers) {
-    // The masses are few and large: their numbers are twice the size of those of the mixes.
-    labelFont(ctx, SCALE * 2)
+    // At the size of the numbers of the mixes.
+    labelFont(ctx, SCALE)
     for (const region of regions) {
-      if (region.anchorDist < MIN_LABEL_DIST * 2 || (solo != null && region.tone !== solo)) continue
+      if (region.anchorDist < MIN_LABEL_DIST || (solo != null && region.tone !== solo)) continue
       ctx.fillStyle = toneGrey(region.tone, tones)[0] > 140 ? '#1d1b18' : '#ffffff'
       ctx.fillText(String(region.tone + 1), (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE)
     }

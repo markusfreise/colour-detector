@@ -127,6 +127,7 @@ export default {
   'Leave the paper white': 'Papier weiß lassen',
   'Leave the paper white.': 'Papier weiß lassen.',
   'Ratio: {ratio}': 'Verhältnis: {ratio}',
+  'Recipe': 'Rezept',
   '{percent}% of image': '{percent} % des Bildes',
   'No paints selected in the paint box': 'Keine Farben im Farbkasten ausgewählt',
   'No paints selected in the paint box.': 'Keine Farben im Farbkasten ausgewählt.',
@@ -410,6 +411,7 @@ export default {
   'The photo as numbered areas, with the recipe of one area': 'Das Foto als nummerierte Flächen, mit dem Rezept einer Fläche',
   // App
   'Hide': 'Ausblenden',
+  'Hide “Get pro” for this session': '„Pro holen“ für diese Sitzung ausblenden',
   // Messages from the account service
   'The account service cannot be reached. Please check your connection.': 'Der Kontodienst ist nicht erreichbar. Bitte prüf deine Verbindung.',
   'The account service did not answer as expected.': 'Der Kontodienst hat nicht wie erwartet geantwortet.',

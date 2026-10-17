@@ -50,7 +50,7 @@ enum ViewMode: String, Codable, CaseIterable, Identifiable {
         case .original: "photo"
         case .overlay: "photo.on.rectangle"
         case .template: "square.dashed"
-        case .blocking: "mountain.2"
+        case .blocking: "icon.blocking"
         }
     }
 

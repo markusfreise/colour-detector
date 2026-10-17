@@ -61,6 +61,8 @@ struct FloatingCard<Content: View>: View {
             content
         }
         .padding(16)
+        // As high as its content, never the height of the window.
+        .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: 400, alignment: .leading)
         .foregroundStyle(Theme.copy)
         .background(Theme.raised, in: RoundedRectangle(cornerRadius: Theme.radius))

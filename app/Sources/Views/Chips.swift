@@ -162,7 +162,8 @@ struct RecipeView: View {
         } else {
             RoundedRectangle(cornerRadius: 6)
                 .strokeBorder(.primary.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
-                .frame(maxWidth: .infinity, minHeight: rowHeight)
+                // A shape takes all the height it is offered: one row, as the filled slots.
+                .frame(maxWidth: .infinity, minHeight: rowHeight, maxHeight: rowHeight)
                 .accessibilityHidden(true)
         }
     }

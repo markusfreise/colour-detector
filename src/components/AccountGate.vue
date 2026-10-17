@@ -135,6 +135,7 @@
         <a :href="legalPage('terms')">{{ t('Terms') }}</a>
         <a :href="legalPage('imprint')">{{ t('Imprint') }}</a>
         <button v-if="consent.available" class="gate__settings" type="button" @click="consent.review()">{{ t('Cookies') }}</button>
+        <DebugMenu link />
       </footer>
     </section>
   </main>
@@ -147,6 +148,7 @@ import { useAnalysisStore, SAMPLES } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
 import { showcasePaints } from '../data/showcase.js'
 import PaintingCanvas from './PaintingCanvas.vue'
+import DebugMenu from './DebugMenu.vue'
 import { APP_NAME } from '../config.js'
 import logoSvg from '../../resources/logo.svg?raw'
 import background from '../../resources/background.webp'
@@ -171,6 +173,14 @@ const logo = logoSvg.replace(/fill="black"/g, 'fill="currentColor"')
 const email = ref('')
 const code = ref('')
 const signingUp = ref(false)
+// The debug menu chooses between signing in and signing up.
+watch(
+  () => account.preview,
+  (screen) => {
+    if (screen === 'signin' || screen === 'signup') signingUp.value = screen === 'signup'
+  },
+  { immediate: true },
+)
 const privacy = ref(false)
 const local = ref(false)
 

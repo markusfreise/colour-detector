@@ -23,12 +23,6 @@
         }
     }
 
-    &__footer-manual {
-        @media (max-width: 760px) {
-            display: none;
-        }
-    }
-
     &__footer-link {
         border: 0;
         background: none;

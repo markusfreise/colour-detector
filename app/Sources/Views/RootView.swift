@@ -33,13 +33,19 @@ struct RootView: View {
     @State private var hints = false
     /// A phone: the picture buttons are folded behind the menu button.
     @State private var menuOpen = false
+    /// The cards floating over the picture, the front one last: a card touched comes to the front.
+    @State private var cardOrder: [FloatCard] = [.settings, .colours, .colour]
+    /// Width of the window, for the size of the buttons on a phone.
+    @State private var windowWidth: CGFloat = 0
+    /// "Get pro" closed with its cross: hidden until the app is started again.
+    @State private var promoHidden = false
 
     var body: some View {
         stage
             .overlay(alignment: .topLeading) { pictureButtons.padding(Theme.gap) }
             .overlay(alignment: compact ? .bottom : .top) { tools.padding(Theme.gap) }
-            // Above the rest that lies over the picture: the cards float over the whole window.
-            .overlay(alignment: .topTrailing) { panels }
+            // Above the rest that lies over the picture, the tools too: the cards float over the whole window.
+            .overlay { cards }
             .overlay(alignment: .top) {
                 // A phone: one card across the window, as the web's flyout in a narrow window.
                 if compact, let tab = openTab {
@@ -50,6 +56,8 @@ struct RootView: View {
                 }
             }
             .background(Theme.page.ignoresSafeArea())
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { windowWidth = $0 }
+            .environment(\.iconButtonSize, buttonSize)
             .environment(\.showHints, hints)
             .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: hints)
             .tint(Theme.corporate)
@@ -73,9 +81,13 @@ struct RootView: View {
         // A saved picture shown in Blocking opens in the paint without the full version.
         .onChange(of: session.settings.view, initial: true) { leaveLockedView() }
         .onChange(of: store.checked) { leaveLockedView() }
+        .onChange(of: store.unlocked) { leaveLockedView() }
         // A phone: the colour card comes up where the panel card was; one thing over the picture at a time.
         .onChange(of: session.selectedRegion) { _, region in
             if compact, region != nil { showingSettings = false; showingColours = false; menuOpen = false }
+        }
+        .onChange(of: session.inspectedEntry) { _, entry in
+            if entry != nil { raise(.colour) }
         }
         // Layer mode: the spot tapped in the picture is shown at the top of the layers card, which opens for it.
         .onChange(of: session.layerSpot != nil) { _, spot in
@@ -212,19 +224,44 @@ struct RootView: View {
                 .padding(.horizontal, Theme.iconButton + Theme.gap * 2)
                 .padding(.top, compact ? Theme.gap : Theme.gap * 2 + Theme.iconButton)
             }
-            .overlay(alignment: .bottom) {
-                // Layer mode shows the tapped spot in the layers card instead.
-                Group {
-                    if !session.layerMode {
-                        ColourCard { openBreakdown() }
-                    }
-                }
-                .padding(.horizontal, Theme.gap)
-                // A phone: above the tools at the bottom.
-                .padding(.bottom, compact ? Theme.gap * 2 + toolSize : Theme.gap)
-                .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
+    }
+
+    /// The colour card over the lower edge of the picture. Layer mode shows the tapped spot in the
+    /// layers card instead.
+    private var colourCard: some View {
+        Group {
+            if !session.layerMode {
+                ColourCard { openBreakdown() }
             }
-            .animation(reduceMotion ? nil : .snappy, value: session.inspectedEntry)
+        }
+        .padding(.horizontal, Theme.gap)
+        // A phone: above the tools at the bottom.
+        .padding(.bottom, compact ? Theme.gap * 2 + toolSize : Theme.gap)
+        .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
+        .animation(reduceMotion ? nil : .snappy, value: session.inspectedEntry)
+    }
+
+    // MARK: Cards
+
+    /// The colour card and the panels with their buttons, in the order they were last touched.
+    private var cards: some View {
+        ZStack {
+            colourCard
+                .frontOnTap { raise(.colour) }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .zIndex(depth(.colour))
+            panels
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                .zIndex(max(depth(.settings), depth(.colours)))
+        }
+    }
+
+    private func depth(_ card: FloatCard) -> Double { Double(cardOrder.firstIndex(of: card) ?? 0) }
+
+    private func raise(_ card: FloatCard) {
+        guard cardOrder.last != card else { return }
+        cardOrder.removeAll { $0 == card }
+        cardOrder.append(card)
     }
 
     private var compact: Bool {
@@ -245,14 +282,14 @@ struct RootView: View {
                 HStack(spacing: Theme.gap) {
                     IconButton(title: "Menu", symbol: menuOpen ? "xmark" : "line.3.horizontal", active: menuOpen) { menuOpen.toggle() }
                         .environment(\.showHints, false)
-                    if !store.unlocked {
-                        Button("Get pro") {
+                    if !store.unlocked, !promoHidden {
+                        GetProButton(size: buttonSize) {
                             menuOpen = false
                             paywallReason = "use everything"
                             showingPaywall = true
+                        } hide: {
+                            promoHidden = true
                         }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
                     }
                 }
             }
@@ -339,12 +376,11 @@ struct RootView: View {
         HStack(alignment: .top, spacing: Theme.gap) {
             if !compact {
                 VStack(alignment: .trailing, spacing: Theme.gap) {
-                    if showingSettings { card(.settings).frame(width: 460) }
-                    if showingColours { card(.colours).frame(width: 480) }
+                    if showingSettings { card(.settings).frame(width: 460).zIndex(depth(.settings)) }
+                    if showingColours { card(.colours).frame(width: 480).zIndex(depth(.colours)) }
                 }
             }
             VStack(spacing: Theme.gap) {
-                IconButton(title: "Settings", symbol: "slider.horizontal.3", active: showingSettings) { toggle(.settings) }
                 IconButton(
                     title: session.layerMode ? "Layers" : "Colours",
                     symbol: session.layerMode ? "square.3.layers.3d" : "swatchpalette",
@@ -354,10 +390,37 @@ struct RootView: View {
                 // Help: the labels of all buttons at once, for screens without a pointer to hover with.
                 IconButton(title: "Help", symbol: "questionmark", active: hints, action: toggleHints)
                     .padding(.top, Theme.gap)
+                if store.testing { debugMenu }
             }
             .environment(\.hintSide, .leading)
         }
         .padding(Theme.gap)
+    }
+
+    /// Test builds only (Xcode, TestFlight): the full version on or off without buying, and the
+    /// purchase screen. The app has no sign-in of its own; the App Store account is the account.
+    private var debugMenu: some View {
+        @Bindable var store = store
+        return Menu {
+            Picker("Full version", selection: $store.debugPro) {
+                Text("As bought").tag(Bool?.none)
+                Text("Unlocked").tag(Bool?.some(true))
+                Text("Locked").tag(Bool?.some(false))
+            }
+            .pickerStyle(.inline)
+            Button("Show purchase screen", systemImage: "cart") {
+                paywallReason = "use everything"
+                showingPaywall = true
+            }
+            Button("Show “Get pro” again", systemImage: "arrow.uturn.backward") { promoHidden = false }
+                .disabled(!promoHidden)
+        } label: {
+            Label("Debug", systemImage: "ladybug")
+        }
+        .webMenu(active: store.debugPro != nil)
+        .help("Debug")
+        .hint("Debug")
+        .padding(.top, Theme.gap)
     }
 
     /// Help on a phone opens the menu too, so that its labels are seen.
@@ -367,9 +430,11 @@ struct RootView: View {
     }
 
     private func card(_ tab: PanelTab) -> some View {
-        PanelCard(close: { close(tab) }) {
+        let id: FloatCard = tab == .settings ? .settings : .colours
+        return PanelCard(close: { close(tab) }, touched: { raise(id) }) {
             PanelView(tab: tab, showPaintBox: openPaintBox)
         }
+        .frontOnTap { raise(id) }
     }
 
     /// The open card on a phone, where only one fits.
@@ -383,6 +448,7 @@ struct RootView: View {
         // A phone has room for one card.
         if compact { showingSettings = false; showingColours = false; menuOpen = false }
         if tab == .settings { showingSettings = true } else { showingColours = true }
+        raise(tab == .settings ? .settings : .colours)
     }
 
     private func close(_ tab: PanelTab) {
@@ -391,29 +457,44 @@ struct RootView: View {
 
     // MARK: Tools (top centre)
 
-    /// What the picture shows, as the web's painting tools: a close-up, the views, outlines and
-    /// numbers. Smaller on a phone, so that they fit in one row.
+    /// What the picture shows, as the web's painting tools: a close-up, the settings, the views,
+    /// outlines and numbers. As far apart as the buttons of the columns; closer on a phone.
     private var tools: some View {
         @Bindable var session = session
-        return HStack(spacing: 6) {
+        return HStack(spacing: toolGap) {
             frameButton
+            // The settings beside the views they belong to; their card floats at the top right.
+            IconButton(title: "Settings", symbol: "slider.horizontal.3", active: showingSettings) { toggle(.settings) }
             SegmentedGroup(
                 options: viewModes, selection: session.settings.view,
                 title: { layered($0) ?? $0.title }, symbol: { $0.symbol },
                 choose: choose,
-                size: toolSize,
-                hint: { layered($0) ?? $0.hint }
+                size: buttonSize,
+                hint: { layered($0) ?? $0.hint },
+                locked: { $0 == .blocking && !store.unlocked }
             )
             // Their labels for Help alternate in height with those of the views beside them.
-            IconButton(title: "Outlines", symbol: "squareshape.split.3x3", active: session.settings.outlines, size: toolSize, hintRow: viewModes.count % 2) {
+            IconButton(title: "Outlines", symbol: "squareshape.split.3x3", active: session.settings.outlines, hintRow: viewModes.count % 2) {
                 session.settings.outlines.toggle()
             }
             .disabled(session.settings.view == .template)
-            IconButton(title: "Numbers", symbol: "textformat.123", active: session.settings.numbers, size: toolSize, hintRow: (viewModes.count + 1) % 2) {
+            IconButton(title: "Numbers", symbol: "textformat.123", active: session.settings.numbers, hintRow: (viewModes.count + 1) % 2) {
                 session.settings.numbers.toggle()
             }
         }
         .environment(\.hintSide, compact ? .above : .below)
+    }
+
+    private var toolGap: CGFloat { compact ? 6 : Theme.gap }
+
+    /// The side of every icon button: Theme.iconButton where the row of tools fits with it (from
+    /// the largest phones up), smaller only as far as a narrower phone needs.
+    private var buttonSize: CGFloat {
+        guard compact, windowWidth > 0 else { return Theme.iconButton }
+        // Detail, Settings, the views, Outlines, Numbers; four gaps, the borders of the group.
+        let buttons = CGFloat(viewModes.count + 4)
+        let room = windowWidth - Theme.gap * 2 - toolGap * 4 - CGFloat(viewModes.count + 1)
+        return min(Theme.iconButton, (room / buttons).rounded(.down))
     }
 
     /// Blocking is part of the full version.
@@ -436,7 +517,7 @@ struct RootView: View {
         session.layerMode && mode == .mixed ? "Layered paint" : nil
     }
 
-    private var toolSize: CGFloat { compact ? 36 : Theme.iconButton }
+    private var toolSize: CGFloat { buttonSize }
 
     /// A phone has the template to print in the menu instead.
     private var viewModes: [ViewMode] {
@@ -447,9 +528,9 @@ struct RootView: View {
     private var frameButton: some View {
         IconButton(
             title: session.framing ? "Cancel choosing a part of the picture" : "Close-up: zoom in on a part of the picture",
-            symbol: "plus.magnifyingglass",
+            symbol: "icon.frame",
             active: session.framing,
-            size: toolSize,
+            locked: !store.unlocked,
             hint: "Detail",
             hintRow: 1
         ) {
@@ -586,5 +667,54 @@ private extension View {
             .buttonStyle(IconButtonStyle(active: active))
             .menuIndicator(.hidden)
             .fixedSize()
+    }
+}
+
+/// The cards that float over the picture and can lie over each other.
+enum FloatCard {
+    case settings, colours, colour
+}
+
+private extension View {
+    /// A tap anywhere on the card, its buttons too, brings it to the front.
+    func frontOnTap(_ action: @escaping () -> Void) -> some View {
+        simultaneousGesture(TapGesture().onEnded(action))
+    }
+}
+
+/// "Get pro" with its cross, as the other buttons around the picture: white with a thin border,
+/// as tall as they are; the cross divided off as in a segmented group.
+private struct GetProButton: View {
+    let size: CGFloat
+    let open: () -> Void
+    let hide: () -> Void
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Button(action: open) {
+                Text("Get pro")
+                    .font(Theme.strong)
+                    .padding(.horizontal, 14)
+                    .frame(maxHeight: .infinity)
+                    .contentShape(Rectangle())
+            }
+            Theme.border.frame(width: 1)
+            Button(action: hide) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.copyLight)
+                    .frame(width: size * 0.75)
+                    .frame(maxHeight: .infinity)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Hide “Get pro” until the next start")
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Theme.copy)
+        .frame(height: size)
+        .fixedSize(horizontal: true, vertical: false)
+        .background(Theme.raised, in: RoundedRectangle(cornerRadius: Theme.radiusSmall))
+        .overlay(RoundedRectangle(cornerRadius: Theme.radiusSmall).strokeBorder(Theme.border))
+        .flatShadow()
     }
 }

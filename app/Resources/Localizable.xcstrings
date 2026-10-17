@@ -1,3888 +1,3986 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "": {
-      "shouldTranslate": false
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+      "shouldTranslate" : false
     },
-    " (accent)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": " (Akzent)"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    " (sample)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": " (Beispiel)"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    " + ": {
-      "shouldTranslate": false
-    },
-    " and ": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": " und "
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%@ %@": {
-      "shouldTranslate": false
-    },
-    "%@ on %@%% of the image. Click to see the step that paints coat %lld.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ auf %@ %% des Bildes. Klicke, um den Schritt zu sehen, der Auftrag %lld malt."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%@ Pans": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ Näpfchen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%@ Tubes": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ Tuben"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%@ · match: %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ · Treffer: %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%@ – colours and mixes": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ – Farben und Mischungen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%@ – detail %lld": {
-      "shouldTranslate": false,
-      "extractionState": "manual"
-    },
-    "%@ – layers": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ – Schichten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%@%% of image": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ %% des Bildes"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%@%% of the picture is out of reach of these paints. Compare with Photo, or swap a paint.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ %% des Bildes erreichen diese Farben nicht. Vergleiche mit dem Foto oder tausche eine Farbe."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%@, %@%% of the picture.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@, %@ %% des Bildes."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%@: %@, %@%% of image": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@: %@, %@ %% des Bildes"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld": {
-      "shouldTranslate": false
-    },
-    "%lld accent": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld Akzent"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld accents": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld Akzente"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld coat": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld Auftrag"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld coats": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld Aufträge"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld coats on white paper": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld Aufträge auf weißem Papier"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld in %lld mix": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld in %lld Mischung"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld in %lld mixes": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld in %lld Mischungen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld layer": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld Schicht"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld layers": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld Schichten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld layers at most: remove one before adding another.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Höchstens %lld Schichten: entferne eine, bevor du eine weitere hinzufügst."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld of %lld": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld von %lld"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld selected": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld ausgewählt"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld separate shapes in this step. A higher “Simplify areas” gives fewer and bigger ones.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld einzelne Formen in diesem Schritt. Ein höheres „Flächen vereinfachen“ gibt weniger und größere."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld small shape in full colour.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld kleine Form in voller Farbe."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld small shape.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld kleine Form."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld small shapes in full colour.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld kleine Formen in voller Farbe."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld small shapes.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld kleine Formen."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld step": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld Schritt"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld steps": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld Schritte"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld washes": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld Verdünnungen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "%lld%@": {
-      "shouldTranslate": false
-    },
-    "%llds": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%llder"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    ", coat %lld of %lld": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": ", Auftrag %lld von %lld"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "1 part paint to %@ part water, like %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 Teil Farbe auf %@ Teil Wasser, wie %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "1 part paint to %@ parts water, like %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 Teil Farbe auf %@ Teile Wasser, wie %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "1 part paint to hardly any water, like %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 Teil Farbe mit kaum Wasser, wie %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "1:%@ with water, like %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1:%@ mit Wasser, wie %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "A strong wash on the numbered shapes, painted last, when everything else is dry.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eine kräftige Lasur auf den nummerierten Formen, zum Schluss gemalt, wenn alles andere trocken ist."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Accent %@ of %lld, %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Akzent %@ von %lld, %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Accent %@: %@ (accent), %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Akzent %@: %@ (Akzent), %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Accents": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Akzente"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Accents, painted last": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Akzente, zum Schluss gemalt"
+    " (accent)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " (Akzent)"
           }
         }
       }
     },
-    "Actions for %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aktionen für %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Add Paint": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbe hinzufügen"
+    " (sample)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " (Beispiel)"
           }
         }
       }
     },
-    "Add paints of any brand that are not in the lists above.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Füge Farben jeder Marke hinzu, die nicht in den Listen oben stehen."
+    " + " : {
+      "shouldTranslate" : false
+    },
+    " and " : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " und "
           }
         }
       }
     },
-    "Adds the paint to the box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Legt die Farbe in den Kasten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "All of these are selected.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle davon sind ausgewählt."
+    ", coat %lld of %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", Auftrag %lld von %lld"
           }
         }
       }
     },
-    "An estimate from one swatch: test the wash on a scrap first": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eine Schätzung aus einem Farbmuster: probiere die Lasur erst auf einem Rest Papier"
+    "%@ – colours and mixes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ – Farben und Mischungen"
           }
         }
       }
     },
-    "Analysing": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wird analysiert"
-          }
-        }
-      },
-      "extractionState": "manual"
+    "%@ – detail %lld" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
     },
-    "Appearance": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Darstellung"
+    "%@ – layers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ – Schichten"
           }
         }
       }
     },
-    "Applied to the photo before its colours are found": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wirkt auf das Foto, bevor seine Farben gesucht werden"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Auto": {
-      "shouldTranslate": false
-    },
-    "auto": {
-      "shouldTranslate": false,
-      "extractionState": "manual"
-    },
-    "Automatic": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Automatisch"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Back to the default selection": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zurück zur Standardauswahl"
+    "%@ · match: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · Treffer: %@"
           }
         }
       }
     },
-    "Bielefeld (sample)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bielefeld (Beispiel)"
-          }
-        }
-      },
-      "extractionState": "manual"
+    "%@ %@" : {
+      "shouldTranslate" : false
     },
-    "Box %lld": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kasten %lld"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Brand": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Marke"
+    "%@ numbers fill in name and colour." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nummern von %@ füllen Name und Farbe aus."
           }
         }
       }
     },
-    "butter": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Butter"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Cancel": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abbrechen"
+    "%@ on %@%% of the image. Click to see the step that paints coat %lld." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ auf %@ %% des Bildes. Klicke, um den Schritt zu sehen, der Auftrag %lld malt."
           }
         }
       }
     },
-    "Cancel choosing a part of the picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ausschnitt wählen abbrechen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Change colour": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbe ändern"
+    "%@ Pans" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Näpfchen"
           }
         }
       }
     },
-    "changed": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "geändert"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Chosen by hand. Auto in the paint box picks again.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Von Hand gewählt. Auto im Farbkasten wählt neu."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Clear": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Leeren"
+    "%@ Tubes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Tuben"
           }
         }
       }
     },
-    "clear water": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "klares Wasser"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Close": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schließen"
+    "%@, %@%% of the picture." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %@ %% des Bildes."
           }
         }
       }
     },
-    "Close-up: zoom in on a part of the picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ausschnitt: einen Teil des Bildes vergrößern"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Coat %lld of layer %@: show this step": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Auftrag %lld von Schicht %@: diesen Schritt zeigen"
+    "%@: %@, %@%% of image" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: %@, %@ %% des Bildes"
           }
         }
       }
     },
-    "Coat %lld on the %@.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Auftrag %lld auf die %@."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Coat 1 on every numbered area.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Auftrag 1 auf jede nummerierte Fläche."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Coats": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aufträge"
+    "%@%% of image" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %% des Bildes"
           }
         }
       }
     },
-    "coffee": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kaffee"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Collection": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sammlung"
+    "%@%% of the picture is out of reach of these paints. Compare with Photo, or swap a paint." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %% des Bildes erreichen diese Farben nicht. Vergleiche mit dem Foto oder tausche eine Farbe."
           }
         }
       }
     },
-    "Colour": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbe"
+    "%lld" : {
+      "shouldTranslate" : false
+    },
+    "%lld accent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Akzent"
           }
         }
       }
     },
-    "Colour %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbe %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "colour estimated": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbe geschätzt"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Colours": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farben"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "concentrated": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "konzentriert"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "concentrated (hardly any water)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "konzentriert (kaum Wasser)"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Contrast": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kontrast"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Could not cut out this part of the picture.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dieser Ausschnitt des Bildes konnte nicht ausgeschnitten werden."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Could not load this photo.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dieses Foto konnte nicht geladen werden."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Could not open the saved picture.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das gesicherte Bild konnte nicht geöffnet werden."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Could not open this picture.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dieses Bild konnte nicht geöffnet werden."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Could not read this file.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diese Datei konnte nicht gelesen werden."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Could not save the picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das Bild konnte nicht gesichert werden"
+    "%lld accents" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Akzente"
           }
         }
       }
     },
-    "Could not save the picture: %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das Bild konnte nicht gesichert werden: %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "cream": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sahne"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Create": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anlegen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Dark": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dunkel"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Delete": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Löschen"
+    "%lld coat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Auftrag"
           }
         }
       }
     },
-    "Delete %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ löschen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Delete Box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kasten löschen"
+    "%lld coats" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Aufträge"
           }
         }
       }
     },
-    "Delete the box “%@”?": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Den Kasten „%@“ löschen?"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Delete this paint?": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diese Farbe löschen?"
+    "%lld coats on white paper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Aufträge auf weißem Papier"
           }
         }
       }
     },
-    "Delete this picture?": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dieses Bild löschen?"
+    "%lld in %lld mix" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld in %lld Mischung"
           }
         }
       }
     },
-    "Detail %lld": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ausschnitt %lld"
+    "%lld in %lld mixes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld in %lld Mischungen"
           }
         }
       }
     },
-    "Details": {
-      "shouldTranslate": false,
-      "extractionState": "manual"
-    },
-    "Distance to the photo: %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abstand zum Foto: %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Done": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fertig"
+    "%lld layer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Schicht"
           }
         }
       }
     },
-    "Drag a frame over the part to zoom in on": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zieh einen Rahmen über den Ausschnitt, den du vergrößern willst"
+    "%lld layers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Schichten"
           }
         }
       }
     },
-    "Edit": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bearbeiten"
+    "%lld layers at most: remove one before adding another." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höchstens %lld Schichten: entferne eine, bevor du eine weitere hinzufügst."
           }
         }
       }
     },
-    "Edit only the tapped area": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nur die angetippte Fläche ändern"
+    "%lld of %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld von %lld"
           }
         }
       }
     },
-    "Edit Paint": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbe bearbeiten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "excellent": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "sehr gut"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Export as JPG": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Als JPG exportieren"
+    "%lld selected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld ausgewählt"
           }
         }
       }
     },
-    "fair": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ordentlich"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Fit picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bild einpassen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "for a colour the washes miss": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "für eine Farbe, die den Lasuren fehlt"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "for the darks": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "für die dunklen Stellen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Form": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Form"
+    "%lld separate shapes in this step. A higher “Simplify areas” gives fewer and bigger ones." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld einzelne Formen in diesem Schritt. Ein höheres „Flächen vereinfachen“ gibt weniger und größere."
           }
         }
       }
     },
-    "From Files": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aus Dateien"
+    "%lld small shape in full colour." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld kleine Form in voller Farbe."
           }
         }
       }
     },
-    "From Photos": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aus Fotos"
+    "%lld small shape." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld kleine Form."
           }
         }
       }
     },
-    "Full Breakdown": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle Rezepte"
+    "%lld small shapes in full colour." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld kleine Formen in voller Farbe."
           }
         }
       }
     },
-    "Geometric: shapes with straight edges, laid over each other from large to small": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Geometrisch: Formen mit geraden Kanten, von groß nach klein übereinandergelegt"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "good": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "gut"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Higher = bigger, calmer shapes": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Höher = größere, ruhigere Flächen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "It brings the picture %@ closer to the photo.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sie bringt das Bild %@ näher an das Foto."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "It is removed from every paint box.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sie wird aus jedem Farbkasten entfernt."
+    "%lld small shapes." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld kleine Formen."
           }
         }
       }
     },
-    "Keep a paint box for every set of paints you own": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ein Farbkasten für jedes Set, das du besitzt"
+    "%lld step" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Schritt"
           }
         }
       }
     },
-    "keep more than one paint box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "mehr als einen Farbkasten anzulegen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Language": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sprache"
+    "%lld steps" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Schritte"
           }
         }
       }
     },
-    "Layer": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schicht"
+    "%lld washes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Verdünnungen"
           }
         }
       }
     },
-    "Layer %@ of %lld, %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schicht %@ von %lld, %@"
-          }
-        }
-      },
-      "extractionState": "manual"
+    "%lld%@" : {
+      "shouldTranslate" : false
     },
-    "Layer %@: %@, %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schicht %@: %@, %@"
-          }
-        }
-      },
-      "extractionState": "manual"
+    "%lld%%" : {
+
     },
-    "Layer mode paints with a few base paints, one layer each (%lld of %lld). They are kept apart from the paints selected for mixing.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Im Schichtmodus malst du mit wenigen Grundfarben, je eine Schicht (%lld von %lld). Sie stehen getrennt von den Farben, die zum Mischen ausgewählt sind."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Layer: a few thin washes, each painted over the dry one before": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schichten: wenige dünne Lasuren, jede über die getrocknete davor gemalt"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Layered": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Geschichtet"
+    "%llds" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%llder"
           }
         }
       }
     },
-    "Layers": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schichten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Layers on this spot": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schichten an dieser Stelle"
+    "1 part paint to %@ part water, like %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Teil Farbe auf %@ Teil Wasser, wie %@"
           }
         }
       }
     },
-    "Leave the paper white": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Papier weiß lassen"
+    "1 part paint to %@ parts water, like %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Teil Farbe auf %@ Teile Wasser, wie %@"
           }
         }
       }
     },
-    "Leave the paper white.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Papier weiß lassen."
+    "1 part paint to hardly any water, like %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Teil Farbe mit kaum Wasser, wie %@"
           }
         }
       }
     },
-    "Let Auto choose from %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Auto aus %@ wählen lassen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Let each coat dry.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jeden Auftrag trocknen lassen."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "let it dry completely.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "vollständig trocknen lassen."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Let the app choose the base paints for this picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die App die Grundfarben für dieses Bild wählen lassen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Let the app select the paints that suit each picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die App die passenden Farben für jedes Bild wählen lassen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Light": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hell"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "light": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "hell"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "light wash": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "hell"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Llyn Idwal (sample)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Llyn Idwal (Beispiel)"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Lower = closer overall, higher = small areas keep their own colour": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Niedriger = insgesamt näher, höher = kleine Flächen behalten ihre eigene Farbe"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Match: %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Treffer: %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Max. coats": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Max. Aufträge"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Max. paints": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Max. Farben"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "medium": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "mittel"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "milk": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Milch"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Mix": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mischen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Mix %@, %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mischung %@, %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Mix: every colour mixed on the palette and painted once": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mischen: jede Farbe auf der Palette gemischt und einmal gemalt"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Mixed paint": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gemischte Farbe"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "More colours = more detail": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mehr Farben = mehr Details"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "My paint box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mein Farbkasten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Name": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Name"
+    "1:%@ with water, like %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1:%@ mit Wasser, wie %@"
           }
         }
       }
     },
-    "New Box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Neuer Kasten"
+    "2" : {
+
+    },
+    "3" : {
+
+    },
+    "A strong wash on the numbered shapes, painted last, when everything else is dry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine kräftige Lasur auf den nummerierten Formen, zum Schluss gemalt, wenn alles andere trocken ist."
           }
         }
       }
     },
-    "New Paint Box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Neuer Farbkasten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "New: choose a photo": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Neu: Foto wählen"
+    "Accent %@ of %lld, %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akzent %@ von %lld, %@"
           }
         }
       }
     },
-    "Next": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weiter"
+    "Accent %@: %@ (accent), %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akzent %@: %@ (Akzent), %@"
           }
         }
       }
     },
-    "No base paints chosen. Open the paint box and pick up to %lld, or let the app choose.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Grundfarben gewählt. Öffne den Farbkasten und wähle bis zu %lld, oder lass die App wählen."
+    "Accents" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akzente"
           }
         }
       }
     },
-    "No base paints chosen. Tap a paint below to add it, or press Auto.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Grundfarben gewählt. Tippe unten auf eine Farbe, um sie hinzuzufügen, oder drücke Auto."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "No earlier purchase was found for this Apple Account.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Für diesen Apple Account wurde kein früherer Kauf gefunden."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "No layer for %@: it adds too little here. Swap it in the paint box.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Schicht für %@: sie bringt hier zu wenig. Tausche sie im Farbkasten."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "No layer for %@: they add too little here. Swap them in the paint box.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Schicht für %@: sie bringen hier zu wenig. Tausche sie im Farbkasten."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "No paints selected": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Farben ausgewählt"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "No paints selected in the paint box.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Im Farbkasten sind keine Farben ausgewählt."
+    "Accents, painted last" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akzente, zum Schluss gemalt"
           }
         }
       }
     },
-    "No paints selected. Tap a paint below to add it.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Farben ausgewählt. Tippe unten auf eine Farbe, um sie hinzuzufügen."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "No Picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kein Bild"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "No Pictures Yet": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Noch keine Bilder"
+    "Actions for %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktionen für %@"
           }
         }
       }
     },
-    "Not needed for this picture: %@.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Für dieses Bild nicht gebraucht: %@."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Not Now": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nicht jetzt"
+    "Add a colour to %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine Farbe zu %@ hinzufügen"
           }
         }
       }
     },
-    "Not painted here: %@.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hier nicht gemalt: %@."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Number": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nummer"
+    "add colours from the catalogues of known manufacturers" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farben aus den Katalogen bekannter Hersteller hinzuzufügen"
           }
         }
       }
     },
-    "Numbers": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nummern"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Of image": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vom Bild"
+    "Add colours from the catalogues of known manufacturers" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farben aus den Katalogen bekannter Hersteller hinzufügen"
           }
         }
       }
     },
-    "OK": {
-      "shouldTranslate": false
-    },
-    "Old town in snow (sample)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Altstadt im Schnee (Beispiel)"
+    "Add Paint" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe hinzufügen"
           }
         }
-      },
-      "extractionState": "manual"
+      }
     },
-    "One stroke on white paper": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ein Pinselstrich auf weißem Papier"
+    "add paint boxes of your own" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eigene Farbkästen anzulegen"
           }
         }
-      },
-      "extractionState": "manual"
+      }
     },
-    "Open %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ öffnen"
+    "Add paints of any brand that are not in the lists above." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge Farben jeder Marke hinzu, die nicht in den Listen oben stehen."
           }
         }
-      },
-      "extractionState": "manual"
+      }
     },
-    "Organic: areas that follow the photo": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Organisch: Flächen, die dem Foto folgen"
+    "Adds the paint to the box" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legt die Farbe in den Kasten"
           }
         }
-      },
-      "extractionState": "manual"
+      }
     },
-    "Outlines": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Umrisse"
+    "Adds the paint to the palette" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nimmt die Farbe in die Palette auf"
           }
         }
-      },
-      "extractionState": "manual"
+      }
     },
-    "Overlay": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Überlagerung"
+    "All of these are selected." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle davon sind ausgewählt."
           }
         }
-      },
-      "extractionState": "manual"
+      }
     },
-    "P (pan)": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "P"
+    "An estimate from one swatch: test the wash on a scrap first" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine Schätzung aus einem Farbmuster: probiere die Lasur erst auf einem Rest Papier"
+          }
+        }
+      }
+    },
+    "Analysing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird analysiert"
+          }
+        }
+      }
+    },
+    "and easily add pre-defined colours from the catalogues of known manufacturers and brands." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "und ganz einfach fertige Farben aus den Katalogen bekannter Hersteller und Marken hinzufügen."
+          }
+        }
+      }
+    },
+    "Appearance" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Darstellung"
+          }
+        }
+      }
+    },
+    "Applied to the photo before its colours are found" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wirkt auf das Foto, bevor seine Farben gesucht werden"
+          }
+        }
+      }
+    },
+    "As bought" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wie gekauft"
+          }
+        }
+      }
+    },
+    "auto" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "Auto" : {
+      "shouldTranslate" : false
+    },
+    "Automatic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisch"
+          }
+        }
+      }
+    },
+    "Back to the default selection" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurück zur Standardauswahl"
+          }
+        }
+      }
+    },
+    "Base paints" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grundfarben"
+          }
+        }
+      }
+    },
+    "Bielefeld (sample)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bielefeld (Beispiel)"
+          }
+        }
+      }
+    },
+    "block in light and shadow" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht und Schatten anzulegen"
+          }
+        }
+      }
+    },
+    "Block in light and shadow, and make the areas finer" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht und Schatten anlegen und die Flächen feiner machen"
+          }
+        }
+      }
+    },
+    "Blocking" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blocking"
+          }
+        }
+      }
+    },
+    "Blocking: light and shadow in large masses" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blocking: Licht und Schatten in großen Massen"
+          }
+        }
+      }
+    },
+    "Box %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kasten %lld"
+          }
+        }
+      }
+    },
+    "Brand" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marke"
+          }
+        }
+      }
+    },
+    "butter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Butter"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbrechen"
+          }
+        }
+      }
+    },
+    "Cancel choosing a part of the picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausschnitt wählen abbrechen"
+          }
+        }
+      }
+    },
+    "Catalogue" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Katalog"
+          }
+        }
+      }
+    },
+    "Change colour" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe ändern"
+          }
+        }
+      }
+    },
+    "changed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "geändert"
+          }
+        }
+      }
+    },
+    "Chosen by hand. Auto in the paint box picks again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Von Hand gewählt. Auto im Farbkasten wählt neu."
+          }
+        }
+      }
+    },
+    "Clear" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leeren"
+          }
+        }
+      }
+    },
+    "clear water" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "klares Wasser"
+          }
+        }
+      }
+    },
+    "Close" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schließen"
+          }
+        }
+      }
+    },
+    "Close-up: zoom in on a part of the picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausschnitt: einen Teil des Bildes vergrößern"
+          }
+        }
+      }
+    },
+    "Coat %lld of layer %@: show this step" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auftrag %lld von Schicht %@: diesen Schritt zeigen"
+          }
+        }
+      }
+    },
+    "Coat %lld on the %@." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auftrag %lld auf die %@."
+          }
+        }
+      }
+    },
+    "Coat 1 on every numbered area." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auftrag 1 auf jede nummerierte Fläche."
+          }
+        }
+      }
+    },
+    "Coats" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufträge"
+          }
+        }
+      }
+    },
+    "coffee" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaffee"
+          }
+        }
+      }
+    },
+    "Collection" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sammlung"
+          }
+        }
+      }
+    },
+    "Colour" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe"
+          }
+        }
+      }
+    },
+    "Colour %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe %@"
+          }
+        }
+      }
+    },
+    "Colour chart" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbkarte"
+          }
+        }
+      }
+    },
+    "colour estimated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe geschätzt"
+          }
+        }
+      }
+    },
+    "Colours" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farben"
+          }
+        }
+      }
+    },
+    "concentrated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "konzentriert"
+          }
+        }
+      }
+    },
+    "concentrated (hardly any water)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "konzentriert (kaum Wasser)"
+          }
+        }
+      }
+    },
+    "Contrast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontrast"
+          }
+        }
+      }
+    },
+    "Could not cut out this part of the picture." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Ausschnitt des Bildes konnte nicht ausgeschnitten werden."
+          }
+        }
+      }
+    },
+    "Could not load this photo." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Foto konnte nicht geladen werden."
+          }
+        }
+      }
+    },
+    "Could not open the saved picture." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das gesicherte Bild konnte nicht geöffnet werden."
+          }
+        }
+      }
+    },
+    "Could not open this picture." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Bild konnte nicht geöffnet werden."
+          }
+        }
+      }
+    },
+    "Could not read this file." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Datei konnte nicht gelesen werden."
+          }
+        }
+      }
+    },
+    "Could not save the picture" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Bild konnte nicht gesichert werden"
+          }
+        }
+      }
+    },
+    "Could not save the picture: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Bild konnte nicht gesichert werden: %@"
+          }
+        }
+      }
+    },
+    "cream" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sahne"
+          }
+        }
+      }
+    },
+    "Create" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anlegen"
+          }
+        }
+      }
+    },
+    "Dark" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dunkel"
+          }
+        }
+      }
+    },
+    "Debug" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschen"
+          }
+        }
+      }
+    },
+    "Delete %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ löschen"
+          }
+        }
+      }
+    },
+    "Delete Box" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kasten löschen"
+          }
+        }
+      }
+    },
+    "Delete the box “%@”?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den Kasten „%@“ löschen?"
+          }
+        }
+      }
+    },
+    "Delete this paint?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Farbe löschen?"
+          }
+        }
+      }
+    },
+    "Delete this picture?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Bild löschen?"
+          }
+        }
+      }
+    },
+    "Detail" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausschnitt"
+          }
+        }
+      }
+    },
+    "Detail %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausschnitt %lld"
+          }
+        }
+      }
+    },
+    "Details" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "Distance to the photo: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abstand zum Foto: %@"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fertig"
+          }
+        }
+      }
+    },
+    "Drag a frame over the part to zoom in on" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zieh einen Rahmen über den Ausschnitt, den du vergrößern willst"
+          }
+        }
+      }
+    },
+    "Edit" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bearbeiten"
+          }
+        }
+      }
+    },
+    "Edit only the tapped area" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur die angetippte Fläche ändern"
+          }
+        }
+      }
+    },
+    "Edit Paint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe bearbeiten"
+          }
+        }
+      }
+    },
+    "excellent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sehr gut"
+          }
+        }
+      }
+    },
+    "Export" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportieren"
+          }
+        }
+      }
+    },
+    "Export as JPG" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Als JPG exportieren"
+          }
+        }
+      }
+    },
+    "fair" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ordentlich"
+          }
+        }
+      }
+    },
+    "Fit picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild einpassen"
+          }
+        }
+      }
+    },
+    "for a colour the washes miss" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "für eine Farbe, die den Lasuren fehlt"
+          }
+        }
+      }
+    },
+    "for the darks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "für die dunklen Stellen"
+          }
+        }
+      }
+    },
+    "Form" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Form"
+          }
+        }
+      }
+    },
+    "Forms" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formen"
+          }
+        }
+      }
+    },
+    "From Files" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus Dateien"
+          }
+        }
+      }
+    },
+    "From Photos" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus Fotos"
+          }
+        }
+      }
+    },
+    "Full Breakdown" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Rezepte"
+          }
+        }
+      }
+    },
+    "Full version" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vollversion"
+          }
+        }
+      }
+    },
+    "Further left, more of the picture counts as light" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter links zählt mehr vom Bild als Licht"
+          }
+        }
+      }
+    },
+    "Geometric: shapes with straight edges, laid over each other from large to small" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geometrisch: Formen mit geraden Kanten, von groß nach klein übereinandergelegt"
+          }
+        }
+      }
+    },
+    "Get pro" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro holen"
+          }
+        }
+      }
+    },
+    "good" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "gut"
+          }
+        }
+      }
+    },
+    "Help" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilfe"
+          }
+        }
+      }
+    },
+    "Hide “Get pro” until the next start" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Pro holen“ bis zum nächsten Start ausblenden"
+          }
+        }
+      }
+    },
+    "Higher = bigger, calmer shapes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höher = größere, ruhigere Flächen"
+          }
+        }
+      }
+    },
+    "Higher = bigger, calmer shapes. Below 0 with Pro" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höher = größere, ruhigere Flächen. Unter 0 mit Pro"
+          }
+        }
+      }
+    },
+    "How strongly the tones cover the photo" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wie stark die Töne das Foto verdecken"
+          }
+        }
+      }
+    },
+    "Import Paint Box" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbkasten importieren"
+          }
+        }
+      }
+    },
+    "It brings the picture %@ closer to the photo." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sie bringt das Bild %@ näher an das Foto."
+          }
+        }
+      }
+    },
+    "It is removed from every paint box." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sie wird aus jedem Farbkasten entfernt."
+          }
+        }
+      }
+    },
+    "Keep a paint box for every set of paints you own" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Farbkasten für jedes Set, das du besitzt"
+          }
+        }
+      }
+    },
+    "keep more than one paint box" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mehr als einen Farbkasten anzulegen"
+          }
+        }
+      }
+    },
+    "Language" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sprache"
+          }
+        }
+      }
+    },
+    "Layer" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schicht"
+          }
+        }
+      }
+    },
+    "Layer %@ of %lld, %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schicht %@ von %lld, %@"
+          }
+        }
+      }
+    },
+    "Layer %@: %@, %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schicht %@: %@, %@"
+          }
+        }
+      }
+    },
+    "Layer mode paints with a few base paints, one layer each (%lld of %lld). They are kept apart from the paints selected for mixing." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Schichtmodus malst du mit wenigen Grundfarben, je eine Schicht (%lld von %lld). Sie stehen getrennt von den Farben, die zum Mischen ausgewählt sind."
+          }
+        }
+      }
+    },
+    "Layer: a few thin washes, each painted over the dry one before" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schichten: wenige dünne Lasuren, jede über die getrocknete davor gemalt"
+          }
+        }
+      }
+    },
+    "Layered" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geschichtet"
+          }
+        }
+      }
+    },
+    "Layered paint" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geschichtete Farbe"
+          }
+        }
+      }
+    },
+    "Layers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schichten"
+          }
+        }
+      }
+    },
+    "Layers on this spot" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schichten an dieser Stelle"
+          }
+        }
+      }
+    },
+    "Leave the paper white" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Papier weiß lassen"
+          }
+        }
+      }
+    },
+    "Leave the paper white." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Papier weiß lassen."
+          }
+        }
+      }
+    },
+    "Left: more detail. Right: the largest masses." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Links: mehr Einzelheiten. Rechts: die größten Massen."
+          }
+        }
+      }
+    },
+    "Let Auto choose from %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auto aus %@ wählen lassen"
+          }
+        }
+      }
+    },
+    "Let each coat dry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeden Auftrag trocknen lassen."
+          }
+        }
+      }
+    },
+    "let it dry completely." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "vollständig trocknen lassen."
+          }
+        }
+      }
+    },
+    "Let the app choose the base paints for this picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die App die Grundfarben für dieses Bild wählen lassen"
+          }
+        }
+      }
+    },
+    "Let the app select the paints that suit each picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die App die passenden Farben für jedes Bild wählen lassen"
+          }
+        }
+      }
+    },
+    "light" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hell"
+          }
+        }
+      }
+    },
+    "Light" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hell"
+          }
+        }
+      }
+    },
+    "Light / middle" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht / Mittelton"
+          }
+        }
+      }
+    },
+    "Light / shadow" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht / Schatten"
+          }
+        }
+      }
+    },
+    "Light against shadow (notan)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht gegen Schatten (Notan)"
+          }
+        }
+      }
+    },
+    "light wash" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hell"
+          }
+        }
+      }
+    },
+    "Light, a middle tone and shadow" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht, ein Mittelton und Schatten"
+          }
+        }
+      }
+    },
+    "Llyn Idwal (sample)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llyn Idwal (Beispiel)"
+          }
+        }
+      }
+    },
+    "Locked" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesperrt"
+          }
+        }
+      }
+    },
+    "Lower = closer overall, higher = small areas keep their own colour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niedriger = insgesamt näher, höher = kleine Flächen behalten ihre eigene Farbe"
+          }
+        }
+      }
+    },
+    "make the areas finer than Simplify 0" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "die Flächen feiner als „Vereinfachen 0“ zu machen"
+          }
+        }
+      }
+    },
+    "Match: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Treffer: %@"
+          }
+        }
+      }
+    },
+    "Max. coats" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Max. Aufträge"
+          }
+        }
+      }
+    },
+    "Max. paints" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Max. Farben"
+          }
+        }
+      }
+    },
+    "medium" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mittel"
+          }
+        }
+      }
+    },
+    "Menu" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menü"
+          }
+        }
+      }
+    },
+    "Middle / shadow" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mittelton / Schatten"
+          }
+        }
+      }
+    },
+    "Middle tone" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mittelton"
+          }
+        }
+      }
+    },
+    "milk" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Milch"
+          }
+        }
+      }
+    },
+    "Mix" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mischen"
+          }
+        }
+      }
+    },
+    "Mix %@, %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mischung %@, %@"
+          }
+        }
+      }
+    },
+    "Mix: every colour mixed on the palette and painted once" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mischen: jede Farbe auf der Palette gemischt und einmal gemalt"
+          }
+        }
+      }
+    },
+    "Mixed paint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemischte Farbe"
+          }
+        }
+      }
+    },
+    "Monochrome" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monochrom"
+          }
+        }
+      }
+    },
+    "Monochrome: the picture in grey, each value painted with one colour of the paint box" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monochrom: das Bild in Grau, jeder Tonwert mit einer Farbe aus dem Farbkasten gemalt"
+          }
+        }
+      }
+    },
+    "More colours = more detail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mehr Farben = mehr Details"
+          }
+        }
+      }
+    },
+    "My paint box" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mein Farbkasten"
+          }
+        }
+      }
+    },
+    "Name" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        }
+      }
+    },
+    "Name of the series" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name der Serie"
+          }
+        }
+      }
+    },
+    "New Box" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neuer Kasten"
+          }
+        }
+      }
+    },
+    "New Paint Box" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neuer Farbkasten"
+          }
+        }
+      }
+    },
+    "New picture" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neues Bild"
+          }
+        }
+      }
+    },
+    "New series" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue Serie"
+          }
+        }
+      }
+    },
+    "New: choose a photo" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neu: Foto wählen"
+          }
+        }
+      }
+    },
+    "Next" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter"
+          }
+        }
+      }
+    },
+    "No base paints chosen. Open the paint box and pick up to %lld, or let the app choose." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Grundfarben gewählt. Öffne den Farbkasten und wähle bis zu %lld, oder lass die App wählen."
+          }
+        }
+      }
+    },
+    "No base paints chosen. Tap a paint below to add it, or press Auto." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Grundfarben gewählt. Tippe unten auf eine Farbe, um sie hinzuzufügen, oder drücke Auto."
+          }
+        }
+      }
+    },
+    "No colour found" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Farbe gefunden"
+          }
+        }
+      }
+    },
+    "No earlier purchase was found for this Apple Account." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für diesen Apple Account wurde kein früherer Kauf gefunden."
+          }
+        }
+      }
+    },
+    "No layer for %@: it adds too little here. Swap it in the paint box." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Schicht für %@: sie bringt hier zu wenig. Tausche sie im Farbkasten."
+          }
+        }
+      }
+    },
+    "No layer for %@: they add too little here. Swap them in the paint box." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Schicht für %@: sie bringen hier zu wenig. Tausche sie im Farbkasten."
+          }
+        }
+      }
+    },
+    "No paints selected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Farben ausgewählt"
+          }
+        }
+      }
+    },
+    "No paints selected in the paint box." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Farbkasten sind keine Farben ausgewählt."
+          }
+        }
+      }
+    },
+    "No paints selected. Tap a paint below to add it." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Farben ausgewählt. Tippe unten auf eine Farbe, um sie hinzuzufügen."
+          }
+        }
+      }
+    },
+    "No Picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Bild"
+          }
+        }
+      }
+    },
+    "No Pictures Yet" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch keine Bilder"
+          }
+        }
+      }
+    },
+    "Not needed for this picture: %@." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für dieses Bild nicht gebraucht: %@."
+          }
+        }
+      }
+    },
+    "Not Now" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht jetzt"
+          }
+        }
+      }
+    },
+    "Not painted here: %@." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hier nicht gemalt: %@."
+          }
+        }
+      }
+    },
+    "Number" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nummer"
+          }
+        }
+      }
+    },
+    "Numbers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nummern"
+          }
+        }
+      }
+    },
+    "Of image" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vom Bild"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "shouldTranslate" : false
+    },
+    "Old town in snow (sample)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altstadt im Schnee (Beispiel)"
+          }
+        }
+      }
+    },
+    "One stroke on white paper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Pinselstrich auf weißem Papier"
+          }
+        }
+      }
+    },
+    "Opacity" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deckkraft"
+          }
+        }
+      }
+    },
+    "Open %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ öffnen"
+          }
+        }
+      }
+    },
+    "Or enter a colour of your own" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oder eine eigene Farbe eingeben"
+          }
+        }
+      }
+    },
+    "Organic: areas that follow the photo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Organisch: Flächen, die dem Foto folgen"
+          }
+        }
+      }
+    },
+    "Outlines" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Umrisse"
+          }
+        }
+      }
+    },
+    "Overlay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Überlagerung"
+          }
+        }
+      }
+    },
+    "Overlay: the photo at half strength over the paint" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Überlagerung: das Foto halb deckend über der Farbe"
+          }
+        }
+      }
+    },
+    "P (pan)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "N"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Paint": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbe"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "P"
           }
         }
       }
     },
-    "Paint box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbkasten"
+    "Paint" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe"
           }
         }
       }
     },
-    "Paint Box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbkasten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Paint Box: Base Paints": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbkasten: Grundfarben"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Paint step by step": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schritt für Schritt malen"
+    "Paint box" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbkasten"
           }
         }
       }
     },
-    "Paints in one mix at most": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farben in einer Mischung, höchstens"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Pan": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Näpfchen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "paper only": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "nur Papier"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Paper white": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Papierweiß"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "PDF": {
-      "shouldTranslate": false
-    },
-    "Photo": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto"
+    "Paint Box" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbkasten"
           }
         }
       }
     },
-    "Photo %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Photo colour": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fotofarbe"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube. Schmincke Horadam numbers fill in name and colour.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wähle den Farbton deiner Farbe in ihrer kräftigsten Lasur: etwa gleich viel Farbe und Wasser, trocken auf weißem Papier. Nicht die Farbe direkt aus Näpfchen oder Tube. Bei Schmincke-Horadam-Nummern werden Name und Farbe ausgefüllt."
+    "Paint Box: Base Paints" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbkasten: Grundfarben"
           }
         }
       }
     },
-    "Picture as layers of paint": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bild als Farbschichten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Picture as numbered colour areas": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bild als nummerierte Farbflächen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Planning layers": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schichten werden geplant"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Preferences": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einstellungen"
+    "Paint step by step" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schritt für Schritt malen"
           }
         }
       }
     },
-    "Previous": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zurück"
+    "Paints in one mix at most" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farben in einer Mischung, höchstens"
           }
         }
       }
     },
-    "Print": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Drucken"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Recipe: %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rezept: %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Recipes": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rezepte"
+    "Palette" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palette"
           }
         }
       }
     },
-    "Remove detail %lld": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ausschnitt %lld entfernen"
+    "Pan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näpfchen"
           }
         }
       }
     },
-    "Removes the paint from the box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nimmt die Farbe aus dem Kasten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Rename": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Umbenennen"
+    "Pans" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näpfchen"
           }
         }
       }
     },
-    "Rename Paint Box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbkasten umbenennen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Rename Picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bild umbenennen"
+    "paper only" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nur Papier"
           }
         }
       }
     },
-    "Reset photo: saturation and contrast back to 100%": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto zurücksetzen: Sättigung und Kontrast wieder auf 100 %"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Reset to photo": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wie im Foto"
+    "Paper white" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Papierweiß"
           }
         }
       }
     },
-    "Restore Purchase": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kauf wiederherstellen"
+    "PDF" : {
+      "shouldTranslate" : false
+    },
+    "Photo" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto"
           }
         }
       }
     },
-    "Revert": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zurücksetzen"
+    "Photo %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto %@"
           }
         }
       }
     },
-    "rich": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "kräftig"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Rooftops at dusk (sample)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dächer in der Dämmerung (Beispiel)"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "rough": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "grob"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "S (travel box)": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "S"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "R"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Same mix as %@ – only the amount of water differs.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dieselbe Mischung wie %@ – nur die Menge Wasser ist anders."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Sample photos by Markus Freise, under the Unsplash License.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beispielfotos von Markus Freise, unter der Unsplash-Lizenz."
+    "Photo colour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotofarbe"
           }
         }
       }
     },
-    "Samples": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beispiele"
+    "Photo: %@ / Unsplash" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto: %@ / Unsplash"
           }
         }
       }
     },
-    "Samples: choose a sample picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beispiele: ein Beispielbild wählen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Saturation": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sättigung"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Save": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sichern"
+    "Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähl den Farbton deiner Farbe in ihrer kräftigsten Lasur: etwa gleich viel Farbe und Wasser, trocken auf weißem Papier. Nicht die Farbe direkt aus dem Näpfchen oder der Tube."
           }
         }
       }
     },
-    "Save as many pictures as you like": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "So viele Bilder sichern, wie du willst"
+    "Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube. Schmincke Horadam numbers fill in name and colour." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle den Farbton deiner Farbe in ihrer kräftigsten Lasur: etwa gleich viel Farbe und Wasser, trocken auf weißem Papier. Nicht die Farbe direkt aus Näpfchen oder Tube. Bei Schmincke-Horadam-Nummern werden Name und Farbe ausgefüllt."
           }
         }
       }
     },
-    "Save Changes": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Änderungen sichern"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Save keeps the photo with its settings and colour changes on this device.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sichern bewahrt das Foto mit seinen Einstellungen und Farbänderungen auf diesem Gerät auf."
+    "Picture as layers of paint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild als Farbschichten"
           }
         }
       }
     },
-    "save more than one picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "mehr als ein Bild zu sichern"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Save Picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bild sichern"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Settings": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einstellungen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Share: PDF or JPG": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Teilen: PDF oder JPG"
+    "Picture as numbered colour areas" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild als nummerierte Farbflächen"
           }
         }
       }
     },
-    "Show": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zeigen"
+    "Planning layers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schichten werden geplant"
           }
         }
       }
     },
-    "Show All": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle zeigen"
+    "Preferences" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen"
           }
         }
       }
     },
-    "Show all layers.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle Schichten zeigen."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Show layer %@, %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schicht %@ zeigen, %@"
+    "Previous" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurück"
           }
         }
       }
     },
-    "Show only this layer.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nur diese Schicht zeigen."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Show the step that paints this": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Den Schritt zeigen, der das malt"
+    "Print" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drucken"
           }
         }
       }
     },
-    "Simplify areas": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flächen vereinfachen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Small strong touches painted last, first for a colour the washes miss, then for the darks": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kleine kräftige Tupfer zum Schluss, zuerst für eine Farbe, die den Lasuren fehlt, dann für die dunklen Stellen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "So far": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bisher"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Something went wrong": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Etwas ist schiefgegangen"
+    "Print / PDF" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drucken / PDF"
           }
         }
       }
     },
-    "Step %lld of %lld:": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schritt %lld von %lld:"
+    "Recipe: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rezept: %@"
           }
         }
-      },
-      "extractionState": "manual"
+      }
     },
-    "T (tube)": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "T"
+    "Recipes" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rezepte"
+          }
+        }
+      }
+    },
+    "Red train (sample)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Roter Zug (Beispiel)"
+          }
+        }
+      }
+    },
+    "Remove Colours" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farben entfernen"
+          }
+        }
+      }
+    },
+    "Remove detail %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausschnitt %lld entfernen"
+          }
+        }
+      }
+    },
+    "Removes the paint from the box" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nimmt die Farbe aus dem Kasten"
+          }
+        }
+      }
+    },
+    "Removes the paint from the palette" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nimmt die Farbe aus der Palette"
+          }
+        }
+      }
+    },
+    "Rename" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Umbenennen"
+          }
+        }
+      }
+    },
+    "Rename Paint Box" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbkasten umbenennen"
+          }
+        }
+      }
+    },
+    "Rename Picture" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild umbenennen"
+          }
+        }
+      }
+    },
+    "Reset photo: saturation and contrast back to 100%" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto zurücksetzen: Sättigung und Kontrast wieder auf 100 %"
+          }
+        }
+      }
+    },
+    "Reset to photo" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wie im Foto"
+          }
+        }
+      }
+    },
+    "Restore Purchase" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kauf wiederherstellen"
+          }
+        }
+      }
+    },
+    "Revert" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurücksetzen"
+          }
+        }
+      }
+    },
+    "rich" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kräftig"
+          }
+        }
+      }
+    },
+    "Rooftops at dusk (sample)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dächer in der Dämmerung (Beispiel)"
+          }
+        }
+      }
+    },
+    "rough" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "grob"
+          }
+        }
+      }
+    },
+    "S (travel box)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "R"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "T"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S"
           }
         }
-      },
-      "extractionState": "manual"
-    },
-    "Tap a layer to see it alone.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tippe auf eine Schicht, um sie allein zu sehen."
-          }
-        }
-      }
-    },
-    "Tap a spot to see which layers it gets.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tippe auf eine Stelle, um ihre Schichten zu sehen."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Tap an area to see its recipe.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tippe auf eine Fläche, um ihr Rezept zu sehen."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Target": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ziel"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "tea": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tee"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Template": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vorlage"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "The App Store is not reachable right now. Please try again later.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der App Store ist gerade nicht erreichbar. Bitte versuche es später noch einmal."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "the areas in full colour": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "die Flächen in voller Farbe"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "the areas of this step": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "die Flächen dieses Schritts"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "The colours appear once the picture is analysed.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Farben erscheinen, sobald das Bild analysiert ist."
-          }
-        }
-      }
-    },
-    "the filled areas": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "die gefüllten Flächen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "The free version holds one saved picture and one paint box, without close-ups. To %@, unlock the full version with a single purchase. No subscription.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die kostenlose Version hat ein gesichertes Bild und einen Farbkasten, ohne Ausschnitte. Um %@, schalte die Vollversion mit einem einmaligen Kauf frei. Kein Abo."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "The paints stay in your library.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Farben bleiben in deiner Sammlung."
-          }
-        }
-      }
-    },
-    "The photo in your photo library is not touched.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das Foto in deiner Mediathek bleibt unberührt."
-          }
-        }
-      }
-    },
-    "The purchase could not be verified.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der Kauf konnte nicht bestätigt werden."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "The purchase did not go through: %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der Kauf ist nicht durchgegangen: %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "The purchase is waiting for approval.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der Kauf wartet auf Freigabe."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "the same wash again.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "dieselbe Lasur noch einmal."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "The sample photo is missing.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das Beispielfoto fehlt."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Then": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dann"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "This Spot": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diese Stelle"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "This wash": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diese Lasur"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Ticks only change what the picture shows. Change the paints in the paint box.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Häkchen ändern nur, was das Bild zeigt. Die Farben änderst du im Farbkasten."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Travelbox": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reisekasten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Tube": {
-      "shouldTranslate": false,
-      "extractionState": "manual"
-    },
-    "Unlock": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Freischalten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Unlock Everything": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alles freischalten"
-          }
-        }
-      }
-    },
-    "Unlock for %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Für %@ freischalten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Use for Auto": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Für Auto nutzen"
-          }
-        }
-      }
-    },
-    "very concentrated": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "sehr konzentriert"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "very concentrated (layer/glaze)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "sehr konzentriert (Schicht/Lasur)"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "very watery": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "sehr wässrig"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "very watery wash": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "sehr wässrig"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Wash": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lasur"
-          }
-        }
-      }
-    },
-    "Wash %@, %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verdünnung %@, %@"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Washes; accents and second coats are extra steps": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lasuren; Akzente und zweite Aufträge sind eigene Schritte"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "water": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wasser"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Where to paint": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wo du malst"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Whole Picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ganzes Bild"
-          }
-        }
-      }
-    },
-    "Winter fields (sample)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Winterfelder (Beispiel)"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "you are done.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "fertig."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Your mix": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deine Mischung"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Your own paints": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deine eigenen Farben"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "zoom in on a part of the picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "einen Ausschnitt des Bildes zu vergrößern"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Zoom in on parts of a picture and analyse them on their own": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ausschnitte eines Bildes vergrößern und einzeln analysieren"
-          }
-        }
-      }
-    },
-    "Pans": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Näpfchen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Tubes": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tuben"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Palette": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Palette"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Base paints": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Grundfarben"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "The palette is saved with the picture.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Palette wird mit dem Bild gesichert."
-          }
-        }
-      }
-    },
-    "Import Paint Box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbkasten importieren"
-          }
-        }
-      }
-    },
-    "Tap a colour to take it out of this box.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tippe eine Farbe an, um sie aus diesem Kasten zu nehmen."
-          }
-        }
-      }
-    },
-    "Takes the colour out of this box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nimmt die Farbe aus diesem Kasten"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Adds the paint to the palette": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nimmt die Farbe in die Palette auf"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Removes the paint from the palette": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nimmt die Farbe aus der Palette"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Add a colour to %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eine Farbe zu %@ hinzufügen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Series, number or name": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Serie, Nummer oder Name"
-          }
-        }
-      }
-    },
-    "Colour chart": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farbkarte"
-          }
-        }
-      }
-    },
-    "No colour found": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Farbe gefunden"
-          }
-        }
-      }
-    },
-    "Or enter a colour of your own": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Oder eine eigene Farbe eingeben"
-          }
-        }
-      }
-    },
-    "Remove Colours": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farben entfernen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Export": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Exportieren"
-          }
-        }
-      }
-    },
-    "add paint boxes of your own": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "eigene Farbkästen anzulegen"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "This is not a paint box file.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das ist keine Farbkasten-Datei."
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "Red train (sample)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Roter Zug (Beispiel)"
-          }
-        }
-      }
-    },
-    "Woman by a white wall (sample)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Frau an weißer Wand (Beispiel)"
-          }
-        }
-      }
-    },
-    "Photo: %@ / Unsplash": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto: %@ / Unsplash"
-          }
-        }
-      }
-    },
-    "Sample photos under the Unsplash License.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beispielfotos unter der Unsplash-Lizenz."
-          }
-        }
-      }
-    },
-    "Catalogue": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Katalog"
-          }
-        }
-      }
-    },
-    "Get pro": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pro holen"
-          }
-        }
-      }
-    },
-    "and easily add pre-defined colours from the catalogues of known manufacturers and brands.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "und ganz einfach fertige Farben aus den Katalogen bekannter Hersteller und Marken hinzufügen."
-          }
-        }
-      }
-    },
-    "Vendor and Series": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hersteller und Serie"
-          }
-        }
-      }
-    },
-    "New series": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Neue Serie"
-          }
-        }
-      }
-    },
-    "Name of the series": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Name der Serie"
-          }
-        }
-      }
-    },
-    "%@ numbers fill in name and colour.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nummern von %@ füllen Name und Farbe aus."
-          }
-        }
-      }
-    },
-    "Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wähl den Farbton deiner Farbe in ihrer kräftigsten Lasur: etwa gleich viel Farbe und Wasser, trocken auf weißem Papier. Nicht die Farbe direkt aus dem Näpfchen oder der Tube."
-          }
-        }
-      }
-    },
-    "The free version holds one saved picture and the paint boxes it comes with. To %@, unlock the full version with a single purchase. No subscription.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die kostenlose Version hat ein gesichertes Bild und die Farbkästen, die sie mitbringt. Um %@, schalte die Vollversion mit einem einmaligen Kauf frei. Kein Abo."
-          }
-        }
-      }
-    },
-    "add colours from the catalogues of known manufacturers": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farben aus den Katalogen bekannter Hersteller hinzuzufügen"
-          }
-        }
-      }
-    },
-    "Add colours from the catalogues of known manufacturers": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Farben aus den Katalogen bekannter Hersteller hinzufügen"
-          }
-        }
-      }
-    },
-    "Block in light and shadow, and make the areas finer": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Licht und Schatten anlegen und die Flächen feiner machen"
-          }
-        }
-      }
-    },
-    "Menu": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Menü"
-          }
-        }
-      }
-    },
-    "Help": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hilfe"
-          }
-        }
-      }
-    },
-    "Share": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Teilen"
-          }
-        }
-      }
-    },
-    "New picture": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Neues Bild"
-          }
-        }
-      }
-    },
-    "Print / PDF": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Drucken / PDF"
-          }
-        }
-      }
-    },
-    "Detail": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ausschnitt"
-          }
-        }
-      }
-    },
-    "use everything": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "alles zu nutzen"
-          }
-        }
-      }
-    },
-    "Template to print": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vorlage zum Drucken"
-          }
-        }
-      }
-    },
-    "Overlay: the photo at half strength over the paint": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Überlagerung: das Foto halb deckend über der Farbe"
-          }
-        }
       }
     },
-    "Template to print: areas and numbers in light blue, nothing filled in": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vorlage zum Drucken: Flächen und Nummern in Hellblau, nichts ausgefüllt"
+    "Same mix as %@ – only the amount of water differs." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieselbe Mischung wie %@ – nur die Menge Wasser ist anders."
           }
         }
       }
     },
-    "Layered paint": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Geschichtete Farbe"
+    "Sample photos by Markus Freise, under the Unsplash License." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispielfotos von Markus Freise, unter der Unsplash-Lizenz."
           }
         }
       }
     },
-    "Tones": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Töne"
+    "Sample photos under the Unsplash License." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispielfotos unter der Unsplash-Lizenz."
           }
         }
       }
     },
-    "Two tones: light against shadow (notan)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zwei Töne: Licht gegen Schatten (Notan)"
+    "Samples" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiele"
           }
         }
       }
     },
-    "Three tones: light, a middle tone and shadow": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Drei Töne: Licht, ein Mittelton und Schatten"
+    "Samples: choose a sample picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiele: ein Beispielbild wählen"
           }
         }
       }
     },
-    "Light against shadow (notan)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Licht gegen Schatten (Notan)"
+    "Saturation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sättigung"
           }
         }
       }
     },
-    "Light, a middle tone and shadow": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Licht, ein Mittelton und Schatten"
+    "Save" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sichern"
           }
         }
       }
     },
-    "Light / shadow": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Licht / Schatten"
+    "Save as many pictures as you like" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So viele Bilder sichern, wie du willst"
           }
         }
       }
     },
-    "Light / middle": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Licht / Mittelton"
+    "Save Changes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Änderungen sichern"
           }
         }
       }
     },
-    "Middle / shadow": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mittelton / Schatten"
+    "Save keeps the photo with its settings and colour changes on this device." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sichern bewahrt das Foto mit seinen Einstellungen und Farbänderungen auf diesem Gerät auf."
           }
         }
       }
     },
-    "Further left, more of the picture counts as light": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weiter links zählt mehr vom Bild als Licht"
+    "save more than one picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mehr als ein Bild zu sichern"
           }
         }
       }
     },
-    "Split as the photo divides": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Teilen, wie das Foto es vorgibt"
+    "Save Picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild sichern"
           }
         }
       }
     },
-    "Forms": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Formen"
+    "Series, number or name" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serie, Nummer oder Name"
           }
         }
       }
     },
-    "Left: more detail. Right: the largest masses.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Links: mehr Einzelheiten. Rechts: die größten Massen."
+    "Settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen"
           }
         }
       }
     },
-    "Opacity": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deckkraft"
+    "Share" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilen"
           }
         }
       }
     },
-    "How strongly the tones cover the photo": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wie stark die Töne das Foto verdecken"
+    "Share: PDF or JPG" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilen: PDF oder JPG"
           }
         }
       }
     },
-    "Middle tone": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mittelton"
+    "Show" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigen"
           }
         }
       }
     },
-    "The lightest tone: save the paper white here, or mask it before you paint.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der hellste Ton: Hier bleibt das Papier weiß, oder du maskierst es vor dem Malen."
+    "Show “Get pro” again" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Pro holen“ wieder zeigen"
           }
         }
       }
     },
-    "The darkest tone: paint it last.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der dunkelste Ton: Male ihn zuletzt."
+    "Show All" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle zeigen"
           }
         }
       }
     },
-    "The middle tone: one wash over everything but the light.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der Mittelton: eine Lasur über alles außer dem Licht."
+    "Show all layers." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Schichten zeigen."
           }
         }
       }
     },
-    "Blocking": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Blocking"
+    "Show layer %@, %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schicht %@ zeigen, %@"
           }
         }
       }
     },
-    "Blocking: light and shadow in large masses": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Blocking: Licht und Schatten in großen Massen"
+    "Show only this layer." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur diese Schicht zeigen."
           }
         }
       }
     },
-    "block in light and shadow": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Licht und Schatten anzulegen"
+    "Show purchase screen" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaufbildschirm zeigen"
           }
         }
       }
     },
-    "tone %lld": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ton %lld"
+    "Show the step that paints this" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den Schritt zeigen, der das malt"
           }
         }
       }
     },
-    "The mix is lighter than its tone in the blocking": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Mischung ist heller als ihr Ton im Blocking"
+    "Simplify areas" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flächen vereinfachen"
           }
         }
       }
     },
-    "The mix is darker than its tone in the blocking": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Mischung ist dunkler als ihr Ton im Blocking"
+    "Small strong touches painted last, first for a colour the washes miss, then for the darks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kleine kräftige Tupfer zum Schluss, zuerst für eine Farbe, die den Lasuren fehlt, dann für die dunklen Stellen"
           }
         }
       }
     },
-    "Monochrome": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Monochrom"
+    "So far" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bisher"
           }
         }
       }
     },
-    "Monochrome: the picture in grey, each value painted with one colour of the paint box": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Monochrom: das Bild in Grau, jeder Tonwert mit einer Farbe aus dem Farbkasten gemalt"
+    "Something went wrong" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etwas ist schiefgegangen"
           }
         }
       }
     },
-    "Higher = bigger, calmer shapes. Below 0 with Pro": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Höher = größere, ruhigere Flächen. Unter 0 mit Pro"
+    "Split as the photo divides" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilen, wie das Foto es vorgibt"
           }
         }
       }
     },
-    "make the areas finer than Simplify 0": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "die Flächen feiner als „Vereinfachen 0“ zu machen"
+    "Step %lld of %lld:" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schritt %lld von %lld:"
           }
         }
       }
     },
-    "tone.shadow": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schatten"
+    "T (tube)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "T"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shadow"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "T"
           }
         }
       }
     },
-    "tone.light": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Licht"
+    "Take Photo" : {
+
+    },
+    "Takes the colour out of this box" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nimmt die Farbe aus diesem Kasten"
+          }
+        }
+      }
+    },
+    "Tap a colour to take it out of this box." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe eine Farbe an, um sie aus diesem Kasten zu nehmen."
+          }
+        }
+      }
+    },
+    "Tap a layer to see it alone." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf eine Schicht, um sie allein zu sehen."
+          }
+        }
+      }
+    },
+    "Tap a spot to see which layers it gets." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf eine Stelle, um ihre Schichten zu sehen."
+          }
+        }
+      }
+    },
+    "Tap an area to see its recipe." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf eine Fläche, um ihr Rezept zu sehen."
+          }
+        }
+      }
+    },
+    "Target" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ziel"
+          }
+        }
+      }
+    },
+    "tea" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tee"
+          }
+        }
+      }
+    },
+    "Template" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorlage"
+          }
+        }
+      }
+    },
+    "Template to print" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorlage zum Drucken"
+          }
+        }
+      }
+    },
+    "Template to print: areas and numbers in light blue, nothing filled in" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorlage zum Drucken: Flächen und Nummern in Hellblau, nichts ausgefüllt"
+          }
+        }
+      }
+    },
+    "The App Store is not reachable right now. Please try again later." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der App Store ist gerade nicht erreichbar. Bitte versuche es später noch einmal."
+          }
+        }
+      }
+    },
+    "the areas in full colour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "die Flächen in voller Farbe"
+          }
+        }
+      }
+    },
+    "the areas of this step" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "die Flächen dieses Schritts"
+          }
+        }
+      }
+    },
+    "The colours appear once the picture is analysed." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Farben erscheinen, sobald das Bild analysiert ist."
+          }
+        }
+      }
+    },
+    "The darkest tone: paint it last." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der dunkelste Ton: Male ihn zuletzt."
+          }
+        }
+      }
+    },
+    "the filled areas" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "die gefüllten Flächen"
+          }
+        }
+      }
+    },
+    "The free version holds one saved picture and one paint box, without close-ups. To %@, unlock the full version with a single purchase. No subscription." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die kostenlose Version hat ein gesichertes Bild und einen Farbkasten, ohne Ausschnitte. Um %@, schalte die Vollversion mit einem einmaligen Kauf frei. Kein Abo."
+          }
+        }
+      }
+    },
+    "The free version holds one saved picture and the paint boxes it comes with. To %@, unlock the full version with a single purchase. No subscription." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die kostenlose Version hat ein gesichertes Bild und die Farbkästen, die sie mitbringt. Um %@, schalte die Vollversion mit einem einmaligen Kauf frei. Kein Abo."
+          }
+        }
+      }
+    },
+    "The lightest tone: save the paper white here, or mask it before you paint." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der hellste Ton: Hier bleibt das Papier weiß, oder du maskierst es vor dem Malen."
+          }
+        }
+      }
+    },
+    "The middle tone: one wash over everything but the light." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Mittelton: eine Lasur über alles außer dem Licht."
+          }
+        }
+      }
+    },
+    "The mix is darker than its tone in the blocking" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Mischung ist dunkler als ihr Ton im Blocking"
+          }
+        }
+      }
+    },
+    "The mix is lighter than its tone in the blocking" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Mischung ist heller als ihr Ton im Blocking"
+          }
+        }
+      }
+    },
+    "The paints stay in your library." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Farben bleiben in deiner Sammlung."
+          }
+        }
+      }
+    },
+    "The palette is saved with the picture." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Palette wird mit dem Bild gesichert."
+          }
+        }
+      }
+    },
+    "The photo in your photo library is not touched." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Foto in deiner Mediathek bleibt unberührt."
+          }
+        }
+      }
+    },
+    "The purchase could not be verified." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Kauf konnte nicht bestätigt werden."
+          }
+        }
+      }
+    },
+    "The purchase did not go through: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Kauf ist nicht durchgegangen: %@"
+          }
+        }
+      }
+    },
+    "The purchase is waiting for approval." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Kauf wartet auf Freigabe."
+          }
+        }
+      }
+    },
+    "the same wash again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dieselbe Lasur noch einmal."
+          }
+        }
+      }
+    },
+    "The sample photo is missing." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Beispielfoto fehlt."
+          }
+        }
+      }
+    },
+    "Then" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dann"
+          }
+        }
+      }
+    },
+    "This is not a paint box file." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das ist keine Farbkasten-Datei."
+          }
+        }
+      }
+    },
+    "This Spot" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Stelle"
+          }
+        }
+      }
+    },
+    "This wash" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Lasur"
+          }
+        }
+      }
+    },
+    "Three tones: light, a middle tone and shadow" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drei Töne: Licht, ein Mittelton und Schatten"
+          }
+        }
+      }
+    },
+    "Ticks only change what the picture shows. Change the paints in the paint box." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Häkchen ändern nur, was das Bild zeigt. Die Farben änderst du im Farbkasten."
+          }
+        }
+      }
+    },
+    "tone %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ton %lld"
+          }
+        }
+      }
+    },
+    "tone.light" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Light"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light"
+          }
+        }
+      }
+    },
+    "tone.shadow" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schatten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shadow"
+          }
+        }
+      }
+    },
+    "Tones" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Töne"
+          }
+        }
+      }
+    },
+    "Travelbox" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reisekasten"
+          }
+        }
+      }
+    },
+    "Tube" : {
+      "extractionState" : "manual",
+      "shouldTranslate" : false
+    },
+    "Tubes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuben"
+          }
+        }
+      }
+    },
+    "Two tones: light against shadow (notan)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zwei Töne: Licht gegen Schatten (Notan)"
+          }
+        }
+      }
+    },
+    "Unlock" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Freischalten"
+          }
+        }
+      }
+    },
+    "Unlock Everything" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alles freischalten"
+          }
+        }
+      }
+    },
+    "Unlock for %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für %@ freischalten"
+          }
+        }
+      }
+    },
+    "Unlocked" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Freigeschaltet"
+          }
+        }
+      }
+    },
+    "use everything" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "alles zu nutzen"
+          }
+        }
+      }
+    },
+    "Use for Auto" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für Auto nutzen"
+          }
+        }
+      }
+    },
+    "Vendor and Series" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hersteller und Serie"
+          }
+        }
+      }
+    },
+    "very concentrated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sehr konzentriert"
+          }
+        }
+      }
+    },
+    "very concentrated (layer/glaze)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sehr konzentriert (Schicht/Lasur)"
+          }
+        }
+      }
+    },
+    "very watery" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sehr wässrig"
+          }
+        }
+      }
+    },
+    "very watery wash" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sehr wässrig"
+          }
+        }
+      }
+    },
+    "Wash" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasur"
+          }
+        }
+      }
+    },
+    "Wash %@, %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verdünnung %@, %@"
+          }
+        }
+      }
+    },
+    "Washes; accents and second coats are extra steps" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasuren; Akzente und zweite Aufträge sind eigene Schritte"
+          }
+        }
+      }
+    },
+    "water" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wasser"
+          }
+        }
+      }
+    },
+    "Where to paint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wo du malst"
+          }
+        }
+      }
+    },
+    "Whole Picture" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ganzes Bild"
+          }
+        }
+      }
+    },
+    "Winter fields (sample)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Winterfelder (Beispiel)"
+          }
+        }
+      }
+    },
+    "Woman by a white wall (sample)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frau an weißer Wand (Beispiel)"
+          }
+        }
+      }
+    },
+    "you are done." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "fertig."
+          }
+        }
+      }
+    },
+    "Your mix" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Mischung"
+          }
+        }
+      }
+    },
+    "Your own paints" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine eigenen Farben"
+          }
+        }
+      }
+    },
+    "zoom in on a part of the picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "einen Ausschnitt des Bildes zu vergrößern"
+          }
+        }
+      }
+    },
+    "Zoom in on parts of a picture and analyse them on their own" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausschnitte eines Bildes vergrößern und einzeln analysieren"
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }

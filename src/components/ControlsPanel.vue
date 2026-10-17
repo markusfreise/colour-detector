@@ -1,9 +1,9 @@
 <template>
   <section class="panel sidebar" :class="{ 'panel--collapsed': collapsed }">
-    <div class="toolbar">
-      <PanelToggle name="controls" label="the settings" />
-    <p v-if="analysis.error" class="controls__error">{{ analysis.error }}</p>
-  </div>
+    <!-- The button that opens the settings is among the tools over the picture (PaintingCanvas.vue). -->
+    <div v-if="analysis.error" class="toolbar">
+      <p class="controls__error">{{ analysis.error }}</p>
+    </div>
 
         <!-- The settings float over the picture: dragged by the handle, their place is remembered. -->
         <div v-if="!collapsed" ref="panel" class="card flyout flyout--floating" :class="{ 'flyout--dragging': dragging }" :style="style">
@@ -51,7 +51,7 @@
         <button
           type="button"
           class="button"
-          :class="{ 'button--active': analysis.valueMode }"
+          :class="{ 'button--active': analysis.valueMode, 'button--locked': !pro.can('monochrome') }"
           :aria-pressed="analysis.valueMode"
           :disabled="analysis.layerMode"
           :title="t('Monochrome: the picture in grey, each value painted with one colour of the paint box')"
@@ -196,7 +196,6 @@ import { useAnalysisStore } from '../stores/analysis.js'
 import { useCollectionStore } from '../stores/collection.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useLayoutStore } from '../stores/layout.js'
-import PanelToggle from './PanelToggle.vue'
 import { FINEST, SIMPLIFY_ZERO } from '../lib/segment.js'
 import { useProStore } from '../stores/pro.js'
 import AiPanel from './AiPanel.vue'

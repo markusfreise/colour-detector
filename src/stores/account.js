@@ -83,10 +83,12 @@ export const useAccountStore = defineStore('account', {
     testLink: '', // local test: the sign-in link, shown instead of mailed
     open: false, // account dialog
     welcome: false, // just signed in: the plans are offered once the app is open
+    preview: null, // the debug menu shows a sign-in screen: 'signin', 'signup', 'sent' or 'consent'
+    previewSaved: null, // what the preview replaced, to put back
   }),
   getters: {
     // The app itself may be used: signed in, and both statements agreed to.
-    ready: (state) => !state.enabled || Boolean(state.user?.consent),
+    ready: (state) => !state.preview && (!state.enabled || Boolean(state.user?.consent)),
     pro: (state) => Boolean(state.user?.pro),
     credits: (state) => state.user?.credits ?? 0,
     /** Hashes of the photos unlocked with a credit, as far as their keys are worked out (learnKeys). */
@@ -101,6 +103,23 @@ export const useAccountStore = defineStore('account', {
     packs: (state) => state.products.filter((p) => p.type === 'credit_pack'),
   },
   actions: {
+    /** The debug menu: shows one of the sign-in screens with made-up data, or (null) the app again. */
+    showPreview(screen) {
+      if (!this.preview) this.previewSaved = { loaded: this.loaded, user: this.user, sentTo: this.sentTo, invitation: this.invitation, testLink: this.testLink }
+      if (!screen) {
+        Object.assign(this, this.previewSaved ?? {})
+        this.preview = null
+        this.previewSaved = null
+        return
+      }
+      this.preview = screen
+      this.loaded = true
+      this.error = null
+      this.testLink = ''
+      this.invitation = true
+      this.user = screen === 'consent' ? { email: 'test@example.org', consent: false } : null
+      this.sentTo = screen === 'sent' ? 'test@example.org' : ''
+    },
     async init() {
       if (!this.enabled) return
       // A sign-in link opened in a tab that already shows the app only changes the fragment.

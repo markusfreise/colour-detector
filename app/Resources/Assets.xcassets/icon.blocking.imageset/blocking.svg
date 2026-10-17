@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="72pt" height="72pt" viewBox="0 0 72 72" version="1.1">
+<g id="blocking">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(9.019608%,9.019608%,9.411765%);fill-opacity:1;" d="M 14 10 L 58 10 C 60.21 10 62 11.79 62 14 L 62 58 C 62 60.21 60.21 62 58 62 L 14 62 C 11.79 62 10 60.21 10 58 L 10 14 C 10 11.79 11.79 10 14 10 Z M 14.5 14.5 L 14.5 41.5 L 27 29 L 38 40 L 49 25 L 57.5 33.5 L 57.5 14.5 Z M 14.5 14.5 "/>
+</g>
+</svg>

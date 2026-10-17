@@ -6,7 +6,11 @@
       :key="v.value"
       type="button"
       class="segmented__option"
-      :class="{ 'segmented__option--active': analysis.settings.view === v.value, 'viewswitch__template': v.value === 'template' }"
+      :class="{
+        'segmented__option--active': analysis.settings.view === v.value,
+        'segmented__option--locked': v.value === 'blocking' && !pro.can('blocking'),
+        'viewswitch__template': v.value === 'template',
+      }"
       :aria-pressed="analysis.settings.view === v.value"
       :data-hint="t(v.hint)"
       @click="choose(v.value)"

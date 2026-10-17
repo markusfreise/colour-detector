@@ -39,11 +39,8 @@
     <div v-if="frame" class="painting__frame" :style="frameStyle"></div>
     <!-- The spot whose colour is being looked at, blinking under the card. -->
     <span v-if="spot && !backdrop" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
-    <div v-if="!backdrop" class="painting__tools">
-      <!-- Until everything is unlocked: the plans, one click away. -->
-      <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(false, 'use everything')">
-        {{ t('Get pro') }}
-      </button>
+    <div v-if="!backdrop" class="painting__tools toolbar">
+      <GetPro class="painting__pro" @open="pro.require(null, 'use everything')" />
       <button class="button button--ghost painting__tool" type="button" :data-hint="t('Fit')" @click="fit">
         <AppIcon name="zoom" :label="t('Fit the picture to the window')" />
       </button>
@@ -58,6 +55,17 @@
         @click="framing = !framing"
       >
         <AppIcon name="frame" :label="framing ? t('Cancel choosing a part of the picture') : t('Zoom in on a part of the picture')" />
+      </button>
+      <!-- The settings, beside the views they belong to; their card floats at the top right. -->
+      <button
+        class="button painting__tool"
+        :class="{ 'button--active': !layout.collapsed.controls }"
+        type="button"
+        :aria-expanded="!layout.collapsed.controls"
+        :data-hint="t('Settings')"
+        @click="layout.toggle('controls')"
+      >
+        <AppIcon name="settings" :label="t(layout.collapsed.controls ? 'Show {what}' : 'Hide {what}', { what: t('the settings') })" />
       </button>
       <ViewSwitch />
       <!-- What is drawn over the picture. -->
@@ -95,12 +103,15 @@ import { computed, reactive, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
 import { useProStore } from '../stores/pro.js'
+import { useLayoutStore } from '../stores/layout.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
 import { drawLayerView, labelFont, paintPixels } from './layerView.js'
 import { smoothCurve } from '../lib/sketch.js'
 import { upscaleAreas } from '../lib/smooth.js'
+import { toneGrey } from '../lib/blocking.js'
 import RecipeTip from './RecipeTip.vue'
 import AppIcon from './AppIcon.vue'
+import GetPro from './GetPro.vue'
 import ViewSwitch from './ViewSwitch.vue'
 import { closeupRect } from '../lib/closeup.js'
 import { APP_NAME } from '../config.js'
@@ -129,6 +140,7 @@ function onWelcomeFile(event) {
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 const pro = useProStore()
+const layout = useLayoutStore()
 // The paint box in use holds no paint: none to paint with, or in layer mode none to glaze with.
 const noPaints = computed(() => !!analysis.image && (analysis.layerMode ? !analysis.busy && !analysis.layers : paints.enabled.length === 0))
 const canvas = ref(null)
@@ -194,6 +206,7 @@ function draw() {
   const el = canvas.value
   if (!el) return
   if (analysis.settings.view === 'sketch') return drawSketch(el)
+  if (analysis.settings.view === 'blocking') return drawBlocking(el)
   if (analysis.layerMode) drawLayers(el)
   else drawMixes(el)
   drawDetails(el)
@@ -256,6 +269,54 @@ function drawSketch(el) {
     paintPixels(ctx, el, rgba, details.width, details.height, true)
   }
   if (analysis.settings.guides) drawGuides(ctx, el.width, el.height)
+}
+
+// Blocking: light and shadow as flat greys in large masses, numbered from the lightest. With one
+// tone on its own the others go pale; with "Over photo" below 100 the photo shows through.
+const BLOCKING_LINE = [90, 150, 230] // light blue: seen on the paper white and on the dark
+const BLOCKING_PALE = [212, 206, 196] // the other tones while one is shown on its own: clearly not the paper
+let blockingAtCanvas = null // { result, toneAt } the tones at the size of the canvas, kept per result
+function drawBlocking(el) {
+  const result = analysis.blockingResult
+  if (!result) {
+    // Worked out in the worker; until then the picture before stays.
+    analysis.ensureBlocking()
+    return
+  }
+  const { width, height, tones, regions } = result
+  const w = width * SCALE, h = height * SCALE
+  el.width = w
+  el.height = h
+  const ctx = el.getContext('2d')
+  if (blockingAtCanvas?.result !== result) blockingAtCanvas = { result, toneAt: upscaleAreas(result.toneMap, width, height, SCALE) }
+  const { toneAt } = blockingAtCanvas
+  const { outlines, numbers, blockingOpacity } = analysis.settings
+  const solo = analysis.blockingSolo
+  const greys = Array.from({ length: tones }, (_, tone) => (solo == null || tone === solo ? toneGrey(tone, tones) : BLOCKING_PALE))
+  const alpha = Math.round((blockingOpacity / 100) * 255)
+  const img = new Uint8ClampedArray(w * h * 4)
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const p = y * w + x
+      const tone = toneAt[p]
+      const line = outlines && ((x < w - 1 && tone !== toneAt[p + 1]) || (y < h - 1 && tone !== toneAt[p + w]))
+      img.set(line ? BLOCKING_LINE : greys[tone], p * 4)
+      img[p * 4 + 3] = line ? 255 : alpha
+    }
+  }
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, w, h)
+  if (alpha < 255) drawPhoto(ctx, el)
+  paintPixels(ctx, el, img, w, h)
+  if (numbers) {
+    // At the size of the numbers of the mixes.
+    labelFont(ctx, SCALE)
+    for (const region of regions) {
+      if (region.anchorDist < MIN_LABEL_DIST || (solo != null && region.tone !== solo)) continue
+      ctx.fillStyle = toneGrey(region.tone, tones)[0] > 140 ? '#1d1b18' : '#ffffff'
+      ctx.fillText(String(region.tone + 1), (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE)
+    }
+  }
 }
 
 // Guide lines for transferring the sketch to paper: the picture in quarters each way, its two
@@ -624,7 +685,7 @@ function pixelAt(event) {
 // Mix mode: the recipe of the colour under the pointer follows the pointer.
 function onMove(event) {
   if (!canHover) return
-  const at = moving.value || framing.value || analysis.layerMode || analysis.busy || analysis.settings.view === 'sketch' || !analysis.regionEntry ? null : pixelAt(event)
+  const at = moving.value || framing.value || analysis.layerMode || analysis.busy || ['sketch', 'blocking'].includes(analysis.settings.view) || !analysis.regionEntry ? null : pixelAt(event)
   const entry = at ? analysis.regionEntry[regionAtCanvasPixel(at.cx, at.cy)] : null
   // Nothing over the part of the picture that is blanked while one colour is selected.
   if (entry == null || !analysis.entries[entry] || (analysis.settings.view !== 'original' && !shown(entry))) hover.value = null
@@ -637,6 +698,15 @@ function onClick(event) {
   if (!at) return
   const { cx, cy, x, y } = at
   if (analysis.settings.view === 'sketch') return // nothing to pick in the sketch
+  if (analysis.settings.view === 'blocking') {
+    // A tap on a tone shows it on its own; again, or on another, changes back.
+    const result = analysis.blockingResult
+    const bx = Math.floor((cx / (canvas.value.width || 1)) * (result?.width ?? 0))
+    const by = Math.floor((cy / (canvas.value.height || 1)) * (result?.height ?? 0))
+    const tone = result?.toneMap[by * result.width + bx]
+    if (tone != null) analysis.blockingSolo = analysis.blockingSolo === tone ? null : tone
+    return
+  }
   if (analysis.layerMode) {
     analysis.selectPoint({ x, y })
     return
@@ -664,6 +734,9 @@ watch(
     analysis.sketchKey,
     analysis.settings.outlines,
     analysis.settings.numbers,
+    analysis.blockingKey,
+    analysis.blockingSolo,
+    analysis.settings.blockingOpacity,
   ],
   render,
 )

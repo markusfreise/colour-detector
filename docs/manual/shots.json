@@ -1,0 +1,624 @@
+{
+  "de/blocking": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/blocking-tone": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/breakdown": {
+    "width": 768,
+    "height": 786,
+    "markers": []
+  },
+  "de/closeup": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/collection": {
+    "width": 952,
+    "height": 426,
+    "markers": []
+  },
+  "de/colours": {
+    "width": 764,
+    "height": 900,
+    "markers": [
+      {
+        "n": 1,
+        "x": 4.06,
+        "y": 12.05
+      },
+      {
+        "n": 2,
+        "x": 4.06,
+        "y": 15.74
+      },
+      {
+        "n": 3,
+        "x": 5.89,
+        "y": 23.25
+      }
+    ]
+  },
+  "de/colours-6": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/geometric": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/help-labels": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/inspector": {
+    "width": 1440,
+    "height": 900,
+    "markers": [
+      {
+        "n": 1,
+        "x": 37.08,
+        "y": 70.9
+      }
+    ]
+  },
+  "de/layer-solo": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/layer-step": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/layers": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/mix-selected": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/overview": {
+    "width": 1440,
+    "height": 900,
+    "markers": [
+      {
+        "n": 1,
+        "x": 5.97,
+        "y": 4.44
+      },
+      {
+        "n": 2,
+        "x": 35.76,
+        "y": 9.11
+      },
+      {
+        "n": 3,
+        "x": 43.33,
+        "y": 9
+      },
+      {
+        "n": 4,
+        "x": 94.03,
+        "y": 11.56
+      },
+      {
+        "n": 5,
+        "x": 94.03,
+        "y": 4.44
+      },
+      {
+        "n": 6,
+        "x": 94.03,
+        "y": 18.67
+      },
+      {
+        "n": 7,
+        "x": 94.03,
+        "y": 25.78
+      }
+    ]
+  },
+  "de/paintbox": {
+    "width": 952,
+    "height": 1100,
+    "markers": []
+  },
+  "de/paintbox-add": {
+    "width": 912,
+    "height": 130,
+    "markers": []
+  },
+  "de/phone": {
+    "width": 390,
+    "height": 844,
+    "markers": []
+  },
+  "de/picture-tools": {
+    "width": 482,
+    "height": 72,
+    "markers": [
+      {
+        "n": 1,
+        "x": 7.47,
+        "y": 3
+      },
+      {
+        "n": 2,
+        "x": 18.67,
+        "y": 3
+      },
+      {
+        "n": 3,
+        "x": 30.08,
+        "y": 3
+      },
+      {
+        "n": 4,
+        "x": 40.04,
+        "y": 3
+      },
+      {
+        "n": 5,
+        "x": 50,
+        "y": 3
+      },
+      {
+        "n": 6,
+        "x": 59.96,
+        "y": 3
+      },
+      {
+        "n": 7,
+        "x": 69.92,
+        "y": 3
+      },
+      {
+        "n": 8,
+        "x": 81.33,
+        "y": 3
+      },
+      {
+        "n": 9,
+        "x": 92.53,
+        "y": 3
+      }
+    ]
+  },
+  "de/preferences": {
+    "width": 768,
+    "height": 288,
+    "markers": []
+  },
+  "de/print": {
+    "width": 1000,
+    "height": 1400,
+    "markers": []
+  },
+  "de/samples": {
+    "width": 952,
+    "height": 567,
+    "markers": []
+  },
+  "de/settings": {
+    "width": 531,
+    "height": 361,
+    "markers": [
+      {
+        "n": 1,
+        "x": 6.59,
+        "y": 24.77
+      },
+      {
+        "n": 2,
+        "x": 27.48,
+        "y": 24.77
+      },
+      {
+        "n": 3,
+        "x": 6.97,
+        "y": 42.1
+      },
+      {
+        "n": 4,
+        "x": 8.09,
+        "y": 52.06
+      },
+      {
+        "n": 5,
+        "x": 36.03,
+        "y": 52.06
+      },
+      {
+        "n": 6,
+        "x": 63.97,
+        "y": 52.06
+      }
+    ]
+  },
+  "de/simplify-high": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/simplify-low": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/values": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/view-overlay": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/view-photo": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/view-plain": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/view-target": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/view-template": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "de/welcome": {
+    "width": 1440,
+    "height": 900,
+    "markers": [
+      {
+        "n": 1,
+        "x": 5.97,
+        "y": 4.44
+      },
+      {
+        "n": 2,
+        "x": 5.97,
+        "y": 10.44
+      },
+      {
+        "n": 3,
+        "x": 50,
+        "y": 3
+      }
+    ]
+  },
+  "en/blocking": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/blocking-tone": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/breakdown": {
+    "width": 768,
+    "height": 786,
+    "markers": []
+  },
+  "en/closeup": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/collection": {
+    "width": 952,
+    "height": 426,
+    "markers": []
+  },
+  "en/colours": {
+    "width": 810,
+    "height": 900,
+    "markers": [
+      {
+        "n": 1,
+        "x": 3.83,
+        "y": 12.05
+      },
+      {
+        "n": 2,
+        "x": 3.83,
+        "y": 15.74
+      },
+      {
+        "n": 3,
+        "x": 5.56,
+        "y": 23.25
+      }
+    ]
+  },
+  "en/colours-6": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/geometric": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/help-labels": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/inspector": {
+    "width": 1440,
+    "height": 900,
+    "markers": [
+      {
+        "n": 1,
+        "x": 37.08,
+        "y": 70.9
+      }
+    ]
+  },
+  "en/layer-solo": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/layer-step": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/layers": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/mix-selected": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/overview": {
+    "width": 1440,
+    "height": 900,
+    "markers": [
+      {
+        "n": 1,
+        "x": 5.97,
+        "y": 4.44
+      },
+      {
+        "n": 2,
+        "x": 35.76,
+        "y": 9.11
+      },
+      {
+        "n": 3,
+        "x": 43.33,
+        "y": 9
+      },
+      {
+        "n": 4,
+        "x": 94.03,
+        "y": 11.56
+      },
+      {
+        "n": 5,
+        "x": 94.03,
+        "y": 4.44
+      },
+      {
+        "n": 6,
+        "x": 94.03,
+        "y": 18.67
+      },
+      {
+        "n": 7,
+        "x": 94.03,
+        "y": 25.78
+      }
+    ]
+  },
+  "en/paintbox": {
+    "width": 952,
+    "height": 1100,
+    "markers": []
+  },
+  "en/paintbox-add": {
+    "width": 912,
+    "height": 130,
+    "markers": []
+  },
+  "en/phone": {
+    "width": 390,
+    "height": 844,
+    "markers": []
+  },
+  "en/picture-tools": {
+    "width": 482,
+    "height": 72,
+    "markers": [
+      {
+        "n": 1,
+        "x": 7.47,
+        "y": 3
+      },
+      {
+        "n": 2,
+        "x": 18.67,
+        "y": 3
+      },
+      {
+        "n": 3,
+        "x": 30.08,
+        "y": 3
+      },
+      {
+        "n": 4,
+        "x": 40.04,
+        "y": 3
+      },
+      {
+        "n": 5,
+        "x": 50,
+        "y": 3
+      },
+      {
+        "n": 6,
+        "x": 59.96,
+        "y": 3
+      },
+      {
+        "n": 7,
+        "x": 69.92,
+        "y": 3
+      },
+      {
+        "n": 8,
+        "x": 81.33,
+        "y": 3
+      },
+      {
+        "n": 9,
+        "x": 92.53,
+        "y": 3
+      }
+    ]
+  },
+  "en/preferences": {
+    "width": 768,
+    "height": 288,
+    "markers": []
+  },
+  "en/print": {
+    "width": 1000,
+    "height": 1400,
+    "markers": []
+  },
+  "en/samples": {
+    "width": 952,
+    "height": 567,
+    "markers": []
+  },
+  "en/settings": {
+    "width": 521,
+    "height": 361,
+    "markers": [
+      {
+        "n": 1,
+        "x": 6.72,
+        "y": 24.77
+      },
+      {
+        "n": 2,
+        "x": 28.02,
+        "y": 24.77
+      },
+      {
+        "n": 3,
+        "x": 7.1,
+        "y": 42.1
+      },
+      {
+        "n": 4,
+        "x": 8.25,
+        "y": 52.06
+      },
+      {
+        "n": 5,
+        "x": 36.08,
+        "y": 52.06
+      },
+      {
+        "n": 6,
+        "x": 63.92,
+        "y": 52.06
+      }
+    ]
+  },
+  "en/simplify-high": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/simplify-low": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/values": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/view-overlay": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/view-photo": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/view-plain": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/view-target": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/view-template": {
+    "width": 1440,
+    "height": 900,
+    "markers": []
+  },
+  "en/welcome": {
+    "width": 1440,
+    "height": 900,
+    "markers": [
+      {
+        "n": 1,
+        "x": 5.97,
+        "y": 4.44
+      },
+      {
+        "n": 2,
+        "x": 5.97,
+        "y": 10.44
+      },
+      {
+        "n": 3,
+        "x": 50,
+        "y": 3
+      }
+    ]
+  }
+}

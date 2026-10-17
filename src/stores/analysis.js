@@ -11,6 +11,8 @@ import { boxMask, detailWash } from '../lib/details.js'
 import { toOklabPixels, SIMPLIFY_ZERO } from '../lib/segment.js'
 import { closeupSize } from '../lib/closeup.js'
 import { useProStore } from './pro.js'
+import { hashOf } from '../lib/picture.js'
+import { DEFAULT_FORMS, toneOfHex } from '../lib/blocking.js'
 import { t } from '../i18n/index.js'
 
 // Working resolution: the picture is scaled down to about this many pixels, whatever its shape.
@@ -23,14 +25,26 @@ const VALUE_STEP = 0.15
 // Recipes count as the same mix when they use the same paints.
 const paintKey = (recipe) => recipe.paints.map((p) => p.paintId).sort().join('+')
 // Sample pictures, offered in the sample library (SampleDialog.vue); the first one loads at start.
-// They are Markus Freise's own works (see public/imprint), no longer than 1024 px.
+// All are under the Unsplash License, no longer than 1024 px. `credit` names the photographer and
+// links to the photo, or to the profile until the photo is up there.
+const MARKUS = { name: 'Markus Freise', url: 'https://unsplash.com/@markusfreise' }
 export const SAMPLES = [
-  { file: 'sample-bielefeld.webp', name: 'Bielefeld' },
-  { file: 'sample-llyn-idwal.webp', name: 'Llyn Idwal' },
-  { file: 'sample-rooftops-dusk.webp', name: 'Rooftops at dusk' },
-  { file: 'sample-winter-fields.webp', name: 'Winter fields' },
-  { file: 'sample-old-town-snow.webp', name: 'Old town in snow' },
-].map((sample) => ({ url: `${import.meta.env.BASE_URL}${sample.file}`, name: sample.name, local: false }))
+  { file: 'sample-bielefeld.webp', name: 'Bielefeld', credit: MARKUS },
+  { file: 'sample-llyn-idwal.webp', name: 'Llyn Idwal', credit: MARKUS },
+  { file: 'sample-rooftops-dusk.webp', name: 'Rooftops at dusk', credit: MARKUS },
+  { file: 'sample-winter-fields.webp', name: 'Winter fields', credit: MARKUS },
+  { file: 'sample-old-town-snow.webp', name: 'Old town in snow', credit: MARKUS },
+  {
+    file: 'sample-red-train.webp',
+    name: 'Red train',
+    credit: { name: 'Markus Freise', url: 'https://unsplash.com/photos/red-and-white-train-on-train-station-Zi8T2OwJf44' },
+  },
+  {
+    file: 'sample-woman-white-wall.webp',
+    name: 'Woman by a white wall',
+    credit: { name: 'Ayo Ogunseinde', url: 'https://unsplash.com/photos/woman-looking-sideways-leaning-on-white-wall-6W4F62sN_yI' },
+  },
+].map((sample) => ({ url: `${import.meta.env.BASE_URL}${sample.file}`, name: sample.name, credit: sample.credit, local: false }))
 // Pictures in `local-samples/` exist only in this checkout: the folder is not in the repo, and the
 // list is filled by the dev server only (vite.config.js). "white-dress.webp" → "White dress".
 for (const file of __LOCAL_SAMPLES__) {
@@ -49,6 +63,7 @@ let layerProposal = null // "picture/count" the current proposal was made for
 // The settings the mix analysis (`segmentation`) was made with, see `mixCurrent`.
 let mixKey = null
 let sketchRunning = null // the picture a sketch is being worked out for
+let blockingRunning = null // the blocking being worked out (its key)
 let loadSerial = 0 // counts the pictures asked for, see loadFromSource
 const mixKeyOf = ({ saturation, contrast, simplify, colours, geometric, values }, plan = 0) => [saturation, contrast, simplify, colours, !!geometric, plan].join('/') + (values ? '/values' : '')
 
@@ -107,6 +122,9 @@ export const useAnalysisStore = defineStore('analysis', {
   state: () => ({
     imageName: '',
     savedId: null, // id in the collection when the picture was saved or opened from it
+    // The picture as the entitlements know it: a sample, or a photo with the hash of its bytes
+    // (null until it is known). Close-ups are part of the picture they are cut from.
+    picture: null, // { sample, hash }
     image: null, // HTMLImageElement (raw)
     pixels: null, // { rgba, width, height } at working resolution (raw)
     adjusted: null, // the same pixels with saturation and contrast applied, null when both are at 100 (raw)
@@ -133,6 +151,8 @@ export const useAnalysisStore = defineStore('analysis', {
     aiDetails: null, // { key, mask, hex, paintId, dilution, pixels, shapes } the final wash of details (raw)
     aiMatch: null, // { key, on, off } distance to the photo with and without the AI's choices, per method
     sketch: null, // { key, paths, width, height } the pencil sketch as lines of points, see lib/sketch.js (raw)
+    blocking: null, // { key, ...blockImage } the picture as tones in large masses, see lib/blocking.js (raw)
+    blockingSolo: null, // the tone shown on its own in the Blocking view, or null
     aiBusy: false,
     aiError: null,
     pictureStamp: 0, // counts the pictures opened
@@ -159,7 +179,12 @@ export const useAnalysisStore = defineStore('analysis', {
       values: false, // mix mode: the picture in grey, every value painted with one paint of the box (a value study)
       saturation: 200, // percent, applied to the photo before the analysis
       contrast: 100,
-      view: 'mixed', // mixed | target | overlay | original | template
+      view: 'mixed', // mixed | target | overlay | original | template | blocking
+      // Blocking: light and shadow in large masses (lib/blocking.js).
+      blockingTones: 2, // 2 = light and shadow, 3 = with a middle tone
+      blockingSplit: null, // thresholds in L* set by hand; null = where the photo divides
+      blockingForms: DEFAULT_FORMS, // 0 = more detail .. 10 = the largest masses
+      blockingOpacity: 100, // percent: the tones over the photo, 100 = the photo is not seen
       outlines: true,
       numbers: true,
     },
@@ -171,8 +196,33 @@ export const useAnalysisStore = defineStore('analysis', {
     layerMode: (state) => state.settings.mode === 'layer',
     /** What an AI plan belongs to: the picture as it is analysed. */
     aiKey: (state) => [state.pictureStamp, state.settings.saturation, state.settings.contrast, state.settings.values ? 'values' : ''].join('/'),
-    // Value mode belongs to mix mode: layers are fitted to colours.
-    valueMode: (state) => !!state.settings.values && state.settings.mode !== 'layer',
+    // Monochrome (setting `values`) belongs to mix mode: layers are fitted to colours. It is a Pro
+    // feature, so a picture saved with it opens in colour without Pro.
+    valueMode: (state) => !!state.settings.values && state.settings.mode !== 'layer' && useProStore().can('monochrome'),
+    /** What a blocking belongs to: the picture as analysed and the settings of the view. */
+    blockingKey(state) {
+      const s = state.settings
+      const source = state.adjusted ?? state.pixels
+      return [state.pictureStamp, source?.width, source?.height, s.saturation, s.contrast, s.blockingTones, s.blockingSplit?.join(',') ?? '', s.blockingForms].join('/')
+    },
+    /** The blocking of the picture on screen as it is set, or null while it is worked out. */
+    blockingResult(state) {
+      return state.blocking?.key === this.blockingKey ? state.blocking : null
+    },
+    /**
+     * How a mix stands to its tone in the blocking: 'lighter' or 'darker' when the mixed colour
+     * falls in another tone than the colour of the photo, else null. Value matters more than hue.
+     */
+    toneWarning() {
+      const thresholds = this.blockingResult?.thresholds
+      return (entry) => {
+        const mixed = entry?.recipes[entry.chosen]?.hex
+        if (!thresholds || !mixed) return null
+        const want = toneOfHex(entry.targetHex, thresholds)
+        const got = toneOfHex(mixed, thresholds)
+        return got === want ? null : got < want ? 'lighter' : 'darker'
+      }
+    },
     /** What a sketch belongs to: the picture, and the AI's answer for it once there is one. */
     sketchKey(state) {
       return `${state.pictureStamp}/${state.aiPlan?.key === this.aiKey ? state.aiPlan.serial : 0}`
@@ -244,11 +294,16 @@ export const useAnalysisStore = defineStore('analysis', {
     /** Load a sample picture by its place in the list; the first one is used at start. */
     async loadSample(index = 0) {
       const sample = SAMPLES[index] ?? SAMPLES[0]
-      await this.loadFromSource(sample.url, t('{name} (sample)', { name: t(sample.name) }))
+      // A split of light and shadow set by hand belongs to the photo it was set for.
+      this.settings.blockingSplit = null
+      await this.loadFromSource(sample.url, t('{name} (sample)', { name: t(sample.name) }), { sample: true, hash: null })
     },
     async loadFile(file) {
       const url = URL.createObjectURL(file)
-      await this.loadFromSource(url, file.name)
+      // The bytes of the photo as they came: the same file is the same picture, whenever it is opened.
+      const hash = await hashOf(file).catch(() => null)
+      this.settings.blockingSplit = null
+      await this.loadFromSource(url, file.name, { sample: false, hash })
     },
     /** Open a picture from the collection with its saved settings and colour changes. */
     async loadSaved(record) {
@@ -257,7 +312,9 @@ export const useAnalysisStore = defineStore('analysis', {
       // The palette belongs to the picture. Pictures saved before it did keep the one on screen.
       if (record.palette) usePaintsStore().setPalette(record.palette)
       const url = URL.createObjectURL(record.blob)
-      await this.loadFromSource(url, record.name)
+      // Pictures saved before they knew their photo take the hash of the stored copy, which stays the same.
+      const picture = record.picture?.hash || record.picture?.sample ? record.picture : { sample: false, hash: await hashOf(record.blob).catch(() => null) }
+      await this.loadFromSource(url, record.name, picture)
       URL.revokeObjectURL(url)
       if (this.error) return
       this.savedId = record.id
@@ -288,7 +345,7 @@ export const useAnalysisStore = defineStore('analysis', {
         .map((e, index) => ({ index, targetHex: e.overridden ? e.targetHex : null, chosen: e.chosen }))
         .filter((e) => e.targetHex || e.chosen)
     },
-    async loadFromSource(src, name) {
+    async loadFromSource(src, name, picture = { sample: false, hash: null }) {
       this.error = null
       this.savedId = null
       // Pictures asked for one after the other: the last one asked for wins, whichever loads first.
@@ -312,6 +369,7 @@ export const useAnalysisStore = defineStore('analysis', {
         this.image = markRaw(img)
         this.pixels = markRaw({ rgba: data, width, height })
         this.imageName = name
+        this.picture = picture
         this.forgetPicture()
         await this.analyse()
       } catch (e) {
@@ -324,7 +382,7 @@ export const useAnalysisStore = defineStore('analysis', {
      * the analysis finds what the whole picture has no room for. `rect` is in shares of the picture.
      */
     async addCloseup(rect) {
-      if (!this.image || !useProStore().require(false, 'zoom in on a part of the picture')) return
+      if (!this.image || !useProStore().require('closeups', 'zoom in on a part of the picture')) return
       const source = this.base?.image ?? this.image
       const cut = closeupSize(source.naturalWidth ?? source.width, source.naturalHeight ?? source.height, rect, 160 * 160)
       const thumb = document.createElement('canvas')
@@ -425,6 +483,7 @@ export const useAnalysisStore = defineStore('analysis', {
     forgetPicture() {
       pictureSerial++
       this.pictureStamp = pictureSerial
+      this.blockingSolo = null
       mixKey = null
       this.pendingEdits = null
       if (this.layerMode) {
@@ -739,6 +798,27 @@ export const useAnalysisStore = defineStore('analysis', {
         this.error = t('Sketch failed: {reason}', { reason: t(e.message) })
       } finally {
         if (sketchRunning === key) sketchRunning = null
+      }
+    },
+
+    /** Works out the blocking of the picture as it is set (in the worker), unless it is there or on its way. */
+    async ensureBlocking() {
+      const source = this.adjusted ?? this.pixels
+      const key = this.blockingKey
+      if (!source || this.blocking?.key === key || blockingRunning === key) return
+      blockingRunning = key
+      const { blockingTones: tones, blockingSplit: split, blockingForms: forms } = this.settings
+      try {
+        const { result } = await runSegmentation({ kind: 'blocking', rgba: source.rgba.slice(), width: source.width, height: source.height, tones, split: split ? [...split] : null, forms })
+        if (key !== this.blockingKey) return
+        // A tone on its own that the new blocking does not have any more is let go.
+        if (this.blockingSolo != null && this.blockingSolo >= result.tones) this.blockingSolo = null
+        this.blocking = markRaw({ key, ...result })
+        this.renderVersion++
+      } catch (e) {
+        this.error = t('Blocking failed: {reason}', { reason: t(e.message) })
+      } finally {
+        if (blockingRunning === key) blockingRunning = null
       }
     },
 

@@ -1,5 +1,22 @@
 <template>
-  <section class="panel layers">
+  <!-- Layer mode's counterpart of the colour list: the same buttons in the right column, and the
+       layers in a card that floats over the picture, folded and moved like the colours. -->
+  <section class="panel sidebar layers" :class="{ 'panel--collapsed': collapsed }">
+    <div class="toolbar">
+      <PanelToggle name="palette" icon="layers" label="the layers" />
+      <button class="button button--ghost" type="button" :data-hint="t('Paint box')" @click="emit('show-paintbox')">
+        <AppIcon name="paintbox" />
+      </button>
+    </div>
+    <div v-if="!collapsed" ref="panel" class="card flyout flyout--floating flyout--low" :class="{ 'flyout--dragging': dragging }" :style="style">
+      <div class="flyout__handle" :title="t('Drag to move the layers')" @pointerdown="startDrag"></div>
+      <button class="flyout__close" type="button" :title="t('Close')" :aria-label="t('Close the layers')" @click="layout.toggle('palette')">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+          <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
+        </svg>
+      </button>
+    <!-- The spot tapped in the picture, at the top of the card while it is open. -->
+    <LayerArea />
     <header class="layers__header">
       <h2 class="panel__title">
         {{ t('Layers') }}
@@ -68,22 +85,38 @@
       </p>
       <p class="layers__note">{{ t('Ticks only change what the picture shows. Change the paints in the paint box.') }}</p>
     </template>
+    </div>
   </section>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { contrastText } from '../lib/color.js'
 import { matchQuality } from '../lib/mixing.js'
 import { paintNumber } from '../lib/paintbox.js'
 import { useText, washGuideText } from '../i18n/index.js'
+import AppIcon from './AppIcon.vue'
+import LayerArea from './LayerArea.vue'
+import PanelToggle from './PanelToggle.vue'
+import { useLayoutStore } from '../stores/layout.js'
+import { useFloating } from './floating.js'
 
 const { t, paintName: nameOf, region } = useText()
 const emit = defineEmits(['show-paintbox'])
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
+const layout = useLayoutStore()
+const collapsed = computed(() => !!layout.collapsed.palette)
+const { panel, style, dragging, startDrag } = useFloating('colours')
+// A spot tapped in the picture is shown at the top of the card: a folded card opens for it.
+watch(
+  () => analysis.layerPoint,
+  (point) => {
+    if (point && collapsed.value) layout.toggle('palette')
+  },
+)
 
 const result = computed(() => analysis.layers)
 const percent = (share) => Math.round(share * 100) || '<1'

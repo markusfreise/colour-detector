@@ -7,6 +7,7 @@ import SwiftUI
 struct PaintingView: View {
     @Environment(Session.self) private var session
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     @State private var zoom = 1.0
     @State private var zoomAtStart: Double?
@@ -22,6 +23,14 @@ struct PaintingView: View {
     private static let padding = 16.0
     /// How far a zoomed picture may be moved past its edge: its shadow and a little more.
     private static let edge = 20.0
+
+    private var compact: Bool {
+        #if os(iOS)
+        sizeClass == .compact
+        #else
+        false
+        #endif
+    }
 
     var body: some View {
         GeometryReader { frame in
@@ -67,7 +76,8 @@ struct PaintingView: View {
 
     @ViewBuilder private var picture: some View {
         if let image = session.rendered, let size = session.workingSize {
-            NumberedPicture(image: image, width: size.width, labels: session.pictureLabels())
+            // A phone keeps its 14 points; iPad and Mac size the numbers with the picture, as the web.
+            NumberedPicture(image: image, width: size.width, labels: session.pictureLabels(), fontSize: compact ? 14 : nil)
                 .overlay {
                     GeometryReader { geometry in
                         Color.clear
@@ -165,6 +175,10 @@ struct PaintingView: View {
         let x = Int(location.x / size.width * Double(working.width))
         let y = Int(location.y / size.height * Double(working.height))
         guard x >= 0, y >= 0, x < working.width, y < working.height else { return }
+        if session.settings.view == .blocking {
+            session.tapBlocking(x: x, y: y)
+            return
+        }
         if session.layerMode {
             session.selectPoint((x, y))
             return
@@ -234,6 +248,7 @@ extension Session {
     /// layer seen alone. Shared by the screen, the printed sheet and the exported picture.
     func pictureLabels() -> [NumberedPicture.Label] {
         guard settings.numbers else { return [] }
+        if settings.view == .blocking { return blockingLabels() }
         let onPhoto = settings.view == .original
         if layerMode {
             guard let plan = layers, let solo = layerSolo else { return [] }
@@ -270,6 +285,24 @@ extension Session {
     }
 }
 
+extension Session {
+    /// The numbers of the tones in their masses, as the picture shows them.
+    private func blockingLabels() -> [NumberedPicture.Label] {
+        guard let result = blockingResult else { return [] }
+        return result.regions.compactMap { region in
+            if let solo = blockingSolo, region.tone != solo { return nil }
+            let grey = Blocking.toneGrey(region.tone, tones: result.tones)
+            return NumberedPicture.Label(
+                text: "\(region.tone + 1)",
+                x: Double(region.anchorX) + 0.5,
+                y: Double(region.anchorY) + 0.5,
+                room: Double(region.anchorDist),
+                color: grey.r > 140 ? Color(hex: "#1d1b18") : .white
+            )
+        }
+    }
+}
+
 /// The rendered areas with a number in every area that has room for one.
 struct NumberedPicture: View {
     struct Label {
@@ -286,7 +319,14 @@ struct NumberedPicture: View {
     /// Width of the picture in working pixels.
     let width: Int
     let labels: [Label]
-    var fontSize: CGFloat = 14
+    /// A fixed size in points (a phone, the printed sheet); without one the numbers grow with the
+    /// picture, as on the web: 5.5 working pixels high, never smaller than can be read.
+    var fontSize: CGFloat?
+
+    /// As the web's MIN_LABEL_DIST: only areas with this much room, in working pixels, get a number.
+    private static let minRoom = 5.0
+    private static let relativeSize = 5.5
+    private static let smallest: CGFloat = 7
 
     var body: some View {
         Image(decorative: image, scale: 1)
@@ -295,8 +335,10 @@ struct NumberedPicture: View {
             .overlay {
                 Canvas { context, size in
                     let scale = size.width / Double(width)
-                    for label in labels where label.room * scale >= fontSize * 0.7 {
-                        let text = Text(label.text).font(.system(size: fontSize, weight: .bold)).foregroundStyle(label.color)
+                    let fontSize = fontSize ?? max(Self.smallest, Self.relativeSize * scale)
+                    let minRoom = self.fontSize == nil ? Self.minRoom : 0
+                    for label in labels where label.room >= minRoom && label.room * scale >= fontSize * 0.7 {
+                        let text = Text(label.text).font(.system(size: fontSize, weight: .semibold)).foregroundStyle(label.color)
                         context.draw(text, at: CGPoint(x: label.x * scale, y: label.y * scale))
                     }
                 }

@@ -88,4 +88,28 @@
         min-width: 0;
         margin-top: 0;
     }
+
+    // One offer of the dialog: this picture (a credit, packs), or Pro.
+    &__section {
+        margin: #{pxtorem(12)} 0;
+    }
+
+    &__heading {
+        margin-bottom: var(--gap-05x);
+        font-size: var(--fs-medium);
+        font-weight: 700;
+    }
+
+    &__deduction {
+        margin: #{pxtorem(8)} 0;
+        color: var(--c-corporate);
+        font-weight: 600;
+    }
+
+    &__confirm {
+        margin-bottom: #{pxtorem(10)};
+        padding: #{pxtorem(10)};
+        border-radius: var(--radius-medium);
+        background: var(--c-background);
+    }
 }

@@ -1,0 +1,17 @@
+{
+  "comment": "Cases for canUse, checked by src/__tests__/entitlements.test.js and server/tests/run.php. A state names what the account has; 'picture' is the hash of the picture on screen.",
+  "cases": [
+    { "name": "free: own paints locked", "state": {}, "picture": "aaa", "feature": "own_paints", "expected": false },
+    { "name": "free: studio locked", "state": {}, "picture": "aaa", "feature": "paint_boxes", "expected": false },
+    { "name": "free: no picture", "state": {}, "picture": null, "feature": "print", "expected": false },
+    { "name": "credit: picture feature on its picture", "state": { "unlocked": ["aaa"] }, "picture": "aaa", "feature": "print", "expected": true },
+    { "name": "credit: own paints on its picture", "state": { "unlocked": ["aaa"] }, "picture": "aaa", "feature": "own_paints", "expected": true },
+    { "name": "credit: not on another picture", "state": { "unlocked": ["aaa"] }, "picture": "bbb", "feature": "print", "expected": false },
+    { "name": "credit: studio stays locked", "state": { "unlocked": ["aaa"] }, "picture": "aaa", "feature": "brand_charts", "expected": false },
+    { "name": "credit: monochrome stays locked", "state": { "unlocked": ["aaa"] }, "picture": "aaa", "feature": "monochrome", "expected": false },
+    { "name": "subscription: everything", "state": { "plan": "subscription" }, "picture": "bbb", "feature": "ai", "expected": true },
+    { "name": "subscription: without a picture", "state": { "plan": "subscription" }, "picture": null, "feature": "save", "expected": true },
+    { "name": "lifetime: everything", "state": { "plan": "lifetime" }, "picture": "aaa", "feature": "box_import", "expected": true },
+    { "name": "lifetime and credits: credits play no part", "state": { "plan": "lifetime", "unlocked": ["aaa"] }, "picture": "bbb", "feature": "closeups", "expected": true }
+  ]
+}

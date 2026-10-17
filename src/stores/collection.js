@@ -4,6 +4,7 @@ import { listImages, getImage, putImage, deleteImage, getLast, putLast } from '.
 import { usePaintsStore } from './paints.js'
 import { useAnalysisStore } from './analysis.js'
 import { useProStore, FREE_IMAGES } from './pro.js'
+import { useAccountStore } from './account.js'
 import { t } from '../i18n/index.js'
 
 const STORE_SIZE = 1600 // longest side of the stored picture
@@ -33,8 +34,10 @@ export const useCollectionStore = defineStore('collection', {
       try {
         const records = await listImages()
         this.items = records
-          .map(({ id, name, thumb, updatedAt }) => ({ id, name, thumb, updatedAt }))
+          .map(({ id, name, thumb, updatedAt, picture }) => ({ id, name, thumb, updatedAt, hash: picture?.hash ?? null }))
           .sort((a, b) => b.updatedAt - a.updatedAt)
+        // Which of them were unlocked with a credit (the badge in the collection).
+        useAccountStore().learnKeys(this.items.map((item) => item.hash))
       } catch (e) {
         this.error = t('Could not read the collection: {reason}', { reason: t(e.message) })
       }
@@ -45,7 +48,7 @@ export const useCollectionStore = defineStore('collection', {
       const analysis = useAnalysisStore()
       if (!analysis.image) return false
       const isNew = !analysis.savedId
-      if (isNew && !useProStore().require(this.items.length < FREE_IMAGES, FREE_IMAGES ? 'save more than one picture' : 'save pictures')) return false
+      if (isNew && !useProStore().require('save', FREE_IMAGES ? 'save more than one picture' : 'save pictures', this.items.length < FREE_IMAGES)) return false
       this.error = null
       try {
         const id = analysis.savedId ?? `img-${Date.now().toString(36)}`
@@ -58,6 +61,7 @@ export const useCollectionStore = defineStore('collection', {
           settings: { ...analysis.settings },
           edits: analysis.exportEdits(),
           palette: structuredClone(toRaw(usePaintsStore().palette)),
+          picture: existing?.picture ?? { ...analysis.picture },
           updatedAt: Date.now(),
         })
         analysis.savedId = id
@@ -88,6 +92,7 @@ export const useCollectionStore = defineStore('collection', {
           settings: { ...analysis.settings },
           edits: analysis.exportEdits(),
           palette: structuredClone(toRaw(usePaintsStore().palette)),
+          picture: { ...analysis.picture },
           savedId: analysis.savedId ?? null,
           updatedAt: Date.now(),
         })

@@ -56,9 +56,33 @@ A restricted key (`rk_live_...`) works, with these permissions (everything else 
 | Customers | Write | buying |
 | Subscriptions | Read | webhook |
 
-It creates the product, the three prices, the 19 % VAT rate, the webhook to `<app_url>api/stripe/webhook` and the customer portal (cancel at the end of the period, switch between monthly and yearly, invoices, card), reuses what is already there, and writes key, webhook secret and price IDs into `config.php`. Run it again after changing a price in `PLANS`; the old price stays for its existing subscribers. With a `sk_test_` key it sets up the test mode the same way.
+It creates the product, a price for every product in `plans.json`, the 19 % VAT rate, the webhook to `<app_url>api/stripe/webhook` and the customer portal (cancel at the end of the period, switch between monthly and yearly, invoices, card), reuses what is already there, and writes key, webhook secret and price IDs into `config.php`. Run it again after changing a price in `PLANS`; the old price stays for its existing subscribers. With a `sk_test_` key it sets up the test mode the same way.
 
 In the Stripe dashboard, once: public details (terms and privacy URL, support address) and the VAT ID on the invoices.
+
+## Plans and what they unlock
+
+`plans.json` holds the products (subscriptions, the lifetime licence, credit packs), the two groups of paid features (`picture`: what one picture needs, unlocked by a credit; `studio`: only with a plan) and the free limits. The app reads the same file (`src/lib/entitlements.js`), and `entitlements.php` decides with the same rules; `tests/entitlement-cases.json` checks both. A product is offered when it is `active` and has a Stripe price: `STRIPE_PRICE_<KEY>` in the environment (`pictures-5` → `STRIPE_PRICE_PICTURES_5`) or `stripe.prices` in `config.php`. The prices shown come from Stripe, not from the file or the translations.
+
+## Picture credits
+
+A credit unlocks the picture features (see `plans.json`) of one picture for good. Every account gets one free credit (`credits.welcome`), old accounts too, once. Packs are bought like the lifetime licence, with one payment; the webhook adds their credits once per checkout, however often Stripe reports it. A refund takes back credits in proportion to the money returned, never below 0; pictures already unlocked stay unlocked. Subscribers and licence holders spend no credits.
+
+The server never sees a picture, nor its hash: the app sends `SHA-256(salt + ":" + SHA-256 of the photo's bytes)`, with a salt of its own for every account, so the same photo gives another key in another account.
+
+`credit_ledger` holds every change of a balance with its reason (grant, purchase, spend, admin, refund); the balance is its sum. By hand, in the folder of the API:
+
+```
+php credits.php show someone@example.org
+php credits.php grant someone@example.org 5 --reason="Workshop with ..."
+php credits.php revoke someone@example.org 2 --reason="Given twice by mistake"
+```
+
+Database changes after the first tables are numbered migrations (`migrations.php`), run once each on the first request; the number reached is SQLite's `user_version`.
+
+## Tests
+
+`npm run test:server` (or `php server/tests/run.php`): no packages, every test on a new SQLite file.
 
 ## Vouchers
 
@@ -74,7 +98,7 @@ The holder signs in with that address and enters the code under "Unlock everythi
 
 ## Routes
 
-`GET me` · `POST auth/magic` · `POST auth/magic/verify` · `GET auth/<provider>/start` · `GET|POST auth/<provider>/callback` · `POST consent` · `POST logout` · `GET export` · `POST delete` · `POST billing/checkout` · `POST billing/portal` · `POST billing/voucher` · `POST stripe/webhook`
+`GET me` · `POST auth/magic` · `POST auth/magic/verify` · `GET auth/<provider>/start` · `GET|POST auth/<provider>/callback` · `POST consent` · `POST logout` · `GET export` · `POST delete` · `POST billing/checkout` · `POST billing/portal` · `POST billing/voucher` · `POST credits/unlock` · `POST stripe/webhook`
 
 ## Limits
 

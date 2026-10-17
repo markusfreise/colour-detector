@@ -13,10 +13,13 @@
             <!-- Pictures from local-samples/ are only there on the dev server. -->
             <span v-if="sample.local" class="samples__tag">{{ t('Only on this machine') }}</span>
           </button>
+          <a v-if="sample.credit" class="samples__credit" :href="sample.credit.url" target="_blank" rel="noopener">
+            {{ t('Photo: {name} / Unsplash', { name: sample.credit.name }) }}
+          </a>
         </li>
       </ul>
       <p class="samples__note">
-        {{ t('Sample images © Markus Freise. For personal use only, not for commercial use.') }}
+        {{ t('Sample photos under the Unsplash License.') }}
         <a v-if="!isNative" :href="legalPage('imprint')">{{ t('Imprint') }}</a>
       </p>
     </div>

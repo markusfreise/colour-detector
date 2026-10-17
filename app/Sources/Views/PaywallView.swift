@@ -10,12 +10,14 @@ struct PaywallView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Unlock Everything").font(.title.bold())
-            Text(L("The free version holds one saved picture and one paint box, without close-ups. To %@, unlock the full version with a single purchase. No subscription.", L(reason)))
+            Text(L("The free version holds one saved picture and the paint boxes it comes with. To %@, unlock the full version with a single purchase. No subscription.", L(reason)))
                 .foregroundStyle(.secondary)
             VStack(alignment: .leading, spacing: 8) {
                 Label("Save as many pictures as you like", systemImage: "photo.on.rectangle")
                 Label("Keep a paint box for every set of paints you own", systemImage: "shippingbox")
+                Label("Add colours from the catalogues of known manufacturers", systemImage: "books.vertical")
                 Label("Zoom in on parts of a picture and analyse them on their own", systemImage: "viewfinder")
+                Label("Block in light and shadow, and make the areas finer", systemImage: "circle.lefthalf.filled")
             }
             if let error = store.error {
                 Text(error).foregroundStyle(.red)
@@ -39,7 +41,7 @@ struct PaywallView: View {
         .presentationDetents([.medium, .large])
         .onChange(of: store.unlocked) { if store.unlocked { dismiss() } }
         #if os(macOS)
-        .frame(width: 420, height: 400)
+        .frame(width: 440, height: 460)
         #endif
     }
 }

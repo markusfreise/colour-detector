@@ -23,6 +23,11 @@ struct SamplesView: View {
                                     .font(.subheadline)
                                     .foregroundStyle(.primary)
                                     .lineLimit(2)
+                                if let url = URL(string: sample.url) {
+                                    Link(L("Photo: %@ / Unsplash", sample.photographer), destination: url)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
                             }
                             .contentShape(Rectangle())
                         }
@@ -31,7 +36,7 @@ struct SamplesView: View {
                     }
                 }
                 .padding()
-                Text("Sample images © Markus Freise. For personal use only, not for commercial use.")
+                Text("Sample photos under the Unsplash License.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .padding([.horizontal, .bottom])

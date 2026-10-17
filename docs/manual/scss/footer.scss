@@ -1,0 +1,15 @@
+@use "functions" as *;
+
+.footer {
+    padding-block: var(--gap-2x);
+    border-top: 1px solid var(--c-border);
+    font-size: var(--fs-small);
+    color: var(--c-copy-light);
+
+    &__inner {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: var(--gap-05x) var(--gap-2x);
+    }
+}

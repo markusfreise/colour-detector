@@ -1,0 +1,74 @@
+@use "../functions" as *;
+
+// The debug menu (DebugMenu.vue): a button in the left column of the app, its card beside it;
+// in the footer of the sign-in a link, its card above it.
+.debug {
+    position: relative;
+
+    // Its icon is drawn with lines, not filled as the icons of the app (.button svg path, ui.scss).
+    &__toggle {
+        position: relative;
+        color: var(--c-copy-light);
+
+        svg path {
+            fill: none !important;
+            stroke: currentColor;
+        }
+
+        &.button--active {
+            color: var(--c-on-active);
+        }
+    }
+
+    &__link {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--c-corporate);
+        font: inherit;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    // Something is overridden: the pro state or a sign-in screen.
+    &__dot {
+        position: absolute;
+        top: #{pxtorem(4)};
+        right: #{pxtorem(4)};
+        width: #{pxtorem(8)};
+        height: #{pxtorem(8)};
+        border-radius: 50%;
+        background: var(--c-danger);
+    }
+
+    &__card {
+        position: absolute;
+        z-index: 6;
+        top: 0;
+        left: calc(100% + var(--gap-05x));
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-05x);
+        width: max-content;
+        max-width: calc(100vw - #{pxtorem(72)});
+        padding: var(--gap);
+    }
+
+    &--link &__card {
+        top: auto;
+        bottom: calc(100% + var(--gap-05x));
+        left: 0;
+    }
+
+    &__title {
+        font-size: var(--fs-small);
+        font-weight: 650;
+        color: var(--c-copy-light);
+    }
+
+    &__list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--gap-05x);
+    }
+}

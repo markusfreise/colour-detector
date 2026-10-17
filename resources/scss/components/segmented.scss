@@ -42,15 +42,21 @@
             }
         }
         &--active {
-            box-shadow: var(--shadow-flat);
-            background: var(--c-corporate);
-            color: var(--c-on-corporate);
+            background: var(--c-active);
+            color: var(--c-on-active);
             font-weight: 600;
-            box-shadow: var(--shadow-flat);
+            svg {
+                filter: var(--active-glow);
+                path {
+                    fill: var(--c-on-active);
+                }
+            }
         }
-        &--active {
-            background: var(--c-corporate);
-        }
+    }
+
+    // Part of the full version, not bought: ghosted, as .button--locked.
+    &__option--locked svg {
+        opacity: 0.4;
     }
 
     // Words instead of icons: as wide as the word.

@@ -6,6 +6,10 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/entitlements.php';
+require_once __DIR__ . '/migrations.php';
+require_once __DIR__ . '/ledger.php';
+
 const SESSION_COOKIE = 'cd_session';
 const STATE_COOKIE = 'cd_state';
 const SESSION_DAYS = 60;
@@ -18,26 +22,28 @@ const MAGIC_PER_IP = 20;
 
 function config(?string $key = null): mixed
 {
-    static $config = null;
-    if ($config === null) {
+    // The tests put a configuration of their own here.
+    if (!isset($GLOBALS['accountConfig'])) {
         $file = __DIR__ . '/config.php';
         if (!is_file($file)) {
             fail(500, 'The account service is not configured.');
         }
-        $config = require $file;
+        $GLOBALS['accountConfig'] = require $file;
     }
+    $config = $GLOBALS['accountConfig'];
     return $key === null ? $config : ($config[$key] ?? null);
 }
 
 function db(): PDO
 {
-    static $db = null;
-    if ($db !== null) {
-        return $db;
+    if (isset($GLOBALS['accountDb'])) {
+        return $GLOBALS['accountDb'];
     }
-    $db = new PDO('sqlite:' . config('database'), null, null, [
+    $db = $GLOBALS['accountDb'] = new PDO('sqlite:' . config('database'), null, null, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        // A request that finds the database held by another one waits for it (seconds).
+        PDO::ATTR_TIMEOUT => 10,
     ]);
     $db->exec('PRAGMA journal_mode = WAL');
     $db->exec('PRAGMA foreign_keys = ON');
@@ -89,6 +95,8 @@ function db(): PDO
         PRIMARY KEY (code, email)
     )');
     $db->exec('CREATE TABLE IF NOT EXISTS stripe_events (id TEXT PRIMARY KEY, at INTEGER NOT NULL)');
+    // Everything added since: migrations.php.
+    migrate($db);
     return $db;
 }
 
@@ -105,8 +113,20 @@ function row(string $sql, array $values = []): ?array
     return $found === false ? null : $found;
 }
 
+/** What send() and fail() throw under test, instead of answering and ending the script. */
+final class Answer extends Exception
+{
+    public function __construct(public readonly array $data, public readonly int $status)
+    {
+        parent::__construct((string) ($data['error'] ?? 'answer'), $status);
+    }
+}
+
 function send(array $data, int $status = 200): never
 {
+    if (defined('ACCOUNT_TESTS')) {
+        throw new Answer($data, $status);
+    }
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store');
@@ -269,8 +289,9 @@ function userByEmail(string $email): array
     $email = strtolower(trim($email));
     $user = row('SELECT * FROM users WHERE email = ?', [$email]);
     if (!$user) {
-        run('INSERT INTO users (email, created_at) VALUES (?, ?)', [$email, time()]);
+        run('INSERT INTO users (email, created_at, picture_salt) VALUES (?, ?, ?)', [$email, time(), bin2hex(random_bytes(16))]);
         $user = row('SELECT * FROM users WHERE email = ?', [$email]);
+        grantWelcomeCredits(db(), (int) $user['id']);
     }
     return $user;
 }
@@ -296,7 +317,7 @@ function describeUser(array $user): array
         'until' => (int) $user['lifetime'] === 1 ? null : ($user['sub_until'] ? (int) $user['sub_until'] : null),
         'consent' => $user['consent_version'] === config('consent_version'),
         'billing' => $user['stripe_customer'] !== null,
-    ];
+    ] + describeCredits($user);
 }
 
 function enabledProviders(): array
@@ -315,17 +336,17 @@ function enabledProviders(): array
     return $providers;
 }
 
-function enabledPlans(): array
+/** The products that can be bought: active in plans.json and with a Stripe price. */
+function enabledProducts(): array
 {
-    $stripe = config('stripe') ?? [];
-    if (($stripe['secret_key'] ?? '') === '') {
+    if (((config('stripe') ?? [])['secret_key'] ?? '') === '') {
         return [];
     }
-    $plans = [];
-    foreach ($stripe['plans'] ?? [] as $name => $plan) {
-        if (($plan['price'] ?? '') !== '') {
-            $plans[] = ['id' => $name, 'label' => $plan['label'] ?? ''];
+    $products = [];
+    foreach (activeProducts() as $product) {
+        if (priceIdOf($product['key']) !== '') {
+            $products[] = array_intersect_key($product, array_flip(['key', 'type', 'interval', 'quantity'])) + ['price' => priceOf(priceIdOf($product['key']))];
         }
     }
-    return $plans;
+    return $products;
 }

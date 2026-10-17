@@ -6,7 +6,7 @@
       <span class="tip__share">{{ t('{percent}% of image', { percent: Math.round(entry.share * 100) || '<1' }) }}</span>
     </div>
     <!-- The recommended recipe as in the recipe panel: wash and match, the paints with their parts, the ratio as a bar. -->
-    <RecipeLine v-if="recipe" :recipe="recipe" full />
+    <RecipeLine v-if="recipe" :recipe="recipe" full :forms="false" />
     <p v-else class="tip__paper">{{ t('No paints selected in the paint box') }}</p>
   </div>
 </template>

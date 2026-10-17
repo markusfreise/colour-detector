@@ -10,9 +10,18 @@
     box-shadow: var(--shadow);
 }
 
+.toolbar {
+    padding: calc(0.5 * var(--tool-gap));
+    background: var(--c-background-raised);
+    box-shadow: var(--shadow);
+    border-radius: var(--radius-medium);
+}
+
 .flyout {
+    // The padding, also known to the handle, which reaches across it.
+    --flyout-pad: #{pxtorem(32)};
     left: 0;
-    padding: #{pxtorem(32)};
+    padding: var(--flyout-pad);
     // Never wider than a narrow window.
     min-width: min(#{pxtorem(480)}, 95vw);
     max-width: 95vw;
@@ -46,12 +55,16 @@
     }
 
     // The handle: a strip across the top of the panel with a short bar in its middle, and room
-    // above and below the bar.
+    // above and below the bar. It stays at the top while the panel scrolls, over what passes under it.
     &__handle {
+        position: sticky;
+        top: 0;
+        z-index: 1;
         display: grid;
         place-items: center;
         height: #{pxtorem(24)};
-        margin: #{pxtorem(-20)} 0 #{pxtorem(12)};
+        margin: #{pxtorem(-20)} calc(var(--flyout-pad, 0px) * -1) #{pxtorem(12)};
+        background: inherit;
         cursor: grab;
         user-select: none;
         touch-action: none;
@@ -197,11 +210,13 @@
         color: var(--c-on-corporate);
     }
     &--active {
-        background: var(--c-corporate);
-        color: var(--c-on-corporate) !important;
+        background: var(--c-active);
+        border-color: var(--c-active-outline);
+        color: var(--c-on-active) !important;
         svg {
+            filter: var(--active-glow);
             path {
-                fill: var(--c-on-corporate) !important;
+                fill: var(--c-on-active) !important;
             }
         }
     }
@@ -219,6 +234,10 @@
     // Text buttons with a white or clear ground carry a dark outline; filled and icon buttons do not.
     &:not(:has(svg)):not(.button--secondary):not(.button--active) {
         border: 2px solid var(--c-button-border);
+    }
+    // Part of the full version, not bought: ghosted. A click still offers it.
+    &--locked svg {
+        opacity: 0.4;
     }
     &--ghost {
         background: transparent;

@@ -82,16 +82,28 @@
         grid-template-columns: 1fr;
     }
 
+    // Two lines in the measure of the paint rows below, so that it reads against them.
     &--full &__result {
-        min-height: 0;
+        min-height: calc((1.25em + 2 * var(--gap-025x) + 2px) * 2);
+        padding-block: var(--gap-025x);
+        justify-content: center;
+    }
+
+    &__label {
+        margin-top: var(--gap-025x);
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+        font-weight: 650;
     }
 
     &--full &__paints {
         grid-template-columns: 1fr;
     }
 
+    // Room on the left where the colour shows, free of text.
     &--full .chip {
         font-size: var(--fs-small);
+        padding-left: 2.4em;
     }
 
     &--full .chip__text {
@@ -99,11 +111,14 @@
         white-space: normal;
     }
 
-    &--full &__paint {
-        justify-content: flex-start;
+    // One line of a row, padding and border included, times its share of the mix.
+    // Without pan or tube, the parts and the paint are one run of text: one space between them.
+    &--bare &__paint {
+        gap: 0.3em;
     }
 
-    &--full &__part-text {
-        font-size: var(--fs-caption);
+    &--full &__paint {
+        justify-content: flex-start;
+        min-height: calc((1.25em + 2 * var(--gap-025x) + 2px) * var(--lines, 1));
     }
 }

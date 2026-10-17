@@ -115,35 +115,42 @@
         transform: translateX(-50%);
         display: flex;
         align-items: center;
-        gap: #{pxtorem(6)};
+        gap: var(--tool-gap);
         cursor: default;
     }
 
-    // As tall as the icon buttons beside it. On a phone it sits beside the menu button instead.
+    // On a phone it sits beside the menu button instead.
     &__pro {
         @media (max-width: 760px) {
             display: none;
         }
-
-        height: #{pxtorem(48)};
-        padding-block: 0;
-        font-weight: 600;
     }
 
-    // The view buttons are as large as the buttons beside them (48 px, as .button with an icon).
+    // The view buttons are as large as the buttons beside them (--tool, app.scss).
     &__tools .segmented {
         display: flex;
-        height: #{pxtorem(48)};
+        height: calc(var(--tool) + #{pxtorem(2)});
+    }
+
+    &__tools .button:not(.painting__pro),
+    &__tools .segmented__option {
+        width: var(--tool);
+        height: var(--tool);
     }
 
     &__tools .segmented__option {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: #{pxtorem(48)};
         height: 100%;
         padding: 0;
         aspect-ratio: auto;
+    }
+
+    &__tools .button svg,
+    &__tools .segmented__option svg {
+        width: calc(var(--tool) * 0.79);
+        height: calc(var(--tool) * 0.79);
     }
 
     // In a narrow window the toolbars take the top corners: the buttons go to the bottom, above
@@ -159,36 +166,19 @@
         }
     }
 
-    @media (max-width: 524px) {
-        &__tools .button,
-        &__tools .segmented__option {
-            width: #{pxtorem(40)};
-            height: #{pxtorem(40)};
-        }
+    // As .button--active (ui.scss): black, the icon white with a little glow.
+    &__tool--on,
+    &__tool--on:hover {
+        background: var(--c-active) !important;
+        border-color: var(--c-active-outline);
+        color: var(--c-on-active);
 
-        &__tools .segmented {
-            height: #{pxtorem(42)};
-        }
+        svg {
+            filter: var(--active-glow);
 
-        &__tools .button svg,
-        &__tools .segmented__option svg {
-            width: #{pxtorem(30)};
-            height: #{pxtorem(30)};
-        }
-
-        &__tools .painting__pro {
-            width: auto;
-            padding-inline: #{pxtorem(10)};
-        }
-    }
-
-    &__tool--on {
-        background: var(--c-corporate);
-        border-color: var(--c-corporate);
-        color: var(--c-on-corporate);
-
-        &:hover {
-            background: var(--c-corporate);
+            path {
+                fill: var(--c-on-active) !important;
+            }
         }
     }
 

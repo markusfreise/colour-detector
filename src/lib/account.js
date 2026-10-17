@@ -18,6 +18,7 @@ const NOTICES = {
   'login=failed': { kind: 'error', text: 'Signing in did not work. Please try again.' },
   'login=no-email': { kind: 'error', text: 'That account shares no e-mail address. Please sign in another way.' },
   'billing=ok': { kind: 'paid', text: 'Thank you. Your purchase is being confirmed.' },
+  'billing=pictures': { kind: 'pictures', text: 'Thank you. Your pictures are being credited.' },
   'billing=cancelled': { kind: 'info', text: 'The payment was not completed. Nothing was charged.' },
 }
 
@@ -40,4 +41,9 @@ export function readReturn(hash) {
 export function paidUntil(seconds, locale = 'en-GB') {
   if (!seconds) return ''
   return new Date(seconds * 1000).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+/** A price as Stripe gives it ({ amount in cents, currency }), e.g. "8,99 €" in German. */
+export function formatPrice({ amount, currency }, locale = 'en-GB') {
+  return new Intl.NumberFormat(locale, { style: 'currency', currency: currency.toUpperCase() }).format(amount / 100)
 }

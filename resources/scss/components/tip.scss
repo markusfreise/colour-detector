@@ -5,7 +5,10 @@
 .tip {
     position: fixed;
     z-index: 20;
-    width: min(#{pxtorem(480)}, 90vw);
+    // Half the old width at least, wider where a paint name needs it.
+    width: max-content;
+    min-width: min(#{pxtorem(240)}, 90vw);
+    max-width: 90vw;
     padding: #{pxtorem(10)};
     border: 1px solid var(--c-border);
     border-radius: var(--radius-medium);

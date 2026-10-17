@@ -1,12 +1,21 @@
 import { defineStore } from 'pinia'
 import { isNative, onNative, sendNative } from '../lib/native.js'
+import { canUse, featureGroup, freeSavedPictures } from '../lib/entitlements.js'
 import { useAccountStore } from './account.js'
+import { useAnalysisStore } from './analysis.js'
 
-// What the free version includes; a purchase lifts the limits.
-// The app from the App Store keeps one picture for free; a free account in the browser saves none.
-export const FREE_IMAGES = isNative ? 1 : 0
-// A free account mixes from at most this many paints, and does not print.
-export const FREE_PAINTS = 8
+// Pictures a free account keeps: one in the app from the App Store, none in the browser.
+export const FREE_IMAGES = freeSavedPictures(isNative)
+
+// "Get pro" closed with its cross stays closed until the tab is closed.
+const PROMO_KEY = 'colour-detector:promo-hidden'
+function promoHiddenStored() {
+  try {
+    return sessionStorage.getItem(PROMO_KEY) === '1'
+  } catch {
+    return false
+  }
+}
 
 export const useProStore = defineStore('pro', {
   state: () => ({
@@ -15,18 +24,36 @@ export const useProStore = defineStore('pro', {
     busy: false,
     offered: false, // purchase dialog open
     reason: '', // what the user tried to do when the dialog opened
+    feature: null, // the feature asked for, see plans.json
     error: null,
+    promoHidden: promoHiddenStored(), // "Get pro" closed for this session
+    debugPro: null, // the debug menu: true unlocked, false locked, null as bought
   }),
   getters: {
-    // In the app the App Store decides. In the browser the account does; without accounts nothing is locked.
-    active(state) {
-      if (isNative) return state.unlocked
+    /** What the entitlement rules are asked about: the account, the purchase in the app, the picture on screen. */
+    entitlement(state) {
       const account = useAccountStore()
-      return !account.enabled || account.pro
+      const picture = useAnalysisStore().picture
+      // The debug menu: everything unlocked, or locked as for an account without a plan.
+      if (state.debugPro !== null) return { open: false, native: false, plan: state.debugPro ? 'lifetime' : null, unlocked: new Set(), picture }
+      return {
+        open: !isNative && !account.enabled,
+        native: isNative,
+        nativeUnlocked: state.unlocked,
+        plan: account.user?.plan ?? null,
+        unlocked: account.unlockedHashes,
+        picture,
+      }
     },
-    // How many paints a paint box may use: all of them once unlocked. Only accounts in the browser have this limit.
-    paintLimit() {
-      return isNative || this.active ? Infinity : FREE_PAINTS
+    // Everything unlocked: a plan, the purchase in the app, or a build without accounts.
+    active() {
+      const e = this.entitlement
+      return e.open || (e.native ? e.nativeUnlocked : Boolean(e.plan))
+    },
+    /** `pro.can('print')`: whether the feature may be used on the picture on screen. */
+    can() {
+      const e = this.entitlement
+      return (feature) => canUse(e, feature)
     },
   },
   actions: {
@@ -40,13 +67,22 @@ export const useProStore = defineStore('pro', {
       })
       sendNative('ready')
     },
-    /** True when the feature may be used; otherwise opens the purchase dialog. */
-    require(allowed, reason) {
-      if (this.active || allowed) return true
+    /**
+     * True when the feature may be used (or `allowed` says so anyway); otherwise opens the dialog
+     * that offers what unlocks it. `feature` null asks for everything (the "Get Pro" buttons);
+     * `always` opens the dialog regardless (the debug menu).
+     */
+    require(feature, reason, allowed = false, always = false) {
+      if (!always && (allowed || (feature ? this.can(feature) : this.active))) return true
+      this.feature = feature
       this.reason = reason
       this.error = null
       this.offered = true
       return false
+    },
+    /** Whether the dialog may offer a credit: only a picture feature, on a picture. */
+    creditHelps() {
+      return Boolean(this.feature && featureGroup(this.feature) === 'picture' && this.entitlement.picture)
     },
     purchase() {
       this.busy = true
@@ -60,6 +96,14 @@ export const useProStore = defineStore('pro', {
     },
     dismiss() {
       this.offered = false
+    },
+    hidePromo() {
+      this.promoHidden = true
+      try {
+        sessionStorage.setItem(PROMO_KEY, '1')
+      } catch {
+        // Private mode: closed until the page is reloaded.
+      }
     },
   },
 })

@@ -2,6 +2,8 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useLayoutStore } from '../stores/layout.js'
 
 const MARGIN = 8 // what stays between the panel and the edge of the window
+// The panel touched last lies on top: each touch gives it a higher z-index than the others.
+let topmost = 4
 
 /**
  * A panel that floats over the page and is dragged by its handle. It only floats where its CSS
@@ -59,10 +61,23 @@ export function useFloating(name) {
     const at = layout.positions[name]
     if (at && floats()) layout.positions[name] = inWindow(at.x, at.y)
   }
+  // A panel that opens or is touched anywhere comes to the front.
+  function raise() {
+    if (panel.value) panel.value.style.zIndex = String(++topmost)
+  }
   // The panel may come and go (v-if): checked whenever it appears.
-  watch(panel, (el) => el && keepInWindow(), { flush: 'post' })
+  watch(
+    panel,
+    (el) => {
+      if (!el) return
+      keepInWindow()
+      raise()
+      el.addEventListener('pointerdown', raise, { capture: true })
+    },
+    { flush: 'post' },
+  )
   onMounted(() => window.addEventListener('resize', keepInWindow))
   onBeforeUnmount(() => window.removeEventListener('resize', keepInWindow))
 
-  return { panel, style, dragging, startDrag, floats }
+  return { panel, style, dragging, startDrag, floats, raise, keepInWindow }
 }

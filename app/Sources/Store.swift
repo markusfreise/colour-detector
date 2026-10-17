@@ -9,7 +9,26 @@ final class Store {
     /// What the free version holds.
     static let freePictures = 1
 
-    private(set) var unlocked = false
+    /// The full version: bought, or switched on or off in the debug menu of a test build.
+    var unlocked: Bool { testing ? debugPro ?? owned : owned }
+    /// Bought, as the verified transactions say.
+    private var owned = false
+    /// A build for testing (Xcode or TestFlight): it shows the debug menu.
+    private(set) var testing = false
+    /// The debug menu's choice: nil follows the purchase. Kept across launches.
+    var debugPro: Bool? = Store.readDebugPro() {
+        didSet { UserDefaults.standard.set(debugPro.map { $0 ? "on" : "off" }, forKey: Self.debugProKey) }
+    }
+    private static let debugProKey = "debugPro"
+    private static func readDebugPro() -> Bool? {
+        switch UserDefaults.standard.string(forKey: debugProKey) {
+        case "on": true
+        case "off": false
+        default: nil
+        }
+    }
+    /// The purchase state has been read once: before that `unlocked` is not known yet.
+    private(set) var checked = false
     private(set) var price: String?
     private(set) var error: String?
     private(set) var busy = false
@@ -25,9 +44,21 @@ final class Store {
             }
         }
         Task {
+            await findTesting()
             await loadProduct()
             await refresh()
         }
+    }
+
+    /// Xcode and TestFlight builds are test builds; one from the App Store is not.
+    private func findTesting() async {
+        #if DEBUG
+        testing = true
+        #else
+        if case .verified(let transaction) = try? await AppTransaction.shared {
+            testing = transaction.environment != .production
+        }
+        #endif
     }
 
     private func loadProduct() async {
@@ -49,7 +80,12 @@ final class Store {
                 owned = true
             }
         }
-        unlocked = owned
+        #if DEBUG
+        // "-pro" at launch: the full version, for screenshots and checks.
+        if ProcessInfo.processInfo.arguments.contains("-pro") { owned = true }
+        #endif
+        self.owned = owned
+        checked = true
     }
 
     func purchase() async {

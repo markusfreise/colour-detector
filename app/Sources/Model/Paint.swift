@@ -18,8 +18,10 @@ struct Paint: Codable, Identifiable, Hashable, Sendable {
     /// Added by the user.
     var custom: Bool?
 
-    /// The brand the stock is built on: its paints are grouped by form, every other brand gets a group of its own.
-    static let houseVendor = "Schmincke"
+    /// The series the stock is built on: its paints are grouped by form, every other series gets a group of its own.
+    static let houseVendor = "Schmincke Horadam"
+    /// What the house series was called before it was named after the paints (custom paints saved then).
+    static let oldHouseVendor = "Schmincke"
 
     var isCustom: Bool { custom ?? false }
 
@@ -119,9 +121,23 @@ extension Array where Element == Paint {
     }
 }
 
-/// One colour of the Schmincke Horadam colour chart; fills in name and colour when a paint is added by number.
-struct ChartColour: Codable {
+/// One colour of a library's colour chart; fills in name and colour when a paint is added by number.
+struct ChartColour: Codable, Hashable {
     let number: String
     let name: String
     let hex: String
+}
+
+/// A paint series that comes with the app, with its colour chart (`src/data/libraries.js`):
+/// a number of the series entered for a paint fills in its name and colour.
+struct PaintLibrary: Codable, Identifiable {
+    let id: String
+    /// As it is written on the tube; also the vendor of the paints added from it.
+    let name: String
+    let catalogue: [ChartColour]
+
+    func colour(number: String) -> ChartColour? {
+        let wanted = number.trimmingCharacters(in: .whitespaces).lowercased()
+        return catalogue.first { $0.number.lowercased() == wanted }
+    }
 }

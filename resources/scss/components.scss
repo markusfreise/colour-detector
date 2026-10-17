@@ -14,6 +14,8 @@
 @use "components/collection";
 @use "components/samples";
 @use "components/pro";
+@use "components/getpro";
+@use "components/debug";
 @use "components/consent";
 @use "components/legend";
 @use "components/layers";
@@ -25,3 +27,5 @@
 @use "components/tip";
 @use "components/closeup";
 @use "components/account";
+@use "components/credits";
+@use "components/blocking";

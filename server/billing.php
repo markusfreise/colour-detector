@@ -24,14 +24,19 @@ function startCheckout(): never
     $user = requireUser();
     $body = body();
     $name = (string) ($body['plan'] ?? '');
-    $plan = (config('stripe')['plans'] ?? [])[$name] ?? null;
-    if (!$plan || ($plan['price'] ?? '') === '') {
+    $product = productByKey($name);
+    $price = $product ? priceIdOf($name) : '';
+    if (!$product || $price === '') {
         fail(422, 'This plan is not offered.');
+    }
+    $pack = $product['type'] === 'credit_pack';
+    if ($pack && planOf($user) !== null) {
+        fail(409, 'Your plan already unlocks every picture.');
     }
     if ((int) $user['lifetime'] === 1) {
         fail(409, 'This account already has a lifetime licence.');
     }
-    $once = $name === 'lifetime';
+    $once = $product['type'] !== 'subscription';
     if (!$once && isPro($user)) {
         fail(409, 'This account already has a subscription. Change it under "Manage subscription".');
     }
@@ -40,10 +45,10 @@ function startCheckout(): never
     $vat = (string) (config('stripe')['tax_rate'] ?? '');
     $fields = [
         'mode' => $once ? 'payment' : 'subscription',
-        'line_items' => [['price' => $plan['price'], 'quantity' => 1]],
+        'line_items' => [['price' => $price, 'quantity' => 1]],
         'client_reference_id' => $user['id'],
         'metadata' => ['plan' => $name],
-        'success_url' => config('app_url') . '#billing=ok',
+        'success_url' => config('app_url') . ($pack ? '#billing=pictures' : '#billing=ok'),
         'cancel_url' => config('app_url') . '#billing=cancelled',
         'allow_promotion_codes' => 'true',
         // Stripe's page in the language of the app.
@@ -55,8 +60,8 @@ function startCheckout(): never
         // of withdrawal (Section 356 (5) BGB). Needs the terms URL in Stripe's public details.
         'consent_collection' => ['terms_of_service' => 'required'],
         'custom_text' => ['terms_of_service_acceptance' => ['message' => $german
-            ? 'Ich stimme den [AGB](' . config('app_url') . 'de/agb/) zu und verlange, dass Watercolourlove sofort freigeschaltet wird. Mir ist bekannt, dass ich damit mein Widerrufsrecht verliere.'
-            : 'I agree to the [terms](' . config('app_url') . 'terms/) and ask for Watercolourlove to be unlocked at once. I understand that I thereby lose my right of withdrawal.']],
+            ? 'Ich stimme den [AGB](' . config('app_url') . 'de/agb/) zu und verlange, dass Watercolourlove sofort freigeschaltet wird' . ($pack ? ' und die Bilder sofort gutgeschrieben werden' : '') . '. Mir ist bekannt, dass ich damit mein Widerrufsrecht verliere.'
+            : 'I agree to the [terms](' . config('app_url') . 'terms/) and ask for Watercolourlove to be unlocked' . ($pack ? ' and the pictures to be credited' : '') . ' at once. I understand that I thereby lose my right of withdrawal.']],
     ];
     // A payment once gets an invoice too; subscriptions have their own. A subscription keeps the
     // VAT as its default, so it stays when the buyer switches between monthly and yearly.
@@ -67,6 +72,22 @@ function startCheckout(): never
         }
     } elseif ($vat !== '') {
         $fields['subscription_data'] = ['default_tax_rates' => [$vat]];
+    }
+    // What was paid for pictures lately comes off the first plan, as a coupon for this one checkout.
+    // Stripe takes either a discount or promotion codes, not both.
+    $deduction = $pack ? 0 : deductionOn(packDeduction($user), (int) (priceOf($price)['amount'] ?? 0));
+    if ($deduction > 0) {
+        $coupon = stripe('POST', 'coupons', [
+            'amount_off' => $deduction,
+            'currency' => plans()['currency'] ?? 'eur',
+            'duration' => 'once',
+            'max_redemptions' => 1,
+            'name' => $german ? 'Bezahlte Bilder' : 'Pictures paid for',
+            'metadata' => ['user' => (string) $user['id']],
+        ]);
+        $fields['discounts'] = [['coupon' => $coupon['id']]];
+        unset($fields['allow_promotion_codes']);
+        $fields['metadata']['deduction'] = (string) $deduction;
     }
     if ($user['stripe_customer']) {
         $fields['customer'] = $user['stripe_customer'];
@@ -122,8 +143,12 @@ function stripeWebhook(): never
     if (!$signed || abs(time() - $time) > 300 || (config('stripe')['webhook_secret'] ?? '') === '') {
         fail(400, 'Invalid signature.');
     }
+    handleStripeEvent(json_decode($payload, true) ?: []);
+}
 
-    $event = json_decode($payload, true) ?: [];
+/** One event of Stripe, its signature checked. */
+function handleStripeEvent(array $event): never
+{
     // Stripe may send an event more than once.
     try {
         run('INSERT INTO stripe_events (id, at) VALUES (?, ?)', [(string) ($event['id'] ?? ''), time()]);
@@ -136,11 +161,21 @@ function stripeWebhook(): never
     switch ($event['type'] ?? '') {
         case 'checkout.session.completed':
             $userId = (int) ($object['client_reference_id'] ?? 0);
+            // The deduction for packs is used up with the plan it went into.
+            if ((int) ($object['metadata']['deduction'] ?? 0) > 0 && in_array($object['payment_status'] ?? '', ['paid', 'no_payment_required'], true)) {
+                run('UPDATE users SET deduction_used_at = ? WHERE id = ? AND deduction_used_at IS NULL', [time(), $userId]);
+            }
             if ($object['customer'] ?? null) {
                 run('UPDATE users SET stripe_customer = ? WHERE id = ?', [$object['customer'], $userId]);
             }
+            $bought = productByKey((string) ($object['metadata']['plan'] ?? '')) ?? ['type' => 'lifetime'];
             if (($object['mode'] ?? '') === 'payment' && ($object['payment_status'] ?? '') === 'paid') {
-                run('UPDATE users SET lifetime = 1 WHERE id = ?', [$userId]);
+                // A pack adds its credits; a payment before packs existed was the lifetime licence.
+                if ($bought['type'] === 'credit_pack') {
+                    recordPackPurchase($userId, $bought, $object);
+                } else {
+                    run('UPDATE users SET lifetime = 1 WHERE id = ?', [$userId]);
+                }
             } elseif (($object['mode'] ?? '') === 'subscription' && ($object['subscription'] ?? null)) {
                 storeSubscription(stripe('GET', 'subscriptions/' . $object['subscription']));
             }
@@ -151,7 +186,11 @@ function stripeWebhook(): never
             storeSubscription($object);
             break;
         case 'charge.refunded':
-            // A licence paid once and fully refunded is taken back; subscriptions report their own end.
+            // A pack gives back its credits as far as they are not spent; a licence paid once and
+            // fully refunded is taken back; subscriptions report their own end.
+            if (refundPackPurchase($object) !== null) {
+                break;
+            }
             if (($object['refunded'] ?? false) && ($object['customer'] ?? null)) {
                 $user = row('SELECT * FROM users WHERE stripe_customer = ?', [$object['customer']]);
                 if ($user && !$user['sub_id']) {
@@ -194,4 +233,35 @@ function cancelBilling(array $user): void
     if ($user['sub_id'] && in_array($user['sub_status'], ['active', 'trialing', 'past_due', 'unpaid'], true)) {
         stripe('DELETE', 'subscriptions/' . $user['sub_id']);
     }
+}
+
+/** Spends a credit on the picture with this key (see pictureKey in src/lib/picture.js). */
+function spendCredit(): never
+{
+    method('POST');
+    $user = requireUser();
+    $key = validPictureKey(body()['key'] ?? null) ?? fail(422, 'This is not a picture key.');
+    $result = unlockPicture($user, $key);
+    if ($result === 'empty') {
+        fail(402, 'No pictures left to unlock.');
+    }
+    send(['result' => $result, 'user' => describeUser(row('SELECT * FROM users WHERE id = ?', [$user['id']]))]);
+}
+
+/**
+ * The price of a product as Stripe has it, kept for an hour; an older one is used while Stripe
+ * cannot be reached, none at all before the first answer.
+ */
+function priceOf(string $priceId): ?array
+{
+    $cached = row('SELECT * FROM stripe_prices WHERE id = ?', [$priceId]);
+    if ($cached && $cached['fetched_at'] > time() - 3600) {
+        return ['amount' => (int) $cached['amount'], 'currency' => $cached['currency']];
+    }
+    $answer = http('GET', STRIPE . 'prices/' . rawurlencode($priceId), [], ['Authorization: Bearer ' . (config('stripe')['secret_key'] ?? '')]);
+    if ($answer['status'] === 200 && isset($answer['data']['unit_amount'])) {
+        run('INSERT OR REPLACE INTO stripe_prices (id, amount, currency, fetched_at) VALUES (?, ?, ?, ?)', [$priceId, (int) $answer['data']['unit_amount'], (string) $answer['data']['currency'], time()]);
+        return ['amount' => (int) $answer['data']['unit_amount'], 'currency' => (string) $answer['data']['currency']];
+    }
+    return $cached ? ['amount' => (int) $cached['amount'], 'currency' => $cached['currency']] : null;
 }

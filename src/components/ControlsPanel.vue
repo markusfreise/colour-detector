@@ -1,9 +1,9 @@
 <template>
   <section class="panel sidebar" :class="{ 'panel--collapsed': collapsed }">
-    <div class="toolbar">
-      <PanelToggle name="controls" label="the settings" />
-    <p v-if="analysis.error" class="controls__error">{{ analysis.error }}</p>
-  </div>
+    <!-- The button that opens the settings is among the tools over the picture (PaintingCanvas.vue). -->
+    <div v-if="analysis.error" class="toolbar">
+      <p class="controls__error">{{ analysis.error }}</p>
+    </div>
 
         <!-- The settings float over the picture: dragged by the handle, their place is remembered. -->
         <div v-if="!collapsed" ref="panel" class="card flyout flyout--floating" :class="{ 'flyout--dragging': dragging }" :style="style">
@@ -13,6 +13,9 @@
               <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
             </svg>
           </button>
+          <!-- In the Blocking view only its own settings; the colour settings come back with the other views. -->
+          <BlockingControls v-if="blocking" />
+          <template v-else>
           <div class="field__label">
             <div class="segmented__group">
               <div class="segmented segmented--fill">
@@ -44,17 +47,17 @@
             <template v-else>{{ t(a.label) }}</template>
           </button>
         </div>
-        <!-- A value study: the picture in grey, each value painted with one colour of the paint box. -->
+        <!-- Monochrome: the picture in grey, each value painted with one colour of the paint box. -->
         <button
           type="button"
           class="button"
-          :class="{ 'button--active': analysis.valueMode }"
+          :class="{ 'button--active': analysis.valueMode, 'button--locked': !pro.can('monochrome') }"
           :aria-pressed="analysis.valueMode"
           :disabled="analysis.layerMode"
-          :title="t('Values: the picture in grey, each value painted with one colour of the paint box')"
+          :title="t('Monochrome: the picture in grey, each value painted with one colour of the paint box')"
           @click="setValues(!analysis.settings.values)"
         >
-          <AppIcon name="contrast" :label="t('Values')" />
+          <AppIcon name="contrast" :label="t('Monochrome')" />
         </button>
         </div>
             <span class="controls__toggles">
@@ -71,7 +74,7 @@
               type="range"
               :min="analysis.layerMode ? 0 : FINEST"
               max="10"
-              :title="analysis.layerMode || pro.active ? undefined : t('Below 0 with Pro')"
+              :title="analysis.layerMode || pro.can('finer_areas') ? undefined : t('Below 0 with Pro')"
               @input="setSimplify($event)"
               @change="simplifyChanged"
             />
@@ -182,6 +185,7 @@
             />
           </label>
         </div>
+          </template>
     </div>
   </section>
 </template>
@@ -192,10 +196,10 @@ import { useAnalysisStore } from '../stores/analysis.js'
 import { useCollectionStore } from '../stores/collection.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useLayoutStore } from '../stores/layout.js'
-import PanelToggle from './PanelToggle.vue'
 import { FINEST, SIMPLIFY_ZERO } from '../lib/segment.js'
 import { useProStore } from '../stores/pro.js'
 import AiPanel from './AiPanel.vue'
+import BlockingControls from './BlockingControls.vue'
 import { useFloating } from './floating.js'
 import AppIcon from './AppIcon.vue'
 import { icons } from './icons.js'
@@ -208,11 +212,13 @@ const layout = useLayoutStore()
 const collapsed = computed(() => !!layout.collapsed.controls)
 const { panel, style, dragging, startDrag } = useFloating('settings')
 const paints = usePaintsStore()
+const blocking = computed(() => analysis.settings.view === 'blocking')
 const areas = [
   { value: false, label: 'Organic', icon: 'organic', title: 'Organic: areas follow the outlines in the photo' },
   { value: true, label: 'Geometric', icon: 'geometric', title: 'Geometric: areas as polygons with a few straight edges that overlap' }
 ]
 function setValues(on) {
+  if (on && !pro.require('monochrome', 'paint the picture in monochrome')) return
   analysis.settings.values = on
   analysis.analyse()
 }
@@ -234,7 +240,7 @@ const pro = useProStore()
 let wantedFiner = false
 function setSimplify(event) {
   let value = Number(event.target.value)
-  wantedFiner = !analysis.layerMode && !pro.active && value < SIMPLIFY_ZERO
+  wantedFiner = !analysis.layerMode && !pro.can('finer_areas') && value < SIMPLIFY_ZERO
   if (wantedFiner) {
     value = SIMPLIFY_ZERO
     event.target.value = value
@@ -242,7 +248,7 @@ function setSimplify(event) {
   analysis.settings[simplifyKey.value] = value
 }
 function simplifyChanged() {
-  if (wantedFiner) pro.require(false, 'make the areas finer than Simplify 0')
+  if (wantedFiner) pro.require('finer_areas', 'make the areas finer than Simplify 0')
   wantedFiner = false
   analysis.analyse()
 }

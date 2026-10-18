@@ -121,7 +121,6 @@ export default {
   'Leave the paper white': 'Papier weiß lassen',
   'Leave the paper white.': 'Papier weiß lassen.',
   'Ratio: {ratio}': 'Verhältnis: {ratio}',
-  'Recipe': 'Rezept',
   '{percent}% of image': '{percent} % des Bildes',
   'No paints selected in the paint box': 'Keine Farben im Farbkasten ausgewählt',
   'No paints selected in the paint box.': 'Keine Farben im Farbkasten ausgewählt.',

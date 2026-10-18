@@ -544,6 +544,17 @@
         }
       }
     },
+    "Add colour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe hinzufügen"
+          }
+        }
+      }
+    },
     "Black grid" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -555,12 +566,67 @@
         }
       }
     },
+    "Blue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blau"
+          }
+        }
+      }
+    },
+    "Brown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Braun"
+          }
+        }
+      }
+    },
+    "Clear: empty the search and the filters" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leeren: Suche und Filter zurücksetzen"
+          }
+        }
+      }
+    },
     "Common colours" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gängige Farben"
+          }
+        }
+      }
+    },
+    "Green" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grün"
+          }
+        }
+      }
+    },
+    "Grey and black" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grau und Schwarz"
           }
         }
       }
@@ -587,6 +653,28 @@
         }
       }
     },
+    "Hue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbton"
+          }
+        }
+      }
+    },
+    "L (liquid)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "F"
+          }
+        }
+      }
+    },
     "Large" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -598,6 +686,28 @@
         }
       }
     },
+    "Library" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliothek"
+          }
+        }
+      }
+    },
+    "Liquid" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flüssig"
+          }
+        }
+      }
+    },
     "Mixed: %@ · %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -605,6 +715,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gemischt: %1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "Name, number …" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name, Nummer …"
           }
         }
       }
@@ -664,12 +785,67 @@
         }
       }
     },
+    "O (other)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A"
+          }
+        }
+      }
+    },
+    "Okay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Okay"
+          }
+        }
+      }
+    },
     "Opaque" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Deckend"
+          }
+        }
+      }
+    },
+    "Orange" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orange"
+          }
+        }
+      }
+    },
+    "Other" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anders"
+          }
+        }
+      }
+    },
+    "Own colour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eigene Farbe"
           }
         }
       }
@@ -681,6 +857,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Verhältnis: %@"
+          }
+        }
+      }
+    },
+    "Red" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rot"
+          }
+        }
+      }
+    },
+    "Search a colour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe suchen"
           }
         }
       }
@@ -701,6 +899,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Halb lasierend"
+          }
+        }
+      }
+    },
+    "Series" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serie"
           }
         }
       }
@@ -741,16 +950,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Farben aus den Katalogen bekannter Hersteller hinzufügen"
-          }
-        }
-      }
-    },
-    "Add Paint" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Farbe hinzufügen"
           }
         }
       }
@@ -1011,16 +1210,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ausschnitt wählen abbrechen"
-          }
-        }
-      }
-    },
-    "Catalogue" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Katalog"
           }
         }
       }
@@ -2282,16 +2471,6 @@
         }
       }
     },
-    "Name of the series" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Name der Serie"
-          }
-        }
-      }
-    },
     "New Box" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2320,16 +2499,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Neues Bild"
-          }
-        }
-      }
-    },
-    "New series" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Neue Serie"
           }
         }
       }
@@ -2576,16 +2745,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ öffnen"
-          }
-        }
-      }
-    },
-    "Or enter a colour of your own" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oder eine eigene Farbe eingeben"
           }
         }
       }
@@ -3227,16 +3386,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bild sichern"
-          }
-        }
-      }
-    },
-    "Series, number or name" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serie, Nummer oder Name"
           }
         }
       }
@@ -3897,6 +4046,17 @@
         }
       }
     },
+    "Turquoise" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Türkis"
+          }
+        }
+      }
+    },
     "Two tones: light against shadow (notan)" : {
       "localizations" : {
         "de" : {
@@ -3969,16 +4129,6 @@
         }
       }
     },
-    "Vendor and Series" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hersteller und Serie"
-          }
-        }
-      }
-    },
     "very concentrated" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4019,6 +4169,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "sehr wässrig"
+          }
+        }
+      }
+    },
+    "Violet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Violett"
           }
         }
       }
@@ -4115,6 +4276,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Frau an weißer Wand (Beispiel)"
+          }
+        }
+      }
+    },
+    "Yellow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gelb"
           }
         }
       }

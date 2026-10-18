@@ -157,7 +157,7 @@ struct RootView: View {
         if arguments.contains("-large") { session.settings.numberSize = .large }
         let screen = arguments.firstIndex(of: "-screen").flatMap { arguments.dropFirst($0 + 1).first } ?? ""
         switch screen {
-        case "paintbox": showingPaintBox = true
+        case "paintbox", "addcolour": showingPaintBox = true
         case "collection": showingCollection = true
         case "editor": if !session.layerMode { session.inspect(entry: 2) }
         case "breakdown":

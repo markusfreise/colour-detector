@@ -115,6 +115,62 @@ enum ColorMath {
         if hue < 345 { return .violet }
         return .red
     }
+
+    /// Hue group of a colour for the filters of the dialog that adds colours to a box, from its
+    /// OKLCh lightness, chroma and hue angle: browns are the dark, muted reds, oranges and yellows.
+    /// As `hueGroup` in color.js.
+    static func hueGroup(hex: String) -> HueGroup {
+        let lab = oklab(hex: hex)
+        let chroma = hypot(lab.y, lab.z)
+        if chroma < 0.035 { return .grey }
+        let hue = (atan2(lab.z, lab.y) * 180 / .pi + 360).truncatingRemainder(dividingBy: 360)
+        if hue >= 20 && hue < 100 && lab.x < 0.6 && chroma < 0.13 { return .brown }
+        if hue < 36 || hue >= 355 { return .red }
+        if hue < 78 { return .orange }
+        if hue < 115 { return .yellow }
+        if hue < 175 { return .green }
+        if hue < 225 { return .turquoise }
+        if hue < 290 { return .blue }
+        return .violet
+    }
+}
+
+/// The colour filters of the dialog that adds colours to a box, finer than the families: turquoise
+/// apart from blue, and the earths apart from their hues. As HUE_GROUPS in color.js.
+enum HueGroup: String, CaseIterable, Identifiable {
+    case red, orange, yellow, green, turquoise, blue, violet, brown, grey
+
+    var id: String { rawValue }
+
+    /// The English name; shown in the chosen language.
+    var name: String {
+        switch self {
+        case .red: "Red"
+        case .orange: "Orange"
+        case .yellow: "Yellow"
+        case .green: "Green"
+        case .turquoise: "Turquoise"
+        case .blue: "Blue"
+        case .violet: "Violet"
+        case .brown: "Brown"
+        case .grey: "Grey and black"
+        }
+    }
+
+    /// The swatch of the filter button.
+    var hex: String {
+        switch self {
+        case .red: "#b22727"
+        case .orange: "#ec7b25"
+        case .yellow: "#f3d104"
+        case .green: "#79c167"
+        case .turquoise: "#00c9c9"
+        case .blue: "#3354c1"
+        case .violet: "#d968d7"
+        case .brown: "#955e37"
+        case .grey: "#52463d"
+        }
+    }
 }
 
 /// Base colours of the colour wheel, in wheel order; `neutral` collects greys, blacks and other low-chroma paints.

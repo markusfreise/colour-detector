@@ -4,7 +4,8 @@ import { paintNumber, paintForms, groupPaints, sortPaints, paintGroupKeys, serie
 import { stockPaints } from '../data/paints.js'
 import { readFileSync } from 'node:fs'
 import { librariesReport } from '../lib/librariesReport.js'
-import { PAINT_LIBRARIES, TRANSPARENCY, chartColour, chartDetails, chartNames, libraryByName } from '../data/libraries.js'
+import { PAINT_LIBRARIES, COMMON_LIBRARY, TRANSPARENCY, chartColour, chartDetails, chartNames, libraryByName, libraryOpen, resolveCommon } from '../data/libraries.js'
+import { commonColours } from '../data/common-catalogue.js'
 
 describe('colourFamily', () => {
   it('maps paints to their colour-wheel family', () => {
@@ -107,7 +108,7 @@ describe('groupPaints', () => {
 describe('paint libraries', () => {
   it('ships Schmincke Horadam as the series of the stock', () => {
     const horadam = libraryByName(HOUSE_VENDOR)
-    expect(horadam).toBe(PAINT_LIBRARIES[0])
+    expect(horadam.id).toBe('horadam')
     expect(horadam.catalogue.find((c) => c.number === '347').name).toBe('Kadmiumrot mittel')
     // However it is written in the form.
     expect(libraryByName('  schmincke horadam ')).toBe(horadam)
@@ -151,6 +152,29 @@ describe('paint libraries', () => {
     }
   })
 
+  it('ships the common colours for everybody, each with the value of a maker\'s chart', () => {
+    expect(PAINT_LIBRARIES[0]).toBe(COMMON_LIBRARY)
+    expect(COMMON_LIBRARY.catalogue).toHaveLength(commonColours.length)
+    for (const c of commonColours) {
+      const [id, ref] = c.from
+      const shown = chartColour(PAINT_LIBRARIES.find((l) => l.id === id), ref)
+      expect(chartColour(COMMON_LIBRARY, c.number), c.number).toMatchObject({ name: c.name, names: { de: c.de }, hex: shown.hex, pigments: c.pigments })
+    }
+    // By its English or its German name.
+    expect(libraryByName('common colours')).toBe(COMMON_LIBRARY)
+    expect(libraryByName(' Gängige Farben ')).toBe(COMMON_LIBRARY)
+    expect(() => resolveCommon([{ number: 'X', name: 'Nothing', de: '', pigments: [], from: ['sennelier', '999'] }], PAINT_LIBRARIES)).toThrow(/no colour 999/)
+  })
+
+  it('opens the common colours without a plan, the makers\' charts only with one', () => {
+    expect(libraryOpen(COMMON_LIBRARY, false)).toBe(true)
+    for (const library of PAINT_LIBRARIES.filter((l) => l !== COMMON_LIBRARY)) {
+      expect(libraryOpen(library, false), library.id).toBe(false)
+      expect(libraryOpen(library, true), library.id).toBe(true)
+    }
+    expect(libraryOpen(null, true)).toBe(false)
+  })
+
   it('ships Sennelier L\'Aquarelle with pigments, transparency and French names from its chart', () => {
     const sennelier = libraryByName("sennelier l'aquarelle")
     expect(sennelier.catalogue).toHaveLength(98)
@@ -174,7 +198,7 @@ describe('paint libraries', () => {
       [paint('W311', '#c88c5f', ['tube 15 ml'], 'Michael Harding'), paint('347', '#e2544d', ['half pan'])],
       PAINT_LIBRARIES,
     )
-    expect(names).toEqual(['Michael Harding', HOUSE_VENDOR, "Sennelier L'Aquarelle", 'Winsor & Newton Professional'])
+    expect(names).toEqual(['Common colours', 'Michael Harding', HOUSE_VENDOR, "Sennelier L'Aquarelle", 'Winsor & Newton Professional'])
     expect(new Set(names).size).toBe(names.length)
     expect(seriesNames(stockPaints, PAINT_LIBRARIES)).toContain('Travelbox')
   })

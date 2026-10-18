@@ -17,7 +17,7 @@
       </header>
 
       <h3 class="addcolour__heading">{{ t('Own colour') }}</h3>
-      <PaintForm v-model="paintForm" :series="seriesNames" :library="formLibrary" :pro="charts" @submit="saveOwn" />
+      <PaintForm v-model="paintForm" :series="seriesNames" :library="formLibrary" :pro="libraryOpen(formLibrary, charts)" @submit="saveOwn" />
 
       <h3 class="addcolour__heading">{{ t('Library') }}</h3>
       <div class="addcolour__series" role="group" :aria-label="t('Library')">
@@ -30,7 +30,7 @@
           :aria-pressed="!hidden.has(section.id)"
           @click="toggleSeries(section.id)"
         >
-          {{ section.name }}
+          {{ t(section.name) }}
         </button>
       </div>
 
@@ -59,8 +59,8 @@
         {{ t('and easily add pre-defined colours from the catalogues of known manufacturers and brands.') }}
       </p>
 
-      <section v-for="section in shown" :key="section.id" class="addcolour__group" :aria-label="section.name">
-        <h3 class="addcolour__group-title">{{ section.name }}</h3>
+      <section v-for="section in shown" :key="section.id" class="addcolour__group" :aria-label="t(section.name)">
+        <h3 class="addcolour__group-title">{{ t(section.name) }}</h3>
         <ul class="addcolour__list">
           <li v-for="c in section.found" :key="c.key">
             <button
@@ -89,7 +89,7 @@ import { usePaintsStore } from '../stores/paints.js'
 import { useProStore } from '../stores/pro.js'
 import { chipStyle, HUE_GROUPS } from '../lib/color.js'
 import { paintNumber, seriesNames as allSeries, seriesColours, filterColours } from '../lib/paintbox.js'
-import { PAINT_LIBRARIES, libraryByName } from '../data/libraries.js'
+import { PAINT_LIBRARIES, libraryByName, libraryOpen } from '../data/libraries.js'
 import PaintForm from './PaintForm.vue'
 import AppIcon from './AppIcon.vue'
 import { useText } from '../i18n/index.js'
@@ -111,9 +111,10 @@ const paintForm = ref(null)
 
 const charts = computed(() => pro.can('brand_charts'))
 
-// The libraries, then every other series the paints of the app come in.
+// The libraries, then every other series the paints of the app come in. The common colours are
+// for everybody, the charts of the makers with a plan.
 const sections = computed(() => {
-  const libraries = PAINT_LIBRARIES.map((library) => ({ id: library.id, name: library.name, catalogue: charts.value ? library.catalogue : [] }))
+  const libraries = PAINT_LIBRARIES.map((library) => ({ id: library.id, name: library.name, catalogue: libraryOpen(library, charts.value) ? library.catalogue : [] }))
   const others = [...new Set(paints.all.map((p) => p.vendor).filter((v) => v && !libraryByName(v)))]
     .sort((a, b) => a.localeCompare(b))
     .map((vendor) => ({ id: `vendor:${vendor}`, name: vendor, catalogue: [] }))
@@ -168,7 +169,7 @@ function toggleSeries(id) {
 const inBox = (c) => Boolean(c.paintId && box.value.paintIds.includes(c.paintId))
 
 function chipTitle(c) {
-  const text = `${c.vendor} ${paintNumber(c.number)} ${c.name}`
+  const text = `${t(c.vendor)} ${paintNumber(c.number)} ${c.name}`
   return c.hex ? text : `${text} · ${t('The chart gives no reliable colour for this paint: set it by hand.')}`
 }
 
@@ -178,7 +179,7 @@ async function pick(c) {
   if (inBox(c)) {
     paints.removeFromBox(box.value.id, c.paintId)
   } else if (c.hex) {
-    paints.addColourToBox(box.value.id, { vendor: c.vendor, number: c.number, name: c.chartName, hex: c.hex })
+    paints.addColourToBox(box.value.id, { vendor: c.vendor, number: c.number, name: c.chartName, nameDe: c.nameDe ?? '', hex: c.hex })
   } else {
     paintForm.value = { ...blankForm(), vendor: c.vendor, number: c.number, name: c.chartName }
     await nextTick()

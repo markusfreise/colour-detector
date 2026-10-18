@@ -70,6 +70,16 @@ describe('paints store: paint boxes', () => {
     expect(box.paintIds[1]).toBe(paints.custom[0].id)
   })
 
+  it('keeps a common colour under the library\'s own name and with its German name, however the series was typed', () => {
+    const box = paints.addBox('Mine')
+    paints.addColourToBox(box.id, { vendor: 'Common colours', number: 'C19', name: 'French Ultramarine', nameDe: 'Ultramarin', hex: '#094293' })
+    expect(paints.custom[0]).toMatchObject({ vendor: 'Common colours', name: 'French Ultramarine', nameDe: 'Ultramarin' })
+    // Typed in German into the paint form: the same series, no second one.
+    paints.savePaint({ vendor: 'Gängige Farben', number: 'C34', name: 'Siena gebrannt', form: 'pan', hex: '#bc4e26' }, box.id)
+    expect(paints.custom[1].vendor).toBe('Common colours')
+    expect(paints.addColourToBox(box.id, { vendor: 'gängige farben', number: 'c19', name: 'x', hex: '#000000' })).toBe(paints.custom[0].id)
+  })
+
   it('lets Auto choose and mix the colours of a library put into a box', () => {
     const sennelier = libraryByName("Sennelier L'Aquarelle")
     const box = paints.addBox('Sennelier')

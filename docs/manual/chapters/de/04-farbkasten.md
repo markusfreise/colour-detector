@@ -63,7 +63,7 @@ Am Ende jedes Farbkastens ist ein leerer Platz mit einem **+**. Ein Klick darauf
 
 ![Farben zu einem Kasten hinzufügen](shot:paintbox-add)
 
-Die untere Hälfte, **Bibliothek**, zeigt die Farben, die du hinzufügen kannst, je Serie ein Abschnitt: die Farben des Bestands und, mit Pro, die Farbkarten von vier Herstellern:
+Die untere Hälfte, **Bibliothek**, zeigt die Farben, die du hinzufügen kannst, je Serie ein Abschnitt. Für alle die Farben des Bestands und **Gängige Farben**: 40 Farben, die fast jeder Hersteller führt, unter ihrem üblichen Namen und Pigment (C01 Zitronengelb bis C40 Neutraltinte), jede so, wie die Farbkarte eines Herstellers sie zeigt. Mit Pro außerdem die Farbkarten von vier Herstellern:
 
 - **Schmincke Horadam**,
 - **Winsor & Newton Professional** (116 Farben),

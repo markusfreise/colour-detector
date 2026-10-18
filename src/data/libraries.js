@@ -9,11 +9,13 @@ import { horadamCatalogue } from './horadam-catalogue.js'
 import { winsorNewtonCatalogue } from './winsor-newton-catalogue.js'
 import { michaelHardingCatalogue } from './michael-harding-catalogue.js'
 import { sennelierCatalogue } from './sennelier-catalogue.js'
+import { commonColours } from './common-catalogue.js'
 import { HOUSE_VENDOR } from '../lib/paintbox.js'
 
 // `source`: where the chart comes from, the maker's own publication; `gaps`: colours of the range
-// that no public chart of the maker has (both listed in docs/libraries.md).
-export const PAINT_LIBRARIES = [
+// that no public chart of the maker has (both listed in docs/libraries.md). `free`: for everybody;
+// the others are the charts of known makers, with a plan (`brand_charts`).
+const MAKER_LIBRARIES = [
   { id: 'horadam', name: HOUSE_VENDOR, catalogue: horadamCatalogue, source: 'Official Schmincke Horadam colour chart' },
   {
     id: 'winsor-newton-professional',
@@ -33,13 +35,40 @@ export const PAINT_LIBRARIES = [
   },
 ]
 
+/** The common colours with the value of the maker's chart each one names in `from`. */
+export function resolveCommon(colours, libraries) {
+  return colours.map(({ number, name, de, pigments, from: [id, ref] }) => {
+    const shown = chartColour(libraries.find((library) => library.id === id), ref)
+    if (!shown?.hex) throw new Error(`Common colour ${number} ${name}: no colour ${ref} in ${id}`)
+    return { number, name, names: { de }, hex: shown.hex, pigments }
+  })
+}
+
+// The name is a key of the text tables: shown in the language of the app, stored in English.
+export const COMMON_LIBRARY = {
+  id: 'common',
+  name: 'Common colours',
+  // The German name, as the app shows it: typed into the paint form, it finds the library too.
+  aliases: ['Gängige Farben'],
+  free: true,
+  catalogue: resolveCommon(commonColours, MAKER_LIBRARIES),
+  source: 'The colours most makers have, by their usual name and pigment; each shown as one of the maker charts below shows it (src/data/common-catalogue.js)',
+}
+
+export const PAINT_LIBRARIES = [COMMON_LIBRARY, ...MAKER_LIBRARIES]
+
+/** Whether the colours of that library may be used: the common colours always, a maker's chart with a plan. */
+export function libraryOpen(library, charts) {
+  return Boolean(library && (library.free || charts))
+}
+
 // How much of the paper a paint covers, as the makers' charts mark it.
 export const TRANSPARENCY = { T: 'Transparent', ST: 'Semi-transparent', SO: 'Semi-opaque', O: 'Opaque' }
 
 /** The library of that series, however it is capitalised or spaced; null for a series of one's own. */
 export function libraryByName(name) {
   const wanted = String(name ?? '').trim().toLowerCase()
-  return PAINT_LIBRARIES.find((library) => library.name.toLowerCase() === wanted) ?? null
+  return PAINT_LIBRARIES.find((library) => [library.name, ...(library.aliases ?? [])].some((n) => n.toLowerCase() === wanted)) ?? null
 }
 
 /** The colour of a library's chart with that number, however it is spaced or capitalised; null if none. */

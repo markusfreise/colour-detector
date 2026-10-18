@@ -544,6 +544,16 @@
         }
       }
     },
+    "Common colours" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gängige Farben"
+          }
+        }
+      }
+    },
     "Opaque" : {
       "localizations" : {
         "de" : {

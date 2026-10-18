@@ -56,14 +56,17 @@
 
     // The handle: a strip across the top of the panel with a short bar in its middle, and room
     // above and below the bar. It stays at the top while the panel scrolls, over what passes under it.
+    // It reaches up to the panel's edge: a sticky offset counts from inside the panel's padding,
+    // so with `top: 0` it would slide down over the first row.
     &__handle {
         position: sticky;
-        top: 0;
+        top: calc(var(--flyout-pad, 0px) * -1);
         z-index: 1;
         display: grid;
         place-items: center;
-        height: #{pxtorem(24)};
-        margin: #{pxtorem(-20)} calc(var(--flyout-pad, 0px) * -1) #{pxtorem(12)};
+        height: calc(var(--flyout-pad, #{pxtorem(20)}) + #{pxtorem(4)});
+        margin: calc(var(--flyout-pad, 0px) * -1) calc(var(--flyout-pad, 0px) * -1) #{pxtorem(12)};
+        padding-top: max(0px, calc(var(--flyout-pad, 0px) - #{pxtorem(20)}));
         background: inherit;
         cursor: grab;
         user-select: none;

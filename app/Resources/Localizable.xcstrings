@@ -77,6 +77,16 @@
         }
       }
     },
+    "%@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
     "%@ · match: %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -134,6 +144,19 @@
         }
       }
     },
+    "%@ x" : {
+
+    },
+    "%@ x %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ x %2$@"
+          }
+        }
+      }
+    },
     "%@, %@%% of the picture." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -152,6 +175,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@: %@, %@ %% des Bildes"
+          }
+        }
+      }
+    },
+    "%@%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@%2$@"
           }
         }
       }
@@ -555,385 +588,6 @@
         }
       }
     },
-    "Black grid" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schwarzes Raster"
-          }
-        }
-      }
-    },
-    "Blue" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blau"
-          }
-        }
-      }
-    },
-    "Brown" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Braun"
-          }
-        }
-      }
-    },
-    "Clear: empty the search and the filters" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leeren: Suche und Filter zurücksetzen"
-          }
-        }
-      }
-    },
-    "Common colours" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gängige Farben"
-          }
-        }
-      }
-    },
-    "Green" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Grün"
-          }
-        }
-      }
-    },
-    "Grey and black" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Grau und Schwarz"
-          }
-        }
-      }
-    },
-    "Grey grid" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Graues Raster"
-          }
-        }
-      }
-    },
-    "Grid columns" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rasterspalten"
-          }
-        }
-      }
-    },
-    "Hue" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Farbton"
-          }
-        }
-      }
-    },
-    "L (liquid)" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "F"
-          }
-        }
-      }
-    },
-    "Large" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Groß"
-          }
-        }
-      }
-    },
-    "Library" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bibliothek"
-          }
-        }
-      }
-    },
-    "Liquid" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Flüssig"
-          }
-        }
-      }
-    },
-    "Mixed: %@ · %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemischt: %1$@ · %2$@"
-          }
-        }
-      }
-    },
-    "Name, number …" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Name, Nummer …"
-          }
-        }
-      }
-    },
-    "No grid" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kein Raster"
-          }
-        }
-      }
-    },
-    "No numbers" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Nummern"
-          }
-        }
-      }
-    },
-    "Normal" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Normal"
-          }
-        }
-      }
-    },
-    "Number size" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nummerngröße"
-          }
-        }
-      }
-    },
-    "Numbers on a backdrop" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nummern auf Hintergrund"
-          }
-        }
-      }
-    },
-    "O (other)" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A"
-          }
-        }
-      }
-    },
-    "Okay" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Okay"
-          }
-        }
-      }
-    },
-    "Opaque" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deckend"
-          }
-        }
-      }
-    },
-    "Orange" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Orange"
-          }
-        }
-      }
-    },
-    "Other" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anders"
-          }
-        }
-      }
-    },
-    "Own colour" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eigene Farbe"
-          }
-        }
-      }
-    },
-    "Ratio: %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verhältnis: %@"
-          }
-        }
-      }
-    },
-    "Red" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rot"
-          }
-        }
-      }
-    },
-    "Search a colour" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Farbe suchen"
-          }
-        }
-      }
-    },
-    "Semi-opaque" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Halb deckend"
-          }
-        }
-      }
-    },
-    "Semi-transparent" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Halb lasierend"
-          }
-        }
-      }
-    },
-    "Series" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serie"
-          }
-        }
-      }
-    },
-    "The chart gives no reliable colour for this paint: set it by hand." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Farbkarte gibt für diese Farbe keinen verlässlichen Farbton an: bitte von Hand einstellen."
-          }
-        }
-      }
-    },
-    "Transparent" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lasierend"
-          }
-        }
-      }
-    },
     "add colours from the catalogues of known manufacturers" : {
       "localizations" : {
         "de" : {
@@ -1120,6 +774,17 @@
         }
       }
     },
+    "Black grid" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schwarzes Raster"
+          }
+        }
+      }
+    },
     "block in light and shadow" : {
       "localizations" : {
         "de" : {
@@ -1160,6 +825,17 @@
         }
       }
     },
+    "Blue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blau"
+          }
+        }
+      }
+    },
     "Box %lld" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1178,6 +854,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Marke"
+          }
+        }
+      }
+    },
+    "Brown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Braun"
           }
         }
       }
@@ -1263,6 +950,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "klares Wasser"
+          }
+        }
+      }
+    },
+    "Clear: empty the search and the filters" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leeren: Suche und Filter zurücksetzen"
           }
         }
       }
@@ -1401,6 +1099,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Farben"
+          }
+        }
+      }
+    },
+    "Common colours" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gängige Farben"
           }
         }
       }
@@ -1882,6 +1591,50 @@
         }
       }
     },
+    "Green" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grün"
+          }
+        }
+      }
+    },
+    "Grey and black" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grau und Schwarz"
+          }
+        }
+      }
+    },
+    "Grey grid" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Graues Raster"
+          }
+        }
+      }
+    },
+    "Grid columns" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rasterspalten"
+          }
+        }
+      }
+    },
     "Help" : {
       "localizations" : {
         "de" : {
@@ -1923,12 +1676,34 @@
         }
       }
     },
+    "Higher = finer steps across the picture, lower = small areas keep their own colour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höher = feinere Abstufungen im ganzen Bild, niedriger = kleine Flächen behalten ihre eigene Farbe"
+          }
+        }
+      }
+    },
     "How strongly the tones cover the photo" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wie stark die Töne das Foto verdecken"
+          }
+        }
+      }
+    },
+    "Hue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbton"
           }
         }
       }
@@ -1985,12 +1760,34 @@
         }
       }
     },
+    "L (liquid)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "F"
+          }
+        }
+      }
+    },
     "Language" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sprache"
+          }
+        }
+      }
+    },
+    "Large" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Groß"
           }
         }
       }
@@ -2175,6 +1972,17 @@
         }
       }
     },
+    "Library" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliothek"
+          }
+        }
+      }
+    },
     "light" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2248,6 +2056,17 @@
         }
       }
     },
+    "Liquid" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flüssig"
+          }
+        }
+      }
+    },
     "Llyn Idwal (sample)" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2265,17 +2084,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gesperrt"
-          }
-        }
-      }
-    },
-    "Higher = finer steps across the picture, lower = small areas keep their own colour" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Höher = feinere Abstufungen im ganzen Bild, niedriger = kleine Flächen behalten ihre eigene Farbe"
           }
         }
       }
@@ -2419,6 +2227,17 @@
         }
       }
     },
+    "Mixed: %@ · %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemischt: %1$@ · %2$@"
+          }
+        }
+      }
+    },
     "Monochrome" : {
       "localizations" : {
         "de" : {
@@ -2467,6 +2286,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Name"
+          }
+        }
+      }
+    },
+    "Name, number …" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name, Nummer …"
           }
         }
       }
@@ -2565,6 +2395,17 @@
         }
       }
     },
+    "No grid" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Raster"
+          }
+        }
+      }
+    },
     "No layer for %@: it adds too little here. Swap it in the paint box." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2583,6 +2424,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Keine Schicht für %@: sie bringen hier zu wenig. Tausche sie im Farbkasten."
+          }
+        }
+      }
+    },
+    "No numbers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Nummern"
           }
         }
       }
@@ -2640,6 +2492,17 @@
         }
       }
     },
+    "Normal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normal"
+          }
+        }
+      }
+    },
     "Not needed for this picture: %@." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2682,6 +2545,17 @@
         }
       }
     },
+    "Number size" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nummerngröße"
+          }
+        }
+      }
+    },
     "Numbers" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2689,6 +2563,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nummern"
+          }
+        }
+      }
+    },
+    "Numbers on a backdrop" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nummern auf Hintergrund"
+          }
+        }
+      }
+    },
+    "O (other)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A"
           }
         }
       }
@@ -2705,6 +2601,17 @@
     },
     "OK" : {
       "shouldTranslate" : false
+    },
+    "Okay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Okay"
+          }
+        }
+      }
     },
     "Old town in snow (sample)" : {
       "extractionState" : "manual",
@@ -2738,6 +2645,16 @@
         }
       }
     },
+    "Opaque" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deckend"
+          }
+        }
+      }
+    },
     "Open %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2749,6 +2666,17 @@
         }
       }
     },
+    "Orange" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orange"
+          }
+        }
+      }
+    },
     "Organic: areas that follow the photo" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2756,6 +2684,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Organisch: Flächen, die dem Foto folgen"
+          }
+        }
+      }
+    },
+    "Other" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anders"
           }
         }
       }
@@ -2788,6 +2727,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Überlagerung: das Foto halb deckend über der Farbe"
+          }
+        }
+      }
+    },
+    "Own colour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eigene Farbe"
           }
         }
       }
@@ -3067,6 +3017,17 @@
         }
       }
     },
+    "Ratio: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verhältnis: %@"
+          }
+        }
+      }
+    },
     "Recipe: %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3084,6 +3045,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rezepte"
+          }
+        }
+      }
+    },
+    "Red" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rot"
           }
         }
       }
@@ -3386,6 +3358,48 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bild sichern"
+          }
+        }
+      }
+    },
+    "Search a colour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe suchen"
+          }
+        }
+      }
+    },
+    "Semi-opaque" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halb deckend"
+          }
+        }
+      }
+    },
+    "Semi-transparent" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halb lasierend"
+          }
+        }
+      }
+    },
+    "Series" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serie"
           }
         }
       }
@@ -3726,6 +3740,16 @@
         }
       }
     },
+    "The chart gives no reliable colour for this paint: set it by hand." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Farbkarte gibt für diese Farbe keinen verlässlichen Farbton an: bitte von Hand einstellen."
+          }
+        }
+      }
+    },
     "The colours appear once the picture is analysed." : {
       "localizations" : {
         "de" : {
@@ -4016,6 +4040,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Töne"
+          }
+        }
+      }
+    },
+    "Transparent" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasierend"
           }
         }
       }

@@ -87,16 +87,13 @@ The tools of the picture sit above it.
 2. **Detail** lets you look at a part of the picture on its own (see [Pictures](pictures.html#looking-closer-details-of-the-picture)).
 3. **Mixed paint**: every area in the colour your paints actually reach. This is the view to paint from.
 4. **Photo colour**: every area in the colour of the photo. Compare it with **Mixed paint** to see where your paints fall short.
-5. **Overlay**: the photo at half strength over the paint, to see which area is which part of the photo.
-6. **Photo**: the original, with saturation and contrast applied.
-7. **Blocking**: light and shadow in large masses. See [Values](values.html#blocking-light-and-shadow-first).
-8. **Grid**: square cells over the picture, in white, grey or black. See [Printing](printing.html#the-grid).
-9. **Outlines** on or off.
-10. **Numbers**: each click steps on from numbers to numbers on a backdrop to no numbers. On a backdrop every number sits on a small square, white with a dark number on dark areas and dark with a white number on light ones, so it stays readable on any colour.
+5. **Photo**: the original, with saturation and contrast applied.
+6. **Blocking**: light and shadow in large masses. See [Values](values.html#blocking-light-and-shadow-first).
+7. **Grid**: square cells over the picture, in white, grey or black. See [Printing](printing.html#the-grid).
+8. **Outlines** on or off.
+9. **Numbers**: each click steps on from numbers to numbers on a backdrop to no numbers. On a backdrop every number sits on a small square, white with a dark number on dark areas and dark with a white number on light ones, so it stays readable on any colour.
 
 ![Photo colour: what the photo asks for](shot:view-target)
-
-![Overlay: the photo over the paint](shot:view-overlay)
 
 ![Photo: the original](shot:view-photo)
 

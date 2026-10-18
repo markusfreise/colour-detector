@@ -60,7 +60,6 @@ Was du auf dem Bild, in der Farbliste und in den Rezepten liest.
 | Schichten | Layer mode | Die Methode, ein paar Lasuren übereinander zu legen, statt jede Farbe zu mischen. |
 | Tonwerte | Values | Das Bild in Grau analysiert; jeder Tonwert wird mit einer Farbe der Palette gemalt. |
 | Treffer | Match quality | Wie nah ein Rezept seinem Ziel kommt: sehr gut (unter 2), gut (unter 5), mäßig (unter 10), grob (ab 10). Englisch: excellent, good, fair, rough. |
-| Überlagerung | Overlay | Die Ansicht des Fotos in halber Stärke über der Farbe. |
 | Ziel | Target | Die Farbe, die das Foto an einer Stelle verlangt. |
 
 ## Malbegriffe

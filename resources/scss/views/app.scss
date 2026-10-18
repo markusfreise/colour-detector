@@ -80,23 +80,30 @@
 
     @media (max-width: 760px) {
         --app-tools: 0rem;
-        // The tools are one row at the bottom: ten buttons (the view group counts five, with its
-        // borders) and five gaps. Smaller than 48 px only as far as a narrow screen needs.
+        // The tools are one row at the bottom: ten buttons (fit, detail, settings, four views,
+        // grid, outlines, numbers) and six gaps between the seven groups, inside the toolbar's
+        // padding (6 px) and the view group's borders (2 px), with 2 px to spare. Smaller than
+        // 48 px only as far as a narrow screen needs.
         --tool-gap: #{pxtorem(6)};
-        --tool: min(#{pxtorem(48)}, calc((100vw - var(--gap-2x) - 5 * var(--tool-gap) - #{pxtorem(6)}) / 10));
+        --tool: min(#{pxtorem(48)}, calc((100vw - var(--gap-2x) - 6 * var(--tool-gap) - #{pxtorem(10)}) / 10));
 
         &__menu {
             display: flex;
         }
 
-        // Folded: the buttons slide out to the left, and come back with the menu button.
+        // Folded: the buttons slide out to the left, and come back with the menu button. Out of
+        // the flow while folded, so that the panel around them is only the menu button.
         &__left-buttons {
+            position: absolute;
+            top: 100%;
+            left: 0;
             transform: translateX(calc(-100% - var(--app-left) - var(--gap)));
             visibility: hidden;
             transition: transform 0.25s ease, visibility 0s linear 0.25s;
         }
 
         &__left--open &__left-buttons {
+            position: static;
             transform: none;
             visibility: visible;
             transition: transform 0.25s ease, visibility 0s;

@@ -52,7 +52,6 @@ What you read on the picture, in the colour list and in the recipes.
 | Mix | Mischung | One puddle of paint on the palette, with a number. It can be painted in several washes. |
 | Mixed paint | Gemischte Farbe | The view of what your paints can reach. |
 | Organic | Organisch | Areas that follow the outlines of the photo. |
-| Overlay | Überlagerung | The view of the photo at half strength over the paint. |
 | Paint box | Farbkasten | A named set of paints you own, for example your pans or a travel set. |
 | Palette | Palette | The paints a picture is mixed from. It is saved with the picture. |
 | Photo colour | Fotofarbe | The view of each area in the average colour of the photo there. |

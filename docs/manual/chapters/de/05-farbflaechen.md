@@ -87,16 +87,13 @@ Die Werkzeuge des Bildes sitzen über ihm.
 2. **Ausschnitt** zeigt einen Teil des Bildes für sich (siehe [Bilder](bilder.html#genauer-hinsehen-ausschnitte-des-bildes)).
 3. **Gemischte Farbe**: jede Fläche in dem Ton, den deine Farben tatsächlich erreichen. Nach dieser Ansicht malst du.
 4. **Fotofarbe**: jede Fläche in der Farbe des Fotos. Vergleich sie mit **Gemischte Farbe**, um zu sehen, wo deine Farben nicht hinkommen.
-5. **Überlagerung**: das Foto zur Hälfte über der Farbe, um zu sehen, welche Fläche welcher Teil des Fotos ist.
-6. **Foto**: das Original, mit Sättigung und Kontrast.
-7. **Blocking**: Licht und Schatten in großen Massen. Siehe [Tonwerte](tonwerte.html#blocking-licht-und-schatten-zuerst).
-8. **Raster**: quadratische Felder über dem Bild, in Weiß, Grau oder Schwarz. Siehe [Drucken](drucken.html#das-raster).
-9. **Umrisse** ein oder aus.
-10. **Nummern**: jeder Klick schaltet weiter, von Nummern zu Nummern auf Hintergrund zu keinen Nummern. Auf Hintergrund steht jede Nummer auf einem kleinen Quadrat, weiß mit dunkler Nummer auf dunklen Flächen und dunkel mit weißer Nummer auf hellen, so bleibt sie auf jeder Farbe lesbar.
+5. **Foto**: das Original, mit Sättigung und Kontrast.
+6. **Blocking**: Licht und Schatten in großen Massen. Siehe [Tonwerte](tonwerte.html#blocking-licht-und-schatten-zuerst).
+7. **Raster**: quadratische Felder über dem Bild, in Weiß, Grau oder Schwarz. Siehe [Drucken](drucken.html#das-raster).
+8. **Umrisse** ein oder aus.
+9. **Nummern**: jeder Klick schaltet weiter, von Nummern zu Nummern auf Hintergrund zu keinen Nummern. Auf Hintergrund steht jede Nummer auf einem kleinen Quadrat, weiß mit dunkler Nummer auf dunklen Flächen und dunkel mit weißer Nummer auf hellen, so bleibt sie auf jeder Farbe lesbar.
 
 ![Fotofarbe: was das Foto verlangt](shot:view-target)
-
-![Überlagerung: das Foto über der Farbe](shot:view-overlay)
 
 ![Foto: das Original](shot:view-photo)
 

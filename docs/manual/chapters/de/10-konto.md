@@ -95,11 +95,18 @@ Watercolourlove arbeitet ganz auf deinem Gerät. Dein Foto wird nie hochgeladen:
 - deine Farbkästen und deine eigenen Farben,
 - deine Einstellungen und die Anordnung der Fenster.
 
-Nichts davon gehört zu deinem Konto. Das hat drei Folgen, die du kennen solltest:
+Nichts davon gehört zu deinem Konto. Das hat vier Folgen, die du kennen solltest:
 
 1. **Ein anderes Gerät ist ein Neuanfang.** Meldest du dich auf dem Tablet an, hast du dort deinen Tarif, aber nicht deine Sammlung und nicht deine Farbkästen.
 2. **Wer die Browserdaten löscht, löscht seine Arbeit.** „Browserdaten löschen“, „Cookies und Websitedaten löschen“ oder ein privates Fenster, das du schließt, entfernen sie alle, und niemand kann sie zurückholen.
-3. **Deine Arbeit ist von Grund auf privat.** Niemand, auch wir nicht, kann deine Fotos oder deine Farben sehen.
+3. **Der Browser kann von sich aus aufräumen.** Safari löscht die Daten einer Website, die du sieben Tage lang nicht geöffnet hast, außer du hast sie zum Home-Bildschirm hinzugefügt. Jeder Browser kann gespeicherte Daten entfernen, wenn der Speicher des Geräts fast voll ist. Öffne die App also regelmäßig, oder sichere, was du behalten willst.
+4. **Deine Arbeit ist von Grund auf privat.** Niemand, auch wir nicht, kann deine Fotos oder deine Farben sehen.
+
+Was du sichern kannst:
+
+- **Farbkästen** als Datei: **Exportieren** unter jedem Kasten im Farbkasten, zurück mit **Farbkasten importieren**, auf diesem oder einem anderen Gerät.
+- **Das Ergebnis eines Bildes** als Ausdruck oder PDF mit allen Mischungen ([Drucken](drucken.html)) oder als JPG ([Ein Bild exportieren](bilder.html#ein-bild-exportieren)).
+- **Ein Bild der Sammlung mit seinen Einstellungen** lässt sich nicht als Datei sichern. Heb das Foto selbst auf: Mit derselben Datei und denselben Einstellungen entsteht derselbe Plan wieder, und ein freigeschaltetes Bild bleibt freigeschaltet.
 
 > **Tipp:** Sichere deine Farbkästen. Im Farbkasten speichert **Exportieren** unter jedem Kasten ihn als Datei; **Farbkasten importieren** holt ihn zurück, auf diesem oder einem anderen Gerät. Ein Farbkasten mit deinen eigenen, kalibrierten Farben ist es wert, aufgehoben zu werden. Siehe [Farbkasten und Palette](farbkasten.html).
 

@@ -37,6 +37,7 @@ enum PrintSheet {
                 picture: first ? picture : nil,
                 segmentation: session.segmentation,
                 labels: labels,
+                settings: session.settings,
                 rows: pageRows,
                 key: first && pageRows.contains { $0.washes.count > 1 }
             )
@@ -90,7 +91,7 @@ enum PrintSheet {
                 width: plan.width,
                 labels: layer.regions.compactMap { region in
                     region.coats > 0
-                        ? NumberedPicture.Label(text: "\(region.coats)", x: Double(region.anchorX) + 0.5, y: Double(region.anchorY) + 0.5, room: Double(region.anchorDist), color: Color.ink(on: layer.hexes[region.coats]))
+                        ? NumberedPicture.Label(text: "\(region.coats)", x: Double(region.anchorX) + 0.5, y: Double(region.anchorY) + 0.5, room: Double(region.anchorDist), color: Session.inkHex(on: layer.hexes[region.coats]))
                         : nil
                 }
             ))
@@ -168,7 +169,7 @@ enum PrintSheet {
     }
 
     private static func pictureLabels(_ session: Session) -> [NumberedPicture.Label] {
-        guard session.settings.numbers, let segmentation = session.segmentation, session.regionEntry.count == segmentation.regions.count else { return [] }
+        guard session.settings.numbers != .none, let segmentation = session.segmentation, session.regionEntry.count == segmentation.regions.count else { return [] }
         return segmentation.regions.compactMap { region in
             let index = session.regionEntry[region.id]
             guard session.entries.indices.contains(index) else { return nil }
@@ -177,7 +178,8 @@ enum PrintSheet {
                 x: Double(region.anchorX) + 0.5,
                 y: Double(region.anchorY) + 0.5,
                 room: Double(region.anchorDist),
-                color: session.settings.view == .original ? .white : session.settings.view == .template ? Color.templateNumber : Color.ink(on: session.displayHex(session.entries[index]))
+                color: session.labelHex(index),
+                ink: session.settings.view == .template ? "#ffffff" : nil
             )
         }
     }
@@ -187,6 +189,8 @@ enum PrintSheet {
         let picture: CGImage?
         let segmentation: Segmentation?
         let labels: [NumberedPicture.Label]
+        /// Number style and size, and the grid, as on the screen.
+        let settings: AnalysisSettings
         let rows: [MixBlock]
         /// The letters of the water levels, above the list.
         let key: Bool
@@ -197,7 +201,7 @@ enum PrintSheet {
                     Text(title).font(.system(size: 15, weight: .semibold)).frame(height: 30, alignment: .top)
                 }
                 if let picture, let segmentation {
-                    NumberedPicture(image: picture, width: segmentation.width, labels: labels, fontSize: 7)
+                    NumberedPicture(image: picture, width: segmentation.width, labels: labels, fontSize: 7, settings: settings)
                         .frame(maxWidth: .infinity, maxHeight: PrintSheet.pictureHeight)
                         .frame(height: PrintSheet.pictureHeight + 30, alignment: .top)
                 }

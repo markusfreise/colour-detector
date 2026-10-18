@@ -12,7 +12,8 @@ extension Color {
     }
 
     /// Numbers of the template: light blue without yellow, so a printer uses no black ink.
-    static let templateNumber = Color(hex: "#96c3ff")
+    static let templateNumberHex = "#96c3ff"
+    static let templateNumber = Color(hex: templateNumberHex)
 }
 
 extension CGColor {

@@ -20,14 +20,42 @@ struct ControlsView: View {
     @State private var layerSimplify = 4.0
     @State private var accents = 3.0
     @State private var maxCoats = 2.0
+    @State private var gridColumns = 8.0
 
     var body: some View {
-        // In the Blocking view only its own settings; the colour settings come back with the other views.
-        if session.settings.view == .blocking {
-            BlockingControlsView()
-        } else {
-            colourSettings
+        VStack(alignment: .leading, spacing: 14) {
+            // In the Blocking view only its own settings; the colour settings come back with the other views.
+            if session.settings.view == .blocking {
+                BlockingControlsView()
+            } else {
+                colourSettings
+            }
+            overSettings
         }
+    }
+
+    /// In every view: the size of the numbers and the grid over the picture, side by side.
+    private var overSettings: some View {
+        @Bindable var session = session
+        return HStack(alignment: .top, spacing: Theme.gap) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Number size").font(Theme.strong).lineLimit(1)
+                Picker("Number size", selection: $session.settings.numberSize) {
+                    Text("Normal", comment: "Number size").tag(NumberSize.normal)
+                    Text("Large", comment: "Number size").tag(NumberSize.large)
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .fixedSize()
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            slider("Grid columns", value: $gridColumns, range: 2...30) {
+                session.settings.gridColumns = Int(gridColumns.rounded())
+            }
+        }
+        .tint(Theme.corporate)
+        .onAppear { gridColumns = Double(session.settings.gridColumns) }
+        .onChange(of: session.settings.gridColumns) { gridColumns = Double(session.settings.gridColumns) }
     }
 
     private var colourSettings: some View {

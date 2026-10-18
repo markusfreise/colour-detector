@@ -20,8 +20,8 @@ struct PictureJPG: Transferable {
         guard let image = session.rendered, let size = session.workingSize else { return Data() }
         let width = CGFloat(image.width)
         let height = CGFloat(image.height)
-        // Numbers relative to the picture, as on the screen.
-        let view = NumberedPicture(image: image, width: size.width, labels: session.pictureLabels())
+        // Numbers relative to the picture, and the grid, as on the screen.
+        let view = NumberedPicture(image: image, width: size.width, labels: session.pictureLabels(), settings: session.settings)
             .frame(width: width, height: height)
         let renderer = ImageRenderer(content: view)
         renderer.scale = 1

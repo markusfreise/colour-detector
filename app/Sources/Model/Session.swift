@@ -96,7 +96,14 @@ struct AnalysisSettings: Codable, Equatable {
     var contrast = 100
     var view = ViewMode.mixed
     var outlines = true
-    var numbers = true
+    /// The numbers in the areas: none, alone, or each on a padded square.
+    var numbers = NumberStyle.plain
+    /// The numbers at normal size or 1.4 times that.
+    var numberSize = NumberSize.normal
+    /// A grid of square cells over the picture, in the colour of its lines; nil = none.
+    var grid: GridColour?
+    /// The picture's width in that many square cells; rows as many as fit the height.
+    var gridColumns = 8
     /// Mix mode: Monochrome, the picture in grey, every value painted with one paint of the box (a value study).
     var values = false
     /// Blocking: 2 = light and shadow, 3 = with a middle tone.
@@ -131,12 +138,97 @@ struct AnalysisSettings: Codable, Equatable {
         contrast = try values.decodeIfPresent(Int.self, forKey: .contrast) ?? 100
         view = try values.decodeIfPresent(ViewMode.self, forKey: .view) ?? defaults.view
         outlines = try values.decodeIfPresent(Bool.self, forKey: .outlines) ?? defaults.outlines
-        numbers = try values.decodeIfPresent(Bool.self, forKey: .numbers) ?? defaults.numbers
+        numbers = try values.decodeIfPresent(NumberStyle.self, forKey: .numbers) ?? defaults.numbers
+        numberSize = try values.decodeIfPresent(NumberSize.self, forKey: .numberSize) ?? defaults.numberSize
+        grid = try values.decodeIfPresent(GridColour.self, forKey: .grid)
+        gridColumns = try values.decodeIfPresent(Int.self, forKey: .gridColumns) ?? defaults.gridColumns
         self.values = try values.decodeIfPresent(Bool.self, forKey: .values) ?? defaults.values
         blockingTones = try values.decodeIfPresent(Int.self, forKey: .blockingTones) ?? defaults.blockingTones
         blockingSplit = try values.decodeIfPresent([Double].self, forKey: .blockingSplit)
         blockingForms = try values.decodeIfPresent(Int.self, forKey: .blockingForms) ?? defaults.blockingForms
         blockingOpacity = try values.decodeIfPresent(Int.self, forKey: .blockingOpacity) ?? defaults.blockingOpacity
+    }
+}
+
+/// The numbers over the picture, as the web's setting: false = none, true = the numbers alone,
+/// "backdrop" = each on a padded square. Saved the same way.
+enum NumberStyle: Codable, Equatable {
+    case none, plain, backdrop
+
+    init(from decoder: Decoder) throws {
+        let value = try decoder.singleValueContainer()
+        if let on = try? value.decode(Bool.self) {
+            self = on ? .plain : .none
+        } else {
+            self = try value.decode(String.self) == "backdrop" ? .backdrop : .plain
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var value = encoder.singleValueContainer()
+        switch self {
+        case .none: try value.encode(false)
+        case .plain: try value.encode(true)
+        case .backdrop: try value.encode("backdrop")
+        }
+    }
+
+    /// The step a tap on the numbers button goes on to.
+    var next: NumberStyle {
+        switch self {
+        case .none: .plain
+        case .plain: .backdrop
+        case .backdrop: .none
+        }
+    }
+
+    /// The label of the numbers button: the state now.
+    var title: String {
+        switch self {
+        case .none: "No numbers"
+        case .plain: "Numbers"
+        case .backdrop: "Numbers on a backdrop"
+        }
+    }
+}
+
+enum NumberSize: String, Codable, CaseIterable {
+    case normal, large
+
+    /// Large is this many times normal, as the web's LARGE_LABEL.
+    var factor: Double { self == .large ? 1.4 : 1 }
+}
+
+/// The colour of the lines of the grid over the picture.
+enum GridColour: String, Codable, CaseIterable {
+    case white, grey, black
+
+    var hex: String {
+        switch self {
+        case .white: "#ffffff"
+        case .grey: "#808080"
+        case .black: "#000000"
+        }
+    }
+
+    /// The grid button steps through no grid, white, grey, black.
+    static func next(after colour: GridColour?) -> GridColour? {
+        switch colour {
+        case nil: .white
+        case .white: .grey
+        case .grey: .black
+        case .black: nil
+        }
+    }
+
+    /// The label of the grid button: the state now.
+    static func title(_ colour: GridColour?) -> String {
+        switch colour {
+        case nil: "No grid"
+        case .white: "White grid"
+        case .grey: "Grey grid"
+        case .black: "Black grid"
+        }
     }
 }
 
@@ -358,6 +450,13 @@ final class Session {
     var settings = AnalysisSettings() {
         didSet {
             guard settings != oldValue else { return }
+            // Numbers and grid are drawn over the rendered picture by the view: nothing to redo.
+            var drawn = settings
+            drawn.numbers = oldValue.numbers
+            drawn.numberSize = oldValue.numberSize
+            drawn.grid = oldValue.grid
+            drawn.gridColumns = oldValue.gridColumns
+            if drawn == oldValue { return }
             if settings.saturation != oldValue.saturation || settings.contrast != oldValue.contrast || settings.values != oldValue.values { originalPixels = nil }
             if settings.mode != oldValue.mode { return } // `setMode` takes care of the rest
             if settings.geometric != oldValue.geometric || settings.values != oldValue.values {

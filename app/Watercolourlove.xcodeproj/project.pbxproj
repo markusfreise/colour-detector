@@ -66,6 +66,7 @@
 		F33E90DB14D97620BE3B43B7 /* BlockingControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB7E0CB80CD6AE38F8E3337 /* BlockingControlsView.swift */; };
 		F7E4D190AA7CA705E3468947 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6DDE670EB3783ED7228C8E9 /* Localization.swift */; };
 		FB018294A7D84B17F7161832 /* Blocking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E834ABF1D0C866F84511F0 /* Blocking.swift */; };
+		FB3A7214AA1D3FDA21905609 /* SettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7715F52F3F719520503F302E /* SettingsTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +109,7 @@
 		688048451E524CBAAC7E433A /* Mixing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mixing.swift; sourceTree = "<group>"; };
 		742BD345C948DE84F2EBEF06 /* LayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerTests.swift; sourceTree = "<group>"; };
 		76DF2A1B9A4772D7EAF9C324 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7715F52F3F719520503F302E /* SettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTests.swift; sourceTree = "<group>"; };
 		78B2C029D64DD44C0EC1A98F /* LayerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerViews.swift; sourceTree = "<group>"; };
 		79497CE6AD636D741F37181B /* DebugSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSnapshot.swift; sourceTree = "<group>"; };
 		7ADD282308C8DE8CE23E59FE /* Chips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chips.swift; sourceTree = "<group>"; };
@@ -268,6 +270,7 @@
 				742BD345C948DE84F2EBEF06 /* LayerTests.swift */,
 				F2298D9BDFE2E4ED58CB1C41 /* MixingSyncTests.swift */,
 				C69707560BB9AC39D6BC5D03 /* SegmentationSyncTests.swift */,
+				7715F52F3F719520503F302E /* SettingsTests.swift */,
 				1DB0FE8F7F6E7AACE9CDE55A /* SmoothTests.swift */,
 				F57FC1B509E592B1CBC7EA93 /* TestPictures.swift */,
 			);
@@ -397,6 +400,7 @@
 				9482778874367C9127217FCD /* LayerTests.swift in Sources */,
 				351BFA094BA73D7421A6ED63 /* MixingSyncTests.swift in Sources */,
 				2F39316DEE9D82BDB95624BA /* SegmentationSyncTests.swift in Sources */,
+				FB3A7214AA1D3FDA21905609 /* SettingsTests.swift in Sources */,
 				51ED4B195BA9A622B972B3FB /* SmoothTests.swift in Sources */,
 				17DF9646E7F2AEDB0C29FA63 /* TestPictures.swift in Sources */,
 			);

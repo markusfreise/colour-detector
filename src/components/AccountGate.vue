@@ -94,7 +94,7 @@
             <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
           </label>
           <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Send me a sign-in link') }}</button>
-          <button class="gate__link gate__switch" type="button" @click="signingUp = true">{{ t('Sign up') }}</button>
+          <button class="gate__link gate__switch" type="button" @click="signingUp = true">{{ t('Sign up for free') }}</button>
         </form>
         <form v-else class="gate__form" @submit.prevent="account.sendLink(email, code)">
           <label class="field gate__field">
@@ -117,16 +117,13 @@
       </p>
       </div>
 
-      <!-- What the app does, in three steps. The pictures are hand-drawn sketches for now, to be
-           replaced by screenshots taken after them. -->
+      <!-- What the app does: one sentence, the three steps, and a desk with the printed result. -->
       <aside v-if="!account.sentTo || account.user" class="gate__how" aria-labelledby="how-title">
-        <h2 id="how-title" class="gate__how-title">{{ t('How this works') }}</h2>
+        <h2 id="how-title" class="gate__how-title">{{ t('The app that shows you how to mix the right watercolours for your pictures.') }}</h2>
         <ol class="gate__steps">
-          <li v-for="step in steps" :key="step.title" class="gate__step">
-            <h3 class="gate__step-title">{{ t(step.title) }}</h3>
-            <img class="gate__step-image" :src="step.image" :alt="t(step.alt)" loading="lazy" />
-          </li>
+          <li v-for="step in steps" :key="step" class="gate__step">{{ t(step) }}</li>
         </ol>
+        <img class="gate__image" :src="signinImage" :alt="t('A watercolour palette beside the printed colour cards and the picture as numbered areas')" />
       </aside>
 
       <!-- Below both columns, in one row. -->
@@ -152,9 +149,7 @@ import DebugMenu from './DebugMenu.vue'
 import { APP_NAME } from '../config.js'
 import logoSvg from '../../resources/logo.svg?raw'
 import background from '../../resources/background.webp'
-import stepPhoto from '../../resources/howto/step-1-photo.svg'
-import stepPaints from '../../resources/howto/step-2-paints.svg'
-import stepMixes from '../../resources/howto/step-3-mixes.svg'
+import signinImage from '../../resources/howto/signin.webp'
 import { useConsentStore } from '../stores/consent.js'
 import { usePreferencesStore } from '../stores/preferences.js'
 import { useText } from '../i18n/index.js'
@@ -162,11 +157,7 @@ import { useText } from '../i18n/index.js'
 const { t, legalPage } = useText()
 const consent = useConsentStore()
 const preferences = usePreferencesStore()
-const steps = [
-  { title: 'Choose your reference photo you want to paint with watercolours and need mixes for.', image: stepPhoto, alt: 'A photo chosen from the device opens in the app' },
-  { title: 'Add the colours and paints you use for your art. Presets for known vendors are included.', image: stepPaints, alt: 'The paint box with the paints you own ticked' },
-  { title: 'Image is analysed and recipes for colours calculated. Refine with powerful settings.', image: stepMixes, alt: 'The photo as numbered areas, with the recipe of one area' },
-]
+const steps = ['Add a reference photo for your picture', 'Add your watercolours', 'Let the app analyse the mixes']
 
 const account = useAccountStore()
 const logo = logoSvg.replace(/fill="black"/g, 'fill="currentColor"')

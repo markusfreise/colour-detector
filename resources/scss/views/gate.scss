@@ -297,44 +297,59 @@
 
     &__how-title {
         margin-bottom: var(--gap);
+        // Clear of EN | DE in the corner above it.
+        padding-right: #{pxtorem(64)};
+
+        @media (max-width: 760px) {
+            padding-right: 0;
+        }
+
         color: var(--c-head);
-        font-size: var(--fs-hl-small);
+        font-size: var(--fs-medium);
         font-weight: 700;
+        line-height: 1.3;
     }
 
+    // The three steps as a numbered list, each number in a dark circle.
     &__steps {
         display: grid;
-        gap: var(--gap);
-        margin: 0;
+        gap: var(--gap-05x);
+        margin: 0 0 var(--gap-15x);
         padding: 0;
         list-style: none;
         counter-reset: step;
     }
 
-    // One row per step: the picture, and the headline beside it.
     &__step {
         counter-increment: step;
-        display: grid;
-        grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+        display: flex;
         align-items: center;
-        gap: var(--gap);
-    }
-
-    &__step-title {
-        order: 2;
+        gap: var(--gap-075x, calc(var(--gap) * 0.75));
         color: var(--c-head);
         font-size: var(--fs-copy);
         font-weight: 600;
 
         &::before {
-            content: counter(step) ". ";
+            content: counter(step);
+            flex: none;
+            display: grid;
+            place-items: center;
+            width: #{pxtorem(28)};
+            height: #{pxtorem(28)};
+            border-radius: 50%;
+            background: var(--c-corporate);
+            color: var(--c-on-corporate);
+            font-size: var(--fs-small);
+            font-weight: 700;
         }
     }
 
-    &__step-image {
+    &__image {
         display: block;
         width: 100%;
         height: auto;
+        aspect-ratio: 1;
+        object-fit: cover;
         border-radius: var(--radius-medium);
     }
 }

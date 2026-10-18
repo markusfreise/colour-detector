@@ -404,13 +404,11 @@ export default {
   'Invitation code (optional)': 'Einladungscode (optional)',
   'Send me a sign-in link': 'Schick mir einen Anmeldelink',
   'Try again': 'Noch einmal versuchen',
-  'How this works': 'So funktioniert es',
-  'Choose your reference photo you want to paint with watercolours and need mixes for.': 'Wähl das Referenzfoto, das du in Aquarell malen möchtest und für das du Mischungen brauchst.',
-  'Add the colours and paints you use for your art. Presets for known vendors are included.': 'Füge die Farben hinzu, mit denen du malst. Vorlagen bekannter Hersteller sind schon dabei.',
-  'Image is analysed and recipes for colours calculated. Refine with powerful settings.': 'Dein Bild wird analysiert und das Rezept für jede Farbe berechnet. Mit zahlreichen Einstellungen verfeinerst du das Ergebnis.',
-  'A photo chosen from the device opens in the app': 'Ein Foto vom Gerät öffnet sich in der App',
-  'The paint box with the paints you own ticked': 'Der Farbkasten mit deinen Farben angehakt',
-  'The photo as numbered areas, with the recipe of one area': 'Das Foto als nummerierte Flächen, mit dem Rezept einer Fläche',
+  'The app that shows you how to mix the right watercolours for your pictures.': 'Die App, die dir zeigt, wie du mit Aquarell die korrekten Farben für deine Bilder mischt.',
+  'Add a reference photo for your picture': 'Referenzfoto für dein Bild einfügen',
+  'Add your watercolours': 'Deine Aquarellfarben hinzufügen',
+  'Let the app analyse the mixes': 'Farbmix analysieren lassen',
+  'A watercolour palette beside the printed colour cards and the picture as numbered areas': 'Ein Aquarellkasten neben den gedruckten Farbkarten und dem Bild als nummerierte Flächen',
   // App
   'Hide': 'Ausblenden',
   'Hide “Get pro” for this session': '„Pro holen“ für diese Sitzung ausblenden',
@@ -473,7 +471,7 @@ export default {
   // Signing in and signing up (AccountGate)
   'Sign in with e-mail': 'Anmelden mit E-Mail',
   'Sign up with e-mail': 'Registrieren mit E-Mail',
-  'Sign up': 'Jetzt registrieren',
+  'Sign up for free': 'Jetzt kostenlos registrieren',
   'Sign in with account': 'Jetzt anmelden',
   'Create my account': 'Konto anlegen',
   // Menu button on a phone (App)

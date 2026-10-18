@@ -196,10 +196,9 @@ export const shots = [
     prepare: async (page, { t }) => {
       await hint(page, t, 'Paint box').click()
       await page.locator('.paintbox__add').first().click()
-      await page.locator('.colour-search__input').first().fill('ultramarine')
+      await page.locator('.addcolour__search').first().fill('ultramarin')
     },
-    target: (page) => page.locator('.paintbox__adding').first(),
-    padding: 24,
+    target: (page) => page.locator('.addcolour[open]').first(),
   },
 
   // ------------------------------------------------------------------ Layer mode

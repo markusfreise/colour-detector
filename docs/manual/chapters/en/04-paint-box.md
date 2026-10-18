@@ -59,26 +59,37 @@ That is six to eight paints, and it mixes almost everything. Add a paint only wh
 
 ## Adding paints
 
-At the end of every paint box is an empty place with a **+**. Click it to add a colour to that box.
+At the end of every paint box is an empty place with a **+**. Click it to open **Add colour** for that box.
 
-![Searching a colour to add](shot:paintbox-add)
+![Adding colours to a box](shot:paintbox-add)
 
-Type part of the series, the number or the name: "ultramarine", "494" or "Horadam 494" all work. The search covers the paints of the stock and, with Pro, the colour charts of three makers:
+The lower half, **Library**, lists the colours you can add, one section per series: the paints of the stock and, with Pro, the colour charts of four makers:
 
 - **Schmincke Horadam**,
 - **Winsor & Newton Professional** (116 colours),
-- **Michael Harding** (136 colours).
+- **Michael Harding** (136 colours),
+- **Sennelier L'Aquarelle** (98 colours).
 
-Pick a paint from the list and it joins the box with its name and its reference colour.
+To find a colour:
+
+- The buttons with the series names show or hide their sections. A dark button is shown.
+- Type part of the name or the number into the search field: "ultramarin", "494" or "Horadam 494" all work, and so do pigment names such as "PB29".
+- The colour squares next to it show only reds, oranges, yellows, greens, turquoises, blues, violets, browns, or greys and blacks. Click the square again to see every hue.
+- The button with the eraser at the top empties the search and the filters.
+
+Click a colour and it joins the box with its name and its reference colour. A colour that is in the box already is ghosted; click it again to take it out. Add as many as you like, then close the dialog. A colour with a dashed outline has no reliable reference colour on its maker's chart: clicking it fills in the form above, where you set the colour yourself.
 
 ### A colour of your own
 
-For any other paint, choose **Or enter a colour of your own** below the search. You enter:
+For any other paint, use **Own colour** at the top. You enter:
 
-- **Vendor and Series**, as it is written on the tube, for example "Daniel Smith Extra Fine". If it is a series with a colour chart in the app, entering a number fills in name and colour for you.
-- **Number** and **Name**.
-- **Form**: **Pan** or **Tube**.
-- **Colour**, the reference colour of the paint.
+- the **colour**, in the square on the left: the reference colour of the paint,
+- the **number**,
+- the **series**, as it is written on the tube, for example "Daniel Smith Extra Fine". If it is a series with a colour chart in the app, entering a number fills in name and colour for you,
+- the **name**,
+- the **form**: **Pan**, **Tube**, **Liquid** or **Other**.
+
+Then press **Okay**: the paint joins the box and the dialog closes.
 
 The reference colour matters more than anything else on this form. Pick the colour of the paint at its **strongest wash**: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube: paint in the pan is darker and more saturated than any wash you will lay with it. The app treats this colour as the darkest the paint ever gets and makes everything lighter from it with water, so a colour that is too light makes every recipe with this paint too cautious, and one that is too dark makes them too strong. The best source is your own swatch, painted on your paper and photographed or scanned in daylight. The chapter [Calibrating your paints](calibrating.html) shows how to make one.
 

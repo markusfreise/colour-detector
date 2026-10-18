@@ -145,27 +145,10 @@
         line-height: 1;
         cursor: pointer;
 
-        &:hover,
-        &--open {
+        &:hover {
             border-color: var(--c-corporate);
             color: var(--c-corporate);
         }
-    }
-
-    &__adding {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--gap-05x);
-        margin-top: #{pxtorem(10)};
-
-        .colour-search {
-            width: 100%;
-        }
-    }
-
-    &__form-title {
-        font-weight: 650;
     }
 
     // Taking colours out of a box: a click removes the colour instead of selecting it.
@@ -208,6 +191,11 @@
         }
     }
 
+    &__note {
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+    }
+
     &__edit {
         display: flex;
         flex-wrap: wrap;
@@ -217,50 +205,16 @@
         .input {
             flex: 1 1 #{pxtorem(180)};
         }
-    }
 
-    // Two columns at every width, so that a field is either half the form or the whole of it.
-    &__paint-form {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: var(--gap-05x);
-        margin-bottom: #{pxtorem(12)};
-    }
-
-    &__input {
-        display: flex;
-        flex-direction: column;
-        gap: var(--gap-025x);
-        font-weight: 600;
-
-        &--wide {
-            grid-column: 1 / -1;
+        // The buttons stand as tall as the field next to them.
+        .button {
+            min-height: #{pxtorem(48)};
         }
     }
 
-    &__note {
-        grid-column: 1 / -1;
-        color: var(--c-copy-light);
-        font-size: var(--fs-small);
-    }
-
-    // Under a field: what entering this value does.
-    &__hint {
-        color: var(--c-copy-light);
-        font-size: var(--fs-small);
-        font-weight: 400;
-    }
-
-    &__form-actions {
-        grid-column: 1 / -1;
-        display: flex;
-        gap: #{pxtorem(6)};
-    }
-
-    // The buttons of the forms stand as tall as the fields above them.
-    &__form-actions .button,
-    &__edit .button {
-        min-height: #{pxtorem(48)};
+    // Editing one's own paint: the form above the list.
+    &__group > .paint-form {
+        margin-bottom: #{pxtorem(12)};
     }
 
     // One paint per row: the colour itself, with what is done with it on its right.

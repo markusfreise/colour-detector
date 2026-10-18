@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { stockPaints } from '../data/paints.js'
 import { starterPaints } from '../data/starter.js'
 import { useProStore } from './pro.js'
-import { groupPaints, sortPaints, AUTO_OFF_DEFAULT, HOUSE_VENDOR } from '../lib/paintbox.js'
+import { groupPaints, sortPaints, AUTO_OFF_DEFAULT, HOUSE_VENDOR, ownForm } from '../lib/paintbox.js'
 import { t } from '../i18n/index.js'
 
 const LEGACY_KEY = 'colour-detector:enabled-paints'
@@ -216,9 +216,11 @@ export const usePaintsStore = defineStore('paints', {
       this.custom.push({ id, vendor: vendor.trim(), line: '', number: String(number).trim(), name: name.trim(), nameDe: '', hex, forms: [form], source: 'custom', enabled: false, custom: true })
       return id
     },
-    /** A colour from a library into a box. */
+    /** A colour from a library into a box, in the form it names or the one of the box. Returns its id. */
     addColourToBox(boxId, colour) {
-      this.addToBox(boxId, this.paintFor({ ...colour, form: boxId === 'tube' ? 'tube' : 'pan' }))
+      const id = this.paintFor({ ...colour, form: colour.form ? ownForm(colour.form) : boxId === 'tube' ? 'tube' : 'pan' })
+      this.addToBox(boxId, id)
+      return id
     },
 
     /** A box as a file to keep: its name and its colours, each with series, number, name and colour. */
@@ -238,7 +240,7 @@ export const usePaintsStore = defineStore('paints', {
       const box = this.addBox(String(data.name ?? ''))
       for (const p of data.paints) {
         if (!p?.vendor || p.number == null || !p.name || !/^#[0-9a-f]{6}$/i.test(p.hex ?? '')) continue
-        const id = this.paintFor({ vendor: String(p.vendor), number: String(p.number), name: String(p.name), hex: p.hex, form: p.form === 'tube' ? 'tube' : 'pan' })
+        const id = this.paintFor({ vendor: String(p.vendor), number: String(p.number), name: String(p.name), hex: p.hex, form: ownForm(p.form) })
         if (!box.paintIds.includes(id)) box.paintIds.push(id)
       }
       this.persist()

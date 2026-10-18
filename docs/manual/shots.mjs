@@ -127,6 +127,7 @@ export const shots = [
   { id: 'view-photo', settings: { view: 'original' } },
   { id: 'view-template', settings: { view: 'template' } },
   { id: 'view-plain', settings: { outlines: false, numbers: false } },
+  { id: 'view-backdrop', settings: { numbers: 'backdrop', numberSize: 'large' } },
   {
     id: 'picture-tools',
     target: (page) => page.locator('.painting__tools').first(),

@@ -186,6 +186,23 @@
           </label>
         </div>
           </template>
+          <!-- In every view: the numbers over the picture. -->
+          <div class="field controls__number-size">
+            <span class="field__label">{{ t('Number size') }}</span>
+            <div class="segmented segmented--text">
+              <button
+                v-for="s in numberSizes"
+                :key="s.value"
+                type="button"
+                class="segmented__option"
+                :class="{ 'segmented__option--active': analysis.settings.numberSize === s.value }"
+                :aria-pressed="analysis.settings.numberSize === s.value"
+                @click="analysis.settings.numberSize = s.value"
+              >
+                {{ t(s.label) }}
+              </button>
+            </div>
+          </div>
     </div>
   </section>
 </template>
@@ -216,6 +233,10 @@ const blocking = computed(() => analysis.settings.view === 'blocking')
 const areas = [
   { value: false, label: 'Organic', icon: 'organic', title: 'Organic: areas follow the outlines in the photo' },
   { value: true, label: 'Geometric', icon: 'geometric', title: 'Geometric: areas as polygons with a few straight edges that overlap' }
+]
+const numberSizes = [
+  { value: 'normal', label: 'Normal@@size' },
+  { value: 'large', label: 'Large@@size' },
 ]
 function setValues(on) {
   if (on && !pro.require('monochrome', 'paint the picture in monochrome')) return

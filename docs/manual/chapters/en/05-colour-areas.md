@@ -91,7 +91,7 @@ The tools of the picture sit above it.
 6. **Photo**: the original, with saturation and contrast applied.
 7. **Template to print**: no fill, only outlines and numbers in light blue. See [Printing](printing.html).
 8. **Outlines** on or off.
-9. **Numbers** on or off.
+9. **Numbers**: each click steps on from numbers to numbers on a backdrop to no numbers. On a backdrop every number sits on a small square, white with a dark number on dark areas and dark with a white number on light ones, so it stays readable on any colour.
 
 ![Photo colour: what the photo asks for](shot:view-target)
 
@@ -102,6 +102,10 @@ The tools of the picture sit above it.
 With outlines and numbers off, **Mixed paint** shows the picture as it might look painted, a good test of whether the plan works as a picture.
 
 ![Mixed paint without outlines and numbers](shot:view-plain)
+
+**Number size** at the end of the settings makes the numbers **Large**, 1.4 times the **Normal** size, for a picture seen from further away or printed small.
+
+![Large numbers on a backdrop](shot:view-backdrop)
 
 ## Settings for typical subjects
 

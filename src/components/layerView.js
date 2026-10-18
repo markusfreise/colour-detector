@@ -27,10 +27,35 @@ export function drawOutlines(ctx, width, height, scale, differs, style) {
   }
 }
 
-export function labelFont(ctx, scale) {
-  ctx.font = `600 ${11 * (scale / 2)}px system-ui, sans-serif`
+const LARGE_LABEL = 1.4 // setting numberSize 'large': the numbers this much bigger than 'normal'
+
+/**
+ * Sets the font of the numbers in the areas and returns a function that draws one.
+ * `numbers` is the setting: true = the number alone, 'backdrop' = on a padded square.
+ * The colour passed to the function is the one the number has on its own (light on dark areas,
+ * dark on light ones); on a backdrop it is the colour of the square, and the number takes `ink`,
+ * by default the colour that reads on it.
+ */
+export function labeller(ctx, scale, { numbers = true, size = 'normal' } = {}) {
+  const px = 11 * (scale / 2) * (size === 'large' ? LARGE_LABEL : 1)
+  ctx.font = `600 ${px}px system-ui, sans-serif`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
+  const pad = px * 0.3
+  return (text, x, y, colour, ink = contrastText(colour)) => {
+    if (numbers === 'backdrop') {
+      const height = px + pad * 2
+      const width = Math.max(ctx.measureText(text).width + pad * 2, height)
+      ctx.fillStyle = colour
+      ctx.beginPath()
+      ctx.roundRect(x - width / 2, y - height / 2, width, height, px * 0.15)
+      ctx.fill()
+      ctx.fillStyle = ink
+    } else {
+      ctx.fillStyle = colour
+    }
+    ctx.fillText(text, x, y)
+  }
 }
 
 /**
@@ -43,10 +68,11 @@ export function labelFont(ctx, scale) {
  *   stepView: 'paint' as above, 'wash' only the areas of the step filled with one stroke of its wash,
  *     'result' the paper after the step as it is;
  *   outlines: lines between areas that differ within the shown layers;
- *   numbers: with exactly one layer shown, its coats per area;
+ *   numbers: with exactly one layer shown, its coats per area (false, true or 'backdrop', see `labeller`);
+ *   numberSize: 'normal' or 'large';
  *   backdrop: draws something else than the layers (the photo) before lines and numbers.
  */
-export function drawLayerView(el, result, { show, step = null, stepView = 'paint', outlines = true, numbers = true, scale = 2, backdrop = null }) {
+export function drawLayerView(el, result, { show, step = null, stepView = 'paint', outlines = true, numbers = true, numberSize = 'normal', scale = 2, backdrop = null }) {
   const { width, height, layers } = result
   el.width = width * scale
   el.height = height * scale
@@ -94,11 +120,10 @@ export function drawLayerView(el, result, { show, step = null, stepView = 'paint
   if (numbers && !step && shown.length === 1) {
     // One layer on its own: the number of coats in every area that gets any.
     const layer = layers[shown[0]]
-    labelFont(ctx, scale)
+    const label = labeller(ctx, scale, { numbers, size: numberSize })
     for (const region of layer.regions) {
       if (!region.coats || region.anchorDist < MIN_LABEL_DIST) continue
-      ctx.fillStyle = light ? '#ffffff' : contrastText(layer.hexes[region.coats])
-      ctx.fillText(String(region.coats), (region.anchorX + 0.5) * scale, (region.anchorY + 0.5) * scale)
+      label(String(region.coats), (region.anchorX + 0.5) * scale, (region.anchorY + 0.5) * scale, light ? '#ffffff' : contrastText(layer.hexes[region.coats]))
     }
   }
   return ctx

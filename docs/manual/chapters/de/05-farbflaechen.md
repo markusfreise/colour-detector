@@ -15,7 +15,7 @@ part: Die App
 2. Die Flächen: **Organisch** oder **Geometrisch**.
 3. **Flächen vereinfachen**: wie groß und ruhig die Formen sind.
 4. **Farben**: die Zahl der Mischungen.
-5. **Details**: ob kleine Flächen eines anderen Farbtons eine eigene Mischung behalten.
+5. **Details**: ob die Mischungen feine Abstufungen im ganzen Bild geben oder kleinen Flächen eines anderen Farbtons.
 6. **Max. Farben**: wie viele Farben eine Mischung enthalten darf.
 
 Der Knopf mit dem halb gefüllten Kreis neben den Flächen schaltet auf [Monochrom](tonwerte.html#monochrom-eine-temperatur-jeder-tonwert) um, eine Studie in Hell und Dunkel, gemalt mit deinen Farben (Pro). Für Licht und Schatten allein gibt es die Ansicht **Blocking**.
@@ -48,10 +48,10 @@ Mit Pro geht der Regler unter 0, bis **-2**. Dort nimmt die App Schritt für Sch
 
 Hat das Foto mehr Farben, als du verlangst, müssen sich einige eine Mischung teilen. **Details** entscheidet, welche.
 
-- **Niedrig (Richtung 0)** hält das Bild als Ganzes so nah am Foto wie möglich. Große Flächen bekommen die genauesten Farben, und eine kleine Fläche eines anderen Farbtons wird unter Umständen mit der nächsten großen Mischung gemalt.
-- **Hoch (Richtung 10)** behält kleinen Flächen mit eigenem Farbton eine eigene Mischung: das rote Dach im grünen Tal, die Lippen im Porträt, ein einzelnes gelbes Boot. Dafür teilen sich ähnliche große Farben öfter eine Mischung.
+- **Hoch (Richtung 10)** hält das Bild als Ganzes so nah am Foto wie möglich. Die großen Flächen, ein Himmel, eine Wand, eine Straße, bekommen die feinsten Abstufungen, und eine kleine Fläche eines anderen Farbtons wird unter Umständen mit der nächsten großen Mischung gemalt.
+- **Niedrig (Richtung 0)** behält kleinen Flächen mit eigenem Farbton eine eigene Mischung: das rote Dach im grünen Tal, die Lippen im Porträt, ein einzelnes gelbes Boot. Dafür teilen sich ähnliche große Farben öfter eine Mischung, und ein Himmel wird unter Umständen eine einzige flache Farbe.
 
-Der Ausgangswert 5 ist ein Mittelweg. Erhöh ihn für Bilder, die von einem kleinen Akzent leben; senk ihn für ruhige Landschaften, in denen die großen Farbfelder am meisten zählen.
+Der Ausgangswert 5 ist ein Mittelweg. Senk ihn für Bilder, die von einem kleinen Akzent leben; erhöh ihn für ruhige Landschaften, in denen die großen Farbfelder am meisten zählen.
 
 ## Max. Farben
 
@@ -113,10 +113,10 @@ Das sind Ausgangspunkte, keine Regeln.
 
 | Motiv | Farben | Flächen vereinfachen | Details | Max. Farben |
 |---|---|---|---|---|
-| Landschaft, große Formen | 12 bis 20 | 4 bis 8 | 3 bis 5 | 2 oder 3 |
-| Porträt | 16 bis 24 | 2 bis 5 | 6 bis 8 | 2 oder 3 |
+| Landschaft, große Formen | 12 bis 20 | 4 bis 8 | 5 bis 7 | 2 oder 3 |
+| Porträt | 16 bis 24 | 2 bis 5 | 2 bis 4 | 2 oder 3 |
 | Architektur, Straßen | 14 bis 20 | 3 bis 6 oder **Geometrisch** | 5 | 2 |
-| Blumen, Stillleben | 10 bis 16 | 3 bis 6 | 6 bis 8 | 2 |
-| Schnelle Skizze, draußen | 6 bis 10 | 7 bis 10 | 3 | 2 |
+| Blumen, Stillleben | 10 bis 16 | 3 bis 6 | 2 bis 4 | 2 |
+| Schnelle Skizze, draußen | 6 bis 10 | 7 bis 10 | 7 | 2 |
 
-Bei Porträts tragen die kleinen Züge (Augen, Mund, der Schatten unter der Nase) die Ähnlichkeit, also halt **Details** hoch und **Flächen vereinfachen** niedrig, oder leg einen [Ausschnitt](bilder.html#genauer-hinsehen-ausschnitte-des-bildes) vom Gesicht an. Bei Landschaften klappt meist das Gegenteil: wenige, große, ruhige Flächen, und die kleinen Akzente am Ende frei gemalt.
+Bei Porträts tragen die kleinen Züge (Augen, Mund, der Schatten unter der Nase) die Ähnlichkeit, also halt **Details** und **Flächen vereinfachen** niedrig, oder leg einen [Ausschnitt](bilder.html#genauer-hinsehen-ausschnitte-des-bildes) vom Gesicht an. Bei Landschaften klappt meist das Gegenteil: wenige, große, ruhige Flächen, und die kleinen Akzente am Ende frei gemalt.

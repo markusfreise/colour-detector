@@ -108,9 +108,9 @@
           </label>
     
           <label v-if="!analysis.layerMode" class="field">
-            <span class="field__label">{{ t('Details') }} <output class="field__value">{{ analysis.settings.variety }}</output></span>
+            <span class="field__label">{{ t('Details') }} <output class="field__value">{{ analysis.settings.details }}</output></span>
             <input
-              v-model.number="analysis.settings.variety"
+              v-model.number="analysis.settings.details"
               class="field__range"
               type="range"
               min="0"

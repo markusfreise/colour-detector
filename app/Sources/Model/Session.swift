@@ -82,8 +82,15 @@ struct AnalysisSettings: Codable, Equatable {
     /// Areas as polygons with straight edges that overlap, instead of their organic outline.
     var geometric = false
     var maxPaints = 3
-    /// 0 = the picture as accurate as possible, 10 = small areas of another hue keep their mix.
-    var variety = 5
+    /// The Details slider: 10 = the most steps across the picture, 0 = small areas of another hue
+    /// keep their mix. The logic takes it the other way round, as `variety`.
+    var details = 5
+
+    /// What pictures saved before 2026-10-18 have instead of `details`.
+    private enum LegacyKeys: String, CodingKey { case variety }
+
+    /// `variety` of the logic (Mixes.plan, Segmenter.segment) for the Details slider.
+    var variety: Int { 10 - details }
     /// Percent, applied to the photo before the analysis.
     var saturation = 200
     var contrast = 100
@@ -116,7 +123,10 @@ struct AnalysisSettings: Codable, Equatable {
         simplify = try values.decodeIfPresent(Int.self, forKey: .simplify) ?? defaults.simplify
         geometric = try values.decodeIfPresent(Bool.self, forKey: .geometric) ?? defaults.geometric
         maxPaints = try values.decodeIfPresent(Int.self, forKey: .maxPaints) ?? defaults.maxPaints
-        variety = try values.decodeIfPresent(Int.self, forKey: .variety) ?? defaults.variety
+        let legacy = try decoder.container(keyedBy: LegacyKeys.self)
+        details = try values.decodeIfPresent(Int.self, forKey: .details)
+            ?? legacy.decodeIfPresent(Int.self, forKey: .variety).map { 10 - $0 }
+            ?? defaults.details
         saturation = try values.decodeIfPresent(Int.self, forKey: .saturation) ?? 100
         contrast = try values.decodeIfPresent(Int.self, forKey: .contrast) ?? 100
         view = try values.decodeIfPresent(ViewMode.self, forKey: .view) ?? defaults.view
@@ -356,10 +366,10 @@ final class Session {
             }
             if layerMode {
                 if settings.maxCoats != oldValue.maxCoats { analyse() } else { render() }
-            } else if settings.variety != oldValue.variety && !valueMode {
+            } else if settings.details != oldValue.details && !valueMode {
                 // Details weighs the colours in the analysis too; a grey picture has no hues to keep.
                 analyse()
-            } else if settings.maxPaints != oldValue.maxPaints || settings.variety != oldValue.variety {
+            } else if settings.maxPaints != oldValue.maxPaints || settings.details != oldValue.details {
                 recomputeAllRecipes()
             } else {
                 render()
@@ -563,7 +573,7 @@ final class Session {
     var layerMode: Bool { settings.mode == .layer }
 
     private var mixKeyNow: String {
-        "\(pictureSerial)/\(settings.colours)/\(settings.variety)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)/\(settings.geometric)/\(valueMode)"
+        "\(pictureSerial)/\(settings.colours)/\(settings.details)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)/\(settings.geometric)/\(valueMode)"
     }
 
     /// Glazes of the base paints. On Auto the app proposes the paints from the palette's Auto

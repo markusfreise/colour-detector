@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { segmentImage } from '../lib/segment.js'
 import { layerImage } from '../lib/layers.js'
-import { useAnalysisStore } from '../stores/analysis.js'
+import { useAnalysisStore, savedSettings } from '../stores/analysis.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 
 // Stands in for the Web Worker: copies every message the way postMessage does (which refuses
@@ -52,6 +52,16 @@ async function toLayerMode() {
   analysis.setMode('layer')
   while (waiting()) await answer()
 }
+
+describe('settings of saved pictures', () => {
+  it('turns the old variety into Details the other way round', () => {
+    expect(savedSettings({ colours: 12, variety: 8 })).toEqual({ colours: 12, details: 2 })
+    expect(savedSettings({ variety: 5 })).toEqual({ details: 5 })
+    expect(savedSettings({ details: 7, variety: 1 })).toEqual({ details: 7 })
+    expect(savedSettings({ colours: 12 })).toEqual({ colours: 12 })
+    expect(savedSettings(undefined)).toEqual({})
+  })
+})
 
 describe('layer mode in the analysis store', () => {
   it('plans layers with paints proposed by the app and writes them into the paint box', async () => {

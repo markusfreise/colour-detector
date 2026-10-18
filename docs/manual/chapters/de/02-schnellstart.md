@@ -44,7 +44,7 @@ Wenn du unsicher bist, welche Farben du nehmen sollst, überlass es **Auto**: Di
 2. Die Flächen: organisch oder geometrisch.
 3. **Flächen vereinfachen**.
 4. **Farben**, die Zahl der Mischungen.
-5. **Details**: ob kleine Flächen eines anderen Farbtons eine eigene Mischung behalten.
+5. **Details**: ob die Mischungen feine Abstufungen im ganzen Bild geben oder kleinen Flächen eines anderen Farbtons.
 6. **Max. Farben** pro Mischung.
 
 Jeden Regler erklärt das Kapitel [Farbflächen](farbflaechen.html).

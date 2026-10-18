@@ -65,7 +65,22 @@ let mixKey = null
 let sketchRunning = null // the picture a sketch is being worked out for
 let blockingRunning = null // the blocking being worked out (its key)
 let loadSerial = 0 // counts the pictures asked for, see loadFromSource
-const mixKeyOf = ({ saturation, contrast, simplify, colours, variety, geometric, values }, plan = 0) => [saturation, contrast, simplify, colours, variety, !!geometric, plan].join('/') + (values ? '/values' : '')
+const mixKeyOf = ({ saturation, contrast, simplify, colours, details, geometric, values }, plan = 0) => [saturation, contrast, simplify, colours, details, !!geometric, plan].join('/') + (values ? '/values' : '')
+
+// The Details slider runs the other way from `variety` in the logic (segment.js, mixes.js): high
+// Details = the mixes follow the area, so the large parts of the picture keep the most steps; low
+// Details = few mixes on the large parts, and a small area of another hue keeps a mix of its own.
+const varietyOf = (details) => 10 - details
+
+/**
+ * Settings of a saved picture as the current version reads them. Pictures saved before 2026-10-18
+ * have `variety`, the Details slider the other way round.
+ */
+export function savedSettings(settings = {}) {
+  const { variety, ...rest } = settings
+  if (rest.details == null && typeof variety === 'number') rest.details = varietyOf(variety)
+  return rest
+}
 
 // A small JPEG of the picture for the AI model: enough to judge colours, cheap to send, and
 // re-encoded from pixels, so it carries no metadata of the photo.
@@ -175,7 +190,7 @@ export const useAnalysisStore = defineStore('analysis', {
       ai: false, // the colours to mix and the paints are chosen by an AI model (once asked for this picture)
       geometric: false, // areas as polygons with straight edges that overlap, instead of their organic outline
       maxPaints: 3,
-      variety: 5, // 0 = the picture as accurate as possible, 10 = small areas of another hue keep their mix
+      details: 5, // 10 = the most steps across the picture, 0 = small areas of another hue keep their mix (see varietyOf)
       values: false, // mix mode: the picture in grey, every value painted with one paint of the box (a value study)
       saturation: 200, // percent, applied to the photo before the analysis
       contrast: 100,
@@ -309,7 +324,7 @@ export const useAnalysisStore = defineStore('analysis', {
     /** Open a picture from the collection with its saved settings and colour changes. */
     async loadSaved(record) {
       // Pictures saved before layer mode existed are mix pictures.
-      Object.assign(this.settings, { mode: 'mix', geometric: false, values: false }, record.settings, { ai: false })
+      Object.assign(this.settings, { mode: 'mix', geometric: false, values: false }, savedSettings(record.settings), { ai: false })
       // The palette belongs to the picture. Pictures saved before it did keep the one on screen.
       if (record.palette) usePaintsStore().setPalette(record.palette)
       const url = URL.createObjectURL(record.blob)
@@ -537,7 +552,7 @@ export const useAnalysisStore = defineStore('analysis', {
           simplify: this.settings.simplify,
           // Details weighs small colours and lightness in the analysis too, not only when mixes
           // are joined: a grey picture has no hues to keep.
-          variety: values ? undefined : this.settings.variety,
+          variety: values ? undefined : varietyOf(this.settings.details),
           geometric: this.settings.geometric,
           anchors,
           focus,
@@ -910,7 +925,7 @@ export const useAnalysisStore = defineStore('analysis', {
         maxPaints: this.settings.maxPaints,
         // The AI's colours are the mixes: none of them is joined with another.
         wanted: this.aiActive?.mixes.length ? Math.max(this.settings.colours, this.aiActive.mixes.length) : this.settings.colours,
-        variety: this.settings.variety,
+        variety: varietyOf(this.settings.details),
         values,
       })
       const mixRecipes = {}

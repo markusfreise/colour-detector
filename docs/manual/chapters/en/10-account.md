@@ -60,7 +60,7 @@ A credit unlocks **one picture for good**. Every account starts with one; more c
 | **Yearly** | renews every year, cancel at any time |
 | **Lifetime licence** | one payment, no renewal |
 
-The dialog shows the current prices. They include VAT. Payment is handled by Stripe; the app never sees your card. "Lifetime" means the life of the product: for as long as Watercolourlove is offered, not a promise that it runs forever. The terms explain this in full.
+The dialog shows the current prices. They include VAT. Payment is handled by Stripe; the app never sees your card. "Lifetime" means the lifetime of the product, Watercolourlove. The terms explain this in full.
 
 What you paid for pictures in the last 30 days comes off your first plan: the dialog says how much.
 

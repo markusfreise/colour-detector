@@ -7,7 +7,8 @@
  *
  * It asks for the secret key (sk_live_..., or a restricted key rk_live_... with the permissions
  * listed in README.md) without showing it, then creates what is
- * missing and reuses what is there: the product, a price (gross) for every product in plans.json, the German VAT rate
+ * missing and reuses what is there: the product, a price (gross) for every product in plans.json, the early-bird
+ * promotion code of plans.json, the German VAT rate
  * inside them, the webhook and the customer portal. Markus Freise is the seller; Stripe only
  * takes the payments. Running it again is safe. The webhook is made anew each time,
  * because Stripe shows its signing secret only when it is created.
@@ -180,6 +181,39 @@ foreach ($plans as $plan => $spec) {
     $price = $found ?? stripe('POST', 'prices', $fields);
     $prices[$plan] = $price['id'];
     say("Price $plan: {$price['id']}" . ($found ? ' (found)' : ' (created)'));
+}
+
+// --- Early bird -----------------------------------------------------------------------------------
+// A promotion code customers type at checkout (allow_promotion_codes in billing.php). Its coupon
+// is named after its terms, so changed terms make a new coupon and code; the old ones stay as they are.
+$early = $plansFile['early_bird'] ?? null;
+if ($early && ($early['active'] ?? false)) {
+    $ends = (new DateTimeImmutable($early['ends'] . ' 23:59:59', new DateTimeZone('Europe/Berlin')))->getTimestamp();
+    if ($ends <= time()) {
+        say('Early bird: ended on ' . $early['ends'] . ', nothing made.');
+    } else {
+        $couponId = 'watercolourlove-early-' . $early['percent_off'] . '-' . $early['ends'];
+        $coupon = stripe('GET', 'coupons/' . $couponId, [], true);
+        $coupon ??= stripe('POST', 'coupons', [
+            'id' => $couponId,
+            'name' => 'Early bird ' . $early['percent_off'] . ' %',
+            'percent_off' => $early['percent_off'],
+            'duration' => 'once',
+            'max_redemptions' => $early['max_redemptions'],
+            'redeem_by' => $ends,
+            'metadata' => ['app' => 'watercolourlove'],
+        ]);
+        $code = stripe('GET', 'promotion_codes', ['code' => $early['code'], 'coupon' => $couponId, 'limit' => 1])['data'][0] ?? null;
+        $code ??= stripe('POST', 'promotion_codes', [
+            'coupon' => $couponId,
+            'code' => $early['code'],
+            'max_redemptions' => $early['max_redemptions'],
+            'expires_at' => $ends,
+            'restrictions' => ['minimum_amount' => $early['minimum_amount'], 'minimum_amount_currency' => $currency],
+            'metadata' => ['app' => 'watercolourlove'],
+        ]);
+        say("Early bird: code {$early['code']}, {$early['percent_off']} % off, coupon $couponId, promotion code {$code['id']}");
+    }
 }
 
 // --- Webhook --------------------------------------------------------------------------------------

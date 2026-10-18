@@ -50,6 +50,7 @@ A restricted key (`rk_live_...`) works, with these permissions (everything else 
 | Resource | Permission | Used by |
 |---|---|---|
 | Products, Prices, Tax rates | Write | setup |
+| Coupons, Promotion codes | Write | setup (early bird) |
 | Webhook endpoints | Write | setup |
 | Customer portal (billing portal configurations and sessions) | Write | setup, "Manage subscription" |
 | Checkout Sessions | Write | buying |
@@ -57,6 +58,8 @@ A restricted key (`rk_live_...`) works, with these permissions (everything else 
 | Subscriptions | Read | webhook |
 
 It creates the product, a price for every product in `plans.json`, the 19 % VAT rate, the webhook to `<app_url>api/stripe/webhook` and the customer portal (cancel at the end of the period, switch between monthly and yearly, invoices, card), reuses what is already there, and writes key, webhook secret and price IDs into `config.php`. Run it again after changing a price in `PLANS`; the old price stays for its existing subscribers. With a `sk_test_` key it sets up the test mode the same way.
+
+**Early bird.** `early_bird` in `plans.json` makes a promotion code (default `EARLYBIRD`): a percentage off the first payment of every plan of at least `minimum_amount` (the yearly plan and the lifetime licence, not the monthly plan or picture packs), for the first `max_redemptions` buyers, until the end of the day `ends`. Customers type it at checkout. A checkout that already carries the credit-pack deduction takes no code (Stripe allows one or the other). Changed terms make a new coupon and code on the next run; to end it early, deactivate the promotion code in the Stripe dashboard and set `active` to false. The pricing pages (`public/pricing/`, `public/de/preise/`) show it while it runs.
 
 In the Stripe dashboard, once: public details (terms and privacy URL, support address) and the VAT ID on the invoices.
 

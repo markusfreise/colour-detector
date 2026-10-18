@@ -69,8 +69,15 @@
 
       <template v-else>
         <p v-if="!account.sentTo" class="gate__text">
-          {{ t('Sign in to use the app. Your account is only your e-mail address; your pictures stay in this browser and are never uploaded.') }}
+          {{ t('Sign in for free to use the app. Your account is only your e-mail address; your pictures stay in this browser and are never uploaded.') }}
         </p>
+        <!-- The early bird of plans.json, until its last day. -->
+        <template v-if="!account.sentTo && earlyBird">
+          <p class="gate__text gate__offer">
+            {{ t('40% off the') }} <a :href="legalPage('pricing')" target="_blank" rel="noopener">{{ t('Pro version') }}</a>{{ t(', yearly or lifetime, for the first 100 users.*') }}
+          </p>
+          <p class="gate__footnote">{{ t('*Offer valid until 30 November 2026.') }}</p>
+        </template>
         <div v-if="buttons.length && !account.sentTo" class="gate__providers">
           <button v-for="p in buttons" :key="p.id" class="button button--secondary gate__provider" type="button" @click="account.signInWith(p.id)">
             {{ t('Continue with {name}', { name: p.name }) }}
@@ -128,6 +135,7 @@
 
       <!-- Below both columns, in one row. -->
       <footer class="gate__footer">
+        <a :href="legalPage('pricing')">{{ t('Prices') }}</a>
         <a :href="legalPage('privacy')">{{ t('Privacy') }}</a>
         <a :href="legalPage('terms')">{{ t('Terms') }}</a>
         <a :href="legalPage('imprint')">{{ t('Imprint') }}</a>
@@ -147,6 +155,7 @@ import { showcasePaints } from '../data/showcase.js'
 import PaintingCanvas from './PaintingCanvas.vue'
 import DebugMenu from './DebugMenu.vue'
 import { APP_NAME } from '../config.js'
+import { PLANS } from '../lib/entitlements.js'
 import logoSvg from '../../resources/logo.svg?raw'
 import background from '../../resources/background.webp'
 import signinImage from '../../resources/howto/signin.webp'
@@ -160,6 +169,9 @@ const preferences = usePreferencesStore()
 const steps = ['Add a reference photo for your picture', 'Add your watercolours', 'Let the app analyse the mixes']
 
 const account = useAccountStore()
+// The early-bird offer runs until the end of its last day, Berlin time.
+const early = PLANS.early_bird
+const earlyBird = !!early?.active && Date.now() <= Date.parse(`${early.ends}T23:59:59+01:00`)
 const logo = logoSvg.replace(/fill="black"/g, 'fill="currentColor"')
 const email = ref('')
 const code = ref('')

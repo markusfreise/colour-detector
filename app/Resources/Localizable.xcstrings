@@ -598,6 +598,17 @@
         }
       }
     },
+    "Mixed: %@ · %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemischt: %1$@ · %2$@"
+          }
+        }
+      }
+    },
     "No grid" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -659,6 +670,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Deckend"
+          }
+        }
+      }
+    },
+    "Ratio: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verhältnis: %@"
           }
         }
       }

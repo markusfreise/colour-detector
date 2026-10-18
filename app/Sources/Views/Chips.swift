@@ -173,3 +173,100 @@ struct RecipeView: View {
         "\(Words.number(n)) x"
     }
 }
+
+/// The recipe of the colour tapped in the picture, as the web's RecipeLine `full`: the mix without
+/// water as a square and the washed colour with its letter beside it, the wash in words below, the
+/// ratio as a bar of colour, then one paint per row with its parts, nothing cut short.
+struct FullRecipeView: View {
+    let recipe: Recipe
+    let paints: [String: Paint]
+    /// The wash letter of the colour as its label on the picture shows it; by default the recipe's own.
+    var letter = ""
+
+    private let washHeight: CGFloat = 52
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                RoundedRectangle(cornerRadius: Theme.radiusSmall)
+                    .fill(Color(hex: baseHex))
+                    .overlay(RoundedRectangle(cornerRadius: Theme.radiusSmall).strokeBorder(.primary.opacity(0.35), lineWidth: 1))
+                    .frame(width: washHeight, height: washHeight)
+                    .help(baseHex)
+                    .accessibilityHidden(true)
+                Text(washText)
+                    .font(Theme.chip.bold())
+                    .frame(maxWidth: .infinity, minHeight: washHeight)
+                    .background(Color(hex: recipe.hex))
+                    .foregroundStyle(Color.ink(on: recipe.hex))
+                    .clipShape(RoundedRectangle(cornerRadius: Theme.radiusSmall))
+                    .overlay(RoundedRectangle(cornerRadius: Theme.radiusSmall).strokeBorder(.primary.opacity(0.35), lineWidth: 1))
+            }
+            .help(L("Mixed: %@ · %@", recipe.hex, Words.term(recipe.dilution)))
+            if !letter.isEmpty || !Mixing.washLetter(recipe.fullness).isEmpty {
+                Text(Words.term(recipe.dilution).prefix(1).uppercased() + Words.term(recipe.dilution).dropFirst())
+                    .font(.caption)
+                    .foregroundStyle(Theme.copyLight)
+            }
+            if recipe.paints.count > 1 {
+                bar.frame(height: 36)
+            }
+            if recipe.paints.isEmpty {
+                Text("Leave the paper white").font(Theme.small).italic().foregroundStyle(.secondary)
+            } else {
+                ForEach(Array(recipe.paints.enumerated()), id: \.offset) { index, item in
+                    if let paint = paints[item.paintID] {
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Text("\(Text("\(Words.number(recipe.parts[index])) x").bold()) \(paint.formLabel)").fixedSize()
+                            Text("\(Text(paint.displayNumber).bold()) \(paint.displayName)")
+                                .fixedSize(horizontal: false, vertical: true)
+                            Spacer(minLength: 0)
+                        }
+                        .font(Theme.chip)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
+                        .frame(maxWidth: .infinity, minHeight: 30, alignment: .leading)
+                        .background(Color(hex: paint.hex))
+                        .foregroundStyle(Color.ink(on: paint.hex))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(.primary.opacity(0.35), lineWidth: 1))
+                    }
+                }
+            }
+        }
+    }
+
+    /// The letter, or the wash in words where there is none (paper only).
+    private var washText: String {
+        if !letter.isEmpty { return letter }
+        let own = Mixing.washLetter(recipe.fullness)
+        return own.isEmpty ? Words.dilutionTitle(recipe.dilution) : own
+    }
+
+    /// The mix without water: the same ratio, its largest part at full strength.
+    private var baseHex: String {
+        let most = recipe.paints.map(\.amount).max() ?? 0
+        let mix = recipe.paints.compactMap { item in paints[item.paintID].map { MixPaint(id: $0.id, hex: $0.hex) } }
+        guard most > 0, mix.count == recipe.paints.count else { return recipe.hex }
+        return Mixing.mixHex(mix, recipe.paints.map { $0.amount / most * Mixing.maxAmount })
+    }
+
+    /// The ratio in colour only: the parts are in the rows.
+    private var bar: some View {
+        GeometryReader { geometry in
+            let total = max(recipe.paints.reduce(0) { $0 + $1.share }, 0.0001)
+            HStack(spacing: 0) {
+                ForEach(Array(recipe.paints.enumerated()), id: \.offset) { _, item in
+                    Rectangle()
+                        .fill(Color(hex: paints[item.paintID]?.hex ?? recipe.hex))
+                        .frame(width: max(6, geometry.size.width * item.share / total))
+                }
+            }
+            .frame(width: geometry.size.width, alignment: .leading)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: Theme.radiusSmall))
+        .overlay(RoundedRectangle(cornerRadius: Theme.radiusSmall).strokeBorder(.primary.opacity(0.35), lineWidth: 1))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(L("Ratio: %@", recipe.paints.enumerated().map { i, item in "\(Words.number(recipe.parts[i])) \(paints[item.paintID]?.displayName ?? "")" }.joined(separator: " : ")))
+    }
+}

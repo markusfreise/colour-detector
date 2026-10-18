@@ -14,8 +14,8 @@ struct ColourCard: View {
                 session.inspect(region: nil)
             } content: {
                 if let recipe = entry.recipe {
-                    // The card is narrow everywhere: one paint per row.
-                    RecipeView(recipe: recipe, paints: library.byID, stacked: true)
+                    // As the web's colour card: the washed colour with its letter, the ratio bar, one paint per row.
+                    FullRecipeView(recipe: recipe, paints: library.byID, letter: entry.letter)
                 } else {
                     Text("No paints selected in the paint box.").foregroundStyle(.secondary)
                 }

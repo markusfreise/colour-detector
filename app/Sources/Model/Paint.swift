@@ -122,10 +122,31 @@ extension Array where Element == Paint {
 }
 
 /// One colour of a library's colour chart; fills in name and colour when a paint is added by number.
+/// What the maker's chart says besides (`src/data/libraries.js`): names in other languages,
+/// pigments by Colour Index, transparency. `hex` is nil where the chart gives no reliable colour,
+/// and `unverified` says why: then the number fills in the name and the colour is set by hand.
 struct ChartColour: Codable, Hashable {
     let number: String
     let name: String
-    let hex: String
+    let hex: String?
+    var names: [String: String]? = nil
+    var pigments: [String]? = nil
+    var transparency: String? = nil
+    var unverified: String? = nil
+
+    /// All the names the colour goes by, for the search.
+    var allNames: [String] { [name] + (names.map { Array($0.values) } ?? []) }
+
+    /// Pigments and transparency, in the language of the app.
+    var details: [String] {
+        var parts: [String] = []
+        if let pigments, !pigments.isEmpty { parts.append(pigments.joined(separator: " ")) }
+        if let word = transparency.flatMap({ Self.transparencyWords[$0] }) { parts.append(L(word)) }
+        return parts
+    }
+
+    /// How much of the paper a paint covers, as the makers' charts mark it.
+    static let transparencyWords = ["T": "Transparent", "ST": "Semi-transparent", "SO": "Semi-opaque", "O": "Opaque"]
 }
 
 /// A paint series that comes with the app, with its colour chart (`src/data/libraries.js`):

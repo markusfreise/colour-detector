@@ -59,26 +59,37 @@ Das sind sechs bis acht Farben, und damit lässt sich fast alles mischen. Nimm e
 
 ## Farben hinzufügen
 
-Am Ende jedes Farbkastens ist ein leerer Platz mit einem **+**. Ein Klick darauf fügt diesem Kasten eine Farbe hinzu.
+Am Ende jedes Farbkastens ist ein leerer Platz mit einem **+**. Ein Klick darauf öffnet **Farbe hinzufügen** für diesen Kasten.
 
-![Eine Farbe zum Hinzufügen suchen](shot:paintbox-add)
+![Farben zu einem Kasten hinzufügen](shot:paintbox-add)
 
-Tipp einen Teil der Serie, die Nummer oder den Namen ein: „Ultramarin“, „494“ oder „Horadam 494“ funktionieren alle. Gesucht wird in den Farben des Bestands und, mit Pro, in den Farbkarten dreier Hersteller:
+Die untere Hälfte, **Bibliothek**, zeigt die Farben, die du hinzufügen kannst, je Serie ein Abschnitt: die Farben des Bestands und, mit Pro, die Farbkarten von vier Herstellern:
 
 - **Schmincke Horadam**,
 - **Winsor & Newton Professional** (116 Farben),
-- **Michael Harding** (136 Farben).
+- **Michael Harding** (136 Farben),
+- **Sennelier L'Aquarelle** (98 Farben).
 
-Wähl eine Farbe aus der Liste, und sie kommt mit Namen und Referenzton in den Kasten.
+So findest du eine Farbe:
+
+- Die Knöpfe mit den Seriennamen blenden ihre Abschnitte ein und aus. Ein dunkler Knopf ist eingeblendet.
+- Tipp einen Teil des Namens oder die Nummer in das Suchfeld: „Ultramarin“, „494“ oder „Horadam 494“ funktionieren alle, ebenso Pigmentnamen wie „PB29“.
+- Die Farbquadrate daneben zeigen nur Rot, Orange, Gelb, Grün, Türkis, Blau, Violett, Braun oder Grau und Schwarz. Ein zweiter Klick auf das Quadrat zeigt wieder alle Farbtöne.
+- Der Knopf mit dem Radiergummi oben leert Suche und Filter.
+
+Ein Klick auf eine Farbe legt sie mit Namen und Referenzton in den Kasten. Eine Farbe, die schon im Kasten ist, ist blass dargestellt; ein Klick nimmt sie wieder heraus. Füg so viele hinzu, wie du magst, und schließ dann den Dialog. Eine Farbe mit gestricheltem Rand hat auf der Farbkarte ihres Herstellers keinen verlässlichen Referenzton: Ein Klick darauf füllt das Formular darüber aus, und du stellst den Ton selbst ein.
 
 ### Eine eigene Farbe
 
-Für jede andere Farbe wählst du unter der Suche **Oder eine eigene Farbe eingeben**. Du gibst an:
+Für jede andere Farbe nimmst du oben **Eigene Farbe**. Du gibst an:
 
-- **Hersteller und Serie**, so wie es auf der Tube steht, zum Beispiel „Daniel Smith Extra Fine“. Ist es eine Serie mit Farbkarte in der App, füllt die Nummer Name und Farbe für dich aus.
-- **Nummer** und **Name**.
-- **Form**: **Näpfchen** oder **Tube**.
-- **Farbe**, den Referenzton der Farbe.
+- die **Farbe**, im Quadrat links: den Referenzton der Farbe,
+- die **Nummer**,
+- die **Serie**, so wie sie auf der Tube steht, zum Beispiel „Daniel Smith Extra Fine“. Ist es eine Serie mit Farbkarte in der App, füllt die Nummer Name und Farbe für dich aus,
+- den **Namen**,
+- die **Form**: **Näpfchen**, **Tube**, **Flüssig** oder **Anders**.
+
+Dann drückst du **Okay**: Die Farbe kommt in den Kasten, und der Dialog schließt sich.
 
 Der Referenzton ist das Wichtigste in diesem Formular. Wähl den Farbton deiner Farbe in ihrer **kräftigsten Lasur**: etwa gleich viel Farbe und Wasser, trocken auf weißem Papier. Nicht die Farbe direkt aus Näpfchen oder Tube: Farbe im Näpfchen ist dunkler und satter als jede Lasur, die du damit malst. Die App behandelt diesen Ton als das Dunkelste, was die Farbe je wird, und macht alles Hellere daraus mit Wasser. Ist er zu hell, werden alle Rezepte mit dieser Farbe zu vorsichtig, ist er zu dunkel, zu kräftig. Die beste Quelle ist dein eigener Farbaufstrich, auf deinem Papier gemalt und bei Tageslicht fotografiert oder eingescannt. Wie du ihn anlegst, zeigt das Kapitel [Farben kalibrieren](kalibrieren.html).
 

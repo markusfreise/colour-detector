@@ -261,7 +261,9 @@ struct PaintBoxView: View {
                     HStack(spacing: 10) {
                         RoundedRectangle(cornerRadius: 4).fill(Color(hex: option.hex)).frame(width: 28, height: 28)
                         Text(option.label).frame(maxWidth: .infinity, alignment: .leading)
-                        if option.isChart { Text("Catalogue").font(Theme.small).foregroundStyle(.secondary) }
+                        if case .chart(let colour, _) = option.kind {
+                            Text(([L("Catalogue")] + colour.details).joined(separator: " · ")).font(Theme.small).foregroundStyle(.secondary)
+                        }
                     }
                     .contentShape(Rectangle())
                 }
@@ -300,10 +302,6 @@ struct PaintBoxView: View {
         let label: String
         let hex: String
         let search: String
-        var isChart: Bool {
-            guard case .chart = kind else { return false }
-            return true
-        }
     }
 
     /// What the search offers: every paint the app knows that is not in the box yet, and with the
@@ -319,9 +317,11 @@ struct PaintBoxView: View {
         if store.unlocked {
             let known = Set(library.all.map { "\($0.vendor.lowercased())|\($0.number.lowercased())" })
             for source in library.libraries {
-                options += source.catalogue.filter { !known.contains("\(source.name.lowercased())|\($0.number.lowercased())") }.map { colour -> ColourOption in
+                // A colour without a reliable value is added through the form, where its colour is set by hand.
+                options += source.catalogue.filter { $0.hex != nil && !known.contains("\(source.name.lowercased())|\($0.number.lowercased())") }.map { colour -> ColourOption in
                     let label = "\(source.name) \(colour.number) \(colour.name)"
-                    return ColourOption(id: "\(source.id):\(colour.number)", kind: .chart(colour, source), label: label, hex: colour.hex, search: label.lowercased())
+                    let search = ([label] + colour.allNames + (colour.pigments ?? [])).joined(separator: " ").lowercased()
+                    return ColourOption(id: "\(source.id):\(colour.number)", kind: .chart(colour, source), label: label, hex: colour.hex ?? "#ffffff", search: search)
                 }
             }
         }
@@ -484,6 +484,10 @@ struct PaintEditorView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube.")
                         if let source, store.unlocked { Text(L("%@ numbers fill in name and colour.", source.name)) }
+                        if let found {
+                            Text(([source.map { "\($0.name) \(found.number)" } ?? found.number] + found.details).joined(separator: " · "))
+                            if found.hex == nil { Text("The chart gives no reliable colour for this paint: set it by hand.") }
+                        }
                     }
                 }
             }
@@ -511,10 +515,14 @@ struct PaintEditorView: View {
         #endif
     }
 
-    /// A number that is on the colour chart of its library fills in the rest (full version).
+    /// The colour of the chart the number entered stands for (full version).
+    private var found: ChartColour? { store.unlocked ? source?.colour(number: paint.number) : nil }
+
+    /// A number that is on the colour chart of its library fills in the rest: the name, and the
+    /// colour where the chart gives one (full version).
     private func lookUp() {
-        guard isNew, paint.name.isEmpty, store.unlocked, let known = source?.colour(number: paint.number) else { return }
+        guard isNew, paint.name.isEmpty, let known = found else { return }
         paint.name = known.name
-        paint.hex = known.hex
+        if let hex = known.hex { paint.hex = hex }
     }
 }

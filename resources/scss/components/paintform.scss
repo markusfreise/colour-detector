@@ -1,0 +1,90 @@
+@use "../functions" as *;
+
+// A paint of one's own (PaintForm.vue): colour, number, series and name in a row, the form and
+// Okay below.
+
+.paint-form {
+    display: flex;
+    flex-direction: column;
+    gap: #{pxtorem(12)};
+
+    &__fields,
+    &__row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: #{pxtorem(12)};
+    }
+
+    // The colour itself, as wide as a chip and filled edge to edge.
+    &__swatch {
+        flex: 0 0 #{pxtorem(131)};
+        height: #{pxtorem(48)};
+        padding: 0;
+        border: 1px solid var(--c-chip-border);
+        border-radius: var(--radius-small);
+        background: none;
+        cursor: pointer;
+
+        &::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        &::-webkit-color-swatch {
+            border: 0;
+            border-radius: calc(var(--radius-small) - 1px);
+        }
+
+        &::-moz-color-swatch {
+            border: 0;
+            border-radius: calc(var(--radius-small) - 1px);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--c-corporate);
+            outline-offset: 2px;
+        }
+    }
+
+    &__number {
+        flex: 0 0 #{pxtorem(93)};
+    }
+
+    &__series,
+    &__name {
+        flex: 1 1 #{pxtorem(200)};
+    }
+
+    &__forms {
+        display: grid;
+        flex: 4 1 #{pxtorem(400)};
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: #{pxtorem(12)};
+
+        .button {
+            justify-content: center;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        flex: 1 1 #{pxtorem(206)};
+        gap: #{pxtorem(12)};
+    }
+
+    &__submit {
+        flex: 1;
+        justify-content: center;
+    }
+
+    &__note {
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+    }
+
+    // On a phone the four forms take two rows rather than squeezing their names.
+    @media (max-width: 560px) {
+        &__forms {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+}

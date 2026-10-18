@@ -60,7 +60,7 @@ Ein Guthaben schaltet **ein Bild dauerhaft frei**. Jedes Konto beginnt mit einem
 | **Jährlich** | verlängert sich jedes Jahr, jederzeit kündbar |
 | **Lebenszeit-Lizenz** | eine Zahlung, keine Verlängerung |
 
-Der Dialog zeigt die aktuellen Preise. Sie enthalten die Mehrwertsteuer. Die Zahlung wickelt Stripe ab; die App sieht deine Karte nie. „Lebenszeit“ meint die Lebenszeit des Produkts: so lange, wie Watercolourlove angeboten wird, kein Versprechen, dass es ewig läuft. Die AGB erklären das genau.
+Der Dialog zeigt die aktuellen Preise. Sie enthalten die Mehrwertsteuer. Die Zahlung wickelt Stripe ab; die App sieht deine Karte nie. „Lebenszeit“ meint die Lebenszeit des Produkts Watercolourlove. Die AGB erklären das genau.
 
 Was du in den letzten 30 Tagen für Bilder bezahlt hast, ziehen wir von deinem ersten Tarif ab: Der Dialog sagt dir, wie viel.
 

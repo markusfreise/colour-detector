@@ -213,7 +213,7 @@ export default {
   'Lifetime licence': 'Lebenszeit-Lizenz',
   'Renews every month, cancel at any time.': 'Verlängert sich jeden Monat, jederzeit kündbar.',
   'Renews every year, cancel at any time.': 'Verlängert sich jedes Jahr, jederzeit kündbar.',
-  'One payment, no renewal. For as long as the app is offered: the life of the product, not a promise that it runs for ever.': 'Eine Zahlung, keine Verlängerung. Solange die App angeboten wird: die Lebenszeit des Produkts, kein Versprechen, dass sie ewig läuft.',
+  'One payment, no renewal, for the lifetime of the product.': 'Eine Zahlung, keine Verlängerung, für die Lebenszeit des Produkts.',
   'use everything': 'alles zu nutzen',
   'print or save a PDF': 'zu drucken oder ein PDF zu sichern',
   'export the picture': 'das Bild zu exportieren',

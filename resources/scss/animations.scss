@@ -22,3 +22,10 @@
         scale: 1.06;
     }
 }
+
+// The spinner while the picture is worked out: one full turn.
+@keyframes spin {
+    to {
+        rotate: 360deg;
+    }
+}

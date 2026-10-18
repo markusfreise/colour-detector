@@ -82,6 +82,16 @@
         }
     }
 
+    // The spinner while the picture is worked out, in the middle of the window over the picture.
+    &__spinner {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+    }
+
     // The spot that was tapped, while its colour is looked at: it blinks, so that it is found
     // again in a picture of many areas.
     &__spot {

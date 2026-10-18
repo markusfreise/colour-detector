@@ -1,0 +1,29 @@
+@use "../functions" as *;
+
+// The spinner over the picture while it is worked out (BusySpinner.vue): dots on a ring, the
+// largest in front, turning clockwise.
+.spinner {
+    --ring: #{pxtorem(76)};
+    --dot: #{pxtorem(16)};
+    position: relative;
+    width: var(--ring);
+    height: var(--ring);
+    animation: spin 1.2s linear infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+        animation-duration: 4s;
+    }
+
+    &__dot {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: var(--dot);
+        height: var(--dot);
+        margin: calc(var(--dot) * -0.5);
+        border-radius: 50%;
+        box-shadow: var(--shadow-flat);
+        // Counter-clockwise from the top, so that the smaller dots trail behind the turn.
+        transform: rotate(calc(var(--angle) * -1)) translateY(calc(var(--ring) * -0.5 + var(--dot) * 0.5)) scale(var(--size));
+    }
+}

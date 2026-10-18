@@ -95,11 +95,18 @@ Watercolourlove does its work entirely on your device. Your photo is never uploa
 - your paint boxes and the colours of your own,
 - your preferences and the arrangement of the panels.
 
-None of this is part of your account. That has three consequences you should know:
+None of this is part of your account. That has four consequences you should know:
 
 1. **Another device is a fresh start.** Sign in on your tablet and you have your plan there, but not your collection or your paint boxes.
 2. **Clearing the browser's data deletes your work.** "Clear browsing data", "Delete cookies and site data" or a private window that you close all remove it, and nobody can bring it back.
-3. **Your work is private by design.** Nobody, including us, can see your photos or your paints.
+3. **The browser can clear up on its own.** Safari deletes the data of a website you have not opened for seven days, unless you added it to your home screen. Any browser may remove stored data when the device is nearly full. So open the app regularly, or back up what you want to keep.
+4. **Your work is private by design.** Nobody, including us, can see your photos or your paints.
+
+What you can back up:
+
+- **Paint boxes** as a file: **Export** under each box in the paint box, back with **Import paint box**, on this device or another.
+- **The result of a picture** as a printed sheet or PDF with every mix ([Printing](printing.html)) or as a JPG ([Exporting a picture](pictures.html#exporting-a-picture)).
+- **A picture of the collection with its settings** cannot be saved as a file. Keep the photo itself: the same file with the same settings gives the same plan again, and a picture you unlocked stays unlocked.
 
 > **Tip:** Back up your paint boxes. In the paint box, **Export** under each box saves it as a file; **Import paint box** brings it back, on this device or another. A paint box with your own calibrated colours is worth keeping. See [Paint box and palette](paint-box.html).
 

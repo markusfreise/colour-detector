@@ -1,0 +1,130 @@
+@use "functions" as *;
+
+// A picture of the manual at full size over the page (lightbox.js).
+.shot__zoom,
+.photo:not(.photo--missing) img {
+    cursor: zoom-in;
+}
+
+.lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: var(--gap-3x) calc(var(--gap) * 4) var(--gap);
+    border: 0;
+    // The dialog covers the window and darkens the page itself.
+    background: rgba(20, 18, 16, 0.92);
+    color: #fff;
+
+    &[open] {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--gap);
+    }
+
+    &::backdrop {
+        background: transparent;
+    }
+
+    @media (max-width: 760px) {
+        padding: var(--gap-3x) var(--gap) calc(var(--gap) * 4);
+    }
+
+    &__stage {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 0;
+        width: 100%;
+        flex: 1;
+    }
+
+    &__frame {
+        position: relative;
+        width: min(100%, var(--lightbox-width, 100%));
+        max-height: 100%;
+        border-radius: var(--radius);
+        background: var(--c-background-raised);
+        box-shadow: var(--shadow);
+
+        .shot__zoom {
+            pointer-events: none;
+        }
+
+        img {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: calc(100dvh - #{pxtorem(140)});
+            object-fit: contain;
+            border-radius: var(--radius);
+            cursor: default;
+        }
+    }
+
+    &__caption {
+        max-width: var(--article-width);
+        margin: 0;
+        font-size: var(--fs-small);
+        text-align: center;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    &__button {
+        position: fixed;
+        display: grid;
+        place-items: center;
+        width: #{pxtorem(44)};
+        height: #{pxtorem(44)};
+        border: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+        font-size: #{pxtorem(30)};
+        line-height: 1;
+        cursor: pointer;
+
+        &:hover,
+        &:focus-visible {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        &--close {
+            top: var(--gap);
+            right: var(--gap);
+        }
+
+        &--prev,
+        &--next {
+            top: 50%;
+            translate: 0 -50%;
+        }
+
+        &--prev {
+            left: var(--gap);
+        }
+
+        &--next {
+            right: var(--gap);
+        }
+
+        @media (max-width: 760px) {
+            &--prev,
+            &--next {
+                top: auto;
+                bottom: var(--gap);
+                translate: none;
+            }
+        }
+    }
+}
+
+@media print {
+    .lightbox {
+        display: none !important;
+    }
+}

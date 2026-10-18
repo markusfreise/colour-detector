@@ -14,7 +14,7 @@ struct ControlsView: View {
     @State private var simplify = 0.0
     @State private var saturation = 200.0
     @State private var contrast = 100.0
-    @State private var variety = 5.0
+    @State private var details = 5.0
     @State private var maxPaints = 3.0
     @State private var layers = 5.0
     @State private var layerSimplify = 4.0
@@ -101,8 +101,8 @@ struct ControlsView: View {
                     slider("Colours", value: $colours, range: 2...32, hint: "More colours = more detail") {
                         session.settings.colours = Int(colours.rounded())
                     }
-                    slider("Details", value: $variety, range: 0...10, hint: "Lower = closer overall, higher = small areas keep their own colour") {
-                        session.settings.variety = Int(variety.rounded())
+                    slider("Details", value: $details, range: 0...10, hint: "Higher = finer steps across the picture, lower = small areas keep their own colour") {
+                        session.settings.details = Int(details.rounded())
                     }
                     slider("Max. paints", value: $maxPaints, range: 1...3, hint: "Paints in one mix at most") {
                         session.settings.maxPaints = Int(maxPaints.rounded())
@@ -167,7 +167,7 @@ struct ControlsView: View {
         simplify = Double(session.settings.simplify)
         saturation = Double(session.settings.saturation)
         contrast = Double(session.settings.contrast)
-        variety = Double(session.settings.variety)
+        details = Double(session.settings.details)
         maxPaints = Double(session.settings.maxPaints)
         maxCoats = Double(session.settings.maxCoats)
         // By hand the number of layers is the number of chosen base paints.

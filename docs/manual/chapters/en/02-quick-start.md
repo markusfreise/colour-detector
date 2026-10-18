@@ -44,7 +44,7 @@ Open **Settings**. Three sliders decide most of it:
 2. The areas: organic or geometric.
 3. **Simplify areas**.
 4. **Colours**, the number of mixes.
-5. **Details**: whether small areas of another hue keep a mix of their own.
+5. **Details**: whether the mixes go to fine steps across the picture or to small areas of another hue.
 6. **Max. paints** per mix.
 
 Every slider is explained in [Colour areas](colour-areas.html).

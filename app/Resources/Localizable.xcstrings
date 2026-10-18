@@ -1949,13 +1949,13 @@
         }
       }
     },
-    "Lower = closer overall, higher = small areas keep their own colour" : {
+    "Higher = finer steps across the picture, lower = small areas keep their own colour" : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Niedriger = insgesamt näher, höher = kleine Flächen behalten ihre eigene Farbe"
+            "value" : "Höher = feinere Abstufungen im ganzen Bild, niedriger = kleine Flächen behalten ihre eigene Farbe"
           }
         }
       }

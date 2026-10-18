@@ -3,6 +3,7 @@
 //   public/de/handbuch/<slug>.html      German
 //   .../all.html, .../alles.html        every chapter on one page, for print
 //   public/manual/manual.css            from scss/site.scss, tokens from resources/scss
+//   public/manual/manual.js             lightbox.js: the pictures at full size over the page
 //
 // Sources are chapters/<lang>/NN-name.md with front matter (title, slug, lead, part; nav optional).
 // The same NN in both languages is the same chapter: the language switch links them.
@@ -40,6 +41,7 @@ const LANGS = {
       next: 'Next',
       toApp: 'Open the app',
       zoom: 'Open the picture at full size',
+      lightbox: { close: 'Close', prev: 'Previous picture', next: 'Next picture' },
       photoFollows: 'Photo follows',
       other: 'Deutsch',
       footer: 'Watercolourlove by Markus Freise. Questions:',
@@ -62,6 +64,7 @@ const LANGS = {
       next: 'Weiter',
       toApp: 'Zur App',
       zoom: 'Bild in voller Größe öffnen',
+      lightbox: { close: 'Schließen', prev: 'Bild davor', next: 'Nächstes Bild' },
       photoFollows: 'Foto folgt',
       other: 'English',
       footer: 'Watercolourlove von Markus Freise. Fragen an',
@@ -220,7 +223,7 @@ function page(lang, { title, description, body, navHtml, other }) {
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="${words.lightbox.close}" data-lightbox-prev="${words.lightbox.prev}" data-lightbox-next="${words.lightbox.next}">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove">${LOGO}</span><span class="header__label">${words.manual}</span></a>
@@ -241,6 +244,7 @@ ${body}
     <span>${words.footer} <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="${assets}manual.js"></script>
 </body>
 </html>
 `
@@ -332,6 +336,7 @@ function build() {
     style: 'compressed',
   }).css
   fs.writeFileSync(path.join(ASSETS, 'manual.css'), css)
+  fs.copyFileSync(path.join(HERE, 'lightbox.js'), path.join(ASSETS, 'manual.js'))
   photoList()
   console.log(report.join('\n'))
 }

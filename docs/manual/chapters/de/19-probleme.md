@@ -16,7 +16,7 @@ Stell **Flächen vereinfachen** höher. Jede Stufe fasst kleine Formen mit ihren
 
 ### Eine wichtige Einzelheit ist verschwunden
 
-Kleine Flächen, die sich im Farbton von ihrer Umgebung abheben, ein rotes Dach, die Lippen in einem Porträt, behalten eine eigene Mischung, wenn **Details** hoch steht. Ist die Einzelheit auch klein, verschwindet sie beim Vereinfachen; sieh dir diesen Teil des Bildes mit **Ausschnitt** für sich an, dort bekommt er feinere Flächen und eigene Mischungen (Pro). Siehe [Bilder](bilder.html).
+Kleine Flächen, die sich im Farbton von ihrer Umgebung abheben, ein rotes Dach, die Lippen in einem Porträt, behalten eine eigene Mischung, wenn **Details** niedrig steht. Ist die Einzelheit auch klein, verschwindet sie beim Vereinfachen; sieh dir diesen Teil des Bildes mit **Ausschnitt** für sich an, dort bekommt er feinere Flächen und eigene Mischungen (Pro). Siehe [Bilder](bilder.html).
 
 ### Die Farben wirken stumpf oder viel zu laut
 

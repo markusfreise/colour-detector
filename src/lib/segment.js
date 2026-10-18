@@ -79,6 +79,19 @@ export const AREA_POWER = 0.4
 // needs a new mix. Lower values keep small areas of a different hue (a yellow light on a red
 // stage) at the price of fewer steps between similar colours.
 export const LIGHTNESS_WEIGHT = 0.5
+
+/**
+ * The two weights above as the Details slider (0..10) sets them. At 5 they are the constants. Higher
+ * Details weighs small colours more and lightness less, so a small area of another hue gets a mix
+ * of its own already here; lower weighs colours by area and lightness more, so the large areas get
+ * finer steps. `planMixes` reads the same slider when it joins mixes, but that only acts when the
+ * analysis found more mixes than wanted: on a calm picture or with a small paint box it did not, and
+ * the slider did nothing.
+ */
+export function varietyWeights(variety = 5) {
+  const off = (5 - Math.min(10, Math.max(0, variety))) / 5 // 1 at Details 0, −1 at Details 10
+  return { areaPower: AREA_POWER + 0.4 * off, lightnessWeight: LIGHTNESS_WEIGHT * Math.pow(2, off) }
+}
 // A mix is painted in at most this many washes (water levels).
 export const MAX_WASHES = 5
 // One more wash for every factor of about 1.7 between the weakest and the strongest part of a mix.
@@ -529,10 +542,14 @@ export function calmAreas(raw, lab, width, height, k, simplify, where = null, ph
  *   focus = boxes [left, top, right, bottom] (0..1) in which the areas stay as fine as at Simplify 0
  *   and details are kept more readily, whatever `simplify` is,
  *   maxWashes / washStep = washes a mix is split into at most, and the factor of strength (log)
- *   between two of them: a grey picture is one mix, so these set the number of its values
+ *   between two of them: a grey picture is one mix, so these set the number of its values,
+ *   variety = the Details slider 0..10 (see `varietyWeights`), unless areaPower / lightnessWeight are given
  */
-export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, focus = null, seed = 7, areaPower, maxWashes, washStep, lightnessWeight } = {}) {
+export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, focus = null, seed = 7, variety = 5, areaPower, maxWashes, washStep, lightnessWeight } = {}) {
   const count = width * height
+  const weights = varietyWeights(variety)
+  areaPower ??= weights.areaPower
+  lightnessWeight ??= weights.lightnessWeight
   // Noise goes before the colours are found: every pixel takes the colour of its patch.
   const original = toOklabPixels(rgba, count)
   // Below Simplify 0 the patches shrink, and with a side under two pixels there are none.

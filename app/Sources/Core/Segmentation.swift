@@ -113,6 +113,15 @@ enum Segmenter {
     /// in hue or saturation: a lighter or darker version of a colour is cheap for a painter, a new hue
     /// needs a new mix.
     static let lightnessWeight = 0.5
+
+    /// The two weights above as the Details slider (0...10) sets them; at 5 they are the constants.
+    /// Higher Details weighs small colours more and lightness less, so a small area of another hue
+    /// gets a mix of its own already here; lower weighs colours by area and lightness more. As
+    /// `varietyWeights` in segment.js.
+    static func varietyWeights(_ variety: Int = 5) -> (areaPower: Double, lightnessWeight: Double) {
+        let off = Double(5 - min(10, max(0, variety))) / 5 // 1 at Details 0, -1 at Details 10
+        return (areaPower + 0.4 * off, lightnessWeight * pow(2, off))
+    }
     /// A mix is painted in at most this many washes (water levels).
     static let maxWashes = 5
     /// One more wash for every factor of about 1.7 between the weakest and the strongest part of a mix.
@@ -603,8 +612,12 @@ enum Segmenter {
     ///     readily, whatever `simplify` is
     ///   - maxWashes, washStep: washes a mix is split into at most, and the factor of strength (log)
     ///     between two of them: a grey picture is one mix, so these set the number of its values
-    static func segment(rgba: [UInt8], width: Int, height: Int, colours: Int = 12, simplify: Int = 4, geometric: Bool = false, anchors given: [String]? = nil, focus: [Details.Box]? = nil, seed: UInt32 = 7, areaPower: Double = Segmenter.areaPower, maxWashes: Int = Segmenter.maxWashes, washStep: Double = Segmenter.washStep, lightnessWeight: Double = Segmenter.lightnessWeight) -> Segmentation {
+    ///   - variety: the Details slider (see `varietyWeights`), unless areaPower / lightnessWeight are given
+    static func segment(rgba: [UInt8], width: Int, height: Int, colours: Int = 12, simplify: Int = 4, geometric: Bool = false, anchors given: [String]? = nil, focus: [Details.Box]? = nil, seed: UInt32 = 7, variety: Int = 5, areaPower: Double? = nil, maxWashes: Int = Segmenter.maxWashes, washStep: Double = Segmenter.washStep, lightnessWeight: Double? = nil) -> Segmentation {
         let count = width * height
+        let weights = varietyWeights(variety)
+        let areaPower = areaPower ?? weights.areaPower
+        let lightnessWeight = lightnessWeight ?? weights.lightnessWeight
         // Noise goes before the colours are found: every pixel takes the colour of its patch.
         let original = oklabPixels(rgba, count: count)
         // Below Simplify 0 the patches shrink, and with a side under two pixels there are none.

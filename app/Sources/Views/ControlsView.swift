@@ -141,7 +141,7 @@ struct ControlsView: View {
             // No step: on the Mac a stepped slider draws a tick for every value.
             Slider(value: value, in: range) { editing in
                 guard !editing else { return }
-                // What the picture is analysed from; Details only replans the mixes, which the session does itself.
+                // What the picture is analysed from; Details and Max. paints the session handles itself.
                 let before = analysed
                 commit()
                 if before != analysed { session.analyse() }

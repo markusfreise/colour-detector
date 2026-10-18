@@ -188,7 +188,7 @@ describe('layer mode in the analysis store', () => {
   it('keeps the colour changes of a picture opened in layer mode for its first mix analysis', async () => {
     await toLayerMode()
     const edits = [{ index: 0, targetHex: '#123456', chosen: 0 }]
-    analysis.pendingEdits = { key: '100/100/0/4/false/0', edits }
+    analysis.pendingEdits = { key: '100/100/0/4/5/false/0', edits }
     expect(analysis.exportEdits()).toEqual(edits)
     analysis.setMode('mix')
     await answer()

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { segmentImage, connectedComponents } from '../lib/segment.js'
+import { segmentImage, connectedComponents, varietyWeights, AREA_POWER, LIGHTNESS_WEIGHT } from '../lib/segment.js'
 import { hexToOklab } from '../lib/color.js'
 
 function makeImage(width, height, fn) {
@@ -53,6 +53,27 @@ describe('segment', () => {
     expect(new Set(blues.map((c) => c.group)).size).toBe(1)
     expect(blues.length).toBeGreaterThan(2)
   })
+  it('weighs the colours by the Details slider, with the constants at 5', () => {
+    expect(varietyWeights(5)).toEqual({ areaPower: AREA_POWER, lightnessWeight: LIGHTNESS_WEIGHT })
+    expect(varietyWeights()).toEqual(varietyWeights(5))
+    // Low Details: colours by area and lightness; high Details: small colours and hue.
+    expect(varietyWeights(0).areaPower).toBeCloseTo(0.8)
+    expect(varietyWeights(0).lightnessWeight).toBeCloseTo(1)
+    expect(varietyWeights(10).areaPower).toBeCloseTo(0)
+    expect(varietyWeights(10).lightnessWeight).toBeCloseTo(0.25)
+    expect(varietyWeights(-3)).toEqual(varietyWeights(0))
+    expect(varietyWeights(12)).toEqual(varietyWeights(10))
+  })
+
+  it('lets Details change the analysis itself, not only the joining of mixes', () => {
+    // Many colours: hue across, lightness down, so the weights decide where the mixes go.
+    const picture = makeImage(60, 60, (x, y) => [60 + x * 3, 60 + y * 3, 200 - x * 2])
+    const colours = (seg) => seg.clusters.filter((c) => c.pixelCount).map((c) => c.hex).join()
+    const at = (variety) => colours(segmentImage(picture, 60, 60, { colours: 8, simplify: 0, variety }))
+    expect(at(5)).toBe(colours(segmentImage(picture, 60, 60, { colours: 8, simplify: 0 })))
+    expect(at(0)).not.toBe(at(10))
+  })
+
   it('labels 4-connected components', () => {
     const labels = Int32Array.from([0, 0, 1, 1, 0, 1, 1, 1, 0])
     const { regionCluster } = connectedComponents(labels, 3, 3)

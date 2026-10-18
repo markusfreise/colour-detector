@@ -356,6 +356,9 @@ final class Session {
             }
             if layerMode {
                 if settings.maxCoats != oldValue.maxCoats { analyse() } else { render() }
+            } else if settings.variety != oldValue.variety && !valueMode {
+                // Details weighs the colours in the analysis too; a grey picture has no hues to keep.
+                analyse()
             } else if settings.maxPaints != oldValue.maxPaints || settings.variety != oldValue.variety {
                 recomputeAllRecipes()
             } else {
@@ -530,6 +533,7 @@ final class Session {
         // from Segmenter.finest, with the shown 0 at Segmenter.simplifyZero, as the web app does.
         let simplify = settings.simplify + Segmenter.simplifyZero
         let geometric = settings.geometric
+        let variety = settings.variety
         let saturation = analysisSaturation
         let contrast = Double(settings.contrast) / 100
         busy = true
@@ -538,7 +542,7 @@ final class Session {
                 let adjusted = ColorMath.adjust(rgba: pixels.rgba, saturation: saturation, contrast: contrast)
                 return values
                     ? Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify, geometric: geometric, maxWashes: Self.valueSteps, washStep: Self.valueStep)
-                    : Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify, geometric: geometric)
+                    : Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify, geometric: geometric, variety: variety)
             }.value
             guard run == analysisRun else { return } // a newer analysis superseded this one
             mixKey = key
@@ -559,7 +563,7 @@ final class Session {
     var layerMode: Bool { settings.mode == .layer }
 
     private var mixKeyNow: String {
-        "\(pictureSerial)/\(settings.colours)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)/\(settings.geometric)/\(valueMode)"
+        "\(pictureSerial)/\(settings.colours)/\(settings.variety)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)/\(settings.geometric)/\(valueMode)"
     }
 
     /// Glazes of the base paints. On Auto the app proposes the paints from the palette's Auto

@@ -27,7 +27,7 @@
     ></canvas>
     <!-- No picture yet: the whole canvas is the way to the first one. -->
     <label v-if="!analysis.image && !analysis.busy && !backdrop" class="painting__welcome">
-      <input class="painting__file" type="file" accept="image/*" @change="onWelcomeFile" />
+      <input class="painting__file" type="file" accept="image/*,.wcl" @change="onWelcomeFile" />
       <span class="painting__welcome-text">
         {{ t('Welcome to {app}', { app: APP_NAME }) }}<br />
         <strong>{{ t('Load your first photo.') }}</strong><br />

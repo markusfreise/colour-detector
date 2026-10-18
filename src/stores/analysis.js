@@ -12,6 +12,7 @@ import { toOklabPixels, SIMPLIFY_ZERO } from '../lib/segment.js'
 import { closeupSize } from '../lib/closeup.js'
 import { useProStore } from './pro.js'
 import { hashOf } from '../lib/picture.js'
+import { isWclFile, readWcl } from '../lib/wcl.js'
 import { DEFAULT_FORMS, toneOfHex } from '../lib/blocking.js'
 import { t } from '../i18n/index.js'
 
@@ -317,6 +318,16 @@ export const useAnalysisStore = defineStore('analysis', {
       await this.loadFromSource(sample.url, t('{name} (sample)', { name: t(sample.name) }), { sample: true, hash: null })
     },
     async loadFile(file) {
+      // A picture file (.wcl) opens as it was saved; it joins the collection when it is saved there.
+      if (isWclFile(file)) {
+        try {
+          const record = await readWcl(file)
+          await this.loadSaved({ ...record, id: null })
+        } catch (e) {
+          this.error = t('Could not open the picture: {reason}', { reason: t(e.message) })
+        }
+        return
+      }
       const url = URL.createObjectURL(file)
       // The bytes of the photo as they came: the same file is the same picture, whenever it is opened.
       const hash = await hashOf(file).catch(() => null)

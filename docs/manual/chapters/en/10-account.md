@@ -106,7 +106,7 @@ What you can back up:
 
 - **Paint boxes** as a file: **Export** under each box in the paint box, back with **Import paint box**, on this device or another.
 - **The result of a picture** as a printed sheet or PDF with every mix ([Printing](printing.html)) or as a JPG ([Exporting a picture](pictures.html#exporting-a-picture)).
-- **A picture of the collection with its settings** cannot be saved as a file. Keep the photo itself: the same file with the same settings gives the same plan again, and a picture you unlocked stays unlocked.
+- **A picture with all its settings and colour changes** as a picture file (`.wcl`): every **Save** downloads it, **New picture** opens it again, on this device or another. See [The picture file](pictures.html#the-picture-file-wcl).
 
 > **Tip:** Back up your paint boxes. In the paint box, **Export** under each box saves it as a file; **Import paint box** brings it back, on this device or another. A paint box with your own calibrated colours is worth keeping. See [Paint box and palette](paint-box.html).
 

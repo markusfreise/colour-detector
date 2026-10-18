@@ -106,7 +106,7 @@ Was du sichern kannst:
 
 - **Farbkästen** als Datei: **Exportieren** unter jedem Kasten im Farbkasten, zurück mit **Farbkasten importieren**, auf diesem oder einem anderen Gerät.
 - **Das Ergebnis eines Bildes** als Ausdruck oder PDF mit allen Mischungen ([Drucken](drucken.html)) oder als JPG ([Ein Bild exportieren](bilder.html#ein-bild-exportieren)).
-- **Ein Bild der Sammlung mit seinen Einstellungen** lässt sich nicht als Datei sichern. Heb das Foto selbst auf: Mit derselben Datei und denselben Einstellungen entsteht derselbe Plan wieder, und ein freigeschaltetes Bild bleibt freigeschaltet.
+- **Ein Bild mit allen Einstellungen und Farbänderungen** als Bilddatei (`.wcl`): Jedes **Sichern** lädt sie herunter, **Neues Bild** öffnet sie wieder, auf diesem oder einem anderen Gerät. Siehe [Die Bilddatei](bilder.html#die-bilddatei-wcl).
 
 > **Tipp:** Sichere deine Farbkästen. Im Farbkasten speichert **Exportieren** unter jedem Kasten ihn als Datei; **Farbkasten importieren** holt ihn zurück, auf diesem oder einem anderen Gerät. Ein Farbkasten mit deinen eigenen, kalibrierten Farben ist es wert, aufgehoben zu werden. Siehe [Farbkasten und Palette](farbkasten.html).
 

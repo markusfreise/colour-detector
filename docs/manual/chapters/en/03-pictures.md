@@ -25,7 +25,7 @@ Photos taken with a phone are perfectly good. Resolution matters less than you m
 
 ## Opening a picture
 
-Press **New picture** in the left-hand column and choose a photo. On a phone or tablet the same button also offers the camera, so you can photograph a subject and plan it on the spot. Any picture format your browser can show will do: JPG, PNG, WebP, HEIC on Apple devices.
+Press **New picture** in the left-hand column and choose a photo. On a phone or tablet the same button also offers the camera, so you can photograph a subject and plan it on the spot. Any picture format your browser can show will do: JPG, PNG, WebP, HEIC on Apple devices. The same button also opens a saved picture file (`.wcl`).
 
 **Samples** opens five example photos by the author: a town, a lake in the mountains, rooftops at dusk, winter fields and an old town in snow. They are a good way to explore the app before you bring your own photos, and they are the pictures this manual uses.
 
@@ -47,6 +47,10 @@ What is saved:
 - every change you made to a colour: new targets, chosen recipes, areas you separated.
 
 When you open a saved picture later, it comes back exactly as you left it, even if you have changed your paint boxes in the meantime. After you change a saved picture, the button reads **Save changes**. In the collection you can also **Rename** and **Delete** a picture.
+
+### The picture file (.wcl)
+
+Every save also downloads the picture as a file, for example `Llyn-Idwal.wcl`. It holds the photo and everything listed above, and is about as large as the photo. Keep it wherever you like: in the folder of your painting, in the cloud, on a stick. Open it with **New picture** and the picture comes back exactly as it was, on this device or another, in any browser. A picture you unlocked stays unlocked in your account; for anybody else the file unlocks nothing.
 
 > **Note:** The collection lives in this browser on this device. It is not part of your account and does not travel to another computer. If you clear your browser's data for this site, the collection is gone. Saving pictures needs Pro.
 

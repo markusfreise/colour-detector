@@ -1,0 +1,18 @@
+/* The pricing pages: the colours of the legal pages (legal.css), the offers as cards. */
+.pricing { max-width: 64rem; }
+.pricing__lead { margin: 0 0 1.5rem; font-size: 1.25rem; color: var(--ink-soft); }
+.pricing__early { margin: 0 0 2rem; padding: 1rem 1.25rem; border-radius: 12px; background: var(--accent); color: var(--paper); }
+.pricing__early strong { font-size: 1.125rem; }
+.pricing__code { padding: 0.1rem 0.45rem; border-radius: 6px; background: var(--paper); color: var(--ink); font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-weight: 700; letter-spacing: 0.04em; }
+.pricing__cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 0 0 2rem; }
+@media (max-width: 860px) { .pricing__cards { grid-template-columns: minmax(0, 1fr); } }
+.pricing__card { display: flex; flex-direction: column; padding: 1.25rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.pricing__card--pro { border-color: var(--accent); box-shadow: 0 0.5rem 1.875rem rgba(0, 0, 0, 0.12); }
+.pricing__name { margin: 0 0 0.5rem; font-size: 1.375rem; }
+.pricing .pricing__prices { margin: 0 0 1rem; padding: 0; list-style: none; }
+.pricing__prices li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.35rem 0; border-bottom: 1px solid var(--line); }
+.pricing__amount { font-weight: 700; white-space: nowrap; }
+.pricing__note { color: var(--ink-soft); font-size: 0.9375rem; }
+.pricing__card ul.pricing__features { margin: 0 0 1rem; padding-left: 1.1rem; }
+.pricing__cta { display: inline-block; margin-top: auto; padding: 0.6rem 1rem; border-radius: 8px; background: var(--accent); color: var(--paper) !important; font-weight: 600; text-align: center; text-decoration: none; }
+.pricing__small { color: var(--ink-soft); font-size: 0.9375rem; }

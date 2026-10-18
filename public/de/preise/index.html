@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preise – Watercolourlove</title>
+<meta name="description" content="Was Watercolourlove kostet: kostenlos ausprobieren, Bild für Bild freischalten oder Pro für alle Bilder.">
+<link rel="stylesheet" href="../../legal.css">
+<link rel="stylesheet" href="../../pricing.css">
+<link rel="alternate" hreflang="en" href="../../pricing/">
+</head>
+<body>
+<main class="legal pricing">
+<a class="legal__back" href="../../">Zurück zu Watercolourlove</a>
+<h1 class="legal__title">Preise</h1>
+<p class="pricing__lead">Kostenlos ausprobieren. Für ein Bild bezahlen oder für alle.</p>
+
+<!-- Early bird: plans.json early_bird; das Script unten nimmt es nach seinem letzten Tag weg. -->
+<p class="pricing__early" data-ends="2026-11-30">
+  <strong>Early Bird: 40 % Rabatt</strong> auf das Jahresabo und die Lifetime-Lizenz mit dem Code <span class="pricing__code">EARLYBIRD</span> an der Kasse. Für die ersten 100 Käufer, bis 30. November 2026.
+</p>
+
+<div class="pricing__cards">
+  <section class="pricing__card">
+    <h2 class="pricing__name">Kostenlos</h2>
+    <ul class="pricing__prices"><li><span>Dein Konto</span><span class="pricing__amount">0 €</span></li></ul>
+    <ul class="pricing__features">
+      <li>Mischen aus dem Starterkasten mit 12 Studienfarben</li>
+      <li>Alle Beispielfotos, mit allem freigeschaltet</li>
+      <li>Ein eigenes Bild zum Freischalten geschenkt</li>
+    </ul>
+    <a class="pricing__cta" href="../../">Jetzt kostenlos registrieren</a>
+  </section>
+
+  <section class="pricing__card">
+    <h2 class="pricing__name">Bilder</h2>
+    <ul class="pricing__prices">
+      <li><span>1 Bild</span><span class="pricing__amount">2,49 €</span></li>
+      <li><span>5 Bilder</span><span class="pricing__amount">8,99 €</span></li>
+      <li><span>10 Bilder</span><span class="pricing__amount">14,99 €</span></li>
+    </ul>
+    <p class="pricing__note">Jedes schaltet ein Bild dauerhaft frei. Sie verfallen nicht.</p>
+    <ul class="pricing__features">
+      <li>Mischen aus deinen eigenen Farben</li>
+      <li>Blocking: Licht und Schatten in großen Massen</li>
+      <li>Ausschnitte und feinere Flächen</li>
+      <li>Sichern, drucken oder als PDF speichern, als JPG exportieren</li>
+    </ul>
+    <a class="pricing__cta" href="../../">Zur App</a>
+  </section>
+
+  <section class="pricing__card pricing__card--pro">
+    <h2 class="pricing__name">Pro</h2>
+    <ul class="pricing__prices">
+      <li><span>Monatlich</span><span class="pricing__amount">4,99 €</span></li>
+      <li><span>Jährlich <span class="pricing__note">(halber Monatspreis)</span></span><span class="pricing__amount">29,99 €</span></li>
+      <li><span>Lifetime-Lizenz</span><span class="pricing__amount">79 €</span></li>
+    </ul>
+    <p class="pricing__note">Alles für jedes Bild, und dazu:</p>
+    <ul class="pricing__features">
+      <li>Ein Farbkasten für jedes Set, das du besitzt</li>
+      <li>Die Farbkarten von Schmincke Horadam, Winsor &amp; Newton, Michael Harding und Sennelier</li>
+      <li>Farbkästen importieren und exportieren</li>
+      <li>Monochrome Tonwertstudien</li>
+      <li>Mischungen und Farben mit KI gewählt</li>
+    </ul>
+    <a class="pricing__cta" href="../../">Pro in der App holen</a>
+  </section>
+</div>
+
+<h2 class="legal__heading">Gut zu wissen</h2>
+<ul>
+  <li>Alle Preise inklusive 19 % Mehrwertsteuer. Die Zahlung wickelt Stripe ab.</li>
+  <li>Was du in den letzten 30 Tagen für Bilderpakete bezahlt hast, geht von deiner ersten Pro-Zahlung ab.</li>
+  <li>Monats- und Jahresabo kannst du jederzeit kündigen, zum Ende des bezahlten Zeitraums.</li>
+  <li>„Lifetime“ meint die Lebensdauer des Produkts; was genau dazugehört, steht in den <a href="../agb/">AGB</a>.</li>
+  <li>Deine Bilder bleiben in deinem Browser. Dein Konto ist nur deine E-Mail-Adresse.</li>
+  <li>Die App für iPhone, iPad und Mac gibt es getrennt im App Store.</li>
+</ul>
+
+<nav class="legal__nav" aria-label="Seiten">
+  <a href="../datenschutz/">Datenschutz</a>
+  <a href="../agb/">AGB</a>
+  <a href="../impressum/">Impressum</a>
+  <a href="../../pricing/" hreflang="en" lang="en">English</a>
+</nav>
+</main>
+<script>
+  // Das Early-Bird-Angebot verschwindet nach seinem letzten Tag (Berliner Zeit).
+  for (const el of document.querySelectorAll('[data-ends]')) if (Date.now() > Date.parse(el.dataset.ends + 'T23:59:59+01:00')) el.remove()
+</script>
+</body>
+</html>

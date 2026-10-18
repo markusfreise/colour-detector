@@ -21,6 +21,15 @@
   "native": {
     "locked": ["save", "blocking", "paint_boxes", "brand_charts", "box_import", "closeups", "finer_areas", "ai"]
   },
+  "early_bird": {
+    "comment": "A promotion code at checkout, made by stripe-setup.php: percent off the first payment of a plan of at least minimum_amount (cents, so the yearly plan and the lifetime licence), for the first max_redemptions buyers, until the end of the day 'ends' (Europe/Berlin). Shown on the pricing page while active and not over.",
+    "active": true,
+    "code": "EARLYBIRD",
+    "percent_off": 40,
+    "minimum_amount": 2999,
+    "max_redemptions": 100,
+    "ends": "2026-11-30"
+  },
   "credits": {
     "welcome": 1,
     "deduction_days": 30

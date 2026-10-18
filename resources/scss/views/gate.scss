@@ -168,6 +168,23 @@
         }
     }
 
+    // The early bird under the first paragraph: in the colour of the text, its terms small below.
+    &__offer {
+        margin-bottom: var(--gap-025x);
+        color: var(--c-copy);
+        font-weight: 600;
+
+        a {
+            color: inherit;
+        }
+    }
+
+    &__footnote {
+        margin-bottom: #{pxtorem(14)};
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+    }
+
     &__text {
         margin-bottom: #{pxtorem(14)};
         color: var(--c-copy-light);

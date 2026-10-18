@@ -70,7 +70,7 @@ Diese Übung bringt deine Malerei weiter als jede Farbübung.
 1. Öffne **Llyn Idwal**, drück in den Einstellungen auf **Monochrom** und stell **Farben** auf den kleinsten Wert, 2.
 2. Öffne den **Farbkasten** und leg eine einzige dunkle, transparente Farbe in die Palette, zum Beispiel eine Neutraltinte, eine Sepia oder ein Indigo.
 3. Stell **Flächen vereinfachen** so hoch, dass du nicht mehr als etwa dreißig Flächen zählst.
-4. Druck das Blatt oder die **Vorlage zum Drucken**, übertrag die Umrisse und male die Studie mit den Lasuren, die die App dir gibt, von der hellsten zur dunkelsten.
+4. Druck das Blatt, übertrag die Umrisse und male die Studie mit den Lasuren, die die App dir gibt, von der hellsten zur dunkelsten.
 5. Leg sie, wenn sie trocken ist, neben einen grauen Ausdruck des Fotos und blinzle auf beide.
 
 ![Llyn Idwal in Monochrom mit einer Farbe: das Bild in Grau, jeder Tonwert mit einer einzigen Farbe der Palette gemalt](shot:values)

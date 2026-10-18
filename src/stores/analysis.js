@@ -194,7 +194,7 @@ export const useAnalysisStore = defineStore('analysis', {
       values: false, // mix mode: the picture in grey, every value painted with one paint of the box (a value study)
       saturation: 200, // percent, applied to the photo before the analysis
       contrast: 100,
-      view: 'mixed', // mixed | target | overlay | original | template | blocking
+      view: 'mixed', // mixed | target | overlay | original | template | blocking (template has no button for now)
       // Blocking: light and shadow in large masses (lib/blocking.js).
       blockingTones: 2, // 2 = light and shadow, 3 = with a middle tone
       blockingSplit: null, // thresholds in L* set by hand; null = where the photo divides
@@ -203,6 +203,8 @@ export const useAnalysisStore = defineStore('analysis', {
       outlines: true,
       numbers: true, // false = none, true = the numbers alone, 'backdrop' = each on a padded square
       numberSize: 'normal', // normal | large (1.4 times)
+      grid: false, // false = none, else the colour of its lines: 'white' | 'grey' | 'black'
+      gridColumns: 8, // the picture's width in that many square cells; rows as many as fit the height
     },
   }),
   getters: {

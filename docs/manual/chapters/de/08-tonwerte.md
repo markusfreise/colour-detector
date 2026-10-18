@@ -87,4 +87,4 @@ Versuch es danach mit zwei Farben, einer warmen und einer kalten, etwa Sepiabrau
 
 ## Die Tonwerte und der Rest der App
 
-Monochrom arbeitet mit allem anderen beim Mischen zusammen: der Farbliste, der Karte einer angetippten Fläche, Alle Details, dem Drucken und der Vorlage. Bei den Schichten gibt es Monochrom nicht, dort sind die Schichten auf Farbe abgestimmt. Das Kapitel [Tonwerte und Vereinfachen](tonwerte-und-vereinfachen.html) zeigt, wie du die Tonwerte eines Fotos liest, bevor du die App überhaupt öffnest.
+Monochrom arbeitet mit allem anderen beim Mischen zusammen: der Farbliste, der Karte einer angetippten Fläche, Alle Details und dem Drucken. Bei den Schichten gibt es Monochrom nicht, dort sind die Schichten auf Farbe abgestimmt. Das Kapitel [Tonwerte und Vereinfachen](tonwerte-und-vereinfachen.html) zeigt, wie du die Tonwerte eines Fotos liest, bevor du die App überhaupt öffnest.

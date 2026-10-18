@@ -18,7 +18,7 @@ Watercolourlove beantwortet beide. Die App bringt das Foto auf eine überschauba
 
 1. **Neues Bild** und die anderen Knöpfe rund ums Bild: Beispiele, Sichern, Sammlung, Drucken, Exportieren.
 2. Die Werkzeuge des Bildes: ans Fenster anpassen, einen Ausschnitt ansehen.
-3. Die Ansichten: gemischte Farbe, die Farben des Fotos, Überlagerung, das Foto selbst, die Vorlage zum Drucken.
+3. Die Ansichten: gemischte Farbe, die Farben des Fotos, Überlagerung, das Foto selbst.
 4. **Farben**: jede Mischung mit ihren Farben und Lasuren.
 5. **Einstellungen**: wie viele Mischungen, wie einfach die Flächen, welche Methode.
 6. **Farbkasten**: die Farben, die du besitzt, und die Palette dieses Bildes.

@@ -42,6 +42,7 @@ What you read on the picture, in the colour list and in the recipes.
 | Details | Details | The setting that decides whether the mixes go to fine steps across the picture (high) or to small areas of another hue (low). |
 | Full breakdown | Alle Details | Target and mix side by side, the colour by hand and every recipe of a colour. |
 | Geometric | Geometrisch | Areas as polygons with straight edges instead of their organic outline. |
+| Grid | Raster | Square cells over the picture, to copy it onto paper cell by cell. |
 | Layer | Schicht | Layer mode: the wash of one base paint, painted over the dry layers before it. |
 | Layer mode | Schichten | The method of glazing a few washes over each other instead of mixing every colour. |
 | Layered paint | Geschichtete Farbe | Layer mode: the view of the finished picture, all layers together. |
@@ -58,7 +59,6 @@ What you read on the picture, in the colour list and in the recipes.
 | Recipe | Rezept | Which paints, in how many parts, with how much water, for one colour. |
 | Simplify areas | Flächen vereinfachen | Merges small shapes into larger, calmer ones. |
 | Target | Ziel | The colour the photo asks for in an area. |
-| Template to print | Vorlage zum Drucken | Only outlines and numbers, in light blue, to print and paint on. |
 | Values | Tonwerte | The picture analysed in grey; each value is painted with one paint of the palette. |
 | Wash | Lasur | A mix at one water level. |
 | Your mix | Deine Mischung | The colour the recipe gives on white paper. |

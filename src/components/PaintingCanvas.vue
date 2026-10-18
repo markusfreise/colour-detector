@@ -68,7 +68,16 @@
         <AppIcon name="settings" :label="t(layout.collapsed.controls ? 'Show {what}' : 'Hide {what}', { what: t('the settings') })" />
       </button>
       <ViewSwitch />
-      <!-- What is drawn over the picture. -->
+      <!-- What is drawn over the picture. The grid cycles through none, white, grey, black. -->
+      <button
+        class="button painting__tool"
+        :class="{ 'button--active': analysis.settings.grid }"
+        type="button"
+        :data-hint="t(gridStep.label)"
+        @click="analysis.settings.grid = gridStep.next"
+      >
+        <AppIcon name="grid" :label="t(gridStep.label)" />
+      </button>
       <button
         class="button painting__tool"
         :class="{ 'button--active': analysis.settings.outlines }"
@@ -150,6 +159,17 @@ const numbersStep = computed(() => {
   if (numbers) return { icon: 'numbers', label: 'Numbers', hint: 'Numbers', next: 'backdrop' }
   return { icon: 'numbers', label: 'No numbers', hint: 'No numbers', next: true }
 })
+// The grid button steps through no grid, white, grey, black lines; its label shows the state now.
+const GRID_STEPS = [
+  { value: false, label: 'No grid' },
+  { value: 'white', label: 'White grid', color: '#ffffff' },
+  { value: 'grey', label: 'Grey grid', color: '#808080' },
+  { value: 'black', label: 'Black grid', color: '#000000' },
+]
+const gridStep = computed(() => {
+  const i = Math.max(0, GRID_STEPS.findIndex((s) => s.value === analysis.settings.grid))
+  return { ...GRID_STEPS[i], next: GRID_STEPS[(i + 1) % GRID_STEPS.length].value }
+})
 // The paint box in use holds no paint: none to paint with, or in layer mode none to glaze with.
 const noPaints = computed(() => !!analysis.image && (analysis.layerMode ? !analysis.busy && !analysis.layers : paints.enabled.length === 0))
 const canvas = ref(null)
@@ -173,7 +193,7 @@ function drawPhoto(ctx, el) {
   else ctx.drawImage(analysis.image, 0, 0, el.width, el.height)
 }
 
-// Saves the picture as it is drawn now (view, outlines, numbers) as a JPG, at the size of the canvas.
+// Saves the picture as it is drawn now (view, outlines, numbers, grid) as a JPG, at the size of the canvas.
 function exportJpg() {
   const el = canvas.value
   if (!el?.width) return
@@ -214,11 +234,40 @@ function overlayPhoto(ctx, el) {
 function draw() {
   const el = canvas.value
   if (!el) return
+  drawView(el)
+  drawGrid(el)
+}
+
+function drawView(el) {
   if (analysis.settings.view === 'sketch') return drawSketch(el)
   if (analysis.settings.view === 'blocking') return drawBlocking(el)
   if (analysis.layerMode) drawLayers(el)
   else drawMixes(el)
   drawDetails(el)
+}
+
+// A grid of square cells over the picture, to transfer it to paper: the width in `gridColumns`
+// columns from the left, the rows from the top as far as the height goes. In every view.
+function drawGrid(el) {
+  const color = gridStep.value.color
+  if (!color || !el.width || !el.height) return
+  // A page open since before the setting existed has none: hot reloading keeps the store's state.
+  const cell = el.width / Math.max(1, analysis.settings.gridColumns || 8)
+  const ctx = el.getContext('2d')
+  ctx.save()
+  ctx.strokeStyle = color
+  ctx.lineWidth = Math.max(2, Math.round(el.width / 600))
+  ctx.beginPath()
+  for (let x = cell; x < el.width - 0.5; x += cell) {
+    ctx.moveTo(Math.round(x), 0)
+    ctx.lineTo(Math.round(x), el.height)
+  }
+  for (let y = cell; y < el.height - 0.5; y += cell) {
+    ctx.moveTo(0, Math.round(y))
+    ctx.lineTo(el.width, Math.round(y))
+  }
+  ctx.stroke()
+  ctx.restore()
 }
 
 // The final wash of fine dark details from the AI's plan, over the mixes or the layers.
@@ -746,6 +795,8 @@ watch(
     analysis.settings.outlines,
     analysis.settings.numbers,
     analysis.settings.numberSize,
+    analysis.settings.grid,
+    analysis.settings.gridColumns,
     analysis.blockingKey,
     analysis.blockingSolo,
     analysis.settings.blockingOpacity,

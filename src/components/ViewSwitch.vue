@@ -1,5 +1,5 @@
 <template>
-  <!-- What the picture shows: the paint, the colours of the photo, the photo over the paint, the photo, the empty template. -->
+  <!-- What the picture shows: the paint, the colours of the photo, the photo over the paint, the photo, the blocking. -->
   <div class="segmented viewswitch">
     <button
       v-for="v in views"
@@ -9,7 +9,6 @@
       :class="{
         'segmented__option--active': analysis.settings.view === v.value,
         'segmented__option--locked': v.value === 'blocking' && !pro.can('blocking'),
-        'viewswitch__template': v.value === 'template',
       }"
       :aria-pressed="analysis.settings.view === v.value"
       :data-hint="t(v.hint)"
@@ -35,6 +34,7 @@ const pro = useProStore()
 const BLOCKING = { value: 'blocking', label: 'Blocking: light and shadow in large masses', hint: 'Blocking', icon: 'blocking' }
 // Layer mode has no colour per area to compare with, only the layered picture and the photo.
 // The Sketch view is hidden for now (TASK-39: it is to be reworked); its drawing is still there.
+// So is the Template view: the grid over the picture takes its place; its drawing is still there.
 const views = computed(() =>
   analysis.layerMode
     ? [
@@ -48,7 +48,6 @@ const views = computed(() =>
         { value: 'target', label: 'Photo colour', hint: 'Photo colour', icon: 'colours' },
         { value: 'overlay', label: 'Overlay: the photo at half strength over the paint', hint: 'Overlay', icon: 'overlay' },
         { value: 'original', label: 'Photo', hint: 'Photo', icon: 'photo' },
-        { value: 'template', label: 'Template to print: areas and numbers in light blue, nothing filled in', hint: 'Template to print', icon: 'template' },
         BLOCKING,
       ],
 )

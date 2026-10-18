@@ -6,6 +6,12 @@
 
 declare(strict_types=1);
 
+// Only from the command line: on a web server it would run the suite for anybody who calls it.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit;
+}
+
 const TEST_DIR = __DIR__;
 
 $tests = [];

@@ -251,7 +251,8 @@ function drawView(el) {
 function drawGrid(el) {
   const color = gridStep.value.color
   if (!color || !el.width || !el.height) return
-  const cell = el.width / Math.max(1, analysis.settings.gridColumns)
+  // A page open since before the setting existed has none: hot reloading keeps the store's state.
+  const cell = el.width / Math.max(1, analysis.settings.gridColumns || 8)
   const ctx = el.getContext('2d')
   ctx.save()
   ctx.strokeStyle = color

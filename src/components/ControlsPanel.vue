@@ -186,28 +186,29 @@
           </label>
         </div>
           </template>
-          <!-- In every view: the numbers over the picture. -->
-          <div class="field controls__number-size">
-            <span class="field__label">{{ t('Number size') }}</span>
-            <div class="segmented segmented--text">
-              <button
-                v-for="s in numberSizes"
-                :key="s.value"
-                type="button"
-                class="segmented__option"
-                :class="{ 'segmented__option--active': analysis.settings.numberSize === s.value }"
-                :aria-pressed="analysis.settings.numberSize === s.value"
-                @click="analysis.settings.numberSize = s.value"
-              >
-                {{ t(s.label) }}
-              </button>
+          <!-- In every view: the numbers and the grid over the picture, side by side. -->
+          <div class="controls__settings controls__settings_two">
+            <div class="field controls__number-size">
+              <span class="field__label">{{ t('Number size') }}</span>
+              <div class="segmented segmented--text">
+                <button
+                  v-for="s in numberSizes"
+                  :key="s.value"
+                  type="button"
+                  class="segmented__option"
+                  :class="{ 'segmented__option--active': analysis.settings.numberSize === s.value }"
+                  :aria-pressed="analysis.settings.numberSize === s.value"
+                  @click="analysis.settings.numberSize = s.value"
+                >
+                  {{ t(s.label) }}
+                </button>
+              </div>
             </div>
+            <label class="field controls__grid">
+              <span class="field__label">{{ t('Grid columns') }} <output class="field__value">{{ analysis.settings.gridColumns }}</output></span>
+              <input v-model.number="analysis.settings.gridColumns" class="field__range" type="range" min="2" max="30" step="1" />
+            </label>
           </div>
-          <!-- The grid over the picture: how many square cells across. -->
-          <label class="field controls__grid">
-            <span class="field__label">{{ t('Grid columns') }} <output class="field__value">{{ analysis.settings.gridColumns }}</output></span>
-            <input v-model.number="analysis.settings.gridColumns" class="field__range" type="range" min="2" max="30" step="1" />
-          </label>
     </div>
   </section>
 </template>

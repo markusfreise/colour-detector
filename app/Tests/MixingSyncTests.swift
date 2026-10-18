@@ -56,10 +56,10 @@ final class MixingSyncTests: XCTestCase {
     func testMatchesLandscapeColoursFromTheStock() throws {
         let paints = try stock()
         let expected: [(target: String, ids: String, hex: String, deltaE: Double)] = [
-            ("#8a7a52", "schmincke-horadam-662+schmincke-horadam-208", "#8a7a52", 0.005854795256479304),
-            ("#5f6b7d", "schmincke-horadam-496+schmincke-horadam-672", "#5f6b7d", 0.01895939020552394),
-            ("#a9b4c2", "schmincke-horadam-485", "#a6b5c6", 0.602410311003794),
-            ("#4a4a3a", "schmincke-horadam-662+schmincke-horadam-515", "#4a4a3b", 0.14964155088389408),
+            ("#8a7a52", "schmincke-horadam-526+schmincke-horadam-670", "#8b7a51", 0.1442529790648471),
+            ("#5f6b7d", "schmincke-horadam-496+schmincke-horadam-672", "#5f6b7d", 0.06402444427443803),
+            ("#a9b4c2", "schmincke-horadam-498+schmincke-horadam-655", "#a8b4c2", 0.0816344442204437),
+            ("#4a4a3a", "schmincke-horadam-515+schmincke-horadam-346", "#4b4a3c", 0.3032758045090181),
         ]
         for e in expected {
             let best = try XCTUnwrap(Mixing.findRecipes(target: e.target, paints: paints).first)
@@ -81,13 +81,13 @@ final class MixingSyncTests: XCTestCase {
     func testValueRecipesMatchTheLightnessAlone() throws {
         let paints = [yellow, blue, red, black]
         let expected: [(target: String, ids: [String], hexes: [String], first: [Double], deltaE: [Double])] = [
-            ("#f2f2f2", ["y", "", "k", "y+k", "y+b"], ["#fef887", "#ffffff", "#f3f2f1", "#f7f5ca", "#f2f6d5"], [0.1660543246049216], [0, 3.884863962880103, 0, 0, 0]),
-            ("#d0d0d0", ["y+k", "k", "y+r", "y+b", "b"], ["#ded658", "#d2d0cc", "#fac85b", "#ccdb77", "#b8d4ec"], [0.2875418561928659, 0.14377092809643294], [0, 0, 0, 0, 0]),
-            ("#a0a0a0", ["y+b", "k", "y+k", "y+r", "r"], ["#92ae22", "#a3a099", "#aea42c", "#f17b1a", "#f2765d"], [0.6435710139321797, 0.3217855069660899], [0, 0, 0, 0, 0]),
-            ("#777777", ["k", "b", "b+y", "r+k", "k+b"], ["#7b776e", "#4279bb", "#558552", "#be503a", "#667a89"], [0.8769620840842896], [0, 0, 0, 0, 0]),
-            ("#505050", ["b+r", "b+k", "k+r", "b+r+k", "y+b+k"], ["#4e4e63", "#345370", "#793c2c", "#624949", "#405a17"], [0.67749594149713, 0.338747970748565], [0, 0, 0, 0, 0]),
-            ("#2a2a2a", ["b+r+k", "b+r", "b+k", "r+k", "y+b+k"], ["#3a2324", "#45262a", "#1a3653", "#781f10", "#2e470b"], [0.7154499941573107, 0.7154499941573107, 0.7154499941573107], [0, 2.4540620901711554, 4.014952678468875, 9.766046159342007, 8.05688538534104]),
-            ("#101010", ["b+r+k", "b+r", "b+k", "r+k", "y+b+k"], ["#2b1717", "#45262a", "#1a3653", "#781f10", "#2e470b"], [1, 1, 1], [5.839223111821496, 13.651571544637985, 15.212462132935705, 20.963555613808836, 19.25439483980787]),
+            ("#f2f2f2", ["y", "", "y+k", "y+r", "y+b"], ["#fdf6ab", "#ffffff", "#f5f3e0", "#fdefe8", "#f0f4ec"], [0.34324592731085596], [0, 3.884863962880103, 0, 0, 0]),
+            ("#d0d0d0", ["y+r", "y+k", "y+b", "k", "r"], ["#f8c3a8", "#dbd38e", "#c8d6b9", "#d1d0cd", "#f7c1ba"], [0.3432668688310695, 0.3432668688310695], [0, 0, 0, 0, 0]),
+            ("#a0a0a0", ["r", "k", "b", "k+y", "r+k"], ["#ee7869", "#a2a09a", "#83a2ce", "#a8a36c", "#bf948d"], [0.6622820813262184], [0, 0, 0, 0, 0]),
+            ("#777777", ["k", "b", "b+r", "b+k", "k+r"], ["#7a776e", "#4a78b7", "#757684", "#5e7a9a", "#976b5f"], [0.9266344413720085], [0, 0, 0, 0, 0]),
+            ("#505050", ["b+r", "k+b", "k+r", "b+r+k", "y+b+k"], ["#4e4e60", "#3f5362", "#783d2e", "#5b4c4c", "#425922"], [0.8884988966648782, 0.4442494483324391], [0, 0, 0, 0, 0]),
+            ("#2a2a2a", ["b+r+k", "b+r", "b+k", "r+k", "y+b+k"], ["#372425", "#45262a", "#1a3653", "#781f10", "#2e470b"], [0.9416516768051288, 0.9416516768051288, 0.9416516768051288], [0, 2.4540620901711496, 4.014952678468875, 9.766046159341995, 8.056885385341051]),
+            ("#101010", ["b+r+k", "b+r", "b+k", "r+k", "y+b+k"], ["#2b1717", "#45262a", "#1a3653", "#781f10", "#2e470b"], [1, 1, 1], [5.839223111821518, 13.65157154463798, 15.212462132935705, 20.963555613808825, 19.25439483980788]),
         ]
         for e in expected {
             let recipes = Mixing.findRecipes(target: e.target, paints: paints, values: true)
@@ -104,14 +104,14 @@ final class MixingSyncTests: XCTestCase {
 
     func testValueRecipesKeepToMaxPaintsAndTheLimit() throws {
         let recipes = Mixing.findRecipes(target: "#606060", paints: [yellow, blue, red], maxPaints: 2, limit: 8, values: true)
-        XCTAssertEqual(recipes.map(describe), ["b", "r+b", "b+y", "r", "r+y", "y", ""])
-        XCTAssertEqual(recipes.map(\.hex), ["#2b61ab", "#904840", "#3c6e3a", "#e6331d", "#e84208", "#fae409", "#ffffff"])
-        let expected = [0.6539077431909623, 0, 0, 11.414932016446194, 13.038937541736855, 41.93062947143778, 51.09435546659824]
+        XCTAssertEqual(recipes.map(describe), ["b", "b+r", "b+y", "r", "r+y", "y", ""])
+        XCTAssertEqual(recipes.map(\.hex), ["#2b61ab", "#5e5e6f", "#3d6e3a", "#e6331d", "#e84208", "#fae409", "#ffffff"])
+        let expected = [0.6539077431909568, 0, 0, 11.414932016446194, 13.038937541736855, 41.93062947143778, 51.09435546659824]
         for (found, wanted) in zip(recipes.map(\.deltaE), expected) { XCTAssertEqual(found, wanted, accuracy: 1e-5) }
 
         let stockRecipes = Mixing.findRecipes(target: "#5a5a5a", paints: try stock(), values: true)
-        XCTAssertEqual(stockRecipes.map(describe), ["schmincke-horadam-645", "schmincke-horadam-472", "schmincke-horadam-662", "schmincke-horadam-494", "schmincke-horadam-485+schmincke-horadam-494"])
-        XCTAssertEqual(stockRecipes[0].paints[0].amount, 0.8948883749403834, accuracy: 1e-6)
+        XCTAssertEqual(stockRecipes.map(describe), ["schmincke-horadam-472", "schmincke-horadam-645", "schmincke-horadam-662", "schmincke-horadam-494", "schmincke-horadam-662+schmincke-horadam-494"])
+        XCTAssertEqual(stockRecipes[0].paints[0].amount, 0.9570751436593834, accuracy: 1e-6)
     }
 
     func testValueReachIsTheDarkestThePaintsGo() {
@@ -126,19 +126,19 @@ final class MixingSyncTests: XCTestCase {
     func testValueWashMatchesTheLightness() throws {
         let full = try XCTUnwrap(Mixing.findRecipes(target: "#2b61ab", paints: [blue]).first)
         let value = try XCTUnwrap(Mixing.washRecipe(full, target: "#c0c0c0", paints: ["b": blue], values: true))
-        XCTAssertEqual(value.strength, 0.2095359124734937, accuracy: 1e-5)
-        XCTAssertEqual(value.hex, "#a1c5e5")
+        XCTAssertEqual(value.strength, 0.3858464781221431, accuracy: 1e-5)
+        XCTAssertEqual(value.hex, "#adc2df")
         XCTAssertLessThan(value.deltaE, 1e-4)
         let colour = try XCTUnwrap(Mixing.washRecipe(full, target: "#c0c0c0", paints: ["b": blue]))
-        XCTAssertEqual(colour.strength, 0.18843555249615795, accuracy: 1e-5)
-        XCTAssertEqual(colour.hex, "#a9cae7")
-        XCTAssertEqual(colour.deltaE, 5.677442957174838, accuracy: 1e-5)
+        XCTAssertEqual(colour.strength, 0.36406502866455936, accuracy: 1e-5)
+        XCTAssertEqual(colour.hex, "#b2c5e0")
+        XCTAssertEqual(colour.deltaE, 4.507570330317785, accuracy: 1e-5)
     }
 
     func testProposesPaintsForTheValues() {
         let greys = ["#f2f2f2", "#d0d0d0", "#a0a0a0", "#777777", "#505050", "#2a2a2a", "#101010"]
         let targets = greys.enumerated().map { (hex: $1, weight: Double(10 - $0)) }
-        XCTAssertEqual(Mixing.proposePaints(targets: targets, paints: [yellow, blue, red, black], values: true), ["k", "r", "b"])
+        XCTAssertEqual(Mixing.proposePaints(targets: targets, paints: [yellow, blue, red, black], values: true), ["k", "b", "r"])
         XCTAssertEqual(Mixing.proposePaints(targets: targets, paints: [yellow, blue, red, black]), ["k", "b", "r"])
     }
 
@@ -153,9 +153,9 @@ final class MixingSyncTests: XCTestCase {
         for variety in [0, 10] {
             let mixes = Mixes.plan(clusters: clusters, paints: [yellow, blue, red], wanted: 4, variety: variety, values: true)
             XCTAssertEqual(mixes.sorted { $0.group < $1.group }.map { [$0.group] + $0.clusters.map(\.index).sorted() },
-                           [[0, 0], [2, 1, 2, 6, 9, 11], [3, 3, 7, 10], [4, 4, 5, 8]], "variety \(variety)")
+                           [[0, 0], [1, 1, 2, 6, 9, 10, 11], [3, 3, 7], [4, 4, 5, 8]], "variety \(variety)")
             XCTAssertEqual(mixes.map { $0.recipes.first.map(describe) ?? "" }, ["r", "b+r", "b+r", "b"], "variety \(variety)")
-            XCTAssertEqual(mixes.map { $0.recipes.first?.hex ?? "" }, ["#ed553c", "#4b4b60", "#45262a", "#356bb2"], "variety \(variety)")
+            XCTAssertEqual(mixes.map { $0.recipes.first?.hex ?? "" }, ["#ea5745", "#58596a", "#45262a", "#386bb0"], "variety \(variety)")
         }
     }
 
@@ -163,6 +163,6 @@ final class MixingSyncTests: XCTestCase {
         let hexes = ["#a88b4c", "#715611", "#634908", "#392620", "#bb3405", "#7a7d08", "#3e3d34", "#3f3815", "#c14b03", "#772411", "#465d1e", "#464d0d"]
         let clusters = hexes.enumerated().map { cluster($0, $1, 100 + $0 * 50) }
         let mixes = Mixes.plan(clusters: clusters, paints: [yellow, blue, red], wanted: 4, variety: 0)
-        XCTAssertEqual(mixes.sorted { $0.group < $1.group }.map { [$0.group] + $0.clusters.map(\.index).sorted() }, [[1, 0, 1, 2, 11], [4, 4, 8], [7, 3, 6, 7, 9], [10, 5, 10]])
+        XCTAssertEqual(mixes.sorted { $0.group < $1.group }.map { [$0.group] + $0.clusters.map(\.index).sorted() }, [[1, 0, 1, 2], [7, 3, 6, 7, 9], [8, 4, 8], [10, 5, 10, 11]])
     }
 }

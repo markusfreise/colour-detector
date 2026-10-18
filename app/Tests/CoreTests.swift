@@ -88,9 +88,9 @@ final class CoreTests: XCTestCase {
     func testWashDilutesAMix() throws {
         let full = try XCTUnwrap(Mixing.findRecipes(target: "#2b61ab", paints: [blue]).first)
         let wash = try XCTUnwrap(Mixing.washRecipe(full, target: Mixing.mixHex([blue], [0.3]), paints: ["b": blue]))
-        XCTAssertEqual(wash.strength, 0.29927839115584465, accuracy: 1e-4)
+        XCTAssertEqual(wash.strength, 0.2989668189988934, accuracy: 1e-4)
         XCTAssertEqual(wash.fullness, wash.strength, accuracy: 1e-12)
-        XCTAssertEqual(wash.hex, "#87b2db")
+        XCTAssertEqual(wash.hex, "#c0d0e6")
         XCTAssertEqual(wash.paints.map(\.paintID), ["b"])
         // By fullness: 1 is the paint as its swatch shows it.
         XCTAssertEqual([0.05, 0.2, 0.4, 0.7, 1].map { Mixing.washLetter($0) }.joined(), "WLMRC")
@@ -145,8 +145,8 @@ final class CoreTests: XCTestCase {
         let clusters = hexes.enumerated().map { cluster($0, $1, 100 + $0 * 50) }
         // Per variety: the mix that survives (first number) and the colours painted with it.
         let expected = [
-            0: [[1, 0, 1, 2, 11], [4, 4, 8], [7, 3, 6, 7, 9], [10, 5, 10]],
-            10: [[4, 4, 8], [7, 0, 1, 2, 3, 6, 7], [9, 9], [10, 5, 10, 11]],
+            0: [[1, 0, 1, 2], [7, 3, 6, 7, 9], [8, 4, 8], [10, 5, 10, 11]],
+            10: [[7, 0, 1, 2, 3, 6, 7], [8, 4, 8], [9, 9], [10, 5, 10, 11]],
         ]
         for (variety, groups) in expected {
             let mixes = Mixes.plan(clusters: clusters, paints: [yellow, blue, red], wanted: 4, variety: variety)

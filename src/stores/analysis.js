@@ -65,7 +65,7 @@ let mixKey = null
 let sketchRunning = null // the picture a sketch is being worked out for
 let blockingRunning = null // the blocking being worked out (its key)
 let loadSerial = 0 // counts the pictures asked for, see loadFromSource
-const mixKeyOf = ({ saturation, contrast, simplify, colours, geometric, values }, plan = 0) => [saturation, contrast, simplify, colours, !!geometric, plan].join('/') + (values ? '/values' : '')
+const mixKeyOf = ({ saturation, contrast, simplify, colours, variety, geometric, values }, plan = 0) => [saturation, contrast, simplify, colours, variety, !!geometric, plan].join('/') + (values ? '/values' : '')
 
 // A small JPEG of the picture for the AI model: enough to judge colours, cheap to send, and
 // re-encoded from pixels, so it carries no metadata of the photo.
@@ -535,6 +535,9 @@ export const useAnalysisStore = defineStore('analysis', {
           maxWashes: values ? VALUE_STEPS : undefined,
           washStep: values ? VALUE_STEP : undefined,
           simplify: this.settings.simplify,
+          // Details weighs small colours and lightness in the analysis too, not only when mixes
+          // are joined: a grey picture has no hues to keep.
+          variety: values ? undefined : this.settings.variety,
           geometric: this.settings.geometric,
           anchors,
           focus,

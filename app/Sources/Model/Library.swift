@@ -283,6 +283,8 @@ final class Library {
     /// A colour of a series, as the colour chart or a box file has it: the paint already known with
     /// that series and number, or a new paint of one's own.
     private func paintID(vendor: String, number: String, name: String, nameDe: String = "", hex: String, form: String) -> String {
+        // A library under its own name, whatever language it was typed in.
+        let vendor = library(named: vendor)?.name ?? vendor
         let same = { (a: String, b: String) in a.trimmingCharacters(in: .whitespaces).caseInsensitiveCompare(b.trimmingCharacters(in: .whitespaces)) == .orderedSame }
         if let known = all.first(where: { same($0.vendor, vendor) && same($0.number, number) }) { return known.id }
         var paint = Paint(id: "custom-\(UUID().uuidString.prefix(8))", vendor: vendor.trimmingCharacters(in: .whitespaces), number: number.trimmingCharacters(in: .whitespaces), name: name.trimmingCharacters(in: .whitespaces), hex: hex, forms: [form], source: "custom", custom: true)
@@ -291,17 +293,25 @@ final class Library {
         return paint.id
     }
 
-    /// A colour of a library's chart into a box.
-    /// The search offers only colours with a value; one without is entered through the form.
-    func addChartColour(_ colour: ChartColour, of library: PaintLibrary, to boxID: String) {
-        guard let hex = colour.hex else { return }
-        addToBox(boxID, paint: paintID(vendor: library.name, number: colour.number, name: colour.name, nameDe: colour.names?["de"] ?? "", hex: hex, form: boxID == "tube" ? "tube" : "pan"))
+    /// A colour of a series into a box, as the dialog that adds colours lists it: the paint known
+    /// with that series and number, or a new paint of one's own in the form of the box.
+    /// A colour without a value is entered through the form, where its colour is set by hand.
+    func addColour(_ colour: SeriesColour, to boxID: String) {
+        if let id = colour.paintID {
+            addToBox(boxID, paint: id)
+        } else if let hex = colour.hex {
+            addToBox(boxID, paint: paintID(vendor: colour.vendor, number: colour.number, name: colour.chartName, nameDe: colour.nameDe, hex: hex, form: boxID == "tube" ? "tube" : "pan"))
+        }
     }
 
     /// A box as a JSON file to keep, as a backup or to take to the web app.
     func exportBox(_ id: String) -> Data? {
         guard let box = boxes.first(where: { $0.id == id }) else { return nil }
-        let colours = paints(in: box).map { PaintBoxFile.Colour(vendor: $0.vendor, number: $0.number, name: $0.name, hex: $0.hex, form: $0.comes(as: .tube) && !$0.comes(as: .pan) ? "tube" : "pan") }
+        let colours = paints(in: box).map { paint in
+            // One's own paints in the form given (pan, tube, liquid, other); the stock as pan or tube.
+            let form = paint.isCustom ? paint.ownForm.rawValue : paint.comes(as: .tube) && !paint.comes(as: .pan) ? "tube" : "pan"
+            return PaintBoxFile.Colour(vendor: paint.vendor, number: paint.number, name: paint.name, hex: paint.hex, form: form)
+        }
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         return try? encoder.encode(PaintBoxFile(name: box.displayName, paints: colours))
@@ -318,7 +328,7 @@ final class Library {
         guard let file = try? JSONDecoder().decode(PaintBoxFile.self, from: data), file.format == PaintBoxFile.format else { throw ImportError.notABox }
         var box = addBox(named: file.name)
         for colour in file.paints where !colour.vendor.isEmpty && !colour.name.isEmpty && colour.hex.range(of: "^#[0-9a-fA-F]{6}$", options: .regularExpression) != nil {
-            let id = paintID(vendor: colour.vendor, number: colour.number, name: colour.name, hex: colour.hex, form: colour.form == "tube" ? "tube" : "pan")
+            let id = paintID(vendor: colour.vendor, number: colour.number, name: colour.name, hex: colour.hex, form: PaintForm.own(colour.form).rawValue)
             if !box.paintIDs.contains(id) { box.paintIDs.append(id) }
         }
         if let index = boxes.firstIndex(where: { $0.id == box.id }) { boxes[index] = box }

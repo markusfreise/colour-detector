@@ -149,9 +149,15 @@ struct RootView: View {
         if let mode = arguments.firstIndex(of: "-view").flatMap({ arguments.dropFirst($0 + 1).first }).flatMap(ViewMode.init(rawValue:)) {
             session.settings.view = mode
         }
+        // "-grid white|grey|black" draws the grid; "-backdrop" puts the numbers on squares, "-large" makes them large.
+        if let grid = arguments.firstIndex(of: "-grid").flatMap({ arguments.dropFirst($0 + 1).first }).flatMap(GridColour.init(rawValue:)) {
+            session.settings.grid = grid
+        }
+        if arguments.contains("-backdrop") { session.settings.numbers = .backdrop }
+        if arguments.contains("-large") { session.settings.numberSize = .large }
         let screen = arguments.firstIndex(of: "-screen").flatMap { arguments.dropFirst($0 + 1).first } ?? ""
         switch screen {
-        case "paintbox": showingPaintBox = true
+        case "paintbox", "addcolour": showingPaintBox = true
         case "collection": showingCollection = true
         case "editor": if !session.layerMode { session.inspect(entry: 2) }
         case "breakdown":
@@ -164,13 +170,13 @@ struct RootView: View {
         case "preferences": openPreferences()
         default: break
         }
-        #if os(macOS)
         // "-pdf" writes the printed sheet into the temporary folder.
         if arguments.contains("-pdf") {
             let url = FileManager.default.temporaryDirectory.appendingPathComponent("sheet.pdf")
             try? PrintSheet.pdf(session: session, library: library).write(to: url)
             print("pdf", url.path)
         }
+        #if os(macOS)
         let snapshot = arguments.contains("-snapshot")
         if snapshot {
             try? await Task.sleep(for: .seconds(2))
@@ -325,13 +331,6 @@ struct RootView: View {
             IconButton(title: "Print", symbol: "printer", hint: "Print / PDF") { closeMenu(); PrintSheet.print(session: session, library: library) }
                 .disabled(!printable)
             shareMenu
-            // A phone: the template to print is here instead of among the views at the bottom.
-            if compact, !session.layerMode {
-                IconButton(title: "Template to print", symbol: ViewMode.template.symbol, active: session.settings.view == .template) {
-                    closeMenu()
-                    session.settings.view = session.settings.view == .template ? .mixed : .template
-                }
-            }
             // Language and light or dark, as the web's person button below the picture buttons.
             IconButton(title: "Preferences", symbol: "person.crop.circle") { closeMenu(); openPreferences() }
                 .padding(.top, Theme.gap)
@@ -474,12 +473,23 @@ struct RootView: View {
                 locked: { $0 == .blocking && !store.unlocked }
             )
             // Their labels for Help alternate in height with those of the views beside them.
-            IconButton(title: "Outlines", symbol: "squareshape.split.3x3", active: session.settings.outlines, hintRow: viewModes.count % 2) {
+            // The grid cycles through none, white, grey, black; its label is the state now.
+            IconButton(title: GridColour.title(session.settings.grid), symbol: "icon.grid", active: session.settings.grid != nil, hintRow: viewModes.count % 2) {
+                session.settings.grid = GridColour.next(after: session.settings.grid)
+            }
+            // The hash, as the web's outlines icon: the square cells are the grid's.
+            IconButton(title: "Outlines", symbol: "number", active: session.settings.outlines, hintRow: (viewModes.count + 1) % 2) {
                 session.settings.outlines.toggle()
             }
             .disabled(session.settings.view == .template)
-            IconButton(title: "Numbers", symbol: "textformat.123", active: session.settings.numbers, hintRow: (viewModes.count + 1) % 2) {
-                session.settings.numbers.toggle()
+            // Cycles through no numbers, numbers, numbers on a backdrop.
+            IconButton(
+                title: session.settings.numbers.title,
+                symbol: session.settings.numbers == .backdrop ? "123.rectangle.fill" : "textformat.123",
+                active: session.settings.numbers != .none,
+                hintRow: viewModes.count % 2
+            ) {
+                session.settings.numbers = session.settings.numbers.next
             }
         }
         .environment(\.hintSide, compact ? .above : .below)
@@ -491,9 +501,9 @@ struct RootView: View {
     /// the largest phones up), smaller only as far as a narrower phone needs.
     private var buttonSize: CGFloat {
         guard compact, windowWidth > 0 else { return Theme.iconButton }
-        // Detail, Settings, the views, Outlines, Numbers; four gaps, the borders of the group.
-        let buttons = CGFloat(viewModes.count + 4)
-        let room = windowWidth - Theme.gap * 2 - toolGap * 4 - CGFloat(viewModes.count + 1)
+        // Detail, Settings, the views, Grid, Outlines, Numbers; five gaps, the borders of the group.
+        let buttons = CGFloat(viewModes.count + 5)
+        let room = windowWidth - Theme.gap * 2 - toolGap * 5 - CGFloat(viewModes.count + 1)
         return min(Theme.iconButton, (room / buttons).rounded(.down))
     }
 
@@ -519,9 +529,9 @@ struct RootView: View {
 
     private var toolSize: CGFloat { buttonSize }
 
-    /// A phone has the template to print in the menu instead.
+    /// The Template view has no button, as on the web: the grid takes its place; its drawing stays.
     private var viewModes: [ViewMode] {
-        session.layerMode ? ViewMode.layerCases : ViewMode.allCases.filter { !compact || $0 != .template }
+        session.layerMode ? ViewMode.layerCases : ViewMode.allCases.filter { $0 != .template }
     }
 
     /// A frame drawn on the base picture becomes a close-up: that part, analysed on its own.

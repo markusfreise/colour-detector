@@ -37,8 +37,11 @@ struct Paint: Codable, Identifiable, Hashable, Sendable {
     var groupKeys: [String] {
         if comes(as: .travelbox) { return [PaintForm.travelbox.rawValue] }
         if vendor != Paint.houseVendor { return ["vendor:\(vendor.isEmpty ? "Other" : vendor)"] }
-        return PaintForm.own.filter(comes(as:)).map(\.rawValue)
+        return [PaintForm.pan, .tube].filter(comes(as:)).map(\.rawValue)
     }
+
+    /// The form a paint of one's own comes in, as the paint form offers it; anything else is a pan.
+    var ownForm: PaintForm { PaintForm.own(forms.first) }
 
     /// Short form label: "P" for pan, "T" for tube, "S" for the travel box, "P/T" when owned as both.
     var formLabel: String {
@@ -54,10 +57,13 @@ struct Paint: Codable, Identifiable, Hashable, Sendable {
 }
 
 enum PaintForm: String, CaseIterable, Identifiable, Sendable {
-    case pan, tube, travelbox
+    case pan, tube, travelbox, liquid, other
 
-    /// The forms a paint added by hand can have.
-    static let own: [PaintForm] = [.pan, .tube]
+    /// The forms a paint added by hand can have, as the web's OWN_FORMS.
+    static let own: [PaintForm] = [.pan, .tube, .liquid, .other]
+
+    /// The form a box file or a form names; anything else is a pan (the web's ownForm).
+    static func own(_ name: String?) -> PaintForm { own.first { $0.rawValue == name } ?? .pan }
 
     var id: String { rawValue }
     var title: String {
@@ -65,6 +71,8 @@ enum PaintForm: String, CaseIterable, Identifiable, Sendable {
         case .pan: L("%@ Pans", Paint.houseVendor)
         case .tube: L("%@ Tubes", Paint.houseVendor)
         case .travelbox: L("Travelbox")
+        case .liquid: L("Liquid")
+        case .other: L("Other")
         }
     }
     var singular: String {
@@ -72,6 +80,8 @@ enum PaintForm: String, CaseIterable, Identifiable, Sendable {
         case .pan: L("Pan")
         case .tube: L("Tube")
         case .travelbox: L("Travelbox")
+        case .liquid: L("Liquid")
+        case .other: L("Other")
         }
     }
     /// One letter, in the chosen language: P for pan (N for Näpfchen in German), T for tube.
@@ -80,6 +90,8 @@ enum PaintForm: String, CaseIterable, Identifiable, Sendable {
         case .pan: L("P (pan)")
         case .tube: L("T (tube)")
         case .travelbox: L("S (travel box)")
+        case .liquid: L("L (liquid)")
+        case .other: L("O (other)")
         }
     }
 }
@@ -110,7 +122,7 @@ extension Array where Element == Paint {
     func groupedByForm(shown: (Paint) -> Bool = { _ in true }) -> [PaintGroup] {
         let keyed = map { (paint: $0, keys: $0.groupKeys) }
         let vendors = Set(keyed.flatMap(\.keys).filter { $0.hasPrefix("vendor:") }).sorted { $0.localizedCompare($1) == .orderedAscending }
-        let groups = PaintForm.allCases.map { (key: $0.rawValue, title: $0.title) } + vendors.map { (key: $0, title: String($0.dropFirst("vendor:".count))) }
+        let groups = [PaintForm.pan, .tube, .travelbox].map { (key: $0.rawValue, title: $0.title) } + vendors.map { (key: $0, title: String($0.dropFirst("vendor:".count))) }
         return groups.compactMap { group in
             let own = keyed.filter { $0.keys.contains(group.key) }.map(\.paint)
             guard !own.isEmpty else { return nil }

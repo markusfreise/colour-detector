@@ -12,8 +12,9 @@
 //   reach: a small area of another hue, the darkest folds. It is fitted to what the washes leave
 //   over and painted last, in a few shapes a brush can do. Its paint may be one of the wash paints
 //   or a paint of its own (accent paints come on top of the number of paints asked for).
-// - The colour of an area is white paper filtered by every layer:
-//   reflectance = exp(-sum over layers of depth * A of the paint).
+// - The colour of an area is white paper filtered by every layer: the product over the layers of
+//   what each paint does alone on white paper, its swatch at the opacity of the paint in it
+//   (`paintFilter`, as a wash of a mix: water thins a paint like opacity).
 //   Different paints add up without a common limit, which is what a wet mix cannot do. The coats of
 //   ONE paint add up to the paint as its swatch shows it and no further (MAX_AMOUNT): three
 //   coats of a light yellow wash come closer to the yellow, they never get darker than it. An
@@ -38,7 +39,7 @@
 // Pure functions on typed arrays so it runs in a Web Worker and in tests.
 
 import { hexToRgb, rgbToLinear, srgbToLinear, linearToSrgb, rgbToHex } from './color.js'
-import { absorbanceFromHex, depthLimit, depth as depthOf, describeDilution, MAX_AMOUNT } from './mixing.js'
+import { absorbanceFromHex, depthLimit, depth as depthOf, describeDilution, paintFilter, MAX_AMOUNT } from './mixing.js'
 import { boxBlur, toOklabPixels, colourBins, majorityFilter, connectedComponents, mergeSmallRegions, labelAnchors } from './segment.js'
 import { geometricAreas, straighten, edgeTolerance } from './geometric.js'
 
@@ -187,10 +188,10 @@ export function washGuide(strength) {
 // `under` = amount of the same paint already on the paper (an accent over its own wash layer).
 function filterTable(A, limit, strength, ratio, top, under = 0) {
   const t = new Float64Array((top + 1) * 3)
-  const below = depth(under, limit)
+  const below = paintFilter(A, under)
   for (let c = 0; c <= top; c++) {
-    const d = depth(under + coatAmount(c, strength, ratio), limit) - below
-    t[c * 3] = Math.exp(-d * A[0]); t[c * 3 + 1] = Math.exp(-d * A[1]); t[c * 3 + 2] = Math.exp(-d * A[2])
+    const f = paintFilter(A, under + coatAmount(c, strength, ratio))
+    t[c * 3] = f[0] / below[0]; t[c * 3 + 1] = f[1] / below[1]; t[c * 3 + 2] = f[2] / below[2]
   }
   return t
 }
@@ -644,8 +645,8 @@ function accentGain(candidate, table, spots, role, apply = false) {
 
 // Whether one coat of this wash on white paper is dark enough for the accent for the darks.
 function darkCoat(candidate, strength) {
-  const d = depth(strength, candidate.limit)
-  writeLab(Math.exp(-d * candidate.A[0]), Math.exp(-d * candidate.A[1]), Math.exp(-d * candidate.A[2]), scratch, 0)
+  const [r, g, b] = paintFilter(candidate.A, strength)
+  writeLab(r, g, b, scratch, 0)
   return scratch[0] < DARK_COAT
 }
 

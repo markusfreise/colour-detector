@@ -52,10 +52,10 @@
 
     <p v-if="!paint.id" class="paint-form__note">
       {{ t('Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube.') }}
-      <template v-if="library && pro">{{ t('{library} numbers fill in name and colour.', { library: library.name }) }}</template>
+      <template v-if="library && pro">{{ t('{library} numbers fill in name and colour.', { library: t(library.name) }) }}</template>
     </p>
     <p v-if="found" class="paint-form__note">
-      {{ [`${library.name} ${found.number}`, ...chartDetails(found, t)].join(' · ') }}.
+      {{ [`${t(library.name)} ${found.number}`, ...chartDetails(found, t)].join(' · ') }}.
       <template v-if="!found.hex">{{ t('The chart gives no reliable colour for this paint: set it by hand.') }}</template>
     </p>
   </form>

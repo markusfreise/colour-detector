@@ -63,7 +63,7 @@ At the end of every paint box is an empty place with a **+**. Click it to open *
 
 ![Adding colours to a box](shot:paintbox-add)
 
-The lower half, **Library**, lists the colours you can add, one section per series: the paints of the stock and, with Pro, the colour charts of four makers:
+The lower half, **Library**, lists the colours you can add, one section per series. For everybody, the paints of the stock and **Common colours**: 40 colours that most makers have, under their usual name and pigment (C01 Lemon Yellow to C40 Neutral Tint), each as one maker's chart shows it. With Pro, also the colour charts of four makers:
 
 - **Schmincke Horadam**,
 - **Winsor & Newton Professional** (116 colours),

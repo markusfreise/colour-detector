@@ -282,10 +282,11 @@ final class Library {
 
     /// A colour of a series, as the colour chart or a box file has it: the paint already known with
     /// that series and number, or a new paint of one's own.
-    private func paintID(vendor: String, number: String, name: String, hex: String, form: String) -> String {
+    private func paintID(vendor: String, number: String, name: String, nameDe: String = "", hex: String, form: String) -> String {
         let same = { (a: String, b: String) in a.trimmingCharacters(in: .whitespaces).caseInsensitiveCompare(b.trimmingCharacters(in: .whitespaces)) == .orderedSame }
         if let known = all.first(where: { same($0.vendor, vendor) && same($0.number, number) }) { return known.id }
-        let paint = Paint(id: "custom-\(UUID().uuidString.prefix(8))", vendor: vendor.trimmingCharacters(in: .whitespaces), number: number.trimmingCharacters(in: .whitespaces), name: name.trimmingCharacters(in: .whitespaces), hex: hex, forms: [form], source: "custom", custom: true)
+        var paint = Paint(id: "custom-\(UUID().uuidString.prefix(8))", vendor: vendor.trimmingCharacters(in: .whitespaces), number: number.trimmingCharacters(in: .whitespaces), name: name.trimmingCharacters(in: .whitespaces), hex: hex, forms: [form], source: "custom", custom: true)
+        paint.nameDe = nameDe
         custom.append(paint)
         return paint.id
     }
@@ -294,7 +295,7 @@ final class Library {
     /// The search offers only colours with a value; one without is entered through the form.
     func addChartColour(_ colour: ChartColour, of library: PaintLibrary, to boxID: String) {
         guard let hex = colour.hex else { return }
-        addToBox(boxID, paint: paintID(vendor: library.name, number: colour.number, name: colour.name, hex: hex, form: boxID == "tube" ? "tube" : "pan"))
+        addToBox(boxID, paint: paintID(vendor: library.name, number: colour.number, name: colour.name, nameDe: colour.names?["de"] ?? "", hex: hex, form: boxID == "tube" ? "tube" : "pan"))
     }
 
     /// A box as a JSON file to keep, as a backup or to take to the web app.
@@ -329,6 +330,8 @@ final class Library {
 
     /// Adds a paint to the library, or updates the one with the same id. New paints go into the box `boxID`.
     func savePaint(_ paint: Paint, into boxID: String? = nil) {
+        var paint = paint
+        if let source = library(named: paint.vendor) { paint.vendor = source.name }
         if let index = custom.firstIndex(where: { $0.id == paint.id }) {
             custom[index] = paint
         } else {
@@ -349,7 +352,7 @@ final class Library {
     /// The library of a series, however it is capitalised or spaced; nil for a series of one's own.
     func library(named name: String) -> PaintLibrary? {
         let wanted = name.trimmingCharacters(in: .whitespaces).lowercased()
-        return libraries.first { $0.name.lowercased() == wanted }
+        return libraries.first { ([$0.name] + ($0.aliases ?? [])).contains { $0.lowercased() == wanted } }
     }
 
     /// The series on offer for a paint: the house series, the libraries and those in use, by name.

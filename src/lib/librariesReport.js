@@ -5,7 +5,8 @@ export function librariesReport(libraries) {
   const lines = [
     '# Paint libraries',
     '',
-    'The colour charts that come with the app (`src/data/libraries.js`), with Pro. Written by',
+    'The colour charts that come with the app (`src/data/libraries.js`): the common colours for everybody,',
+    'the makers\' charts with Pro. Written by',
     '`npm run libraries` from the data: do not edit by hand. How each chart was read is in the',
     'header of its catalogue file and, for the newer ones, in `tools/charts/`.',
     '',

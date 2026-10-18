@@ -148,13 +148,13 @@
       <!-- One's own paints, with what is done with them: edited here, put into boxes with the + of a box. -->
       <div v-if="paints.custom.length && !paints.starter" class="paintbox__group">
         <h3 class="paintbox__group-title">{{ t('Your own paints') }}</h3>
-        <PaintForm v-if="paintForm" v-model="paintForm" :series="series" :library="library" :pro="pro.can('brand_charts')" @submit="savePaint" @cancel="paintForm = null" />
+        <PaintForm v-if="paintForm" v-model="paintForm" :series="series" :library="library" :pro="libraryOpen(library, pro.can('brand_charts'))" @submit="savePaint" @cancel="paintForm = null" />
         <ul class="paintbox__own">
           <!-- One paint per row: the colour itself carries what is done with it. -->
           <li v-for="p in paints.custom" :key="p.id" class="chip chip--row paintbox__own-chip" :style="chipStyle(p.hex)">
             <span class="paintbox__own-lines">
               <span class="chip__text"><span class="chip__strong">{{ paintNumber(p.number) }}</span> {{ paintName(p) }}</span>
-              <span class="chip__text paintbox__own-vendor">{{ p.vendor }} · {{ t(formName(p)) }}</span>
+              <span class="chip__text paintbox__own-vendor">{{ t(p.vendor) }} · {{ t(formName(p)) }}</span>
             </span>
             <span class="paintbox__own-actions">
               <button class="paintbox__own-action" type="button" :title="t('Edit this paint')" @click="startPaint(p)">
@@ -186,7 +186,7 @@ import { useProStore } from '../stores/pro.js'
 import { STARTER_BOX_NAME } from '../data/starter.js'
 import { chipStyle } from '../lib/color.js'
 import { paintNumber, sortPaints, sortBoxPaints, seriesNames, ownForm, formName } from '../lib/paintbox.js'
-import { PAINT_LIBRARIES, libraryByName } from '../data/libraries.js'
+import { PAINT_LIBRARIES, libraryByName, libraryOpen } from '../data/libraries.js'
 import { isNative } from '../lib/native.js'
 import PaintChip from './PaintChip.vue'
 import PaintForm from './PaintForm.vue'

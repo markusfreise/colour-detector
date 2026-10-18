@@ -487,6 +487,7 @@ export default {
   'Add colour': 'Farbe hinzufügen',
   'Clear: empty the search and the filters': 'Leeren: Suche und Filter zurücksetzen',
   'Own colour': 'Eigene Farbe',
+  'Common colours': 'Gängige Farben',
   Library: 'Bibliothek',
   'Name, number …': 'Name, Nummer …',
   Hue: 'Farbton',

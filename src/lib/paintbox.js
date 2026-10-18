@@ -123,7 +123,7 @@ export function seriesColours(vendor, catalogue, paints, name = (p) => p.name, l
     listed.add(key)
     const shown = paint ? name(paint) : (colour.names?.[locale] ?? colour.name)
     const words = [vendor, colour.number, shown, colour.name, ...Object.values(colour.names ?? {}), ...(colour.pigments ?? []), paint?.nameDe ?? '']
-    colours.push({ key, vendor, number: colour.number, name: shown, chartName: colour.name, hex: paint?.hex ?? colour.hex, paintId: paint?.id ?? null, search: words.join(' ').toLowerCase() })
+    colours.push({ key, vendor, number: colour.number, name: shown, chartName: colour.name, nameDe: colour.names?.de ?? '', hex: paint?.hex ?? colour.hex, paintId: paint?.id ?? null, search: words.join(' ').toLowerCase() })
   }
   for (const [key, paint] of known) {
     if (listed.has(key)) continue

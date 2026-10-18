@@ -156,6 +156,13 @@ struct PaintLibrary: Codable, Identifiable {
     /// As it is written on the tube; also the vendor of the paints added from it.
     let name: String
     let catalogue: [ChartColour]
+    /// Other names the series is typed under (the German name of the common colours).
+    var aliases: [String]? = nil
+    /// For everybody: the common colours. The charts of the makers come with the full version.
+    var free: Bool? = nil
+
+    /// Whether its colours may be used: the common colours always, a maker's chart when unlocked.
+    func isOpen(unlocked: Bool) -> Bool { unlocked || free == true }
 
     func colour(number: String) -> ChartColour? {
         let wanted = number.trimmingCharacters(in: .whitespaces).lowercased()

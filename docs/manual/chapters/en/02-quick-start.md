@@ -79,7 +79,7 @@ Press **Save** to keep the picture with its settings, its palette and your chang
 
 ### 7. Print the plan
 
-**Print / PDF** gives the picture followed by every mix with its paints. Print it for the desk, or choose "Save as PDF" in the print dialog and keep it on a tablet. **Template to print** draws only the outlines and numbers in light blue: print it on watercolour paper and paint directly on the sheet. Details in [Printing](printing.html).
+**Print / PDF** gives the picture followed by every mix with its paints. Print it for the desk, or choose "Save as PDF" in the print dialog and keep it on a tablet. **Grid** lays square cells over the picture, to copy the drawing onto your paper cell by cell. Details in [Printing](printing.html).
 
 ## Part 2: Paint it
 

@@ -54,13 +54,13 @@ Was du auf dem Bild, in der Farbliste und in den Rezepten liest.
 | Mischung | Mix | Eine Pfütze Farbe auf der Palette, mit einer Nummer. Sie kann in mehreren Lasuren gemalt werden. |
 | Organisch | Organic | Flächen, die den Umrissen des Fotos folgen. |
 | Palette | Palette | Die Farben, aus denen ein Bild gemischt wird. Sie wird mit dem Bild gesichert. |
+| Raster | Grid | Quadratische Felder über dem Bild, um es Feld für Feld auf Papier zu übertragen. |
 | Rezept | Recipe | Welche Farben, in wie vielen Teilen, mit wie viel Wasser, für eine Farbe. |
 | Schicht | Layer | Schichten: die Lasur einer Grundfarbe, über die trockenen Schichten davor gemalt. |
 | Schichten | Layer mode | Die Methode, ein paar Lasuren übereinander zu legen, statt jede Farbe zu mischen. |
 | Tonwerte | Values | Das Bild in Grau analysiert; jeder Tonwert wird mit einer Farbe der Palette gemalt. |
 | Treffer | Match quality | Wie nah ein Rezept seinem Ziel kommt: sehr gut (unter 2), gut (unter 5), mäßig (unter 10), grob (ab 10). Englisch: excellent, good, fair, rough. |
 | Überlagerung | Overlay | Die Ansicht des Fotos in halber Stärke über der Farbe. |
-| Vorlage zum Drucken | Template to print | Nur Umrisse und Nummern, in Hellblau, zum Ausdrucken und Darauf-Malen. |
 | Ziel | Target | Die Farbe, die das Foto an einer Stelle verlangt. |
 
 ## Malbegriffe

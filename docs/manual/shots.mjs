@@ -125,7 +125,7 @@ export const shots = [
   { id: 'view-target', settings: { view: 'target' } },
   { id: 'view-overlay', settings: { view: 'overlay' } },
   { id: 'view-photo', settings: { view: 'original' } },
-  { id: 'view-template', settings: { view: 'template' } },
+  { id: 'view-grid', settings: { grid: 'white', gridColumns: 8 } },
   { id: 'view-plain', settings: { outlines: false, numbers: false } },
   { id: 'view-backdrop', settings: { numbers: 'backdrop', numberSize: 'large' } },
   {
@@ -139,7 +139,8 @@ export const shots = [
       { locate: (p, t) => hint(p, t, 'Photo colour'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Overlay'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Photo'), at: 't' },
-      { locate: (p, t) => hint(p, t, 'Template to print'), at: 't' },
+      { locate: (p, t) => hint(p, t, 'Blocking'), at: 't' },
+      { locate: (p, t) => hint(p, t, 'No grid'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Outlines'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Numbers'), at: 't' },
     ],

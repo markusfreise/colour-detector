@@ -70,7 +70,7 @@ This exercise does more for your painting than any colour exercise.
 1. Open **Llyn Idwal**, press **Monochrome** in the settings and set **Colours** to its lowest, 2.
 2. Open the **Paint box** and put a single dark, transparent paint in the palette, for example a neutral tint, a sepia or an indigo.
 3. Set **Simplify areas** high enough that you count no more than about thirty areas.
-4. Print the sheet or the **Template to print**, transfer the outlines and paint the study with the washes the app gives you, from the lightest to the darkest.
+4. Print the sheet, transfer the outlines and paint the study with the washes the app gives you, from the lightest to the darkest.
 5. When it is dry, put it next to a grey print of the photo and squint at both.
 
 ![Llyn Idwal in Monochrome with one paint: the picture in grey, each value painted with a single colour of the palette](shot:values)

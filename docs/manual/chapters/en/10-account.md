@@ -34,7 +34,7 @@ The free version analyses your photos and gives you every recipe, mixed from the
 | Analyse photos, mix and layer mode, colour list, recipes | yes | yes | yes |
 | Paints to mix from | the Starter box | your own paints, in the boxes you have | your own paints, in as many boxes as you like |
 | Blocking, close-ups, Simplify below 0 | | yes | yes |
-| Save, Print / PDF, the template, Export as JPG | | yes | yes |
+| Save, Print / PDF, Export as JPG | | yes | yes |
 | More paint boxes, brand colour charts, importing a paint box | | | yes |
 | Monochrome | | | yes |
 

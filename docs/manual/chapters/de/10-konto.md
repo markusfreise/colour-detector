@@ -34,7 +34,7 @@ Die kostenlose Version analysiert deine Fotos und gibt dir jedes Rezept, gemisch
 | Fotos analysieren, Mischen und Schichten, Farbliste, Rezepte | ja | ja | ja |
 | Farben zum Mischen | der Einsteigerkasten | deine eigenen Farben, in deinen Farbkästen | deine eigenen Farben, in beliebig vielen Farbkästen |
 | Blocking, Ausschnitte, Flächen vereinfachen unter 0 | | ja | ja |
-| Sichern, Drucken / PDF, die Vorlage, Als JPG exportieren | | ja | ja |
+| Sichern, Drucken / PDF, Als JPG exportieren | | ja | ja |
 | Weitere Farbkästen, Farbkarten der Hersteller, Farbkasten importieren | | | ja |
 | Monochrom | | | ja |
 

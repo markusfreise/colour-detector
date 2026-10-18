@@ -89,9 +89,10 @@ The tools of the picture sit above it.
 4. **Photo colour**: every area in the colour of the photo. Compare it with **Mixed paint** to see where your paints fall short.
 5. **Overlay**: the photo at half strength over the paint, to see which area is which part of the photo.
 6. **Photo**: the original, with saturation and contrast applied.
-7. **Template to print**: no fill, only outlines and numbers in light blue. See [Printing](printing.html).
-8. **Outlines** on or off.
-9. **Numbers**: each click steps on from numbers to numbers on a backdrop to no numbers. On a backdrop every number sits on a small square, white with a dark number on dark areas and dark with a white number on light ones, so it stays readable on any colour.
+7. **Blocking**: light and shadow in large masses. See [Values](values.html#blocking-light-and-shadow-first).
+8. **Grid**: square cells over the picture, in white, grey or black. See [Printing](printing.html#the-grid).
+9. **Outlines** on or off.
+10. **Numbers**: each click steps on from numbers to numbers on a backdrop to no numbers. On a backdrop every number sits on a small square, white with a dark number on dark areas and dark with a white number on light ones, so it stays readable on any colour.
 
 ![Photo colour: what the photo asks for](shot:view-target)
 

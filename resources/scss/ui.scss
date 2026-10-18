@@ -312,6 +312,11 @@
     transform: translate(#{pxtorem(8)}, -50%);
 }
 
+// The settings button says its name itself.
+.painting__settings[data-hint]::after {
+    display: none;
+}
+
 // The buttons of the tools are not positioned, so the label sits under the whole row.
 .painting__tools [data-hint]::after {
     left: 50%;

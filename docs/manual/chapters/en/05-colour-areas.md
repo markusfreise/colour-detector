@@ -79,11 +79,11 @@ Double-click a slider to set it back to 100%.
 
 ## The views
 
-The tools of the picture sit above it.
+The tools of the picture sit above it, with **Settings** on their left. On a phone the tools are at the bottom and **Settings** at the top.
 
 ![The tools of the picture](shot:picture-tools)
 
-1. **Fit** fits the picture to the window.
+1. **Settings** opens and closes the card with the settings.
 2. **Detail** lets you look at a part of the picture on its own (see [Pictures](pictures.html#looking-closer-details-of-the-picture)).
 3. **Mixed paint**: every area in the colour your paints actually reach. This is the view to paint from.
 4. **Photo colour**: every area in the colour of the photo. Compare it with **Mixed paint** to see where your paints fall short.
@@ -92,6 +92,8 @@ The tools of the picture sit above it.
 7. **Grid**: square cells over the picture, in white, grey or black. See [Printing](printing.html#the-grid).
 8. **Outlines** on or off.
 9. **Numbers**: each click steps on from numbers to numbers on a backdrop to no numbers. On a backdrop every number sits on a small square, white with a dark number on dark areas and dark with a white number on light ones, so it stays readable on any colour.
+
+Once you zoom into the picture, **Fit** appears at the start of the tools; it fits the picture to the window again.
 
 ![Photo colour: what the photo asks for](shot:view-target)
 

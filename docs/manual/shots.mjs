@@ -43,7 +43,7 @@ export const shots = [
     id: 'overview',
     markers: [
       { locate: (p, t) => hint(p, t, 'New picture'), at: 'r' },
-      { locate: (p, t) => hint(p, t, 'Fit'), at: 'b' },
+      { locate: (p, t) => hint(p, t, 'Detail'), at: 'b' },
       { locate: (p, t) => hint(p, t, 'Mixed paint'), at: 'b' },
       { locate: (p, t) => hint(p, t, 'Colours'), at: 'l' },
       { locate: (p, t) => hint(p, t, 'Settings'), at: 'l' },
@@ -129,10 +129,10 @@ export const shots = [
   { id: 'view-backdrop', settings: { numbers: 'backdrop', numberSize: 'large' } },
   {
     id: 'picture-tools',
-    target: (page) => page.locator('.painting__tools').first(),
+    target: (page) => page.locator('.painting__bar').first(),
     padding: 12,
     markers: [
-      { locate: (p, t) => hint(p, t, 'Fit'), at: 't' },
+      { locate: (p, t) => hint(p, t, 'Settings'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Detail'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Mixed paint'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Photo colour'), at: 't' },

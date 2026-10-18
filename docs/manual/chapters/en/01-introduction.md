@@ -17,7 +17,7 @@ Watercolourlove answers both. It reduces the photo to a manageable number of mix
 ![The app at a glance, with the sample photo Llyn Idwal](shot:overview)
 
 1. **New picture** and the other buttons for the picture: samples, saving, the collection, printing, exporting.
-2. The tools of the picture: fit it to the window, look at a detail.
+2. The tools of the picture: look at a detail, and fit it to the window again once you have zoomed in.
 3. The views: mixed paint, the colours of the photo, the photo itself.
 4. **Colours**: every mix with its paints and its washes.
 5. **Settings**: how many mixes, how simple the areas, the method.

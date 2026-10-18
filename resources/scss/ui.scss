@@ -248,6 +248,10 @@
         &:hover {
             color: var(--c-copy);
         }
+        // Switched on (help, hints): black like every active button, so its white icon shows.
+        &.button--active {
+            background: var(--c-active);
+        }
     }
     &:has(svg) {
         &:not(.button--active) {
@@ -305,8 +309,7 @@
     transform: translate(#{pxtorem(-8)}, -50%);
 }
 
-.app__sidebar .toolbar [data-hint]::after,
-.app__help::after {
+.app__sidebar .toolbar [data-hint]::after {
     right: calc(100% + var(--gap-05x));
     top: 50%;
     transform: translate(#{pxtorem(8)}, -50%);
@@ -330,8 +333,7 @@
     }
 
     .app__left [data-hint]:hover::after,
-    .app__sidebar .toolbar [data-hint]:hover::after,
-    .app__help:hover::after {
+    .app__sidebar .toolbar [data-hint]:hover::after {
         transform: translate(0, -50%);
     }
 }
@@ -344,8 +346,7 @@
     }
 
     .app__left [data-hint]::after,
-    .app__sidebar .toolbar [data-hint]::after,
-    .app__help::after {
+    .app__sidebar .toolbar [data-hint]::after {
         transform: translate(0, -50%);
     }
 

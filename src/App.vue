@@ -113,6 +113,7 @@ import { isNative } from './lib/native.js'
 import { useProStore } from './stores/pro.js'
 import { useCollectionStore } from './stores/collection.js'
 import { usePaintsStore } from './stores/paints.js'
+import { useLayoutStore } from './stores/layout.js'
 import { useText } from './i18n/index.js'
 
 const { t, legalPage } = useText()
@@ -163,6 +164,16 @@ watch(
     analysis.autoPaints()
     analysis.recomputeAllRecipes()
   },
+)
+// The first picture ever, once it is analysed: the settings open by themselves, once, so that
+// they are found. Not for the showcase behind signing in.
+const layout = useLayoutStore()
+watch(
+  () => !!analysis.image && !analysis.busy && !paints.showcase,
+  (ready) => {
+    if (ready) layout.showSettingsOnce()
+  },
+  { immediate: true },
 )
 onMounted(() => {
   consent.init()

@@ -17,7 +17,7 @@ Watercolourlove beantwortet beide. Die App bringt das Foto auf eine überschauba
 ![Die App auf einen Blick, mit dem Beispielfoto Llyn Idwal](shot:overview)
 
 1. **Neues Bild** und die anderen Knöpfe rund ums Bild: Beispiele, Sichern, Sammlung, Drucken, Exportieren.
-2. Die Werkzeuge des Bildes: ans Fenster anpassen, einen Ausschnitt ansehen.
+2. Die Werkzeuge des Bildes: einen Ausschnitt ansehen und, wenn du hineingezoomt hast, wieder ans Fenster anpassen.
 3. Die Ansichten: gemischte Farbe, die Farben des Fotos, das Foto selbst.
 4. **Farben**: jede Mischung mit ihren Farben und Lasuren.
 5. **Einstellungen**: wie viele Mischungen, wie einfach die Flächen, welche Methode.

@@ -40,9 +40,23 @@
     <div v-if="spinning && !backdrop" class="painting__spinner"><BusySpinner /></div>
     <!-- The spot whose colour is being looked at, blinking under the card. -->
     <span v-if="spot && !backdrop" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
-    <div v-if="!backdrop" class="painting__tools toolbar">
+    <!-- The settings, on their own and named, beside the tools; on a phone at the top. -->
+    <div v-if="!backdrop" class="painting__bar">
+    <button
+      class="button painting__settings"
+      :class="{ 'button--active': !layout.collapsed.controls }"
+      type="button"
+      :aria-expanded="!layout.collapsed.controls"
+      :data-hint="t('Settings')"
+      @click="layout.toggle('controls')"
+    >
+      <AppIcon name="settings" />
+      <span>{{ t('Settings') }}</span>
+    </button>
+    <div class="painting__tools toolbar">
       <GetPro class="painting__pro" @open="pro.require(null, 'use everything')" />
-      <button class="button button--ghost painting__tool" type="button" :data-hint="t('Fit')" @click="fit">
+      <!-- Only while the picture is zoomed in: it fits it to the window again. -->
+      <button v-if="zoomed" class="button button--ghost painting__tool" type="button" :data-hint="t('Fit')" @click="fit">
         <AppIcon name="zoom" :label="t('Fit the picture to the window')" />
       </button>
       <!-- A frame drawn on the base picture becomes a close-up: that part, analysed on its own. -->
@@ -56,17 +70,6 @@
         @click="framing = !framing"
       >
         <AppIcon name="frame" :label="framing ? t('Cancel choosing a part of the picture') : t('Zoom in on a part of the picture')" />
-      </button>
-      <!-- The settings, beside the views they belong to; their card floats at the top right. -->
-      <button
-        class="button painting__tool"
-        :class="{ 'button--active': !layout.collapsed.controls }"
-        type="button"
-        :aria-expanded="!layout.collapsed.controls"
-        :data-hint="t('Settings')"
-        @click="layout.toggle('controls')"
-      >
-        <AppIcon name="settings" :label="t(layout.collapsed.controls ? 'Show {what}' : 'Hide {what}', { what: t('the settings') })" />
       </button>
       <ViewSwitch />
       <!-- What is drawn over the picture. The grid cycles through none, white, grey, black. -->
@@ -101,6 +104,7 @@
       </button>
       <p v-if="analysis.busy" class="painting__status">{{ analysis.layerMode ? t('Planning layers…') : t('Analysing…') }}</p>
       <p v-else-if="framing && !frame" class="painting__status">{{ t('Drag a frame over the part to zoom in on') }}</p>
+    </div>
     </div>
     <!-- Without a paint the picture would be blank paper. One is enough: it is painted in washes. -->
     <p v-if="noPaints && !backdrop" class="painting__notice">{{ t('Put at least one colour in paintbox') }}</p>
@@ -642,6 +646,9 @@ const moving = ref(false)
 let fitted = true
 const MOST = 8 // screen pixels per canvas pixel at most
 const DRAG = 4 // a pointer that moved less than this was a click
+
+// Zoomed in beyond fitting the window: only then is the button to fit it again shown.
+const zoomed = computed(() => !!size.width && view.k > fitScale() * 1.001)
 
 const canvasStyle = computed(() => ({ transform: `translate(${view.x}px, ${view.y}px) scale(${view.k})` }))
 

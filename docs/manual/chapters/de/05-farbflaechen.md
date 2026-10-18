@@ -79,11 +79,11 @@ Ein Doppelklick auf einen Regler setzt ihn auf 100 % zurück.
 
 ## Die Ansichten
 
-Die Werkzeuge des Bildes sitzen über ihm.
+Die Werkzeuge des Bildes sitzen über ihm, links daneben **Einstellungen**. Auf dem Telefon liegen die Werkzeuge unten und **Einstellungen** oben.
 
 ![Die Werkzeuge des Bildes](shot:picture-tools)
 
-1. **Anpassen** passt das Bild ins Fenster.
+1. **Einstellungen** öffnet und schließt die Karte mit den Einstellungen.
 2. **Ausschnitt** zeigt einen Teil des Bildes für sich (siehe [Bilder](bilder.html#genauer-hinsehen-ausschnitte-des-bildes)).
 3. **Gemischte Farbe**: jede Fläche in dem Ton, den deine Farben tatsächlich erreichen. Nach dieser Ansicht malst du.
 4. **Fotofarbe**: jede Fläche in der Farbe des Fotos. Vergleich sie mit **Gemischte Farbe**, um zu sehen, wo deine Farben nicht hinkommen.
@@ -92,6 +92,8 @@ Die Werkzeuge des Bildes sitzen über ihm.
 7. **Raster**: quadratische Felder über dem Bild, in Weiß, Grau oder Schwarz. Siehe [Drucken](drucken.html#das-raster).
 8. **Umrisse** ein oder aus.
 9. **Nummern**: jeder Klick schaltet weiter, von Nummern zu Nummern auf Hintergrund zu keinen Nummern. Auf Hintergrund steht jede Nummer auf einem kleinen Quadrat, weiß mit dunkler Nummer auf dunklen Flächen und dunkel mit weißer Nummer auf hellen, so bleibt sie auf jeder Farbe lesbar.
+
+Sobald du in das Bild hineinzoomst, erscheint vorn bei den Werkzeugen **Anpassen**; es passt das Bild wieder ins Fenster.
 
 ![Fotofarbe: was das Foto verlangt](shot:view-target)
 

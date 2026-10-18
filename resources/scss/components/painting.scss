@@ -135,19 +135,14 @@
         cursor: default;
     }
 
-    // As tall as the toolbar beside it, with its name: easy to find. Wider than the square icon
-    // buttons (ui.scss), so their size is undone here.
+    // The settings in a toolbar of their own, a button as tall as the tools, with its name.
+    // Wider than the square icon buttons (ui.scss), so their size is undone here.
     &__settings.button {
         width: auto;
+        height: var(--tool);
         aspect-ratio: auto;
-        display: inline-flex;
-        align-items: center;
         gap: var(--gap-05x);
-        height: calc(var(--tool) + var(--tool-gap) + #{pxtorem(2)});
-        padding: 0 var(--gap) 0 var(--gap-05x);
-        border: 0;
-        border-radius: var(--radius-medium);
-        box-shadow: var(--shadow);
+        padding: 0 var(--gap-075x, calc(var(--gap) * 0.75)) 0 var(--gap-05x);
         font-weight: 600;
         white-space: nowrap;
 
@@ -199,7 +194,7 @@
             display: contents;
         }
 
-        &__settings {
+        &__settings-bar {
             position: absolute;
             z-index: 2;
             top: max(var(--gap), env(safe-area-inset-top));

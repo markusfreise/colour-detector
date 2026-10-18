@@ -42,6 +42,7 @@
     <span v-if="spot && !backdrop" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
     <!-- The settings, on their own and named, beside the tools; on a phone at the top. -->
     <div v-if="!backdrop" class="painting__bar">
+    <div class="painting__settings-bar toolbar">
     <button
       class="button painting__settings"
       :class="{ 'button--active': !layout.collapsed.controls }"
@@ -53,6 +54,7 @@
       <AppIcon name="settings" />
       <span>{{ t('Settings') }}</span>
     </button>
+    </div>
     <div class="painting__tools toolbar">
       <GetPro class="painting__pro" @open="pro.require(null, 'use everything')" />
       <!-- Only while the picture is zoomed in: it fits it to the window again. -->

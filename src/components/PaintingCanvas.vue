@@ -37,6 +37,7 @@
       </span>
     </label>
     <div v-if="frame" class="painting__frame" :style="frameStyle"></div>
+    <div v-if="spinning && !backdrop" class="painting__spinner"><BusySpinner /></div>
     <!-- The spot whose colour is being looked at, blinking under the card. -->
     <span v-if="spot && !backdrop" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
     <div v-if="!backdrop" class="painting__tools toolbar">
@@ -122,6 +123,7 @@ import RecipeTip from './RecipeTip.vue'
 import AppIcon from './AppIcon.vue'
 import GetPro from './GetPro.vue'
 import ViewSwitch from './ViewSwitch.vue'
+import BusySpinner from './BusySpinner.vue'
 import { closeupRect } from '../lib/closeup.js'
 import { APP_NAME } from '../config.js'
 import { useText } from '../i18n/index.js'
@@ -170,6 +172,26 @@ const gridStep = computed(() => {
   const i = Math.max(0, GRID_STEPS.findIndex((s) => s.value === analysis.settings.grid))
   return { ...GRID_STEPS[i], next: GRID_STEPS[(i + 1) % GRID_STEPS.length].value }
 })
+// The spinner shows while the picture is worked out, and at least SPIN_MIN ms: a quick analysis
+// would only flash it.
+const SPIN_MIN = 2400
+const spinning = ref(false)
+let spinStart = 0
+let spinTimer = null
+watch(
+  () => analysis.busy,
+  (busy) => {
+    clearTimeout(spinTimer)
+    if (busy) {
+      if (!spinning.value) spinStart = Date.now()
+      spinning.value = true
+    } else if (spinning.value) {
+      spinTimer = setTimeout(() => (spinning.value = false), Math.max(0, SPIN_MIN - (Date.now() - spinStart)))
+    }
+  },
+  { immediate: true },
+)
+onBeforeUnmount(() => clearTimeout(spinTimer))
 // The paint box in use holds no paint: none to paint with, or in layer mode none to glaze with.
 const noPaints = computed(() => !!analysis.image && (analysis.layerMode ? !analysis.busy && !analysis.layers : paints.enabled.length === 0))
 const canvas = ref(null)

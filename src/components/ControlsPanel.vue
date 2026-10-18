@@ -203,6 +203,11 @@
               </button>
             </div>
           </div>
+          <!-- The grid over the picture: how many square cells across. -->
+          <label class="field controls__grid">
+            <span class="field__label">{{ t('Grid columns') }} <output class="field__value">{{ analysis.settings.gridColumns }}</output></span>
+            <input v-model.number="analysis.settings.gridColumns" class="field__range" type="range" min="2" max="30" step="1" />
+          </label>
     </div>
   </section>
 </template>

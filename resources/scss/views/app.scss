@@ -184,11 +184,3 @@
     }
 }
 
-// The template to print in the menu: only on a phone, where it leaves the tools at the bottom.
-.app__left .app__template {
-    display: none;
-
-    @media (max-width: 760px) {
-        display: flex;
-    }
-}

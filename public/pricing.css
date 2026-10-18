@@ -9,6 +9,7 @@
 .pricing__card { display: flex; flex-direction: column; padding: 1.25rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
 .pricing__card--pro { border-color: var(--accent); box-shadow: 0 0.5rem 1.875rem rgba(0, 0, 0, 0.12); }
 .pricing__name { margin: 0 0 0.5rem; font-size: 1.375rem; }
+.pricing .pricing__intro { margin: 0 0 1rem; }
 .pricing .pricing__prices { margin: 0 0 1rem; padding: 0; list-style: none; }
 .pricing__prices li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.35rem 0; border-bottom: 1px solid var(--line); }
 .pricing__amount { font-weight: 700; white-space: nowrap; }

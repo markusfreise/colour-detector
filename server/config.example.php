@@ -16,6 +16,12 @@ return [
     // against a local API, set 'open' to true: then anyone may use them, and nothing is locked.
     // Never on the public host.
     // 'open' => true,
+    // Hosts the app may call the mixing service from ("*.example.org": every host below it); default
+    // watercolourlove.de, *.watercolourlove.de and *.croeso.de. Add the public host while the app
+    // is served from another one, e.g. 'watercolourlove.markus-freise.de'.
+    // 'mix_origins' => ['watercolourlove.de', '*.watercolourlove.de', '*.croeso.de'],
+    // Keys for local builds, which have no such host: VITE_MIX_KEY in their .env.local. Long random strings.
+    // 'mix_keys' => ['CHANGE-ME-long-random-string'],
     // Where answers of the mixing service are kept for a week (colours and paints, no picture);
     // default: a folder in the system's temporary directory.
     // 'mix_cache' => '/home/www/pXXXXXX/colour-detector-mix-cache',

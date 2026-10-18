@@ -16,6 +16,45 @@ const MIX_LIMITS = ['paints' => 400, 'clusters' => 1200, 'targets' => 1200, 'job
 // opened again) is answered at once.
 const MIX_CACHE_DAYS = 7;
 
+// Where the app may call the service from, when config.php names no other: its hosts and the
+// development instances. A pattern "*.example.org" takes every host below example.org.
+const MIX_ORIGINS = ['watercolourlove.de', '*.watercolourlove.de', '*.croeso.de'];
+
+/** Whether a host matches one of the patterns. */
+function mixHostAllowed(string $host, array $patterns): bool
+{
+    $host = strtolower($host);
+    foreach ($patterns as $pattern) {
+        $pattern = strtolower((string) $pattern);
+        if (str_starts_with($pattern, '*.') ? str_ends_with($host, substr($pattern, 1)) : $host === $pattern) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Only the app may ask the service: a request from a page on one of the hosts of `mix_origins`
+ * (Origin, or Referer where a browser sends no Origin), or one with a key of `mix_keys`, which a
+ * local build sends (VITE_MIX_KEY). This keeps other sites from using the service through their
+ * visitors' browsers; a script outside a browser can claim any origin, so it comes on top of the
+ * signed-in account, not instead of it.
+ */
+function requireMixClient(): void
+{
+    $key = (string) ($_SERVER['HTTP_X_MIX_KEY'] ?? '');
+    foreach ((array) (config('mix_keys') ?? []) as $allowed) {
+        if ($key !== '' && is_string($allowed) && $allowed !== '' && hash_equals($allowed, $key)) {
+            return;
+        }
+    }
+    $from = (string) ($_SERVER['HTTP_ORIGIN'] ?? '') ?: (string) ($_SERVER['HTTP_REFERER'] ?? '');
+    $host = (string) (parse_url($from, PHP_URL_HOST) ?? '');
+    if ($host === '' || !mixHostAllowed($host, (array) (config('mix_origins') ?? MIX_ORIGINS))) {
+        fail(403, 'The mixing service answers only the Watercolourlove app.');
+    }
+}
+
 /** Whether the account may use a studio feature; everyone may on an open instance. */
 function mixMayUse(?array $user, string $feature): bool
 {
@@ -29,6 +68,7 @@ function handleMix(string $name): never
     if (!isset($routes[$name])) {
         fail(404, 'Not found.');
     }
+    requireMixClient();
     $user = appUser();
     $request = body($user === null);
     checkMixRequest($request);
@@ -117,6 +157,7 @@ function sendJsonText(string $json): never
 function handleCharts(): never
 {
     method('GET');
+    requireMixClient();
     if (!mixMayUse(appUser(), 'brand_charts')) {
         fail(403, 'Colour charts come with Pro.');
     }

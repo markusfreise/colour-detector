@@ -10,13 +10,17 @@ export class MixError extends Error {
   }
 }
 
+// A local build has no host the service knows: it shows a key instead (mix_keys in config.php).
+// Set only in .env.local of a checkout, never for a build that goes on a server.
+export const MIX_KEY_HEADERS = import.meta.env?.VITE_MIX_KEY ? { 'X-Mix-Key': import.meta.env.VITE_MIX_KEY } : {}
+
 // Requests larger than this go compressed, where the browser can do it.
 const COMPRESS_FROM = 16384
 
 /** One request to the service at `url` (absolute, or relative to the page). */
 export async function postMix(url, body) {
   const json = JSON.stringify(body)
-  const headers = { 'Content-Type': 'application/json' }
+  const headers = { 'Content-Type': 'application/json', ...MIX_KEY_HEADERS }
   let payload = json
   if (json.length > COMPRESS_FROM && typeof CompressionStream === 'function') {
     payload = await new Response(new Blob([json]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()

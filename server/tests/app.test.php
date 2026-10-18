@@ -10,6 +10,8 @@ require_once dirname(__DIR__) . '/mix/api.php';
 function play(string $method, ?array $user, array $body = []): void
 {
     $_SERVER['REQUEST_METHOD'] = $method;
+    $_SERVER['HTTP_ORIGIN'] = 'https://watercolourlove.croeso.de';
+    unset($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_X_MIX_KEY']);
     $GLOBALS['testBody'] = $body;
     unset($_COOKIE[SESSION_COOKIE]);
     if ($user !== null) {
@@ -34,6 +36,35 @@ function appFile(): string
 }
 
 const MIX_REQUEST = ['paints' => [['id' => 'y', 'hex' => '#fae409'], ['id' => 'c', 'hex' => '#1392cf']], 'jobs' => [['hex' => '#5a9a40', 'maxPaints' => 2, 'limit' => 1]]];
+
+test('app: the mixing service answers only the app: its hosts, or a local build with its key', function () {
+    $user = agreed('origin@example.org');
+    $from = function (?string $origin, ?string $referer = null, ?string $key = null) use ($user): int {
+        play('POST', $user, MIX_REQUEST);
+        unset($_SERVER['HTTP_ORIGIN']);
+        if ($origin !== null) $_SERVER['HTTP_ORIGIN'] = $origin;
+        if ($referer !== null) $_SERVER['HTTP_REFERER'] = $referer;
+        if ($key !== null) $_SERVER['HTTP_X_MIX_KEY'] = $key;
+        return answerOf(fn () => handleMix('recipes'))[0];
+    };
+    same(200, $from('https://watercolourlove.croeso.de'));
+    same(200, $from('https://app.watercolourlove.de'));
+    same(200, $from('https://watercolourlove.de'));
+    same(200, $from(null, 'https://watercolourlove.croeso.de/some/page'));
+    same(403, $from('https://evil.example.org'));
+    same(403, $from('https://croeso.de.evil.example.org'));
+    same(403, $from('https://notcroeso.de'));
+    same(403, $from(null));
+    same(403, $from('http://localhost:5173'));
+    $GLOBALS['accountConfig']['mix_keys'] = ['local-secret-key'];
+    same(200, $from('http://localhost:5173', null, 'local-secret-key'));
+    same(403, $from('http://localhost:5173', null, 'wrong-key'));
+    unset($GLOBALS['accountConfig']['mix_keys']);
+    $GLOBALS['accountConfig']['mix_origins'] = ['watercolourlove.markus-freise.de'];
+    same(200, $from('https://watercolourlove.markus-freise.de'));
+    same(403, $from('https://watercolourlove.croeso.de'));
+    unset($GLOBALS['accountConfig']['mix_origins']);
+});
 
 test('app: signed out, neither the app nor the mixing service answers', function () {
     play('GET', null);

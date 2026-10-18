@@ -35,6 +35,8 @@ The mixing model, the recipes, the mixes and the planning of layers run here (`m
 | `GET charts` | The colour charts (`mix/charts.json`, made from `src/data/` by `npm run charts`), with Pro |
 | `GET app/<file>.js` | The app itself and its worker. The build writes them to `dist/api/app/`; the deploy copies them to `bundle/` next to `index.php`, which `.htaccess` never serves as files. In a checkout (the dev instance) they are read from `../dist/api/app/`; `'bundle'` in `config.php` names another folder |
 
+**Only the app may ask.** On top of the signed-in account, the mixing service and the charts answer only a page on one of the hosts in `mix_origins` (Origin header, or Referer where a browser sends none; default `watercolourlove.de`, `*.watercolourlove.de`, `*.croeso.de`), or a request with a key from `mix_keys` in the header `X-Mix-Key`. A local build sends that key: `VITE_MIX_KEY` in its `.env.local`, never in a build that goes on a server, as the key is then in the app's code. While the app is served from another host (`watercolourlove.markus-freise.de`, `markus-freise.de`), add it to `mix_origins`. This keeps other sites from using the service through their visitors' browsers; a script outside a browser can claim any origin, which is what the account is for.
+
 Monochrome (value mode) needs a plan. Answers are kept a week in `mix_cache` (default: a folder in the system's temporary directory), keyed by the question, without account or address.
 
 On a development instance whose build has no accounts (no `VITE_ACCOUNT_API`) set `'open' => true` in `config.php`: then anyone may load the app and mix. Never on the public host.

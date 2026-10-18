@@ -123,7 +123,6 @@ export const shots = [
 
   // ------------------------------------------------------------------ Views
   { id: 'view-target', settings: { view: 'target' } },
-  { id: 'view-overlay', settings: { view: 'overlay' } },
   { id: 'view-photo', settings: { view: 'original' } },
   { id: 'view-grid', settings: { grid: 'white', gridColumns: 8 } },
   { id: 'view-plain', settings: { outlines: false, numbers: false } },
@@ -137,7 +136,6 @@ export const shots = [
       { locate: (p, t) => hint(p, t, 'Detail'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Mixed paint'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Photo colour'), at: 't' },
-      { locate: (p, t) => hint(p, t, 'Overlay'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Photo'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Blocking'), at: 't' },
       { locate: (p, t) => hint(p, t, 'No grid'), at: 't' },

@@ -1,5 +1,5 @@
 <template>
-  <!-- What the picture shows: the paint, the colours of the photo, the photo over the paint, the photo, the blocking. -->
+  <!-- What the picture shows: the paint, the colours of the photo, the photo, the blocking. -->
   <div class="segmented viewswitch">
     <button
       v-for="v in views"
@@ -34,19 +34,18 @@ const pro = useProStore()
 const BLOCKING = { value: 'blocking', label: 'Blocking: light and shadow in large masses', hint: 'Blocking', icon: 'blocking' }
 // Layer mode has no colour per area to compare with, only the layered picture and the photo.
 // The Sketch view is hidden for now (TASK-39: it is to be reworked); its drawing is still there.
-// So is the Template view: the grid over the picture takes its place; its drawing is still there.
+// So is the Template view: the grid over the picture takes its place; and the Overlay view, for a
+// toolbar that fits on a phone. Their drawing is still there.
 const views = computed(() =>
   analysis.layerMode
     ? [
         { value: 'mixed', label: 'Layered paint', hint: 'Layered paint', icon: 'mixed' },
-        { value: 'overlay', label: 'Overlay: the photo at half strength over the paint', hint: 'Overlay', icon: 'overlay' },
         { value: 'original', label: 'Photo', hint: 'Photo', icon: 'photo' },
         BLOCKING,
       ]
     : [
         { value: 'mixed', label: 'Mixed paint', hint: 'Mixed paint', icon: 'mixed' },
         { value: 'target', label: 'Photo colour', hint: 'Photo colour', icon: 'colours' },
-        { value: 'overlay', label: 'Overlay: the photo at half strength over the paint', hint: 'Overlay', icon: 'overlay' },
         { value: 'original', label: 'Photo', hint: 'Photo', icon: 'photo' },
         BLOCKING,
       ],

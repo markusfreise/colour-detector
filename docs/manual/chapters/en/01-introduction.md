@@ -18,7 +18,7 @@ Watercolourlove answers both. It reduces the photo to a manageable number of mix
 
 1. **New picture** and the other buttons for the picture: samples, saving, the collection, printing, exporting.
 2. The tools of the picture: fit it to the window, look at a detail.
-3. The views: mixed paint, the colours of the photo, an overlay, the photo itself.
+3. The views: mixed paint, the colours of the photo, the photo itself.
 4. **Colours**: every mix with its paints and its washes.
 5. **Settings**: how many mixes, how simple the areas, the method.
 6. **Paint box**: the paints you own and the palette of this picture.

@@ -10,14 +10,14 @@ part: The app
 
 ## The printed sheet
 
-**Print / PDF** in the column on the left prints the picture followed by its legend: every mix with its paints, so that you can paint without the screen.
+**Print / PDF** in the column on the left prints the picture on a page of its own, followed by its legend: every mix with its paints, so that you can paint without the screen.
 
-![The printed sheet: the picture, then every mix with its washes and paints](shot:print)
+![The legend: every mix as a card with its washes and paints, four to a row](shot:print)
 
 The sheet has two parts:
 
-- **The picture**, exactly as it is shown at the moment of printing: the view you chose, with or without outlines and numbers. For the desk, print it in **Mixed paint** with outlines and numbers on, or in **Template to print** (see below).
-- **The legend**, headed with the name of the picture. One row per mix: its number, its washes side by side with their letters and their share of the picture, the paints with their parts, pan or tube and number, and the recipe as a bar. Mixes that are left as white paper say so.
+- **The picture**, on the first page, exactly as it is shown at the moment of printing: the view you chose, with or without outlines and numbers. For the desk, print it in **Mixed paint** with outlines and numbers on, or in **Template to print** (see below).
+- **The legend**, from the second page, headed with the name of the picture. One card per mix, four to a row, so that about twenty mixes fit on a page. At the top of each card, always on the left, is the mix at full strength, its C wash, with its number and its share of the picture; next to it its other washes, darkest first, with their letters and shares. Below it is the recipe as a bar, then the paints, one under the other, with their parts, pan or tube and number. Mixes that are left as white paper say so.
 
 Choose **Save as PDF** as the printer in the print dialog of your browser to keep the sheet as a file, for example on a tablet next to the painting.
 
@@ -56,7 +56,7 @@ Write the labels (6L, 3R) small and faint inside the areas. A light wash will st
 
 ## Paper size and scale
 
-The browser's print dialog decides the paper. The picture is fitted to the width of the page and is at most 15 cm high, so that the legend starts on the same sheet. On an A4 or Letter page a landscape photo comes out at about 19 by 13 cm; a larger page adds little. For a larger painting:
+The browser's print dialog decides the paper. The picture has the first page to itself and is fitted to it. On an A4 or Letter page a landscape photo comes out at about 19 by 13 cm, a portrait photo at up to about 26 cm high. For a larger painting:
 
 - choose a larger paper size in the print dialog if your printer has it,
 - or save as PDF and print the picture at a copy shop,

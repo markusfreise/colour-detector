@@ -40,6 +40,12 @@
         &__stage {
             position: static;
         }
+
+        // Its tools are hidden; without this its shadow is left under the picture.
+        &__bottom {
+            background: none;
+            box-shadow: none;
+        }
     }
 
     .app__tagline,
@@ -59,8 +65,9 @@
         border: 0;
         padding: 0;
 
+        // The picture has the first page to itself.
         &__canvas {
-            max-height: 150mm;
+            max-height: 260mm;
             width: auto;
             max-width: 100%;
             margin: 0 auto;
@@ -69,7 +76,7 @@
 
     .legend {
         display: block;
-        margin-top: 6mm;
+        break-before: page;
     }
 
     // Layer mode prints its own pictures: the finished one and one per layer.

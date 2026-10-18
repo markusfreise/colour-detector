@@ -10,14 +10,14 @@ part: Die App
 
 ## Der Ausdruck
 
-**Drucken / PDF** in der Spalte links druckt das Bild und danach seine Legende: jede Mischung mit ihren Farben, damit du ohne Bildschirm malen kannst.
+**Drucken / PDF** in der Spalte links druckt das Bild auf einer eigenen Seite und danach seine Legende: jede Mischung mit ihren Farben, damit du ohne Bildschirm malen kannst.
 
-![Der Ausdruck: das Bild, dann jede Mischung mit ihren Lasuren und Farben](shot:print)
+![Die Legende: jede Mischung als Karte mit ihren Lasuren und Farben, vier in einer Reihe](shot:print)
 
 Der Ausdruck hat zwei Teile:
 
-- **Das Bild**, genau so, wie es beim Drucken gezeigt wird: in der Ansicht, die du gewählt hast, mit oder ohne Umrisse und Nummern. Für den Maltisch druckst du es in **Gemischte Farbe** mit Umrissen und Nummern oder als **Vorlage zum Drucken** (siehe unten).
-- **Die Legende**, überschrieben mit dem Namen des Bildes. Eine Zeile pro Mischung: ihre Nummer, ihre Lasuren nebeneinander mit Buchstaben und Anteil am Bild, die Farben mit ihren Teilen, Näpfchen oder Tube und Nummer, und das Rezept als Balken. Mischungen, bei denen das Papier weiß bleibt, sagen das.
+- **Das Bild**, auf der ersten Seite, genau so, wie es beim Drucken gezeigt wird: in der Ansicht, die du gewählt hast, mit oder ohne Umrisse und Nummern. Für den Maltisch druckst du es in **Gemischte Farbe** mit Umrissen und Nummern oder als **Vorlage zum Drucken** (siehe unten).
+- **Die Legende**, ab der zweiten Seite, überschrieben mit dem Namen des Bildes. Eine Karte pro Mischung, vier in einer Reihe, so passen etwa zwanzig Mischungen auf eine Seite. Oben auf jeder Karte steht immer links die Mischung in voller Stärke, ihre C-Lasur, mit ihrer Nummer und ihrem Anteil am Bild; daneben ihre übrigen Lasuren, die dunkelste zuerst, mit Buchstaben und Anteil. Darunter steht das Rezept als Balken, dann die Farben untereinander mit ihren Teilen, Näpfchen oder Tube und Nummer. Mischungen, bei denen das Papier weiß bleibt, sagen das.
 
 Wähle im Druckdialog deines Browsers **Als PDF speichern** als Drucker, um den Ausdruck als Datei zu behalten, zum Beispiel auf einem Tablet neben dem Bild.
 
@@ -56,7 +56,7 @@ Schreib die Beschriftungen (6L, 3R) klein und blass in die Flächen. Eine helle 
 
 ## Papiergröße und Maßstab
 
-Das Papier bestimmt der Druckdialog des Browsers. Das Bild wird auf die Breite der Seite gesetzt und ist höchstens 15 cm hoch, damit die Legende auf demselben Blatt beginnt. Auf einer A4-Seite wird ein Foto im Querformat etwa 19 mal 13 cm groß; ein größeres Blatt bringt wenig mehr. Für ein größeres Bild:
+Das Papier bestimmt der Druckdialog des Browsers. Das Bild hat die erste Seite für sich und wird auf sie eingepasst. Auf einer A4-Seite wird ein Foto im Querformat etwa 19 mal 13 cm groß, eines im Hochformat bis etwa 26 cm hoch. Für ein größeres Bild:
 
 - wähle im Druckdialog ein größeres Papierformat, wenn dein Drucker es kann,
 - oder speichere als PDF und lass das Bild im Copyshop drucken,

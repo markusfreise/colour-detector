@@ -15,8 +15,9 @@ import Foundation
 //   reach: a small area of another hue, the darkest folds. It is fitted to what the washes leave
 //   over and painted last, in a few shapes a brush can do. Its paint may be one of the wash paints
 //   or a paint of its own (accent paints come on top of the number of paints asked for).
-// - The colour of an area is white paper filtered by every layer:
-//   reflectance = exp(-sum over layers of depth * A of the paint).
+// - The colour of an area is white paper filtered by every layer: the product over the layers of
+//   what each paint does alone on white paper, its swatch at the opacity of the paint in it
+//   (`Mixing.paintFilter`, as a wash of a mix: water thins a paint like opacity).
 //   Different paints add up without a common limit, which is what a wet mix cannot do. The coats of
 //   ONE paint add up to the paint as its swatch shows it and no further (Mixing.maxAmount): three
 //   coats of a light yellow wash come closer to the yellow, they never get darker than it. An
@@ -418,10 +419,10 @@ enum Layers {
     // `under` = amount of the same paint already on the paper (an accent over its own wash layer).
     private static func filterTable(_ a: Vec3, _ limit: Double, _ strength: Double, _ ratio: Double, _ top: Int, under: Double = 0) -> [Double] {
         var t = [Double](repeating: 0, count: (top + 1) * 3)
-        let below = depth(under, limit: limit)
+        let below = Mixing.paintFilter(a, under)
         for c in 0...top {
-            let d = depth(under + coatAmount(c, strength, ratio: ratio), limit: limit) - below
-            t[c * 3] = exp(-d * a.x); t[c * 3 + 1] = exp(-d * a.y); t[c * 3 + 2] = exp(-d * a.z)
+            let f = Mixing.paintFilter(a, under + coatAmount(c, strength, ratio: ratio))
+            t[c * 3] = f.x / below.x; t[c * 3 + 1] = f.y / below.y; t[c * 3 + 2] = f.z / below.z
         }
         return t
     }
@@ -985,8 +986,8 @@ enum Layers {
 
     // Whether one coat of this wash on white paper is dark enough for the accent for the darks.
     private static func isDarkCoat(_ candidate: Known, _ strength: Double) -> Bool {
-        let d = depth(strength, limit: candidate.limit)
-        return lab(exp(-d * candidate.a.x), exp(-d * candidate.a.y), exp(-d * candidate.a.z)).l < darkCoat
+        let f = Mixing.paintFilter(candidate.a, strength)
+        return lab(f.x, f.y, f.z).l < darkCoat
     }
 
     // The accents: one strong wash at a time, of the paint and strength that take most away from what

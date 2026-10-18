@@ -254,6 +254,7 @@ export const shots = [
     prepare: async (page) => {
       await page.emulateMedia({ media: 'print' })
     },
+    target: (page) => page.locator('.legend'),
   },
   {
     id: 'preferences',

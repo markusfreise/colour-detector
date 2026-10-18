@@ -52,6 +52,8 @@ The app treats every paint the way the light treats it: as a **transparent filte
 
 For each paint it knows one colour, the colour of its swatch. From that it works out, for red, green and blue light separately, how much the paint absorbs. When you mix paints, their absorptions add up, each weighted by how much of that paint is in the mix. That is subtractive mixing, the same law that describes coloured glass or ink in water (physicists call it Beer-Lambert). Blue and yellow give green because the blue takes away the red and the yellow takes away the blue, and only green light survives both.
 
+Water works differently. The app first works out the mix at full strength, then lays it over the paper the way a screen lays a colour at reduced opacity: an M wash at half strength is the full mix at 50 %, an L wash at a quarter is the mix at 25 %. So a wash grows paler toward the paper and does not keep the glow of the full colour. A turquoise with no red in it at all still turns into a pale, soft turquoise when you add water, as it does on paper.
+
 ### Why three bright paints do not make black
 
 On paper, adding paint does not darken a wash forever. A brush only carries so much pigment, and a thick wash approaches the paint's **masstone**, the colour of the paint at full strength, and stops there. The app models this as a depth limit for the mix as a whole: a bright paint can go only a little darker than its swatch (about 1.6 times its absorption), while greys, blacks and earths, whose masstone is far darker than their wash, can go much deeper (up to 4 times). So in the app, as on paper, three bright colours mixed thickly give a deep dull colour, not black.

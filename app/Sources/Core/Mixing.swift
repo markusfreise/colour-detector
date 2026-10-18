@@ -2,12 +2,15 @@ import Foundation
 
 // Subtractive watercolour mixing. A port of src/lib/mixing.js; keep the two in step.
 //
-// Model: transparent watercolour behaves roughly like a filter over white paper
-// (Beer-Lambert). Each paint's swatch colour gives a per-channel absorbance
-// A = -ln(reflectance). A mix of paints with amounts a_i reflects
-// exp(-d(S)/S * sum a_i * A_i) with S = sum a_i. An amount of 1 means "as strong as the
-// reference swatch"; smaller amounts mean more water. No paint counts for more than 1 (maxAmount):
-// a paint is never darker than its swatch.
+// Model: paints mix like filters over white paper (Beer-Lambert), water thins the mix like
+// opacity. Each paint's swatch colour gives a per-channel absorbance A = -ln(reflectance).
+// A mix with amounts a_i is first taken at full strength, its largest amount (its fullness f)
+// raised to 1: that mix reflects exp(-d(S)/S * sum a_i * A_i) with S = sum a_i. The wash is that
+// colour laid over the paper at opacity f, in sRGB: an M wash at fullness 0.5 is the full mix
+// at 50 % (decided 2026-10-18; until then water only scaled the absorbance, which kept a paint
+// with an empty channel, like cobalt turquoise without red, vivid at every dilution).
+// An amount of 1 means "as strong as the reference swatch"; smaller amounts mean more water.
+// No paint counts for more than 1 (maxAmount): a paint is never darker than its swatch.
 //
 // d(S) is the depth a wash reaches with the total amount S of paint in it. It is 1 at
 // amount 1 and levels off at maxDepth, which matters for a mix of several paints (S above 1):
@@ -19,8 +22,8 @@ import Foundation
 // darker than their wash, bright paints do not. The limit of a mix is the limit of its paints,
 // weighted by their amounts.
 //
-// Finding a recipe is a non-negative least-squares problem in absorbance space,
-// followed by a small perceptual (OKLab) refinement.
+// Finding a recipe starts from a non-negative least-squares fit in absorbance space, which gives
+// the proportions; the water is then fitted and the amounts refined perceptually (OKLab).
 //
 // Value mode (`values: true`): the picture is grey, and the paints and their mixes stand for its
 // values, whatever their hue; only lightness counts (see `valueRecipes`).
@@ -105,7 +108,11 @@ enum Mixing {
         var sum = 0.0
         var limit = 0.0
         // No paint counts for more than its swatch (maxAmount), whatever amount is asked for.
-        let used = amounts.map { min(maxAmount, $0) }
+        let capped = amounts.map { max(0, min(maxAmount, $0)) }
+        let fullness = capped.max() ?? 0
+        guard fullness > 0 else { return Vec3(1, 1, 1) }
+        // The mix at full strength; the water comes in below, as opacity.
+        let used = capped.map { $0 / fullness }
         for (a, amount) in zip(absorbances, used) {
             sum += amount
             limit += amount * depthLimit(a)
@@ -113,7 +120,18 @@ enum Mixing {
         // Every paint contributes by its share of the depth the whole mix reaches.
         let scale = sum > 0 ? depth(sum, limit: limit / sum) / sum : 0
         for (a, amount) in zip(absorbances, used) { total += a * (amount * scale) }
-        return Vec3(exp(-total.x), exp(-total.y), exp(-total.z))
+        return Vec3(thinned(exp(-total.x), fullness), thinned(exp(-total.y), fullness), thinned(exp(-total.z), fullness))
+    }
+
+    /// A reflectance (linear) laid over white paper at that opacity, blended in sRGB.
+    private static func thinned(_ reflectance: Double, _ opacity: Double) -> Double {
+        ColorMath.srgbToLinear(255 - opacity * (255 - ColorMath.linearToSrgb(reflectance)))
+    }
+
+    /// One paint alone on white paper at that amount (capped at maxAmount): its swatch at that opacity, linear RGB.
+    static func paintFilter(_ a: Vec3, _ amount: Double) -> Vec3 {
+        let f = max(0, min(maxAmount, amount))
+        return Vec3(thinned(exp(-a.x), f), thinned(exp(-a.y), f), thinned(exp(-a.z), f))
     }
 
     /// Predicted colour of mixing the given paints with the given amounts on white paper.
@@ -306,7 +324,9 @@ enum Mixing {
             // With the proportions kept, no paint above its swatch.
             let most = amounts.max() ?? 0
             if most > maxAmount { amounts = amounts.map { $0 * maxAmount / most } }
-            results.append(Candidate(indices: indices, amounts: amounts, deltaE: evaluate(columns, amounts, targetLab)))
+            // The fit is in absorbance, where water is not: it gives the proportions, the water is fitted here.
+            let fitted = fitWater(columns, amounts, targetLab, steps: 12, fine: false)
+            results.append(Candidate(indices: indices, amounts: fitted.amounts, deltaE: fitted.deltaE))
         }
 
         let n = pool.count
@@ -368,13 +388,17 @@ enum Mixing {
         let targetLab = ColorMath.oklab(hex: targetHex)
         let ids = recipe.paints.map(\.paintID)
         let absorbances = ids.map { absorbance(hex: paints[$0]?.hex ?? "#ffffff") }
-        let base = recipe.paints.map(\.amount)
+        let fitted = fitWater(absorbances, recipe.paints.map(\.amount), targetLab, values: values)
+        return self.recipe(ids: ids, absorbances: absorbances, amounts: fitted.amounts, deltaE: fitted.deltaE)
+    }
+
+    /// The amounts scaled by the one factor that brings the mix closest to the target: a coarse scan
+    /// over the water level, then (with `fine`) a golden-section search around the best step.
+    private static func fitWater(_ absorbances: [Vec3], _ base: [Double], _ targetLab: Vec3, values: Bool = false, steps: Int = 48, fine: Bool = true) -> (amounts: [Double], deltaE: Double) {
         let largest = base.max() ?? 1
         func error(_ logT: Double) -> Double { evaluate(absorbances, base.map { $0 * exp(logT) }, targetLab, values: values) }
-        // Coarse scan over the water level, then golden-section search around the best step.
         let lo = log(0.02 / largest)
         let hi = log(maxAmount / largest)
-        let steps = 48
         var best = lo
         var bestErr = Double.infinity
         for i in 0...steps {
@@ -382,16 +406,19 @@ enum Mixing {
             let err = error(t)
             if err < bestErr { bestErr = err; best = t }
         }
-        var a = max(lo, best - (hi - lo) / Double(steps))
-        var b = min(hi, best + (hi - lo) / Double(steps))
-        let phi = (5.0.squareRoot() - 1) / 2
-        for _ in 0..<24 {
-            let c = b - (b - a) * phi
-            let d = a + (b - a) * phi
-            if error(c) < error(d) { b = d } else { a = c }
+        var logT = best
+        if fine {
+            var a = max(lo, best - (hi - lo) / Double(steps))
+            var b = min(hi, best + (hi - lo) / Double(steps))
+            let phi = (5.0.squareRoot() - 1) / 2
+            for _ in 0..<24 {
+                let c = b - (b - a) * phi
+                let d = a + (b - a) * phi
+                if error(c) < error(d) { b = d } else { a = c }
+            }
+            logT = (a + b) / 2
         }
-        let logT = (a + b) / 2
-        return self.recipe(ids: ids, absorbances: absorbances, amounts: base.map { $0 * exp(logT) }, deltaE: error(logT))
+        return (base.map { $0 * exp(logT) }, error(logT))
     }
 
     /// Propose a small set of paints that mixes all the given target colours.

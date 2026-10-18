@@ -1,42 +1,42 @@
 <template>
   <section class="legend">
     <h2 class="legend__title">{{ t('{name} – colours and mixes', { name: analysis.imageName }) }}</h2>
-    <p v-if="rows.some((row) => row.washes.length > 1)" class="legend__key">
+    <p class="legend__key">
       <span v-for="w in WASH_LETTERS" :key="w.letter"><strong>{{ w.letter }}</strong> {{ t(w.label) }}</span>
     </p>
     <ol class="legend__list">
       <li v-for="row in rows" :key="row.key" class="legend__item">
-        <span class="legend__number">{{ row.number }}</span>
-        <!-- The washes of the mix side by side, lightest first, each in its own colour. -->
+        <!-- At the top: the base colour (the concentrated wash) with its number, then the other washes, darkest first. -->
         <div class="legend__washes">
+          <span class="legend__base" :style="{ background: row.hex, color: row.ink }">
+            <strong class="legend__number">{{ row.number }}</strong>
+            <span><strong>{{ CONCENTRATED }}</strong><template v-if="row.baseShare !== null">&nbsp;{{ percent(row.baseShare) }}%</template></span>
+          </span>
           <span v-for="wash in row.washes" :key="wash.label" class="legend__wash" :style="{ background: wash.hex, color: wash.ink }">
-            <strong>{{ wash.letter || row.number }}</strong>
+            <strong>{{ wash.letter }}</strong>
             <span>{{ percent(wash.share) }}%</span>
           </span>
         </div>
-        <div class="legend__recipe">
-          <template v-if="row.paints.length">
-            <ul class="legend__paints">
-              <li v-for="paint in row.paints" :key="paint.id" class="chip chip--row legend__paint" :style="chipStyle(paint.hex)">
-                <span class="chip__strong">{{ paint.parts }} x {{ paint.forms }}</span>
-                <span class="chip__text"><span class="chip__strong">{{ paint.number }}</span> {{ paintName(paint.paint) }}</span>
-              </li>
-            </ul>
-            <!-- The recipe as a bar: one segment per paint, as wide as its part of the mix. -->
-            <div class="legend__bar">
-              <span
-                v-for="paint in row.paints"
-                :key="paint.id"
-                class="legend__part"
-                :style="{ flexGrow: paint.share, background: paint.hex, color: paint.ink }"
-              >
-                {{ paint.parts }}
-              </span>
-            </div>
-          </template>
-          <p v-else class="legend__paper">{{ t('Leave the paper white') }}</p>
-        </div>
-        <span class="legend__share">{{ percent(row.share) }}%</span>
+        <template v-if="row.paints.length">
+          <!-- The recipe as a bar: one segment per paint, as wide as its part of the mix. -->
+          <div class="legend__bar">
+            <span
+              v-for="paint in row.paints"
+              :key="paint.id"
+              class="legend__part"
+              :style="{ flexGrow: paint.share, background: paint.hex, color: paint.ink }"
+            >
+              {{ paint.parts }}
+            </span>
+          </div>
+          <ul class="legend__paints">
+            <li v-for="paint in row.paints" :key="paint.id" class="chip chip--row legend__paint" :style="chipStyle(paint.hex)">
+              <span class="chip__strong legend__amount">{{ paint.parts }} x {{ paint.forms }}</span>
+              <span class="chip__text"><span class="chip__strong">{{ paint.number }}</span> {{ paintName(paint.paint) }}</span>
+            </li>
+          </ul>
+        </template>
+        <p v-else class="legend__paper">{{ t('Leave the paper white') }}</p>
       </li>
     </ol>
   </section>
@@ -46,7 +46,7 @@
 import { computed } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
-import { WASH_LETTERS } from '../lib/mixing.js'
+import { WASH_LETTERS, MAX_AMOUNT, mixHex } from '../lib/mixing.js'
 import { chipStyle, contrastText } from '../lib/color.js'
 import { paintNumber, paintForms } from '../lib/paintbox.js'
 import { useText } from '../i18n/index.js'
@@ -57,6 +57,16 @@ const paints = usePaintsStore()
 
 const percent = (share) => Math.round(share * 100) || '<1'
 const formatParts = (n) => (Number.isInteger(n) ? String(n) : n.toLocaleString(region.value, { minimumFractionDigits: 1, maximumFractionDigits: 1 }))
+
+const baseHex = (entry) => entry.recipes[entry.chosen]?.hex ?? entry.targetHex
+const CONCENTRATED = WASH_LETTERS.at(-1).letter
+const washRank = (entry) => WASH_LETTERS.findIndex((w) => w.letter === entry.letter)
+// The mix with its strongest paint at strength 1: the darkest it is ever used.
+const fullStrength = (recipe) => {
+  if (!recipe?.paints.length) return recipe?.hex
+  const most = Math.max(...recipe.paints.map((p) => p.amount))
+  return mixHex(recipe.paints.map((p) => paints.byId[p.paintId]), recipe.paints.map((p) => (p.amount / most) * MAX_AMOUNT))
+}
 
 // One row per mix: its washes share the recipe and differ only in water, so the paints are listed once.
 const rows = computed(() => {
@@ -70,14 +80,22 @@ const rows = computed(() => {
     const base = members.reduce((x, y) => (y.share > x.share ? y : x))
     // The mix as its recipe gives it, before any water is added or taken away.
     const recipe = (base.overridden ? null : analysis.mixRecipes[base.group]?.[base.chosen]) ?? base.recipes[base.chosen]
+    // The base colour is the concentrated wash; without one, the mix at full strength, as a C wash would be.
+    const concentrated = members.find((e) => e.letter === CONCENTRATED || !e.letter)
+    const hex = concentrated ? baseHex(concentrated) : fullStrength(recipe) ?? base.targetHex
     return {
       key: family,
       number: parseInt(base.label),
-      share: members.reduce((sum, e) => sum + e.share, 0),
-      washes: members.map((entry) => {
-        const hex = entry.recipes[entry.chosen]?.hex ?? entry.targetHex
-        return { label: entry.label, letter: entry.letter, hex, ink: contrastText(hex), share: entry.share }
-      }),
+      baseShare: concentrated ? concentrated.share : null,
+      hex,
+      ink: contrastText(hex),
+      washes: members
+        .filter((entry) => entry !== concentrated)
+        .sort((a, b) => washRank(b) - washRank(a))
+        .map((entry) => {
+          const hex = baseHex(entry)
+          return { label: entry.label, letter: entry.letter, hex, ink: contrastText(hex), share: entry.share }
+        }),
       paints: (recipe?.paints ?? []).map((item, i) => {
         const paint = paints.byId[item.paintId]
         return {

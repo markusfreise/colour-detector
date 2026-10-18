@@ -50,6 +50,11 @@
         font-weight: 400;
     }
 
+    // Normal / Large: as wide as its words, not the whole card.
+    &__number-size .segmented {
+        align-self: flex-start;
+    }
+
     &__error {
         margin-top: #{pxtorem(10)};
         color: var(--c-danger);

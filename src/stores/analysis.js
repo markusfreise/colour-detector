@@ -186,7 +186,8 @@ export const useAnalysisStore = defineStore('analysis', {
       blockingForms: DEFAULT_FORMS, // 0 = more detail .. 10 = the largest masses
       blockingOpacity: 100, // percent: the tones over the photo, 100 = the photo is not seen
       outlines: true,
-      numbers: true,
+      numbers: true, // false = none, true = the numbers alone, 'backdrop' = each on a padded square
+      numberSize: 'normal', // normal | large (1.4 times)
     },
   }),
   getters: {

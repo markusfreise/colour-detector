@@ -79,15 +79,15 @@
       >
         <AppIcon name="outlines" :label="t('Show outlines')" />
       </button>
+      <!-- Cycles through no numbers, numbers, numbers on a backdrop. -->
       <button
         class="button painting__tool"
         :class="{ 'button--active': analysis.settings.numbers }"
         type="button"
-        :aria-pressed="analysis.settings.numbers"
-        :data-hint="t('Numbers')"
-        @click="analysis.settings.numbers = !analysis.settings.numbers"
+        :data-hint="t(numbersStep.hint)"
+        @click="analysis.settings.numbers = numbersStep.next"
       >
-        <AppIcon name="numbers" :label="t('Show numbers')" />
+        <AppIcon :name="numbersStep.icon" :label="t(numbersStep.label)" />
       </button>
       <p v-if="analysis.busy" class="painting__status">{{ analysis.layerMode ? t('Planning layers…') : t('Analysing…') }}</p>
       <p v-else-if="framing && !frame" class="painting__status">{{ t('Drag a frame over the part to zoom in on') }}</p>
@@ -105,7 +105,7 @@ import { usePaintsStore } from '../stores/paints.js'
 import { useProStore } from '../stores/pro.js'
 import { useLayoutStore } from '../stores/layout.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
-import { drawLayerView, labelFont, paintPixels } from './layerView.js'
+import { drawLayerView, labeller, paintPixels } from './layerView.js'
 import { smoothCurve } from '../lib/sketch.js'
 import { upscaleAreas } from '../lib/smooth.js'
 import { toneGrey } from '../lib/blocking.js'
@@ -141,6 +141,15 @@ const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 const pro = useProStore()
 const layout = useLayoutStore()
+
+// The numbers button steps through no numbers, numbers, numbers on a backdrop. Its icon and
+// label show the state now; a click goes on to `next`.
+const numbersStep = computed(() => {
+  const numbers = analysis.settings.numbers
+  if (numbers === 'backdrop') return { icon: 'numbers-backdrop', label: 'Numbers on a backdrop', hint: 'Numbers on a backdrop', next: false }
+  if (numbers) return { icon: 'numbers', label: 'Numbers', hint: 'Numbers', next: 'backdrop' }
+  return { icon: 'numbers', label: 'No numbers', hint: 'No numbers', next: true }
+})
 // The paint box in use holds no paint: none to paint with, or in layer mode none to glaze with.
 const noPaints = computed(() => !!analysis.image && (analysis.layerMode ? !analysis.busy && !analysis.layers : paints.enabled.length === 0))
 const canvas = ref(null)
@@ -290,7 +299,7 @@ function drawBlocking(el) {
   const ctx = el.getContext('2d')
   if (blockingAtCanvas?.result !== result) blockingAtCanvas = { result, toneAt: upscaleAreas(result.toneMap, width, height, SCALE) }
   const { toneAt } = blockingAtCanvas
-  const { outlines, numbers, blockingOpacity } = analysis.settings
+  const { outlines, numbers, numberSize, blockingOpacity } = analysis.settings
   const solo = analysis.blockingSolo
   const greys = Array.from({ length: tones }, (_, tone) => (solo == null || tone === solo ? toneGrey(tone, tones) : BLOCKING_PALE))
   const alpha = Math.round((blockingOpacity / 100) * 255)
@@ -310,11 +319,10 @@ function drawBlocking(el) {
   paintPixels(ctx, el, img, w, h)
   if (numbers) {
     // At the size of the numbers of the mixes.
-    labelFont(ctx, SCALE)
+    const label = labeller(ctx, SCALE, { numbers, size: numberSize })
     for (const region of regions) {
       if (region.anchorDist < MIN_LABEL_DIST || (solo != null && region.tone !== solo)) continue
-      ctx.fillStyle = toneGrey(region.tone, tones)[0] > 140 ? '#1d1b18' : '#ffffff'
-      ctx.fillText(String(region.tone + 1), (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE)
+      label(String(region.tone + 1), (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE, toneGrey(region.tone, tones)[0] > 140 ? '#1d1b18' : '#ffffff')
     }
   }
 }
@@ -388,7 +396,7 @@ function drawMixes(el) {
   el.width = w
   el.height = h
   const ctx = el.getContext('2d')
-  const { view, outlines, numbers } = analysis.settings
+  const { view, outlines, numbers, numberSize } = analysis.settings
   const original = view === 'original'
   // Nothing filled in: the paper with the areas and their numbers in light blue, to print and paint on.
   const template = view === 'template'
@@ -446,14 +454,16 @@ function drawMixes(el) {
   }
 
   if (numbers) {
-    labelFont(ctx, SCALE)
+    const label = labeller(ctx, SCALE, { numbers, size: numberSize })
     for (const region of regions) {
       if (region.anchorDist < MIN_LABEL_DIST) continue
       const entryIndex = analysis.regionEntry[region.id]
       if (!original && !template && !shown(entryIndex)) continue
       const entry = analysis.entries[entryIndex]
-      ctx.fillStyle = original ? '#ffffff' : template ? TEMPLATE_NUMBER : contrastText(analysis.displayHex(entry))
-      ctx.fillText(entry.label, (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE)
+      const x = (region.anchorX + 0.5) * SCALE, y = (region.anchorY + 0.5) * SCALE
+      // In the template the backdrop is light blue too, with the number left white.
+      if (template) label(entry.label, x, y, TEMPLATE_NUMBER, '#ffffff')
+      else label(entry.label, x, y, original ? '#ffffff' : contrastText(analysis.displayHex(entry)))
     }
   }
 }
@@ -473,13 +483,14 @@ function drawLayers(el) {
     }
     return
   }
-  const { view, outlines, numbers } = analysis.settings
+  const { view, outlines, numbers, numberSize } = analysis.settings
   const ctx = drawLayerView(el, result, {
     show: analysis.layerView,
     step: analysis.layerStep == null ? null : result.steps[analysis.layerStep],
     stepView: analysis.layerStepView,
     outlines,
     numbers,
+    numberSize,
     scale: SCALE,
     backdrop: view === 'original' ? drawPhoto : null,
   })
@@ -734,6 +745,7 @@ watch(
     analysis.sketchKey,
     analysis.settings.outlines,
     analysis.settings.numbers,
+    analysis.settings.numberSize,
     analysis.blockingKey,
     analysis.blockingSolo,
     analysis.settings.blockingOpacity,

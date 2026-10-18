@@ -91,7 +91,7 @@ Die Werkzeuge des Bildes sitzen über ihm.
 6. **Foto**: das Original, mit Sättigung und Kontrast.
 7. **Vorlage zum Drucken**: keine Füllung, nur Umrisse und Nummern in hellem Blau. Siehe [Drucken](drucken.html).
 8. **Umrisse** ein oder aus.
-9. **Nummern** ein oder aus.
+9. **Nummern**: jeder Klick schaltet weiter, von Nummern zu Nummern auf Hintergrund zu keinen Nummern. Auf Hintergrund steht jede Nummer auf einem kleinen Quadrat, weiß mit dunkler Nummer auf dunklen Flächen und dunkel mit weißer Nummer auf hellen, so bleibt sie auf jeder Farbe lesbar.
 
 ![Fotofarbe: was das Foto verlangt](shot:view-target)
 
@@ -102,6 +102,10 @@ Die Werkzeuge des Bildes sitzen über ihm.
 Ohne Umrisse und Nummern zeigt **Gemischte Farbe** das Bild so, wie es gemalt aussehen könnte, ein guter Test, ob der Plan als Bild funktioniert.
 
 ![Gemischte Farbe ohne Umrisse und Nummern](shot:view-plain)
+
+**Nummerngröße** am Ende der Einstellungen macht die Nummern **Groß**, 1,4-mal so groß wie **Normal**, für ein Bild, das man von weiter weg ansieht oder klein druckt.
+
+![Große Nummern auf Hintergrund](shot:view-backdrop)
 
 ## Einstellungen für typische Motive
 

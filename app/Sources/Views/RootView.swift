@@ -170,13 +170,13 @@ struct RootView: View {
         case "preferences": openPreferences()
         default: break
         }
-        #if os(macOS)
         // "-pdf" writes the printed sheet into the temporary folder.
         if arguments.contains("-pdf") {
             let url = FileManager.default.temporaryDirectory.appendingPathComponent("sheet.pdf")
             try? PrintSheet.pdf(session: session, library: library).write(to: url)
             print("pdf", url.path)
         }
+        #if os(macOS)
         let snapshot = arguments.contains("-snapshot")
         if snapshot {
             try? await Task.sleep(for: .seconds(2))

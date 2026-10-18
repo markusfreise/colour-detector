@@ -6,51 +6,239 @@ import PDFKit
 import UIKit
 #endif
 
-/// The printable sheet: the picture, then every mix with its washes and its recipe, on A4 pages.
+/// The printable sheet, as the web prints it: the picture on a page of its own, then every colour
+/// as a card, four to a row: its base colour and washes on top, the ratio bar, its paints below.
 @MainActor
 enum PrintSheet {
     private static let page = CGSize(width: 595, height: 842) // A4 in points
     private static let margin: CGFloat = 34
-    private static let rowHeight: CGFloat = 44
     private static let pictureHeight: CGFloat = 400
-
+    /// Cards in a row, and the room between them.
+    private static let cardsPerRow = 4
+    private static let cardGap: CGFloat = 10
+    private static let rowGap: CGFloat = 28
 
     static func pdf(session: Session, library: Library) -> Data {
         if session.layerMode { return layerPDF(session: session, library: library) }
-        var rows = session.mixBlocks
-        let picture = session.printImage()
-        let labels = pictureLabels(session)
+        let cards = session.mixBlocks.map(Card.init)
 
         let data = NSMutableData()
         var box = CGRect(origin: .zero, size: page)
         guard let consumer = CGDataConsumer(data: data), let context = CGContext(consumer: consumer, mediaBox: &box, nil) else { return Data() }
-
-        let usable = page.height - 2 * margin
-        var first = true
-        repeat {
-            let room = first ? usable - pictureHeight - 76 : usable
-            let count = min(rows.count, max(1, Int(room / rowHeight)))
-            let pageRows = Array(rows.prefix(count))
-            rows.removeFirst(count)
-            let view = PageView(
-                title: first ? L("%@ – colours and mixes", session.imageName) : nil,
-                picture: first ? picture : nil,
-                segmentation: session.segmentation,
-                labels: labels,
-                settings: session.settings,
-                rows: pageRows,
-                key: first && pageRows.contains { $0.washes.count > 1 }
-            )
+        func add(_ view: some View) {
             let renderer = ImageRenderer(content: view.frame(width: page.width, height: page.height).environment(\.colorScheme, .light))
             renderer.render { _, draw in
                 context.beginPDFPage(nil)
                 draw(context)
                 context.endPDFPage()
             }
+        }
+
+        // The picture has the first page to itself.
+        if let picture = session.printImage(), let segmentation = session.segmentation {
+            add(PicturePage(picture: picture, width: segmentation.width, labels: pictureLabels(session), settings: session.settings))
+        }
+        // Then the cards, row by row, as many rows as fit on a page.
+        var rows = stride(from: 0, to: cards.count, by: cardsPerRow).map { Array(cards[$0..<min($0 + cardsPerRow, cards.count)]) }
+        var first = true
+        repeat {
+            var room = page.height - 2 * margin - (first ? 30 + 22 : 0)
+            var pageRows: [[Card]] = []
+            while let row = rows.first {
+                let height = row.map(\.estimatedHeight).max() ?? 0
+                guard pageRows.isEmpty || height <= room else { break }
+                pageRows.append(row)
+                rows.removeFirst()
+                room -= height + rowGap
+            }
+            add(CardsPage(title: first ? L("%@ – colours and mixes", session.imageName) : nil, rows: pageRows))
             first = false
         } while !rows.isEmpty
         context.closePDF()
         return data as Data
+    }
+
+    /// One colour on the printed sheet, as the web's PrintLegend: the concentrated wash is the base
+    /// colour; without one, the mix with its strongest paint at full strength, as a C wash would be.
+    private struct Card: Identifiable {
+        struct Wash: Identifiable {
+            let id: Int
+            let letter: String
+            let hex: String
+            let share: Double
+        }
+
+        let id: String
+        let number: String
+        let hex: String
+        let baseShare: Double?
+        /// The other washes, darkest first.
+        let washes: [Wash]
+        let paints: [MixBlock.Part]
+
+        static let concentrated = Mixing.washLetters.last?.letter ?? "C"
+
+        init(_ block: MixBlock) {
+            id = block.id
+            number = block.number
+            paints = block.paints
+            let base = block.washes.first { $0.letter == Self.concentrated || $0.letter.isEmpty }
+            baseShare = base?.share
+            if let base {
+                hex = base.hex
+            } else if let most = block.paints.map(\.share).max(), most > 0 {
+                hex = Mixing.mixHex(block.paints.map { MixPaint(id: $0.paint.id, hex: $0.paint.hex) }, block.paints.map { $0.share / most * Mixing.maxAmount })
+            } else {
+                hex = block.hex
+            }
+            let rank = { (letter: String) in Mixing.washLetters.firstIndex { $0.letter == letter } ?? -1 }
+            washes = block.washes
+                .filter { $0.id != base?.id }
+                .sorted { rank($0.letter) > rank($1.letter) }
+                .map { Wash(id: $0.id, letter: $0.letter, hex: $0.hex, share: $0.share) }
+        }
+
+        /// About how tall the card is drawn: washes, bar and a paint of up to two lines each.
+        var estimatedHeight: CGFloat {
+            42 + 4 + (paints.isEmpty ? 14 : 30 + 4 + CGFloat(paints.count) * 25 + CGFloat(paints.count - 1) * 3)
+        }
+    }
+
+    private struct PicturePage: View {
+        let picture: CGImage
+        let width: Int
+        let labels: [NumberedPicture.Label]
+        let settings: AnalysisSettings
+
+        var body: some View {
+            NumberedPicture(image: picture, width: width, labels: labels, fontSize: 9, settings: settings)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .padding(PrintSheet.margin)
+                .background(.white)
+        }
+    }
+
+    private struct CardsPage: View {
+        let title: String?
+        let rows: [[Card]]
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 0) {
+                if let title {
+                    Text(title).font(.system(size: 15, weight: .semibold)).frame(height: 30, alignment: .top)
+                    // The letters of the water levels.
+                    HStack(spacing: 12) {
+                        ForEach(Mixing.washLetters, id: \.letter) { wash in
+                            Text("\(Text(wash.letter).bold()) \(L(wash.label))")
+                        }
+                    }
+                    .font(.system(size: 9))
+                    .frame(height: 22, alignment: .top)
+                }
+                VStack(alignment: .leading, spacing: PrintSheet.rowGap) {
+                    ForEach(rows.indices, id: \.self) { r in
+                        HStack(alignment: .top, spacing: PrintSheet.cardGap) {
+                            ForEach(0..<PrintSheet.cardsPerRow, id: \.self) { c in
+                                if c < rows[r].count {
+                                    card(rows[r][c])
+                                } else {
+                                    Color.clear.frame(maxWidth: .infinity, maxHeight: 1)
+                                }
+                            }
+                        }
+                    }
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(PrintSheet.margin)
+            .foregroundStyle(.black)
+            .background(.white)
+        }
+
+        private func card(_ card: Card) -> some View {
+            VStack(alignment: .leading, spacing: 4) {
+                // The base colour with the number, then the other washes, darkest first.
+                GeometryReader { geometry in
+                    // The base colour 1.4 times as wide as each other wash.
+                    let unit = geometry.size.width / (1.4 + CGFloat(card.washes.count))
+                    HStack(spacing: 0) {
+                        VStack(spacing: 1) {
+                            Text(card.number).font(.system(size: 16, weight: .bold)).monospacedDigit()
+                            Text("\(Text(Card.concentrated).font(.system(size: 11, weight: .bold)))\(card.baseShare.map { " " + PrintSheet.percent($0) } ?? "")")
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                        }
+                        .frame(width: unit * 1.4, height: geometry.size.height)
+                        .background(Color(hex: card.hex))
+                        .foregroundStyle(Color.ink(on: card.hex))
+                        ForEach(card.washes) { wash in
+                            VStack(spacing: 1) {
+                                Text(wash.letter).font(.system(size: 11, weight: .bold))
+                                Text(PrintSheet.percent(wash.share)).lineLimit(1).minimumScaleFactor(0.7)
+                            }
+                            .frame(width: unit, height: geometry.size.height)
+                            .background(Color(hex: wash.hex))
+                            .foregroundStyle(Color.ink(on: wash.hex))
+                            .overlay(alignment: .leading) { Rectangle().fill(.black.opacity(0.3)).frame(width: 1) }
+                        }
+                    }
+                }
+                .font(.system(size: 9))
+                .frame(height: 42)
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+                .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(.black.opacity(0.35), lineWidth: 1))
+                if card.paints.isEmpty {
+                    Text("Leave the paper white").font(.system(size: 9)).italic()
+                } else {
+                    // The recipe as a bar: one segment per paint, as wide as its part of the mix.
+                    PrintBar(parts: card.paints).frame(height: 30)
+                    VStack(alignment: .leading, spacing: 3) {
+                        ForEach(card.paints) { part in
+                            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                Text("\(part.parts) x \(part.paint.formLabel)").bold().fixedSize()
+                                Text("\(Text(part.paint.displayNumber).bold()) \(part.paint.displayName)")
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Spacer(minLength: 0)
+                            }
+                            .font(.system(size: 9))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color(hex: part.paint.hex))
+                            .foregroundStyle(Color.ink(on: part.paint.hex))
+                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                            .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(.black.opacity(0.35), lineWidth: 1))
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    /// The ratio bar of a card: black outline and dividers, the parts in each segment.
+    private struct PrintBar: View {
+        let parts: [MixBlock.Part]
+
+        var body: some View {
+            GeometryReader { geometry in
+                let total = max(parts.reduce(0) { $0 + $1.share }, 0.0001)
+                HStack(spacing: 0) {
+                    ForEach(Array(parts.enumerated()), id: \.offset) { index, part in
+                        Text(part.parts)
+                            .font(.system(size: 12, weight: .bold))
+                            .lineLimit(1)
+                            .frame(width: max(6, geometry.size.width * part.share / total), height: geometry.size.height)
+                            .background(Color(hex: part.paint.hex))
+                            .foregroundStyle(Color.ink(on: part.paint.hex))
+                            .overlay(alignment: .leading) { if index > 0 { Rectangle().fill(.black).frame(width: 1) } }
+                            .clipped()
+                    }
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(.black, lineWidth: 1))
+        }
     }
 
     /// Layer mode: the finished picture with the list of layers, then one sheet per layer.
@@ -181,95 +369,6 @@ enum PrintSheet {
                 color: session.labelHex(index),
                 ink: session.settings.view == .template ? "#ffffff" : nil
             )
-        }
-    }
-
-    private struct PageView: View {
-        let title: String?
-        let picture: CGImage?
-        let segmentation: Segmentation?
-        let labels: [NumberedPicture.Label]
-        /// Number style and size, and the grid, as on the screen.
-        let settings: AnalysisSettings
-        let rows: [MixBlock]
-        /// The letters of the water levels, above the list.
-        let key: Bool
-
-        var body: some View {
-            VStack(alignment: .leading, spacing: 0) {
-                if let title {
-                    Text(title).font(.system(size: 15, weight: .semibold)).frame(height: 30, alignment: .top)
-                }
-                if let picture, let segmentation {
-                    NumberedPicture(image: picture, width: segmentation.width, labels: labels, fontSize: 7, settings: settings)
-                        .frame(maxWidth: .infinity, maxHeight: PrintSheet.pictureHeight)
-                        .frame(height: PrintSheet.pictureHeight + 30, alignment: .top)
-                }
-                if key {
-                    Text(Mixing.washLetters.map { "\($0.letter) \(L($0.label))" }.joined(separator: "   "))
-                        .font(.system(size: 9))
-                        .foregroundStyle(.secondary)
-                        .frame(height: 16, alignment: .top)
-                }
-                ForEach(rows) { row in
-                    HStack(spacing: 8) {
-                        Text(row.number).font(.system(size: 12, weight: .bold)).frame(width: 22, alignment: .trailing)
-                        // The washes of the mix side by side, lightest first, each in its own colour.
-                        HStack(spacing: 0) {
-                            ForEach(row.washes) { wash in
-                                VStack(spacing: 1) {
-                                    Text(wash.letter.isEmpty ? row.number : wash.letter).font(.system(size: 10, weight: .bold))
-                                    Text(PrintSheet.percent(wash.share)).font(.system(size: 7))
-                                }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .background(Color(hex: wash.hex))
-                                .foregroundStyle(Color.ink(on: wash.hex))
-                            }
-                        }
-                        .frame(width: 150, height: 36)
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                        .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(.black.opacity(0.35), lineWidth: 1))
-                        if row.paints.isEmpty {
-                            Text("Leave the paper white").font(.system(size: 10)).italic().frame(maxWidth: .infinity, alignment: .leading)
-                        } else {
-                            VStack(spacing: 3) {
-                                HStack(spacing: 6) {
-                                    ForEach(0..<3, id: \.self) { slot in
-                                        if slot < row.paints.count {
-                                            paint(row.paints[slot])
-                                        } else {
-                                            Color.clear.frame(maxWidth: .infinity, maxHeight: 22)
-                                        }
-                                    }
-                                }
-                                RecipeBar(parts: row.paints, fontSize: 8).frame(height: 11)
-                            }
-                        }
-                        Text(PrintSheet.percent(row.share)).font(.system(size: 10)).foregroundStyle(.secondary).frame(width: 30, alignment: .trailing)
-                    }
-                    .frame(height: PrintSheet.rowHeight)
-                }
-                Spacer(minLength: 0)
-            }
-            .padding(PrintSheet.margin)
-            .foregroundStyle(.black)
-            .background(.white)
-        }
-
-        private func paint(_ part: MixBlock.Part) -> some View {
-            HStack(spacing: 6) {
-                Text("\(Text(part.parts + " x").bold()) \(part.paint.formLabel)").fixedSize()
-                Spacer(minLength: 0)
-                Text("\(Text(part.paint.displayNumber).bold()) \(part.paint.displayName)").truncationMode(.tail)
-            }
-            .font(.system(size: 8.5))
-            .lineLimit(1)
-            .padding(.horizontal, 6)
-            .frame(maxWidth: .infinity, minHeight: 22, maxHeight: 22)
-            .background(Color(hex: part.paint.hex))
-            .foregroundStyle(Color.ink(on: part.paint.hex))
-            .clipShape(RoundedRectangle(cornerRadius: 5))
-            .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(.black.opacity(0.35), lineWidth: 1))
         }
     }
 

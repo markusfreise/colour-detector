@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # One-time setup on the public host (Mittwald), run there over SSH once the checkout exists.
+# The checkout is the one this script lives in.
 # Usage: bash bootstrap-server.sh <web-root> [public-url]
-#   e.g. bash ~/colour-detector/_bootstrap/bootstrap-server.sh ~/html/_sites/watercolourlove https://watercolourlove.de
+#   e.g. bash ~/html/_sites/colour-detector/_bootstrap/bootstrap-server.sh ~/html/_sites/watercolourlove https://watercolourlove.de
 # Idempotent, fail-closed: writes webhook-config.php only if it is missing, then runs the first deploy.
 set -euo pipefail
 SLUG="colour-detector"
 WEB_ROOT="${1:?usage: bootstrap-server.sh <web-root> [public-url]}"
 URL="${2:-https://watercolourlove.de}"
-REPO_DIR="$HOME/$SLUG"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOG_FILE="$HOME/$SLUG-deploy.log"
 
 for bin in git rsync php flock openssl; do command -v "$bin" >/dev/null || { echo "FAILED: $bin missing"; exit 1; }; done

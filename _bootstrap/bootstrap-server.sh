@@ -9,7 +9,8 @@ SLUG="colour-detector"
 WEB_ROOT="${1:?usage: bootstrap-server.sh <web-root> [public-url]}"
 URL="${2:-https://watercolourlove.de}"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-LOG_FILE="$HOME/$SLUG-deploy.log"
+# In the checkout, next to the lock: the home directory on Mittwald is not writable.
+LOG_FILE="$REPO_DIR/.deploy.log"
 
 for bin in git rsync php flock; do command -v "$bin" >/dev/null || { echo "FAILED: $bin missing"; exit 1; }; done
 if [ -s "$HOME/.nvm/nvm.sh" ]; then . "$HOME/.nvm/nvm.sh" >/dev/null; fi

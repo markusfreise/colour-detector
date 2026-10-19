@@ -113,7 +113,7 @@
           </p>
           <div class="gate__more">
             <a class="button gate__more-link" :href="legalPage('pricing')" target="_blank" rel="noopener">{{ t('Pro version') }}</a>
-            <a class="button gate__more-link" :href="legalPage('manual')" target="_blank" rel="noopener">{{ t('Manual') }}</a>
+            <a v-if="!isNative" class="button gate__more-link" :href="legalPage('manual')" target="_blank" rel="noopener">{{ t('Manual') }}</a>
           </div>
         </template>
       </template>
@@ -135,7 +135,6 @@
 
       <!-- Below both columns, in one row. -->
       <footer class="gate__footer">
-        <a v-if="!isNative" :href="legalPage('manual')">{{ t('Manual') }}</a>
         <a :href="legalPage('pricing')">{{ t('Prices') }}</a>
         <a :href="legalPage('privacy')">{{ t('Privacy') }}</a>
         <a :href="legalPage('terms')">{{ t('Terms') }}</a>

@@ -80,6 +80,7 @@
         </template>
         <div v-if="buttons.length && !account.sentTo" class="gate__providers">
           <button v-for="p in buttons" :key="p.id" class="button button--secondary gate__provider" type="button" @click="account.signInWith(p.id)">
+            <span v-if="p.id !== 'meta'" :class="['gate__mark', `gate__mark--${p.id}`]" aria-hidden="true"></span>
             {{ t('Continue with {name}', { name: p.name }) }}
           </button>
         </div>

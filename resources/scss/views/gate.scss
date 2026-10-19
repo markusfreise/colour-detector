@@ -168,21 +168,42 @@
         }
     }
 
-    // The early bird under the first paragraph: in the colour of the text, its terms small below.
+    // The early bird under the form: the percentage large, its terms in two lines beside it.
     &__offer {
-        margin-bottom: var(--gap-025x);
-        color: var(--c-copy);
-        font-weight: 600;
-
-        a {
-            color: inherit;
-        }
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: #{pxtorem(10)};
+        margin-top: var(--gap);
+        padding: #{pxtorem(10)} #{pxtorem(14)};
+        border-radius: var(--radius-medium);
+        background: var(--c-offer);
+        color: var(--c-on-offer);
     }
 
-    &__footnote {
-        margin-bottom: #{pxtorem(14)};
-        color: var(--c-copy-light);
+    &__offer-percent {
+        font-size: #{pxtorem(44)};
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    &__offer-terms {
         font-size: var(--fs-small);
+        line-height: 1.3;
+    }
+
+    // The Pro version and the manual, two equal buttons in a row.
+    &__more {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: #{pxtorem(10)};
+        margin-top: #{pxtorem(10)};
+    }
+
+    &__more-link {
+        justify-content: center;
+        min-height: #{pxtorem(64)};
+        text-decoration: none;
     }
 
     &__text {
@@ -250,6 +271,16 @@
         margin-top: #{pxtorem(10)};
     }
 
+    // Address and button as high as each other.
+    &__email,
+    &__submit {
+        min-height: #{pxtorem(48)};
+    }
+
+    &__submit {
+        font-weight: 700;
+    }
+
     &__check {
         display: flex;
         align-items: flex-start;
@@ -272,14 +303,13 @@
     // "Sign up" under the button, and back.
     &__switch {
         align-self: center;
-        font-size: var(--fs-small);
     }
 
     &__link {
         padding: 0;
         border: 0;
         background: none;
-        color: var(--c-corporate);
+        color: var(--c-copy);
         font: inherit;
         text-decoration: underline;
         cursor: pointer;

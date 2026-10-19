@@ -10,7 +10,7 @@ part: Die App
 
 ## Anmelden
 
-Die Web-App bittet dich, dich anzumelden, bevor sie sich öffnet. Ein Passwort gibt es nicht: Du gibst deine E-Mail-Adresse ein und drückst **Schick mir einen Anmeldelink**. Eine Mail mit einem Link kommt; öffne ihn innerhalb von 15 Minuten auf demselben Gerät und im selben Browser, und du bist angemeldet. Kommt keine Mail, sieh im Spam-Ordner nach oder drücke **Andere Adresse verwenden**, um neu zu beginnen.
+Die Web-App bittet dich, dich anzumelden, bevor sie sich öffnet. Ein Passwort gibt es nicht: Du gibst deine E-Mail-Adresse ein und drückst **Anmeldelink erhalten**. Eine Mail mit einem Link kommt; öffne ihn innerhalb von 15 Minuten auf demselben Gerät und im selben Browser, und du bist angemeldet. Kommt keine Mail, sieh im Spam-Ordner nach oder drücke **Andere Adresse verwenden**, um neu zu beginnen.
 
 Neu hier? Wähle **Jetzt registrieren** unter dem Formular. Die Registrierung funktioniert genauso, mit einem Feld mehr: **Einladungscode (optional)**. Ohne Code bekommst du ein kostenloses Konto; mit einem gültigen Code beginnt dein Konto mit einer Lebenszeit-Lizenz. Jeder Code gilt einmal.
 

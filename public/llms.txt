@@ -80,10 +80,12 @@ A web app at https://watercolourlove.de/ (free account with just an e-mail addre
 ## Topics
 
 - [Mixing watercolours](https://watercolourlove.de/manual/mixing-watercolours.html): How to mix watercolours from the paints you own: choosing two paints, counting the ratio, setting the water, and matching a colour from a photo with a test strip.
+- [Glazing in layers](https://watercolourlove.de/manual/watercolour-glazing.html): Watercolour glazing explained: which paints glaze well, in what order to lay the layers, how many you need, and how to plan glazes for a whole picture from a reference photo.
 
 ## Themen (Deutsch)
 
 - [Aquarellfarben mischen](https://watercolourlove.de/de/handbuch/aquarellfarben-mischen.html): Aquarellfarben mischen mit den Farben, die du hast: zwei Farben wählen, das Verhältnis zählen, das Wasser bestimmen und eine Farbe aus dem Foto mit dem Probestreifen nachmischen.
+- [Lasieren in Schichten](https://watercolourlove.de/de/handbuch/lasurtechnik-aquarell.html): Lasurtechnik im Aquarell erklärt: welche Farben gut lasieren, in welcher Reihenfolge die Schichten kommen, wie viele du brauchst und wie du Lasuren für ein ganzes Bild nach einem Referenzfoto planst.
 
 ## Optional
 

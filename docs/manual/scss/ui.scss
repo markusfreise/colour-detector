@@ -239,3 +239,43 @@
         font-weight: 600;
     }
 }
+
+// The way into the app on a topic page: a raised card with one button, set off by its background.
+.cta {
+    max-width: var(--article-width);
+    margin-block: var(--gap-2x) !important;
+    padding: var(--gap-15x);
+    border-radius: var(--radius);
+    background: var(--c-background-raised);
+    box-shadow: var(--shadow-flat);
+    font-family: var(--ff-copy);
+
+    &__title {
+        font-size: var(--fs-medium);
+        font-weight: 700;
+    }
+
+    &__text {
+        margin-top: var(--gap-05x) !important;
+        font-size: var(--fs-small);
+        color: var(--c-copy-light);
+    }
+
+    &__button {
+        display: inline-flex;
+        align-items: center;
+        min-height: #{pxtorem(44)};
+        margin-top: var(--gap);
+        padding: 0 var(--gap-15x);
+        border-radius: var(--radius-medium);
+        background: var(--c-corporate);
+        color: var(--c-on-corporate);
+        font-size: var(--fs-small);
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover {
+            opacity: 0.88;
+        }
+    }
+}

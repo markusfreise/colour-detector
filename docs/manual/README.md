@@ -31,9 +31,11 @@ from the app's dependencies.
 | Path | Contents |
 | --- | --- |
 | `chapters/<lang>/NN-name.md` | Chapters. Front matter: `title`, `slug`, `lead`, `part`, optional `nav`. `slug: index` is the first page. The same `NN` in both languages is the same chapter; the language switch links them. |
+| `topics/<lang>/NN-name.md` | Topic pages: one question painters search for, written for search engines, listed under "Topics" in the navigation apart from the chapters. Front matter: `title` (the whole `<title>`), `nav`, `slug`, `lead`, `description` (meta), `date`, optional `updated`. A section `## Questions and answers` (German `## Fragen und Antworten`) with `### question` per answer, also written out as FAQPage data; `<!-- cta -->` places the button to the app. Same `NN` = same topic in both languages. |
 | `shots.mjs` | Every screenshot: which sample, settings, method, open panels, clicks, the part to cut out, the number markers |
 | `shots.json` | Size and marker positions per language and screenshot, written by `tools/screenshots.mjs` |
 | `tools/screenshots.mjs` | Takes the screenshots with Playwright (2x, WebP) into `public/manual/img/<lang>/` |
+| `tools/check.mjs` | Run after the build: every link, picture and anchor of the manual exists, every page is its own canonical, hreflang en/de/x-default agree in both directions |
 | `tools/build.mjs` | Markdown to HTML, `public/manual/manual.css` from `scss/`, and `photos.md` |
 | `scss/` | Styles of the manual; reset, functions and tokens come from `resources/scss` |
 | `photos.md` | Written by the build: the photos of the painting process still to take |

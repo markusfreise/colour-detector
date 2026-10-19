@@ -7,11 +7,18 @@
 //
 // Sources are chapters/<lang>/NN-name.md with front matter (title, slug, lead, part; nav optional).
 // The same NN in both languages is the same chapter: the language switch links them.
+// Topics are topics/<lang>/NN-name.md: pages about one question painters search for, listed apart
+// from the chapters ("Topics" in the navigation). Front matter: title (the <title>, whole), nav,
+// slug, lead, description (meta), date (first published; updated optional). Each has a section
+// "## Questions and answers" (German "## Fragen und Antworten") with one "### question" per
+// answer, which also becomes the FAQPage data, and <!-- cta --> where the button to the app goes.
 //   ![Caption](shot:<id>)   a screenshot of shots.mjs; a numbered list right under it explains
 //                           its markers
 //   ![Caption](photo:<name>) a photo of the painting process, public/manual/photos/<name>.webp;
 //                           until it is there, a frame that says a photo follows
 //   > **Tip:** / **Note:** / **Caution:** (German: Tipp, Gut zu wissen, Achtung) become boxes.
+//
+// Every page names itself as canonical and both languages plus x-default (English) as alternates.
 //
 // For search engines and language models it also writes, from the chapters and the pages in public/:
 //   public/llms.txt                     what the site is, with every page and chapter (llmstxt.org)
@@ -44,6 +51,14 @@ const LANGS = {
       manual: 'Manual',
       chapter: (n, total) => (total ? `Chapter ${n} of ${total}` : `Chapter ${n}`),
       chapters: 'Chapters',
+      topics: 'Topics',
+      topic: 'Topic',
+      faq: 'Questions and answers',
+      cta: {
+        title: 'Try it with your own reference',
+        text: 'Open a photo, and Watercolourlove finds the colours that matter and works out a recipe for each: which paints, in what ratio, with how much water. Free to try with an e-mail address; the photo stays on your device.',
+        button: 'Open the app',
+      },
       whole: 'All chapters on one page',
       prev: 'Previous',
       next: 'Next',
@@ -68,6 +83,14 @@ const LANGS = {
       manual: 'Handbuch',
       chapter: (n, total) => (total ? `Kapitel ${n} von ${total}` : `Kapitel ${n}`),
       chapters: 'Kapitel',
+      topics: 'Themen',
+      topic: 'Thema',
+      faq: 'Fragen und Antworten',
+      cta: {
+        title: 'Probier es mit deinem eigenen Foto',
+        text: 'Öffne ein Foto, und Watercolourlove findet die Farben, auf die es ankommt, und rechnet für jede ein Rezept aus: welche Farben, in welchem Verhältnis, mit wie viel Wasser. Kostenlos ausprobieren mit einer E-Mail-Adresse; das Foto bleibt auf deinem Gerät.',
+        button: 'App öffnen',
+      },
       whole: 'Alle Kapitel auf einer Seite',
       prev: 'Zurück',
       next: 'Weiter',
@@ -98,8 +121,9 @@ export function slugify(text) {
 
 // ------------------------------------------------------------ Reading
 
-function readChapters(lang) {
-  const dir = path.join(HERE, 'chapters', lang)
+function readChapters(lang, kind = 'chapters', required = ['title', 'slug', 'lead', 'part']) {
+  const dir = path.join(HERE, kind, lang)
+  if (!fs.existsSync(dir)) return []
   return fs
     .readdirSync(dir)
     .filter((f) => /^\d+-.*\.md$/.test(f))
@@ -114,11 +138,38 @@ function readChapters(lang) {
           return [line.slice(0, i).trim(), line.slice(i + 1).trim()]
         }),
       )
-      for (const key of ['title', 'slug', 'lead', 'part']) {
+      for (const key of required) {
         if (!front[key]) throw new Error(`${lang}/${file}: "${key}" missing in the front matter`)
       }
-      return { file, number: file.slice(0, 2), ...front, body: match[2] }
+      return { file: `${kind}/${file}`, number: file.slice(0, 2), kind, ...front, body: match[2] }
     })
+}
+
+const readTopics = (lang) => readChapters(lang, 'topics', ['title', 'nav', 'slug', 'lead', 'description', 'date'])
+
+/** The questions and answers of a topic, as plain text for the FAQPage data. */
+function faq(topic, lang) {
+  const heading = `## ${LANGS[lang].words.faq}`
+  const start = topic.body.indexOf(`\n${heading}\n`)
+  if (start < 0) throw new Error(`${lang}/${topic.file}: section "${heading}" missing`)
+  const section = topic.body.slice(start + heading.length + 2).split(/\n## /)[0]
+  const plain = (md) =>
+    md
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim()
+  const items = section
+    .split(/^### /m)
+    .slice(1)
+    .map((block) => {
+      const [question, ...answer] = block.split('\n')
+      return { question: plain(question), answer: plain(answer.join('\n')) }
+    })
+  if (items.length < 3) throw new Error(`${lang}/${topic.file}: fewer than three questions under "${heading}"`)
+  return items
 }
 
 // ------------------------------------------------------------ Markdown
@@ -134,6 +185,7 @@ function render(chapter, lang, used, missing) {
   const { words, assets } = LANGS[lang]
   const headings = []
   const ids = new Set()
+  let firstShot = null
   const marked = new Marked({
     gfm: true,
     renderer: {
@@ -162,6 +214,7 @@ function render(chapter, lang, used, missing) {
         const meta = META[`${lang}/${id}`]
         if (!meta) throw new Error(`${lang}/${chapter.file}: screenshot "${id}" missing in shots.json`)
         used.add(id)
+        firstShot ??= id
         const markers = meta.markers
           .map((m) => `<span class="shot__marker" style="left:${m.x}%;top:${m.y}%" aria-hidden="true">${m.n}</span>`)
           .join('')
@@ -189,12 +242,19 @@ function render(chapter, lang, used, missing) {
   let html = marked.parse(chapter.body)
   html = html.replace(/(<\/figure>\s*)<ol>/g, '$1<ol class="legend">')
   html = html.replace(/<table>/g, '<div class="table-wrap"><table class="table">').replace(/<\/table>/g, '</table></div>')
-  return { html, headings }
+  html = html.replace(/<!-- cta -->\n?/g, cta(lang))
+  return { html, headings, firstShot }
+}
+
+/** The way into the app, on a topic page. */
+function cta(lang) {
+  const { title, text, button } = LANGS[lang].words.cta
+  return `<aside class="cta"><p class="cta__title">${esc(title)}</p><p class="cta__text">${esc(text)}</p><a class="cta__button" href="${SITE}/">${esc(button)}</a></aside>\n`
 }
 
 // ------------------------------------------------------------ Pages
 
-function nav(lang, chapters, current, single) {
+function nav(lang, chapters, topics, current, single) {
   const { words, all } = LANGS[lang]
   let part = null
   const items = chapters
@@ -211,10 +271,19 @@ function nav(lang, chapters, current, single) {
     })
     .join('')
   const whole = single ? '' : `<p class="nav__whole"><a href="${all}.html">${words.whole}</a></p>`
-  return `<nav class="nav" aria-label="${words.chapters}"><details class="nav__details" open><summary class="nav__summary">${words.chapters}${current ? `: ${esc(current.nav ?? current.title)}` : ''}</summary><ol class="nav__list">${items}</ol>${whole}</details></nav>`
+  // The topics apart from the chapters, unnumbered: they are not part of the book's order.
+  const topicItems = topics
+    .map((t) => {
+      const active = t.slug === current?.slug
+      return `<li class="nav__item${active ? ' nav__item--active' : ''}"><a href="${t.slug}.html"${active ? ' aria-current="page"' : ''}>${esc(t.nav)}</a></li>`
+    })
+    .join('')
+  const topicList = topics.length ? `<p class="nav__part nav__part--topics">${words.topics}</p><ul class="nav__list nav__list--topics">${topicItems}</ul>` : ''
+  const label = current?.kind === 'topics' ? words.topics : words.chapters
+  return `<nav class="nav" aria-label="${words.chapters}"><details class="nav__details" open><summary class="nav__summary">${label}${current ? `: ${esc(current.nav ?? current.title)}` : ''}</summary><ol class="nav__list">${items}</ol>${topicList}${whole}</details></nav>`
 }
 
-function page(lang, { title, description, body, navHtml, other }) {
+function page(lang, { title, description, body, navHtml, other, canonical, alternates, data }) {
   const { words, assets, app } = LANGS[lang]
   return `<!doctype html>
 <html lang="${lang}">
@@ -224,8 +293,11 @@ function page(lang, { title, description, body, navHtml, other }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="stylesheet" href="${assets}manual.css">
-<link rel="alternate" hreflang="${lang === 'en' ? 'de' : 'en'}" href="${other}">
-<script>
+<link rel="canonical" href="${canonical}">
+<link rel="alternate" hreflang="en" href="${alternates.en}">
+<link rel="alternate" hreflang="de" href="${alternates.de}">
+<link rel="alternate" hreflang="x-default" href="${alternates.en}">
+${data ? `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>\n` : ''}<script>
   // Dark or light as chosen in the app, else as the system says.
   try { const p = JSON.parse(localStorage.getItem('colour-detector:preferences') || '{}'); if (p.theme === 'light' || p.theme === 'dark') document.documentElement.dataset.theme = p.theme } catch {}
   // On a phone the chapter list starts folded; on a wider screen it is always open.
@@ -328,7 +400,8 @@ function pages() {
   return ['', ...found.sort()]
 }
 
-function crawlFiles(books) {
+function crawlFiles(books, topics) {
+  const topicList = (lang) => topics[lang].map((t) => `- [${t.nav}](${chapterUrl(lang, t)}): ${t.description}`)
   const list = (lang) => {
     let part = ''
     return books[lang].flatMap((c) => {
@@ -357,6 +430,8 @@ function crawlFiles(books) {
     '## Handbuch (Deutsch)',
     ...list('de'),
     '',
+    ...(topics.en.length ? ['## Topics', '', ...topicList('en'), ''] : []),
+    ...(topics.de.length ? ['## Themen (Deutsch)', '', ...topicList('de'), ''] : []),
     '## Optional',
     '',
     `- [The whole manual as Markdown](${url('llms-full.txt')})`,
@@ -380,28 +455,68 @@ function crawlFiles(books) {
   return urls.length
 }
 
+/** Structured data of a topic: the article and its questions and answers. */
+function topicData(lang, t) {
+  const address = chapterUrl(lang, t)
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: t.html.match(/<h1 class="chapter__title">([\s\S]*?)<\/h1>/)[1].replace(/<[^>]+>/g, ''),
+        description: t.description,
+        inLanguage: lang,
+        url: address,
+        mainEntityOfPage: address,
+        ...(t.firstShot ? { image: url(`manual/img/${lang}/${t.firstShot}.webp`) } : {}),
+        datePublished: t.date,
+        dateModified: t.updated ?? t.date,
+        author: { '@type': 'Person', name: 'Markus Freise' },
+        publisher: { '@type': 'Organization', name: 'Watercolourlove', url: `${SITE}/` },
+      },
+      {
+        '@type': 'FAQPage',
+        url: address,
+        inLanguage: lang,
+        mainEntity: faq(t, lang).map(({ question, answer }) => ({
+          '@type': 'Question',
+          name: question,
+          acceptedAnswer: { '@type': 'Answer', text: answer },
+        })),
+      },
+    ],
+  }
+}
+
 function build() {
   LOGO = fs.readFileSync(path.join(ROOT, 'resources/logo.svg'), 'utf8').replace(/fill="black"/g, 'fill="currentColor"').replace(/<svg /, '<svg aria-hidden="true" ')
   const books = Object.fromEntries(Object.keys(LANGS).map((lang) => [lang, readChapters(lang)]))
+  const topics = Object.fromEntries(Object.keys(LANGS).map((lang) => [lang, readTopics(lang)]))
   const report = []
 
   for (const [lang, chapters] of Object.entries(books)) {
     const { out, words, all } = LANGS[lang]
     const otherLang = lang === 'en' ? 'de' : 'en'
-    const otherBook = books[otherLang]
     const otherBase = lang === 'en' ? '../de/handbuch/' : '../../manual/'
-    const counterpart = (c) => {
-      const twin = otherBook.find((o) => o.number === c.number)
-      return `${otherBase}${twin ? twin.slug : 'index'}.html`
+    // The page of the other language with the same number: the language switch and hreflang.
+    const twin = (c) => (c.kind === 'topics' ? topics : books)[otherLang].find((o) => o.number === c.number)
+    const counterpart = (c) => `${otherBase}${twin(c)?.slug ?? 'index'}.html`
+    const alternates = (c) => {
+      const other = twin(c) ?? books[otherLang][0]
+      return { [lang]: chapterUrl(lang, c), [otherLang]: chapterUrl(otherLang, other) }
     }
 
     const slugs = new Set(chapters.map((c) => c.slug))
+    for (const t of topics[lang]) {
+      if (slugs.has(t.slug) || t.slug === all) throw new Error(`${lang}/${t.file}: slug "${t.slug}" is taken by a chapter`)
+    }
+    const pageSlugs = new Set([...slugs, ...topics[lang].map((t) => t.slug)])
     const used = new Set()
     const missing = new Set()
-    for (const c of chapters) Object.assign(c, render(c, lang, used, missing))
+    for (const c of [...chapters, ...topics[lang]]) Object.assign(c, render(c, lang, used, missing))
     fs.mkdirSync(out, { recursive: true })
-    // Pages of an earlier build that no chapter makes any more.
-    for (const f of fs.readdirSync(out)) if (f.endsWith('.html') && f !== `${all}.html` && !slugs.has(f.replace(/\.html$/, ''))) fs.rmSync(path.join(out, f))
+    // Pages of an earlier build that no chapter or topic makes any more.
+    for (const f of fs.readdirSync(out)) if (f.endsWith('.html') && f !== `${all}.html` && !pageSlugs.has(f.replace(/\.html$/, ''))) fs.rmSync(path.join(out, f))
 
     chapters.forEach((c, i) => {
       const body =
@@ -410,18 +525,54 @@ function build() {
         `${pager(lang, chapters, i)}</article>`
       fs.writeFileSync(
         path.join(out, `${c.slug}.html`),
-        page(lang, { title: `${c.title} | Watercolourlove ${words.manual}`, description: c.lead, body, navHtml: nav(lang, chapters, c, false), other: counterpart(c) }),
+        page(lang, {
+          title: `${c.title} | Watercolourlove ${words.manual}`,
+          description: c.lead,
+          body,
+          navHtml: nav(lang, chapters, topics[lang], c, false),
+          other: counterpart(c),
+          canonical: chapterUrl(lang, c),
+          alternates: alternates(c),
+        }),
       )
     })
+
+    for (const t of topics[lang]) {
+      const body =
+        `<article class="chapter topic"><p class="chapter__kicker"><span>${words.topic}</span></p>\n` +
+        t.html.replace(/(<h1 class="chapter__title">[\s\S]*?<\/h1>\n)/, `$1<p class="chapter__lead">${esc(t.lead)}</p>\n`) +
+        `</article>`
+      fs.writeFileSync(
+        path.join(out, `${t.slug}.html`),
+        page(lang, {
+          title: t.title,
+          description: t.description,
+          body,
+          navHtml: nav(lang, chapters, topics[lang], t, false),
+          other: counterpart(t),
+          canonical: chapterUrl(lang, t),
+          alternates: alternates(t),
+          data: topicData(lang, t),
+        }),
+      )
+    }
 
     const whole = chapters
       .map((c, i) => `<section class="chapter" id="${c.slug}"><p class="chapter__kicker"><span>${esc(c.part)}</span><span>${words.chapter(i + 1)}</span></p>\n${localize(c.html, c, slugs)}</section>`)
       .join('\n')
     fs.writeFileSync(
       path.join(out, `${all}.html`),
-      page(lang, { title: words.allTitle, description: words.allLead, body: whole, navHtml: nav(lang, chapters, null, true), other: `${otherBase}${LANGS[otherLang].all}.html` }),
+      page(lang, {
+        title: words.allTitle,
+        description: words.allLead,
+        body: whole,
+        navHtml: nav(lang, chapters, topics[lang], null, true),
+        other: `${otherBase}${LANGS[otherLang].all}.html`,
+        canonical: url(`${LANGS[lang].base}${all}.html`),
+        alternates: { [lang]: url(`${LANGS[lang].base}${all}.html`), [otherLang]: url(`${LANGS[otherLang].base}${LANGS[otherLang].all}.html`) },
+      }),
     )
-    report.push(`${lang}: ${chapters.length} chapters, ${used.size} screenshots${missing.size ? `, photos to come: ${[...missing].join(', ')}` : ''}`)
+    report.push(`${lang}: ${chapters.length} chapters, ${topics[lang].length} topics, ${used.size} screenshots${missing.size ? `, photos to come: ${[...missing].join(', ')}` : ''}`)
   }
 
   const css = sass.compile(path.join(HERE, 'scss/site.scss'), {
@@ -431,7 +582,7 @@ function build() {
   fs.writeFileSync(path.join(ASSETS, 'manual.css'), css)
   fs.copyFileSync(path.join(HERE, 'lightbox.js'), path.join(ASSETS, 'manual.js'))
   photoList()
-  report.push(`crawlers: llms.txt, llms-full.txt (en, de), sitemap.xml with ${crawlFiles(books)} pages, robots.txt`)
+  report.push(`crawlers: llms.txt, llms-full.txt (en, de), sitemap.xml with ${crawlFiles(books, topics)} pages, robots.txt`)
   console.log(report.join('\n'))
 }
 

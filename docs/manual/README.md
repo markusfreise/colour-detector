@@ -45,6 +45,9 @@ from the app's dependencies.
 
 - `![Caption](shot:<id>)` shows a screenshot of `shots.mjs`, in the language of the page. A numbered
   list right under it explains its markers, in the order of `markers` in `shots.mjs`.
+- `<!-- chart:<id> -->` on its own line shows a paint library of `src/data/libraries.js` (`horadam`,
+  `winsor-newton-professional`, `sennelier`, `michael-harding`, `common`) as a table: swatch, number,
+  name, and pigments and transparency where the library has them.
 - `![Caption](photo:<name>)` shows `public/manual/photos/<name>.webp` (or .jpg, .png). Until the file
   is there, the page shows an empty frame that says a photo follows, and `photos.md` lists it.
 - `> **Tip:** ...`, `> **Note:** ...`, `> **Caution:** ...` become boxes; in German

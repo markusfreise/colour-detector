@@ -197,6 +197,33 @@
     }
 }
 
+// A maker's colour chart on a topic page: one row per paint, its swatch first.
+.chart {
+    td {
+        vertical-align: middle;
+    }
+
+    &__swatch {
+        display: inline-block;
+        width: #{pxtorem(36)};
+        height: #{pxtorem(24)};
+        border-radius: var(--radius-small);
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
+
+        &--none {
+            width: auto;
+            height: auto;
+            box-shadow: none;
+            font-size: var(--fs-mini);
+            color: var(--c-copy-light);
+        }
+    }
+
+    &__alt {
+        color: var(--c-copy-light);
+    }
+}
+
 // Previous and next chapter at the end of a chapter.
 .pager {
     display: grid;

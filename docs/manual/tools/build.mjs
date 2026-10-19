@@ -16,6 +16,8 @@
 //                           its markers
 //   ![Caption](photo:<name>) a photo of the painting process, public/manual/photos/<name>.webp;
 //                           until it is there, a frame that says a photo follows
+//   <!-- chart:<id> -->     a maker's colour chart from src/data/libraries.js as a table, on its
+//                           own line (topic pages of the four makers)
 //   > **Tip:** / **Note:** / **Caution:** (German: Tipp, Gut zu wissen, Achtung) become boxes.
 //
 // Every page names itself as canonical and both languages plus x-default (English) as alternates.
@@ -31,6 +33,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Marked } from 'marked'
 import * as sass from 'sass'
+import { PAINT_LIBRARIES } from '../../../src/data/libraries.js'
 
 const HERE = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 const ROOT = path.resolve(HERE, '../..')
@@ -58,6 +61,15 @@ const LANGS = {
         title: 'Try it with your own reference',
         text: 'Open a photo, and Watercolourlove finds the colours that matter and works out a recipe for each: which paints, in what ratio, with how much water. Free to try with an e-mail address; the photo stays on your device.',
         button: 'Open the app',
+      },
+      chart: {
+        colour: 'Colour',
+        number: 'No.',
+        name: 'Name',
+        pigments: 'Pigments',
+        transparency: 'Transparency',
+        levels: { T: 'transparent', ST: 'semi-transparent', SO: 'semi-opaque', O: 'opaque' },
+        none: 'set by hand',
       },
       whole: 'All chapters on one page',
       prev: 'Previous',
@@ -90,6 +102,15 @@ const LANGS = {
         title: 'Probier es mit deinem eigenen Foto',
         text: 'Öffne ein Foto, und Watercolourlove findet die Farben, auf die es ankommt, und rechnet für jede ein Rezept aus: welche Farben, in welchem Verhältnis, mit wie viel Wasser. Kostenlos ausprobieren mit einer E-Mail-Adresse; das Foto bleibt auf deinem Gerät.',
         button: 'App öffnen',
+      },
+      chart: {
+        colour: 'Farbe',
+        number: 'Nr.',
+        name: 'Name',
+        pigments: 'Pigmente',
+        transparency: 'Transparenz',
+        levels: { T: 'transparent', ST: 'halbtransparent', SO: 'halbdeckend', O: 'deckend' },
+        none: 'von Hand',
       },
       whole: 'Alle Kapitel auf einer Seite',
       prev: 'Zurück',
@@ -243,7 +264,32 @@ function render(chapter, lang, used, missing) {
   html = html.replace(/(<\/figure>\s*)<ol>/g, '$1<ol class="legend">')
   html = html.replace(/<table>/g, '<div class="table-wrap"><table class="table">').replace(/<\/table>/g, '</table></div>')
   html = html.replace(/<!-- cta -->\n?/g, cta(lang))
+  html = html.replace(/<!-- chart:([a-z-]+) -->\n?/g, (_, id) => chart(lang, id))
   return { html, headings, firstShot }
+}
+
+/** A maker's colour chart as the app knows it, from src/data/libraries.js: swatch, number, name, and pigments and transparency where the chart gives them. */
+function chart(lang, id) {
+  const library = PAINT_LIBRARIES.find((l) => l.id === id)
+  if (!library) throw new Error(`chart:${id}: no such paint library`)
+  const words = LANGS[lang].words.chart
+  const colours = library.catalogue
+  const pigments = colours.some((c) => c.pigments?.length)
+  const transparency = colours.some((c) => c.transparency)
+  const head = [words.colour, words.number, words.name, ...(pigments ? [words.pigments] : []), ...(transparency ? [words.transparency] : [])]
+  const rows = colours.map((c) => {
+    const name = c.names?.[lang] && c.names[lang] !== c.name ? `${esc(c.name)} <span class="chart__alt">(${esc(c.names[lang])})</span>` : esc(c.name)
+    const swatch = c.hex
+      ? `<span class="chart__swatch" style="background:${c.hex}" title="${c.hex}"></span>`
+      : `<span class="chart__swatch chart__swatch--none">${words.none}</span>`
+    return (
+      `<tr><td>${swatch}</td><td>${esc(c.number)}</td><td>${name}</td>` +
+      (pigments ? `<td>${esc((c.pigments ?? []).join(', '))}</td>` : '') +
+      (transparency ? `<td>${words.levels[c.transparency] ?? ''}</td>` : '') +
+      '</tr>'
+    )
+  })
+  return `<div class="table-wrap"><table class="table chart"><thead><tr>${head.map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>\n`
 }
 
 /** The way into the app, on a topic page. */

@@ -105,8 +105,8 @@
         </form>
 
         <!-- Below the form: the early bird of plans.json until its last day, then the Pro version
-             and the manual side by side. -->
-        <template v-if="!account.sentTo">
+             and the manual side by side. At the foot of the column, level with the picture beside it. -->
+        <div v-if="!account.sentTo" class="gate__extras">
           <p v-if="earlyBird" class="gate__offer">
             <strong class="gate__offer-percent">{{ early.percent_off }}%</strong>
             <span class="gate__offer-terms">{{ t('off yearly and lifetime') }}<br />{{ t('early bird until 30 Nov 2026') }}</span>
@@ -115,7 +115,7 @@
             <a class="button gate__more-link" :href="legalPage('pricing')" target="_blank" rel="noopener">{{ t('Pro version') }}</a>
             <a v-if="!isNative" class="button gate__more-link" :href="legalPage('manual')" target="_blank" rel="noopener">{{ t('Manual') }}</a>
           </div>
-        </template>
+        </div>
       </template>
 
       <p v-if="account.error" class="gate__error">{{ account.error }}</p>

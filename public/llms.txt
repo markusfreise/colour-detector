@@ -1,12 +1,12 @@
 # Watercolourlove
 
-> Watercolourlove turns a photo into a plan for a real watercolour: it finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas you can transfer to paper.
+> Watercolourlove is a tool for painters who work from photos, made for professionals and ambitious amateurs: it identifies the colours in a reference that matter and works out how to mix each one from the paints you own, which paints, in what ratio, with how much water.
 
-A web app at https://watercolourlove.de/ (free account with just an e-mail address; prepaid picture packs or Pro for more), also for iPhone, iPad and Mac. Everything is worked out on the device: photos are never uploaded, and pictures, paint boxes and collection stay in the browser. It knows 40 common colours and, with Pro, the colour charts of Schmincke Horadam, Winsor & Newton Professional, Michael Harding and Sennelier L'Aquarelle. Two methods: mix every colour on the palette, or glaze a few base paints in layers. The manual, in English and German, explains the app and painting with watercolour.
+A web app at https://watercolourlove.de/ (free account with just an e-mail address; prepaid picture packs or Pro for more), also for iPhone, iPad and Mac. The focus is recognising colours and their mixes: colour areas, recipes from your own paints, blocking of light and shadow, values, layer mode for glazing, close-ups, and calibrating the paints to your own swatches. Printouts with a grid and numbered areas are secondary aids. It knows 40 common colours and, with Pro, the colour charts of Schmincke Horadam, Winsor & Newton Professional, Michael Harding and Sennelier L'Aquarelle. Everything is worked out on the device: photos are never uploaded, and pictures, paint boxes and collection stay in the browser. The manual, in English and German, explains the app and painting with watercolour.
 
 ## About
 
-- [About Watercolourlove](https://watercolourlove.de/about/): what the app does, how it works, what it costs
+- [About Watercolourlove](https://watercolourlove.de/about/): recognising colours and mixing them, the tools for reading a reference, what it costs
 - [Über Watercolourlove](https://watercolourlove.de/de/ueber/): the same in German
 - [Prices](https://watercolourlove.de/pricing/): free, prepaid picture packs, Pro monthly, yearly or lifetime
 - [Watercolourlove for iPhone, iPad and Mac](https://watercolourlove.de/app/): the native app, with support and privacy
@@ -15,7 +15,7 @@ A web app at https://watercolourlove.de/ (free account with just an e-mail addre
 
 ### Getting started
 
-- [Welcome to Watercolourlove](https://watercolourlove.de/manual/): Watercolourlove turns a photo into a plan for a real watercolour. It finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas you can transfer to paper.
+- [Welcome to Watercolourlove](https://watercolourlove.de/manual/): Watercolourlove is a tool for painters who work from photos. It finds the colours in your reference that matter and works out how to mix each one from the paints you own, with how much water. Colour areas, blocking and values help you read the picture before you paint it.
 - [From photo to painting](https://watercolourlove.de/manual/quick-start.html): One picture from the first click to the last brush stroke. Steps 1 to 7 happen in the app and take about ten minutes; steps 8 to 14 happen at the desk.
 
 ### The app
@@ -48,7 +48,7 @@ A web app at https://watercolourlove.de/ (free account with just an e-mail addre
 
 ### Erste Schritte
 
-- [Willkommen bei Watercolourlove](https://watercolourlove.de/de/handbuch/): Watercolourlove macht aus einem Foto den Plan für ein echtes Aquarell. Die App findet die Farben, auf die es ankommt, sagt dir, wie du jede aus deinen eigenen Farben mischst, und zeigt das Foto als flache, nummerierte Flächen, die du aufs Papier übertragen kannst.
+- [Willkommen bei Watercolourlove](https://watercolourlove.de/de/handbuch/): Watercolourlove ist ein Werkzeug für alle, die nach Foto malen. Die App erkennt die Farben, auf die es in deiner Vorlage ankommt, und berechnet, wie du jede aus deinen eigenen Farben mischst, mit wie viel Wasser. Farbflächen, Blocking und Tonwerte helfen dir, das Bild zu lesen, bevor du es malst.
 - [Vom Foto zum Bild](https://watercolourlove.de/de/handbuch/schnellstart.html): Ein Bild vom ersten Klick bis zum letzten Pinselstrich. Die Schritte 1 bis 7 passieren in der App und dauern etwa zehn Minuten, die Schritte 8 bis 14 am Maltisch.
 
 ### Die App

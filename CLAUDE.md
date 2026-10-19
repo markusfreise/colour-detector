@@ -11,7 +11,7 @@ Finds the main colours in a photo, mixes each from Markus' own watercolours and 
 |---|---|
 | Name | Watercolourlove (until 2026-10-12: Colour Detector; repo, folder, slug and storage keys keep the old name) |
 | Slug | `colour-detector` |
-| Live | https://watercolourlove.de (Mittwald, `_sites/watercolourlove`; push to `main`, then Markus starts the deploy webhook: batcave builds `main` with `deploy/remote-deploy.sh` and copies it there) |
+| Live | https://watercolourlove.de (Mittwald, `_sites/watercolourlove`; a push to `main` deploys it: GitHub webhook → `webhook.php` → `deploy/deploy.sh` builds in the checkout `~/colour-detector` there; see README, Deploy) |
 | Old address | https://watercolourlove.markus-freise.de (the build before the domain; to be redirected to the domain) |
 | Repo | git@github.com:markusfreise/colour-detector.git |
 | Local | ~/Sites/colour-detector |
@@ -34,7 +34,7 @@ Vue 3 (Composition API, `<script setup>`) · Pinia · Vite 5 · Vitest · Web Wo
 - `src/stores/` – `paints` (stock + enabled set, localStorage) and `analysis` (image, settings, segmentation, palette entries).
 - `src/data/paints.js` – hard-coded stock. `hex` = colour at strength 1, and since 2026-10-12 the darkest the paint is ever used: more of one paint than strength 1 does not exist (`MAX_AMOUNT` in `lib/mixing.js`). Darker needs a second paint. The stock values come from the Horadam chart, which shows a mid-strength wash, so dark paints are recorded lighter than they are at full strength.
 - `docs/manual/` – the manual (EN `public/manual/`, DE `public/de/handbuch/`), built by `docs/manual/build.sh`: chapters in Markdown, screenshots of the app via Playwright. After a UI change, re-run it and re-read the chapters that show the changed screens. The same build writes `public/llms.txt`, `llms-full.txt` (EN, DE), `sitemap.xml` and `robots.txt`; after adding or removing a page in `public/`, run `docs/manual/build.sh --pages`.
-- `deploy/` – `webhook.php` + `deploy.sh` for the live server.
+- `deploy/` – `webhook.php` + `deploy.sh` for the live server (`remote-deploy.sh`: the old way over batcave, until the webhook runs).
 - `app/` – native app **Watercolourlove** (SwiftUI, iOS/iPadOS/macOS, bundle ID `de.markusfreise.watercolourlove`, until 2026-10-15 named Tintmap); its support and privacy pages are `public/app/`. `app/Sources/Core/` is a port of `src/lib/`: change both sides together. Details in `app/README.md`.
 
 ## Conventions
@@ -59,7 +59,7 @@ Agents also work in a checkout on batcave (LXC 114, `/var/www/watercolourlove`),
 
 - **Push at once:** every change made on batcave is committed and pushed to the working branch right away. Nothing stays only in that checkout; before starting, pull.
 - **Dev instance:** https://watercolourlove.croeso.de serves `dist/` of that checkout: run `npm run build` to show a change there. Never name this address in public texts.
-- **Deploy to the public host:** only Markus starts it, with the deploy webhook (`deploy/remote-deploy.sh` builds what is pushed and publishes it). Agents do not call it.
+- **Deploy to the public host:** a push to `main` deploys it (Mittwald builds it itself). Pushing to `main` is Markus' call, see below.
 
 ## Not without asking
 

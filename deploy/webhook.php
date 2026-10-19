@@ -2,7 +2,7 @@
 /**
  * GitHub push webhook for Watercolourlove.
  *
- * Lives in the web root (https://markus-freise.de/colour-detective/webhook.php).
+ * Lives in the web root (https://watercolourlove.de/webhook.php).
  * Verifies GitHub's HMAC signature, then starts deploy.sh in the background
  * (git pull + npm ci + npm run build + copy dist/ into the web root) and returns 202.
  *

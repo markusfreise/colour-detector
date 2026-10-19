@@ -6,6 +6,9 @@
 
 declare(strict_types=1);
 
+// The native app's own address scheme, its bundle ID: where a sign-in in the browser returns to.
+const APP_SCHEME = 'de.markusfreise.watercolourlove';
+
 const OAUTH = [
     'google' => [
         'authorize' => 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -284,20 +287,24 @@ function providerSettings(string $provider): array
     return config($provider);
 }
 
-/** Apple wants a signed statement in place of a client secret. */
-function appleSecret(array $settings): string
+/**
+ * Apple wants a signed statement in place of a client secret, made for the client that asks: the
+ * Services ID for the web, the bundle ID for the app. Empty when the key cannot be used.
+ */
+function appleSecret(string $client): string
 {
-    $header = base64url(json_encode(['alg' => 'ES256', 'kid' => $settings['key_id']]));
+    $settings = config('apple') ?? [];
+    $header = base64url(json_encode(['alg' => 'ES256', 'kid' => $settings['key_id'] ?? '']));
     $claims = base64url(json_encode([
-        'iss' => $settings['team_id'],
+        'iss' => $settings['team_id'] ?? '',
         'iat' => time(),
         'exp' => time() + 300,
         'aud' => 'https://appleid.apple.com',
-        'sub' => $settings['client_id'],
+        'sub' => $client,
     ]));
-    $key = openssl_pkey_get_private((string) file_get_contents($settings['key_file']));
+    $key = openssl_pkey_get_private((string) @file_get_contents((string) ($settings['key_file'] ?? '')));
     if (!$key || !openssl_sign("$header.$claims", $der, $key, OPENSSL_ALGO_SHA256)) {
-        fail(500, 'The Apple key could not be used.');
+        return '';
     }
     // openssl signs in DER; a token wants the two numbers side by side, 32 bytes each.
     $offset = 3 + (ord($der[1]) & 0x80 ? ord($der[1]) & 0x7f : 0);
@@ -310,15 +317,70 @@ function appleSecret(array $settings): string
     return "$header.$claims." . base64url($numbers[0] . $numbers[1]);
 }
 
+/** The client secret for a provider and client, or a failed request when there is none. */
+function clientSecret(string $provider, string $client): string
+{
+    if ($provider !== 'apple') {
+        return (string) config($provider)['client_secret'];
+    }
+    $secret = appleSecret($client);
+    return $secret !== '' ? $secret : fail(500, 'The Apple key could not be used.');
+}
+
+/**
+ * Who the identity token from Google or Apple names, as [subject, address]. The token comes
+ * straight from the provider over TLS, so its content can be trusted as received; who it is for and
+ * who issued it are still checked. The address is empty unless the provider has verified it.
+ */
+function identityOf(string $provider, array $answer, string $client): array
+{
+    $parts = explode('.', (string) ($answer['id_token'] ?? ''));
+    $identity = json_decode(base64urlDecode($parts[1] ?? ''), true) ?: [];
+    $genuine = ($identity['aud'] ?? '') === $client && in_array($identity['iss'] ?? '', OAUTH[$provider]['issuer'], true);
+    if (!$genuine) {
+        return ['', ''];
+    }
+    $verified = filter_var($identity['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
+    return [(string) ($identity['sub'] ?? ''), $verified ? (string) ($identity['email'] ?? '') : ''];
+}
+
+/**
+ * The account a provider's sign-in belongs to: known by the provider's subject, else by the address,
+ * created on first sight. Null when the provider is new and gave no address to hang it on. Apple's
+ * refresh token is kept, to take the sign-in back when the account is deleted.
+ */
+function accountFor(string $provider, string $subject, string $email, array $answer, string $client): ?int
+{
+    $known = row('SELECT user_id FROM identities WHERE provider = ? AND subject = ?', [$provider, $subject]);
+    if ($known) {
+        $userId = (int) $known['user_id'];
+    } elseif (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $userId = (int) userByEmail($email)['id'];
+        run('INSERT INTO identities (provider, subject, user_id) VALUES (?, ?, ?)', [$provider, $subject, $userId]);
+    } else {
+        return null;
+    }
+    if ($provider === 'apple' && ($answer['refresh_token'] ?? '') !== '') {
+        run('UPDATE identities SET revoke_token = ?, revoke_client = ? WHERE provider = ? AND subject = ?', [(string) $answer['refresh_token'], $client, $provider, $subject]);
+    }
+    return $userId;
+}
+
 function startOauth(string $provider): never
 {
     method('GET');
     $settings = providerSettings($provider);
+    // From the native app: the hash of a secret only the app knows, which it shows to collect the
+    // sign-in (exchangeHandoff), so that nobody else who sees the way back can use it.
+    $app = (string) ($_GET['app'] ?? '');
+    if ($app !== '' && !preg_match('/^[A-Za-z0-9_-]{43}$/', $app)) {
+        fail(400, 'The app sent a wrong challenge.');
+    }
     // The state comes back with the visitor; the cookie proves it is the same browser. It must
     // also travel with Apple's answer, which is a form sent from apple.com: hence SameSite=None.
     $nonce = token();
     setcookie(STATE_COOKIE, $nonce, ['expires' => time() + 600, 'path' => cookiePath(), 'secure' => true, 'httponly' => true, 'samesite' => 'None']);
-    $state = base64url(json_encode(['p' => $provider, 'n' => hash('sha256', $nonce), 't' => time()]));
+    $state = base64url(json_encode(['p' => $provider, 'n' => hash('sha256', $nonce), 't' => time()] + ($app !== '' ? ['a' => $app] : [])));
     $query = [
         'client_id' => $settings['client_id'],
         'redirect_uri' => apiUrl("auth/$provider/callback"),
@@ -328,6 +390,9 @@ function startOauth(string $provider): never
     ];
     if ($provider === 'apple') {
         $query['response_mode'] = 'form_post'; // Apple's rule as soon as the address is asked for
+    }
+    if ($provider === 'google') {
+        $query['prompt'] = 'select_account'; // a shared computer or a second account: always ask which
     }
     redirect(OAUTH[$provider]['authorize'] . '?' . http_build_query($query));
 }
@@ -340,12 +405,16 @@ function finishOauth(string $provider): never
     $claims = json_decode(base64urlDecode($state), true) ?: [];
     $nonce = $_COOKIE[STATE_COOKIE] ?? '';
     setcookie(STATE_COOKIE, '', ['expires' => 1, 'path' => cookiePath(), 'secure' => true, 'httponly' => true, 'samesite' => 'None']);
-    $valid = hash_equals(sign($state), $signature)
+    $authentic = hash_equals(sign($state), $signature);
+    // Only a state this server signed may send the visitor to the app.
+    $app = $authentic ? (string) ($claims['a'] ?? '') : '';
+    $back = fn (string $result) => $app !== '' ? backToNativeApp(['error' => $result]) : backToApp("login=$result");
+    $valid = $authentic
         && ($claims['p'] ?? '') === $provider
         && time() - (int) ($claims['t'] ?? 0) < 600
         && $nonce !== '' && hash_equals((string) ($claims['n'] ?? ''), hash('sha256', $nonce));
     if (!$valid || !isset($input['code'])) {
-        backToApp('login=failed');
+        $back('failed');
     }
 
     $answer = http('POST', OAUTH[$provider]['token'], [
@@ -353,7 +422,7 @@ function finishOauth(string $provider): never
         'code' => (string) $input['code'],
         'redirect_uri' => apiUrl("auth/$provider/callback"),
         'client_id' => $settings['client_id'],
-        'client_secret' => $provider === 'apple' ? appleSecret($settings) : $settings['client_secret'],
+        'client_secret' => clientSecret($provider, $settings['client_id']),
     ])['data'];
 
     if ($provider === 'meta') {
@@ -361,30 +430,89 @@ function finishOauth(string $provider): never
         $subject = (string) ($profile['id'] ?? '');
         $email = (string) ($profile['email'] ?? '');
     } else {
-        // The identity token comes straight from the provider over TLS, so its content can be
-        // trusted as received; who it is for and who issued it are still checked.
-        $parts = explode('.', (string) ($answer['id_token'] ?? ''));
-        $identity = json_decode(base64urlDecode($parts[1] ?? ''), true) ?: [];
-        $verified = filter_var($identity['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $genuine = ($identity['aud'] ?? '') === $settings['client_id'] && in_array($identity['iss'] ?? '', OAUTH[$provider]['issuer'], true);
-        $subject = $genuine ? (string) ($identity['sub'] ?? '') : '';
-        $email = $genuine && $verified ? (string) ($identity['email'] ?? '') : '';
+        [$subject, $email] = identityOf($provider, $answer, $settings['client_id']);
     }
     if ($subject === '') {
-        backToApp('login=failed');
+        $back('failed');
     }
-
-    $known = row('SELECT user_id FROM identities WHERE provider = ? AND subject = ?', [$provider, $subject]);
-    if ($known) {
-        $userId = (int) $known['user_id'];
-    } else {
-        // Without an address there is nothing to hang the account on.
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            backToApp('login=no-email');
-        }
-        $userId = (int) userByEmail($email)['id'];
-        run('INSERT INTO identities (provider, subject, user_id) VALUES (?, ?, ?)', [$provider, $subject, $userId]);
+    // Without an address there is nothing to hang a new account on.
+    $userId = accountFor($provider, $subject, $email, $answer, $settings['client_id']) ?? $back('no-email');
+    if ($app !== '') {
+        $code = token();
+        run('DELETE FROM app_handoffs WHERE expires_at < ?', [time()]);
+        run('INSERT INTO app_handoffs (hash, user_id, challenge, expires_at) VALUES (?, ?, ?, ?)', [hash('sha256', $code), $userId, $app, time() + 300]);
+        backToNativeApp(['code' => $code]);
     }
     startSession($userId);
-    backToApp('login=ok');
+    $back('ok');
+}
+
+// --- The native app -----------------------------------------------------------------------------
+
+/** Back to the native app, which waits for its own address in the browser it opened. */
+function backToNativeApp(array $query): never
+{
+    redirect(APP_SCHEME . '://signed-in?' . http_build_query($query));
+}
+
+/** The app collects a sign-in from the browser with the secret whose hash it sent at the start. */
+function exchangeHandoff(): never
+{
+    method('POST');
+    $given = body();
+    $code = (string) ($given['code'] ?? '');
+    $verifier = (string) ($given['verifier'] ?? '');
+    $handoff = row('SELECT * FROM app_handoffs WHERE hash = ? AND expires_at > ?', [hash('sha256', $code), time()]);
+    if (!$handoff || !hash_equals($handoff['challenge'], base64url(hash('sha256', $verifier, true)))) {
+        fail(401, 'The sign-in has expired. Please try again.');
+    }
+    run('DELETE FROM app_handoffs WHERE hash = ?', [$handoff['hash']]);
+    sendAppSession((int) $handoff['user_id']);
+}
+
+/** Sign in with Apple inside the app: the app sends the code Apple gave it, the server redeems it. */
+function signInAppleNative(): never
+{
+    method('POST');
+    $given = body();
+    if (!in_array('apple', appProviders(), true)) {
+        fail(404, 'This way of signing in is not available.');
+    }
+    $client = (string) config('apple')['app_id'];
+    $answer = http('POST', OAUTH['apple']['token'], [
+        'grant_type' => 'authorization_code',
+        'code' => (string) ($given['code'] ?? ''),
+        'client_id' => $client,
+        'client_secret' => clientSecret('apple', $client),
+    ])['data'];
+    [$subject, $email] = identityOf('apple', $answer, $client);
+    if ($subject === '') {
+        fail(401, 'Apple did not confirm the sign-in. Please try again.');
+    }
+    $userId = accountFor('apple', $subject, $email, $answer, $client) ?? fail(422, 'Apple did not share an e-mail address.');
+    sendAppSession($userId);
+}
+
+/** A session for the app, which keeps it in the keychain and sends it as a bearer token. */
+function sendAppSession(int $userId): never
+{
+    send(['token' => newSession($userId), 'user' => describeUser(row('SELECT * FROM users WHERE id = ?', [$userId]))]);
+}
+
+/** Apple asks that deleting an account takes back its sign-ins at Apple. Best effort: never blocks the deletion. */
+function revokeAppleSignIns(array $user): void
+{
+    $identities = run("SELECT revoke_token, revoke_client FROM identities WHERE user_id = ? AND provider = 'apple' AND revoke_token IS NOT NULL", [$user['id']])->fetchAll();
+    foreach ($identities as $identity) {
+        $secret = appleSecret((string) $identity['revoke_client']);
+        if ($secret === '') {
+            continue;
+        }
+        http('POST', 'https://appleid.apple.com/auth/revoke', [
+            'client_id' => $identity['revoke_client'],
+            'client_secret' => $secret,
+            'token' => $identity['revoke_token'],
+            'token_type_hint' => 'refresh_token',
+        ]);
+    }
 }

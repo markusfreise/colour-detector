@@ -141,6 +141,9 @@ function fail(int $status, string $message): never
 
 function redirect(string $url): never
 {
+    if (defined('ACCOUNT_TESTS')) {
+        throw new Answer(['location' => $url], 302);
+    }
     header('Location: ' . $url, true, 302);
     header('Cache-Control: no-store');
     exit;
@@ -180,7 +183,9 @@ function body(): array
     if (!str_starts_with($_SERVER['CONTENT_TYPE'] ?? '', 'application/json')) {
         fail(415, 'JSON expected.');
     }
-    $data = json_decode(file_get_contents('php://input') ?: '{}', true);
+    // The tests hand the body over in place of a request.
+    $raw = defined('ACCOUNT_TESTS') && isset($GLOBALS['requestBody']) ? json_encode($GLOBALS['requestBody']) : file_get_contents('php://input');
+    $data = json_decode($raw ?: '{}', true);
     return is_array($data) ? $data : [];
 }
 
@@ -220,6 +225,10 @@ function sign(string $text): string
 /** A request to another service. Returns the decoded JSON answer and the status. */
 function http(string $method, string $url, array $fields = [], array $headers = []): array
 {
+    // The tests answer in place of the other service.
+    if (defined('ACCOUNT_TESTS') && isset($GLOBALS['httpStub'])) {
+        return ($GLOBALS['httpStub'])($method, $url, $fields);
+    }
     $curl = curl_init();
     if ($method === 'GET' && $fields) {
         $url .= (str_contains($url, '?') ? '&' : '?') . http_build_query($fields);
@@ -243,12 +252,19 @@ function http(string $method, string $url, array $fields = [], array $headers = 
 
 // --- Sessions ---------------------------------------------------------------------------------
 
-function startSession(int $userId): void
+/** A new session for the account; returns the value only the visitor keeps. */
+function newSession(int $userId): string
 {
     $value = token();
     run('DELETE FROM sessions WHERE expires_at < ?', [time()]);
     run('INSERT INTO sessions (hash, user_id, expires_at) VALUES (?, ?, ?)', [hash('sha256', $value), $userId, time() + SESSION_DAYS * 86400]);
-    setcookie(SESSION_COOKIE, $value, [
+    return $value;
+}
+
+/** A session in a cookie, for the browser. */
+function startSession(int $userId): void
+{
+    setcookie(SESSION_COOKIE, newSession($userId), [
         'expires' => time() + SESSION_DAYS * 86400,
         'path' => cookiePath(),
         'secure' => secure(),
@@ -257,9 +273,20 @@ function startSession(int $userId): void
     ]);
 }
 
+/** The session the request carries: the browser's cookie, or the native app's bearer token. */
+function sessionValue(): string
+{
+    $cookie = $_COOKIE[SESSION_COOKIE] ?? '';
+    if ($cookie !== '') {
+        return $cookie;
+    }
+    $header = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+    return preg_match('/^Bearer ([0-9a-f]{64})$/', $header, $match) ? $match[1] : '';
+}
+
 function endSession(): void
 {
-    $value = $_COOKIE[SESSION_COOKIE] ?? '';
+    $value = sessionValue();
     if ($value !== '') {
         run('DELETE FROM sessions WHERE hash = ?', [hash('sha256', $value)]);
     }
@@ -268,7 +295,7 @@ function endSession(): void
 
 function currentUser(): ?array
 {
-    $value = $_COOKIE[SESSION_COOKIE] ?? '';
+    $value = sessionValue();
     if ($value === '') {
         return null;
     }
@@ -329,11 +356,27 @@ function enabledProviders(): array
             $providers[] = $name;
         }
     }
-    $apple = config('apple') ?? [];
-    if (($apple['client_id'] ?? '') !== '' && ($apple['key_file'] ?? '') !== '' && is_file($apple['key_file'])) {
+    if (appleKeyReady() && ((config('apple') ?? [])['client_id'] ?? '') !== '') {
         $providers[] = 'apple';
     }
     return $providers;
+}
+
+/** The ways the native app can sign in: Apple in the app itself, the others through the web flow. */
+function appProviders(): array
+{
+    $providers = array_values(array_intersect(enabledProviders(), ['google', 'meta']));
+    if (appleKeyReady() && ((config('apple') ?? [])['app_id'] ?? '') !== '') {
+        array_unshift($providers, 'apple');
+    }
+    return $providers;
+}
+
+function appleKeyReady(): bool
+{
+    $apple = config('apple') ?? [];
+    return ($apple['team_id'] ?? '') !== '' && ($apple['key_id'] ?? '') !== ''
+        && ($apple['key_file'] ?? '') !== '' && is_file($apple['key_file']);
 }
 
 /** The products that can be bought: active in plans.json and with a Stripe price. */

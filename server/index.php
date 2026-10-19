@@ -35,11 +35,18 @@ switch ($route) {
         send([
             'user' => $user ? describeUser($user) : null,
             'providers' => enabledProviders(),
+            'appProviders' => appProviders(),
             'products' => enabledProducts(),
             'consentVersion' => config('consent_version'),
             // Whether invitation codes exist: the sign-in shows the optional field.
             'invitation' => !empty(config('invitation')['codes']),
         ]);
+
+    case 'auth/app/exchange':
+        exchangeHandoff();
+
+    case 'auth/apple/native':
+        signInAppleNative();
 
     case 'auth/magic':
         sendMagicLink();
@@ -103,6 +110,7 @@ switch ($route) {
         body();
         $user = requireUser();
         cancelBilling($user);
+        revokeAppleSignIns($user);
         run('DELETE FROM users WHERE id = ?', [$user['id']]);
         endSession();
         send(['ok' => true]);

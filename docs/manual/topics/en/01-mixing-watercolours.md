@@ -78,6 +78,17 @@ The photo is a reference for colours and values, not a pattern to copy. You deci
 - [Paint box and palette](paint-box.html): how many paints make a good palette
 - [Calibrating your paints](calibrating.html): recipes that fit the paints on your desk
 
+### More on mixing
+
+- [Planning glazes in layers](watercolour-glazing.html): which paints, in what order, light to dark
+- [A mixing chart of your own paints](watercolour-mixing-chart.html): what your pairs really give on your paper
+- [How much water](how-much-water-watercolour.html): paint to water, from tinted water to concentrated
+- [Greys, browns and blacks](mixing-greys-browns-and-blacks.html): neutrals and darks without mud
+- [The value study](watercolour-value-study.html): light and dark before colour
+- [Colours from a reference photo](colours-from-a-reference-photo.html): which colours of a photo matter
+- [A colour mixing app for watercolour](colour-mixing-app.html): what an app can work out, and what it cannot
+- Colour charts: [Schmincke Horadam](schmincke-horadam-colour-chart.html), [Winsor & Newton Professional](winsor-newton-professional-colour-chart.html), [Sennelier L'Aquarelle](sennelier-colour-chart.html), [Michael Harding](michael-harding-colour-chart.html)
+
 ## Questions and answers
 
 ### How many paints should a watercolour mix have?

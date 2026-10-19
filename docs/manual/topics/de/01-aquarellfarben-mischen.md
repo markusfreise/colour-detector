@@ -78,6 +78,17 @@ Das Foto ist eine Referenz für Farben und Tonwerte, keine Vorlage. Du entscheid
 - [Farbkasten und Palette](farbkasten.html): wie viele Farben eine gute Palette braucht
 - [Deine Farben kalibrieren](kalibrieren.html): Rezepte, die zu den Farben auf deinem Tisch passen
 
+### Mehr zum Mischen
+
+- [Lasuren in Schichten planen](lasurtechnik-aquarell.html): welche Farben, in welcher Reihenfolge, von hell nach dunkel
+- [Eine Mischtabelle deiner Farben](aquarell-mischtabelle.html): was deine Paare auf deinem Papier wirklich ergeben
+- [Wie viel Wasser](aquarell-wasser.html): Farbe und Wasser, vom getönten Wasser bis konzentriert
+- [Grau, Braun und Schwarz](grau-braun-schwarz-mischen.html): neutrale Töne und Dunkel ohne Schlamm
+- [Die Tonwertstudie](tonwertstudie-aquarell.html): Hell und Dunkel vor der Farbe
+- [Farben aus einem Referenzfoto](farben-aus-foto.html): welche Farben eines Fotos zählen
+- [Farben mischen mit einer App](farben-mischen-app.html): was eine App ausrechnen kann und was nicht
+- Farbkarten: [Schmincke Horadam](schmincke-horadam-farbkarte.html), [Winsor & Newton Professional](winsor-newton-professional-farbkarte.html), [Sennelier L'Aquarelle](sennelier-aquarell-farbkarte.html), [Michael Harding](michael-harding-aquarell-farbkarte.html)
+
 ## Fragen und Antworten
 
 ### Wie viele Farben sollte eine Aquarellmischung haben?

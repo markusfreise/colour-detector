@@ -168,13 +168,29 @@
         }
     }
 
+    // The sign-in column as high as the one beside it, so that its last part can sit at the foot.
+    &__main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    // The early bird and the two buttons: at the foot of the column, at least a gap below the form,
+    // and after an error, which belongs right under the form.
+    &__extras {
+        order: 1;
+        display: flex;
+        flex-direction: column;
+        gap: #{pxtorem(10)};
+        margin-top: auto;
+        padding-top: var(--gap);
+    }
+
     // The early bird under the form: the percentage large, its terms in two lines beside it.
     &__offer {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: #{pxtorem(10)};
-        margin-top: var(--gap);
         padding: #{pxtorem(10)} #{pxtorem(14)};
         border-radius: var(--radius-medium);
         background: var(--c-offer);
@@ -198,7 +214,6 @@
         grid-auto-flow: column;
         grid-auto-columns: 1fr;
         gap: #{pxtorem(10)};
-        margin-top: #{pxtorem(10)};
     }
 
     &__more-link {
@@ -354,7 +369,11 @@
         cursor: pointer;
     }
 
+    // As high as the sign-in column beside it: the picture takes up what is left.
     &__how {
+        display: flex;
+        flex-direction: column;
+
         @media (max-width: 760px) {
             padding-top: var(--gap-15x);
             border-top: 1px solid var(--c-border);
@@ -415,6 +434,8 @@
         width: 100%;
         height: auto;
         aspect-ratio: 1;
+        // Square at the least; taller when the form beside it is (signing up), cropped to fit.
+        flex: 1 0 auto;
         object-fit: cover;
         border-radius: var(--radius-medium);
     }

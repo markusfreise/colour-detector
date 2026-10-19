@@ -156,6 +156,13 @@
         color: var(--c-head);
     }
 
+    // With the early bird and the buttons at the foot, the form sits in the middle of the room
+    // between them and the logo: the two automatic margins share it.
+    &__main:has(.gate__extras) &__title {
+        margin-bottom: auto;
+        padding-bottom: var(--gap);
+    }
+
     // As wide as the card, its height follows.
     &__logo {
         display: block;

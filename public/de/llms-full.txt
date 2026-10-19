@@ -1,0 +1,1812 @@
+# Watercolourlove Handbuch
+
+> Watercolourlove macht aus einem Foto den Plan für ein echtes Aquarell. Die App findet die Farben, auf die es ankommt, sagt dir, wie du jede aus deinen eigenen Farben mischst, und zeigt das Foto als flache, nummerierte Flächen, die du aufs Papier übertragen kannst.
+
+<!-- https://watercolourlove.de/de/handbuch/ -->
+
+# Willkommen bei Watercolourlove
+
+## Die Idee
+
+Wer nach Foto malt, steht immer vor denselben zwei Fragen. Welche Farben stecken wirklich in diesem Bild, wenn man über die tausend kleinen Abstufungen hinwegsieht, die eine Kamera aufzeichnet? Und wie mische ich jede davon aus den Farben in meinem Kasten, mit wie viel Wasser?
+
+Watercolourlove beantwortet beide. Die App bringt das Foto auf eine überschaubare Zahl von Mischungen, berechnet für jede ein Rezept aus deinen Farben und zeigt dir, wohin sie gehört. Heraus kommt ein Malen nach Zahlen, aber eines, das für Aquarell gemacht ist: Es weiß, dass Farbe lasierend ist, dass Wasser eine Farbe heller macht und dass das Weiß des Papiers das Hellste ist, was du hast.
+
+*Screenshot: Die App auf einen Blick, mit dem Beispielfoto Llyn Idwal*
+
+1. **Neues Bild** und die anderen Knöpfe rund ums Bild: Beispiele, Sichern, Sammlung, Drucken, Exportieren.
+2. Die Werkzeuge des Bildes: einen Ausschnitt ansehen und, wenn du hineingezoomt hast, wieder ans Fenster anpassen.
+3. Die Ansichten: gemischte Farbe, die Farben des Fotos, das Foto selbst.
+4. **Farben**: jede Mischung mit ihren Farben und Lasuren.
+5. **Einstellungen**: wie viele Mischungen, wie einfach die Flächen, welche Methode.
+6. **Farbkasten**: die Farben, die du besitzt, und die Palette dieses Bildes.
+7. **Hilfe** zeigt die Namen aller Knöpfe auf einmal.
+
+## Für wen die App gemacht ist
+
+Watercolourlove ist für Menschen gemacht, die Aquarell ernst nehmen. Vielleicht malst du seit Jahren und suchst einen schnelleren, verlässlicheren Weg vom Referenzfoto zum Plan. Vielleicht lernst du gerade und willst verstehen, warum eine Farbe so wird, wie sie wird, statt zu raten. In beiden Fällen misst die App, und die Entscheidungen bleiben bei dir.
+
+Ein Filter, der ein Foto gemalt aussehen lässt, ist sie nicht. Hier malt nichts für dich. Die App macht Vorschläge; du wählst die Farben, die Formen und die Reihenfolge, und der Pinsel liegt in deiner Hand.
+
+## Was die App kann und was nicht
+
+Die Rezepte sind berechnet, nicht auf deinem Papier gemessen. Die App kennt von jeder Farbe einen Referenzton und bildet nach, wie sich Farben verbinden und wie Wasser sie verdünnt. Das ist eine gute Schätzung, oft eine sehr gute, aber dein Papier, dein Wasser, dein Pinsel und die Tube vor dir reden mit. Nimm jedes Rezept als Ausgangspunkt und lass einen Probestreifen auf demselben Papier entscheiden. Im Kapitel [Farben kalibrieren](https://watercolourlove.de/de/handbuch/kalibrieren.html) steht, wie du die Referenztöne näher an deine eigenen bringst.
+
+Zwei weitere Grenzen, die du von Anfang an kennen solltest:
+
+- Eine Farbe wird nie dunkler verwendet als ihr Referenzton. Aquarellfarbe wird ab einem gewissen Punkt nicht mehr dunkler, wenn du mehr von ihr nimmst; dafür braucht es eine zweite, dunklere Farbe. Die Rezepte halten sich daran.
+- Sehr kleine, sehr dunkle Details (ein Auge, eine Fuge zwischen Steinen) malst du am Ende leichter nach Gefühl, als ihnen als Fläche zu folgen. Die App behält sie als eigene kleine Flächen, aber wie genau du sie nimmst, entscheidest du.
+
+## Zwei Arten zu malen
+
+**Mischen.** Jede Farbe des Bildes wird auf der Palette gemischt, und jede Fläche wird einmal mit ihrer Mischung gemalt. Eine Mischung trägst du in bis zu fünf Wasserstufen auf, von sehr wässrig bis konzentriert, sodass zwanzig Mischungen weit mehr als zwanzig Farben auf dem Papier ergeben. Diese Methode beschreibt der größte Teil des Handbuchs, und mit ihr fängst du an.
+
+**Schichten.** Wenige Grundfarben werden übereinander lasiert, von hell nach dunkel, jede als eine vorbereitete Lasur. Grüntöne, Orange und Dunkel entstehen dort, wo sich die Schichten überlagern. Das ist die klassische Lasurtechnik, Schritt für Schritt für dich geplant. Das Kapitel [Schichten](https://watercolourlove.de/de/handbuch/schichten.html) erklärt sie.
+
+## Was du brauchst
+
+- Ein Foto. Klares Licht und wenige große Formen funktionieren am besten; warum, steht im Kapitel [Bilder](https://watercolourlove.de/de/handbuch/bilder.html).
+- Deine Aquarellfarben und das Wissen, welche du besitzt. Der [Farbkasten](https://watercolourlove.de/de/handbuch/farbkasten.html) kennt die Farben von Schmincke Horadam, Winsor & Newton Professional und Michael Harding und nimmt jede andere Farbe als eigene Farbe auf.
+- Aquarellpapier (300 g/m², am besten Baumwolle), auf ein Brett geklebt, zwei oder drei Pinsel, eine Palette mit Mulden, zwei Wassergläser und einen Bleistift.
+- Einen Drucker oder einen zweiten Bildschirm neben dem Maltisch, für den Plan.
+
+## Wie dieses Handbuch aufgebaut ist
+
+Das Handbuch hat vier Teile.
+
+- **Erste Schritte.** Diese Einleitung und [Vom Foto zum Bild](https://watercolourlove.de/de/handbuch/schnellstart.html): ein Bild vom ersten Klick bis zum letzten Pinselstrich, in vierzehn Schritten. Wenn du nur ein Kapitel liest, dann dieses.
+- **Die App.** Jeder Teil der App im Detail: [Bilder](https://watercolourlove.de/de/handbuch/bilder.html), der [Farbkasten](https://watercolourlove.de/de/handbuch/farbkasten.html), die [Farbflächen](https://watercolourlove.de/de/handbuch/farbflaechen.html), [Mischungen und Rezepte](https://watercolourlove.de/de/handbuch/mischungen.html), [Schichten](https://watercolourlove.de/de/handbuch/schichten.html), [Tonwerte](https://watercolourlove.de/de/handbuch/tonwerte.html), [Drucken](https://watercolourlove.de/de/handbuch/drucken.html) und dein [Konto](https://watercolourlove.de/de/handbuch/konto.html).
+- **Malen mit Aquarell.** Was die App voraussetzt und was du am Tisch tust: [Material](https://watercolourlove.de/de/handbuch/material.html), [wie Aquarell funktioniert](https://watercolourlove.de/de/handbuch/wie-aquarell-funktioniert.html), [Mischen](https://watercolourlove.de/de/handbuch/mischen.html), [Lavieren](https://watercolourlove.de/de/handbuch/lavieren.html), [Lasieren](https://watercolourlove.de/de/handbuch/lasieren.html), [Tonwerte und Vereinfachen](https://watercolourlove.de/de/handbuch/tonwerte-und-vereinfachen.html) und [Farben kalibrieren](https://watercolourlove.de/de/handbuch/kalibrieren.html). Diese Kapitel stehen für sich, mit oder ohne App.
+- **Nachschlagen.** Das [Glossar](https://watercolourlove.de/de/handbuch/glossar.html) mit jedem Begriff auf Deutsch und Englisch und [Wenn etwas nicht klappt](https://watercolourlove.de/de/handbuch/probleme.html).
+
+Durch das ganze Handbuch begleitet dich ein Bild: das Beispielfoto **Llyn Idwal**, ein See unter den Bergen von Snowdonia in Wales, analysiert mit den Schmincke-Horadam-Farben des Bestands und zwanzig Mischungen. Die App findet 52 Farben in diesen 20 Mischungen. Unter **Beispiele** kannst du dasselbe Foto öffnen und mitmachen.
+
+## Deine Bilder bleiben bei dir
+
+Alles wird auf deinem Gerät berechnet. Das Foto wird nie hochgeladen, und deine Bilder, Farbkästen und deine Sammlung liegen in diesem Browser auf diesem Gerät, nicht in deinem Konto.
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/schnellstart.html -->
+
+# Vom Foto zum Bild
+
+Dieses Kapitel ist der kurze Weg. Jeder Schritt sagt, was zu tun ist und warum, und verweist auf das Kapitel, das tiefer geht. Die Bilder zeigen das Beispielfoto **Llyn Idwal**; öffne es unter **Beispiele**, um mitzumachen.
+
+## Teil 1: Das Bild in der App planen
+
+### 1. Ein Foto wählen
+
+Drück auf **Neues Bild** und wähl ein Foto. Auf Telefon und Tablet bietet derselbe Knopf auch die Kamera an. **Beispiele** öffnet fünf Beispielfotos, falls du die App erst ausprobieren möchtest.
+
+*Screenshot: Die leere App wartet auf das erste Foto*
+
+1. **Neues Bild** öffnet ein Foto von deinem Gerät.
+2. **Beispiele** öffnet die Beispielfotos.
+3. Du kannst auch irgendwo auf die leere Seite klicken, um ein Foto zu wählen.
+
+Die App fängt sofort an zu rechnen. Fotos mit klarem Licht und Schatten und wenigen großen Formen funktionieren am besten. Mehr zur Wahl und Vorbereitung einer Vorlage steht unter [Bilder](https://watercolourlove.de/de/handbuch/bilder.html).
+
+### 2. Der App sagen, welche Farben du hast
+
+Öffne den **Farbkasten** in der rechten Spalte. Jede Farbe ist ein Chip in ihrem eigenen Ton, mit ihrer Nummer; P und T stehen für Näpfchen (Pan) und Tube. Die **Palette** oben enthält die Farben, aus denen dieses Bild gemischt werden darf. Klick auf einen Chip, um ihn hinein- oder herauszunehmen.
+
+Wenn du unsicher bist, welche Farben du nehmen sollst, überlass es **Auto**: Die App sucht aus den Kästen, die du freigibst, eine kleine Auswahl, die zu diesem Bild passt. Sobald du den Farbkasten schließt, werden die Mischungen neu berechnet. Kästen, Hersteller und eigene Farben erklärt das Kapitel [Farbkasten und Palette](https://watercolourlove.de/de/handbuch/farbkasten.html).
+
+### 3. Festlegen, wie viel Arbeit das Bild sein soll
+
+Öffne die **Einstellungen**. Drei Regler entscheiden das meiste:
+
+- **Farben** ist die Zahl der Mischungen auf deiner Palette. Fang mit 12 bis 20 an.
+- **Flächen vereinfachen** fasst kleine Formen zu größeren, ruhigeren zusammen. Je höher, desto weniger und größere Flächen.
+- **Max. Farben** begrenzt eine Mischung auf eine, zwei oder drei Farben. Weniger Farben geben sauberere Mischungen.
+
+*Screenshot: Die Einstellungen*
+
+1. Die Methode: **Mischen** oder **Schichten**.
+2. Die Flächen: organisch oder geometrisch.
+3. **Flächen vereinfachen**.
+4. **Farben**, die Zahl der Mischungen.
+5. **Details**: ob die Mischungen feine Abstufungen im ganzen Bild geben oder kleinen Flächen eines anderen Farbtons.
+6. **Max. Farben** pro Mischung.
+
+Jeden Regler erklärt das Kapitel [Farbflächen](https://watercolourlove.de/de/handbuch/farbflaechen.html).
+
+### 4. Die Karte lesen
+
+Jede Fläche trägt eine Bezeichnung wie **3M**. Die Zahl ist die Mischung, der Buchstabe sagt, wie viel Wasser hineinkommt: **W** sehr wässrig, **L** leicht, **M** mittel, **R** kräftig, **C** konzentriert. 3L und 3C kommen also aus derselben Pfütze Farbe, einmal verdünnt und einmal kräftig. Deshalb ergeben 20 Mischungen viel mehr Farben auf dem Papier: 52 in diesem Beispiel.
+
+*Screenshot: Die Liste der Farben*
+
+1. Wie viele Farben das Bild hat, in wie vielen Mischungen.
+2. Der Schlüssel zu den Wasserstufen.
+3. Ein Block je Mischung: ihre Farben als Balken im Verhältnis des Rezepts, darunter ihre Lasuren.
+
+Was die Balken genau bedeuten und wie die Wasserstufen funktionieren, steht unter [Mischungen, Lasuren und Rezepte](https://watercolourlove.de/de/handbuch/mischungen.html).
+
+### 5. Eine Mischung nachschlagen
+
+Klick auf eine Fläche im Bild. Eine Karte öffnet sich mit der Nummer der Farbe, ihrem Anteil am Bild und dem Rezept, sie zu mischen.
+
+*Screenshot: Eine angetippte Fläche und ihre Karte*
+
+1. Die Karte: Farbe, Anteil, Rezept und **Alle Details** für den Rest.
+
+Ein Rezept liest sich wie ein Kochrezept: **1 x P 494** und **1 x P 218** heißt ein Teil aus Näpfchen 494 auf einen Teil aus Näpfchen 218. Wasserstufe und eine Bewertung wie **0.8 · sehr gut** sagen, wie viel Wasser dazu kommt und wie nah die Mischung dem Foto kommt. **Alle Details** zeigt die Zielfarbe neben deiner Mischung und bis zu fünf andere Rezepte. Klick in der Liste **Farben** auf eine Mischung, um nur ihre Flächen zu sehen; ein Klick auf den leeren Teil holt das Bild zurück.
+
+### 6. Ändern, was dir nicht gefällt
+
+Du bist die Malerin oder der Maler, das Foto ist nur ein Vorschlag. In **Alle Details** gibt **Farbe ändern** einer Mischung ein neues Ziel, wärmer, kühler oder ganz anders, und die Rezepte ziehen nach. **Nur die angeklickte Fläche bearbeiten** löst eine Fläche von den anderen mit derselben Farbe. **Zurück zum Foto** holt die Farbe des Fotos zurück.
+
+Drück auf **Sichern**, um das Bild mit seinen Einstellungen, seiner Palette und deinen Änderungen in der **Sammlung** zu behalten.
+
+### 7. Den Plan drucken
+
+**Drucken / PDF** gibt das Bild aus, gefolgt von jeder Mischung mit ihren Farben. Druck es für den Maltisch aus, oder wähl im Druckdialog „Als PDF speichern“ und leg es auf ein Tablet. **Raster** legt quadratische Felder über das Bild, damit du die Zeichnung Feld für Feld auf dein Papier überträgst. Mehr unter [Drucken](https://watercolourlove.de/de/handbuch/drucken.html).
+
+## Teil 2: Malen
+
+### 8. Den Tisch vorbereiten
+
+Kleb das Papier an allen vier Seiten auf ein Brett. Leg den ausgedruckten Plan so hin, dass du ihn siehst, ohne über nasse Farbe zu greifen, Farbkasten und Palette auf die Seite deiner Malhand und zwei Wassergläser dahinter: eines zum Auswaschen, eines, das sauber bleibt, zum Anmischen.
+
+*Photo: Alles, was du brauchst, auf dem Tisch*
+
+### 9. Die Zeichnung übertragen
+
+Übertrag die Umrisse mit einem hellen Bleistift, H oder HB, aufs Papier: am Fenster oder auf einem Leuchttisch durchgepaust oder frei nach dem Plan daneben. Schreib die Bezeichnungen klein und blass in die Flächen; eine helle Lasur lässt sie noch lesen, ein kräftiger Strich scheint für immer durch.
+
+Du brauchst nicht jeden Umriss. Lass weg, was du lieber frei malst, besonders in weichen Partien wie Himmel und Wasser.
+
+*Photo: Die Umrisse werden auf das aufgeklebte Aquarellpapier übertragen*
+
+### 10. Die erste Farbe mischen und testen
+
+Fang mit der Mischung an, die die hellsten Lasuren hat. Zähl die Teile in Pinselladungen: für 3 Teile der einen und 1 Teil der anderen Farbe drei Ladungen der ersten in eine Mulde und eine der zweiten. Dann gib Wasser für die Lasur dazu, die du brauchst: viel für W und L, wenig für R und C.
+
+Mal einen Strich auf ein Reststück desselben Papiers, lass ihn trocknen und halt ihn neben die Farbe im Plan. Aquarell trocknet heller auf, als es nass aussieht. Zu blass: mehr Farbe. Zu kräftig: mehr Wasser. Zu warm oder zu kühl: ein wenig mehr von der anderen Farbe.
+
+*Photo: Ein Probestreifen neben der Farbe im ausgedruckten Plan*
+
+> **Tipp:** Die Rezepte sind Schätzungen aus einem Referenzton je Farbe. Trau dem getrockneten Probestreifen mehr als den Zahlen. Wie du eine Mischung schnell korrigierst, steht unter [Mischen in der Praxis](https://watercolourlove.de/de/handbuch/mischen.html).
+
+### 11. Die hellen Flächen zuerst
+
+Füll jede Fläche dieser Mischung in ihrer hellsten Lasur, dann verstärk dieselbe Pfütze für die kräftigeren Buchstaben. Wähl die Mischung in der App aus, um nur ihre Flächen zu sehen. Arbeite von hell nach dunkel und von großen Flächen zu kleinen.
+
+Mal keine Fläche neben einer, die noch nass ist, außer die beiden sollen ineinanderlaufen. Nass neben nass verläuft, nass neben trocken bleibt eine klare Kante. Die Techniken stehen unter [Lavieren](https://watercolourlove.de/de/handbuch/lavieren.html).
+
+*Photo: Die erste blasse Lasur auf weißem Papier*
+
+### 12. Trocknen lassen
+
+Warte, bis das Papier wieder flach liegt und sich am Handrücken nicht mehr kühl anfühlt. Nutz die Pause, um die nächste Farbe anzumischen und die fertigen Mischungen im Plan abzuhaken.
+
+### 13. Die Mischungen bis zu den Dunkeln durcharbeiten
+
+Wiederhol die Schritte 10 bis 12 für jede Mischung. Das Bild entsteht mit den Mitteltönen; die dunkelsten, konzentriertesten Lasuren kommen zuletzt mit einem kleinen Pinsel. Es sind die kleinsten Flächen, und sie tun am meisten für die Wirkung: die Schattenseite eines Felsens, die Kante des Wassers, die dunkelsten Spalten.
+
+*Photo: Die Dunkel, zuletzt und klein*
+
+### 14. Vergleichen, nachbessern, Klebeband abziehen
+
+Stell das Bild neben den Bildschirm, in die Ansicht **Gemischte Farbe**. Wo eine Fläche zu blass ist, lasier sie noch einmal mit derselben Mischung. Wenn alles ganz trocken ist, zieh das Klebeband langsam ab, flach und vom Bild weg, dann bleibt ein sauberer weißer Rand.
+
+*Photo: Das fertige Aquarell neben dem Foto, aus dem es entstand*
+
+## Lieber in Schichten malen
+
+Wenn du lieber wenige lasierende Schichten übereinanderlegst, statt jede Farbe zu mischen, stell in den Einstellungen die Methode auf **Schichten**. Die App plant dann eine Handvoll Lasuren und führt dich Schritt für Schritt hindurch. Wie das geht, erklärt das Kapitel [Schichten](https://watercolourlove.de/de/handbuch/schichten.html).
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/bilder.html -->
+
+# Bilder
+
+## Was ein gutes Referenzfoto ausmacht
+
+Die App analysiert jedes Foto, aber aus manchen Fotos werden viel bessere Aquarelle als aus anderen. Ein Aquarell besteht aus einer begrenzten Zahl lasierender Schichten auf weißem Papier. Fotos, die sich gut übertragen lassen, haben dieselben Eigenschaften.
+
+**Klares Licht.** Sonnenlicht von der Seite gibt jeder Form eine Licht- und eine Schattenseite. Dadurch wirkt ein Fels fest und ein Haus wie ein Haus. Flaches, bedecktes Licht liefert Farbe, aber wenig Form, und der Plan bekommt viele Flächen von fast gleicher Helligkeit.
+
+**Wenige große Formen.** Ein See, ein Berg, ein Himmel, ein Stück Moor: Große Formen werden zu großen, ruhigen Lasuren. Ein Foto voller kleiner, gleich wichtiger Dinge (ein voller Markt, ein Busch in vollem Laub aus der Nähe) wird zu Hunderten kleiner Flächen, und das ist mühsam zu malen und selten schön.
+
+**Ein echter Umfang von hell bis dunkel.** Das hellste Licht im Aquarell ist das Papier. Hat das Foto helle Lichter und tiefe Schatten, kann die App den ganzen Umfang vom weißen Papier bis zu den konzentrierten Dunkeln nutzen. Ein dunstiges, graues Foto bleibt grau.
+
+**Ein Motiv, das dir etwas bedeutet.** Du verbringst Stunden mit diesem Bild. Wähl eines, das dich auch nach dem ersten Blick noch interessiert.
+
+> **Tipp:** Schneid zu, bevor du das Foto öffnest. Die meisten Fotos gewinnen, wenn du ein Drittel wegnimmst: den leeren Vordergrund, den störenden Rand, das zweite Motiv, das mit dem ersten konkurriert. Ein engerer Ausschnitt gibt außerdem größere Flächen auf demselben Blatt.
+
+Fotos vom Telefon sind völlig in Ordnung. Die Auflösung ist weniger wichtig, als man denkt, weil die App ohnehin mit einer verkleinerten Kopie arbeitet; Bildaufbau und Licht zählen viel mehr.
+
+## Ein Bild öffnen
+
+Drück in der linken Spalte auf **Neues Bild** und wähl ein Foto. Auf Telefon und Tablet bietet derselbe Knopf auch die Kamera an, sodass du ein Motiv fotografieren und gleich vor Ort planen kannst. Jedes Bildformat, das dein Browser anzeigen kann, ist recht: JPG, PNG, WebP, auf Apple-Geräten auch HEIC. Derselbe Knopf öffnet auch eine gesicherte Bilddatei (`.wcl`).
+
+**Beispiele** öffnet fünf Beispielfotos des Autors: eine Stadt, einen See in den Bergen, Dächer in der Dämmerung, Winterfelder und eine Altstadt im Schnee. Mit ihnen lernst du die App gut kennen, bevor du eigene Fotos mitbringst, und es sind die Bilder, die dieses Handbuch verwendet.
+
+*Screenshot: Die Beispielfotos*
+
+Sobald ein Bild offen ist, analysiert die App es mit den aktuellen Einstellungen und deiner Palette. Bei einem großen Foto dauert das einen Moment; der Stand wird über dem Bild angezeigt.
+
+## Die Sammlung
+
+Dein Bild wird nicht von selbst gesichert. Drück auf **Sichern**, und die **Sammlung** öffnet sich mit **Dieses Bild sichern**. Gib ihm einen Namen, an dem du es später wiedererkennst.
+
+*Screenshot: Die Sammlung*
+
+Gesichert wird:
+
+- das Foto selbst,
+- jede Einstellung (Methode, Farben, Vereinfachung, Details, Sättigung, Kontrast und der Rest),
+- die Palette, also die Farben, aus denen dieses Bild gemischt wird,
+- jede Änderung an einer Farbe: neue Ziele, gewählte Rezepte, abgetrennte Flächen.
+
+Öffnest du ein gesichertes Bild später wieder, kommt es genau so zurück, wie du es verlassen hast, auch wenn du deine Farbkästen inzwischen geändert hast. Nachdem du ein gesichertes Bild geändert hast, heißt der Knopf **Änderungen sichern**. In der Sammlung kannst du ein Bild außerdem **Umbenennen** und **Löschen**.
+
+### Die Bilddatei (.wcl)
+
+Jedes Sichern lädt das Bild zusätzlich als Datei herunter, zum Beispiel `Llyn-Idwal.wcl`. Sie enthält das Foto und alles, was oben aufgezählt ist, und ist so groß wie das Foto. Heb sie auf, wo du willst: im Ordner zu deinem Bild, in der Cloud, auf einem Stick. Öffnest du sie mit **Neues Bild**, kommt das Bild genau so zurück, auf diesem oder einem anderen Gerät, in jedem Browser. Ein freigeschaltetes Bild bleibt in deinem Konto freigeschaltet; für jemand anderen schaltet die Datei nichts frei.
+
+> **Gut zu wissen:** Die Sammlung liegt in diesem Browser auf diesem Gerät. Sie gehört nicht zu deinem Konto und kommt nicht mit auf einen anderen Rechner. Löschst du die Browserdaten dieser Seite, ist die Sammlung weg. Bilder sichern geht mit Pro.
+
+## Genauer hinsehen: Ausschnitte des Bildes
+
+Manche Bilder haben eine Stelle, die mehr Aufmerksamkeit verdient als der Rest: ein Gesicht in einer Landschaft, das Fenster eines Hauses, ein Boot auf dem See. Mit dem Werkzeug **Ausschnitt** behandelst du diese Stelle wie ein eigenes Bild.
+
+Drück unter den Werkzeugen des Bildes auf **Ausschnitt** und zieh einen Rahmen über die Stelle, die du willst. Die App schneidet sie in voller Auflösung aus dem Originalfoto, vergrößert einen kleinen Ausschnitt bis zum Vierfachen und analysiert ihn mit eigenen Flächen und eigenen Mischungen. Als eigene Studie gemalt oder als Hilfe für die wichtigste Partie des großen Bildes gibt dir das weit genauere Angaben als der Gesamtplan.
+
+*Screenshot: Ein Ausschnitt des Beispielfotos, als eigenes Bild analysiert*
+
+Jeder Ausschnitt bleibt als kleines Bild in einer Leiste unter dem Hauptbild. Klick auf eines, um zu ihm zurückzukehren; das kleine Kreuz darauf entfernt es. **Zurück** führt zum ganzen Bild. Farbänderungen am ganzen Bild und an jedem Ausschnitt bleiben erhalten, während du zwischen ihnen wechselst.
+
+> **Gut zu wissen:** Ausschnitte gehören zu Pro. Sie werden noch nicht mit einem Bild in der Sammlung gesichert: Wenn du ein gesichertes Bild öffnest, leg die Ausschnitte neu an.
+
+**Anpassen** passt das Bild wieder ins Fenster, nachdem du es vergrößert oder verschoben hast.
+
+## Ein Bild exportieren
+
+**Als JPG exportieren** sichert das Bild genau so, wie es zu sehen ist: in der aktuellen Ansicht, mit oder ohne Umrisse und Nummern, in der Größe, in der es gezeichnet ist. Damit hältst du einen Plan fest, siehst ihn auf einem anderen Gerät an oder schickst ihn jemandem. Als Plan zum Malen ist [Drucken / PDF](https://watercolourlove.de/de/handbuch/drucken.html) meist besser, weil dort die Rezepte dabei sind.
+
+## Auf dem Telefon, und wenn du Hilfe brauchst
+
+Auf dem Telefon kommt das Bild zuerst. Die Felder starten zugeklappt, und die Knöpfe der linken Spalte liegen hinter dem Knopf **Menü** oben links. Dort erreichst du **Neues Bild**, die Beispiele, das Sichern und das Drucken. Die App funktioniert auf dem Telefon, aber zum Planen ist ein Tablet oder ein Rechner viel angenehmer.
+
+*Screenshot: Die App auf dem Telefon*
+
+Die meisten Knöpfe zeigen nur ein Symbol. Mit der Maus fährst du darüber, um den Namen zu sehen. Auf einem Touchscreen, oder wenn du alle auf einmal sehen willst, drück unten in der rechten Spalte auf **Hilfe**: Jeder Knopf zeigt seine Beschriftung, bis du **Hilfe** noch einmal drückst.
+
+*Screenshot: Alle Beschriftungen mit Hilfe eingeblendet*
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/farbkasten.html -->
+
+# Farbkasten und Palette
+
+## Palette und Farbkästen
+
+Zwei Begriffe ziehen sich durch dieses Kapitel, und es hilft, sie auseinanderzuhalten.
+
+Ein **Farbkasten** ist eine Sammlung von Farben, die du besitzt, so wie sie in einem echten Kasten oder einer Schublade liegen: deine Näpfchen, deine Tuben, der kleine Reisekasten für draußen. Du kannst so viele Farbkästen anlegen, wie du willst.
+
+Die **Palette** ist die Auswahl an Farben, aus der ein Bild gemischt wird. Sie wird aus deinen Farbkästen zusammengestellt und gehört zum Bild: Sicherst du ein Bild, wird seine Palette mitgesichert, und öffnest du es wieder, ist auch die Palette wieder da. Ein anderes Bild kann eine völlig andere Palette haben.
+
+Du öffnest den Farbkasten mit **Farbkasten** in der rechten Spalte oder oben in der Liste der Farben.
+
+*Screenshot: Der Farbkasten: oben die Palette, darunter die Farbkästen*
+
+Oben steht die **Palette**. Darunter liegen deine Farbkästen. Zu Beginn sind das die Schmincke-Horadam-Näpfchen und -Tuben des Bestands, ein Reisekasten und ein Kasten für jede weitere Serie, die du hinzufügst. Ein Klick auf einen Chip in einem Kasten nimmt die Farbe in die Palette; ein Klick auf denselben Chip in der Palette nimmt sie wieder heraus.
+
+## Einen Chip lesen
+
+Jede Farbe ist ein Chip in ihrem eigenen Ton.
+
+- Die **Nummer** ist die Herstellernummer, die auf Näpfchen oder Tube steht.
+- Dahinter steht der **Name**, in der Sprache der App.
+- **P** und **T** in der Ecke eines Chips in der Palette sagen, ob du die Farbe als Näpfchen (Pan), als Tube oder als beides (**P/T**) hast. Näpfchen und Tube derselben Farbe sind derselbe Ton; die Markierung hilft dir nur, sie auf dem Tisch zu finden.
+- In der Palette sind die Namen der Farben fett gesetzt, die die aktuellen Mischungen wirklich verwenden. Farben ohne fetten Namen sind ausgewählt, werden für dieses Bild aber nicht gebraucht.
+
+Fährst du mit der Maus über einen Chip, siehst du Hersteller, Serie und den Namen der Farbe in der anderen Sprache.
+
+## Auto: die App wählen lassen
+
+Die richtigen fünf bis zwölf Farben für ein Bild zu wählen, ist eine eigene Kunst. **Auto**, der erste Knopf oben im Farbkasten, nimmt sie dir ab: Die App sieht sich die Farben des Bildes an und sucht aus den Kästen, die du freigibst, eine kleine Auswahl, mit der sich alle gut mischen lassen.
+
+Jeder Farbkasten hat ein Häkchen **Für „Auto“ nutzen**. Nimm es bei einem Kasten heraus, der nicht in den Vorschlag soll, zum Beispiel beim Reisekasten, wenn du zu Hause malst, oder bei einer teuren Tube, die du schonen willst. Auto ist zu Beginn eingeschaltet und geht aus, sobald du eine Farbe von Hand in die Palette nimmst oder herausnimmst; drück wieder auf **Auto**, um einen neuen Vorschlag zu bekommen.
+
+Daneben führt **Zurücksetzen** zur Standardauswahl zurück, und **Leeren** räumt die Palette, damit du sie selbst aufbauen kannst.
+
+> **Tipp:** Auto ist ein hervorragender Lehrer. Lass die App wählen, schau dir an, welche Farben sie genommen hat und wofür (die Liste der Farben zeigt, welche Mischungen sie verwenden), dann tausch eine Farbe aus und vergleiche. So lernst du deinen eigenen Kasten sehr gut kennen.
+
+## Wie viele Farben eine gute Palette braucht
+
+Mehr Farben machen keine besseren Bilder. Jede weitere Farbe ist eine weitere Möglichkeit für jede Mischung, die App findet also genauere Treffer, aber auf dem Papier verliert das Bild seine Einheit. Malerinnen und Maler wissen seit Langem: Ein Bild aus wenigen Farben hält zusammen, weil jede Farbe darin mit jeder anderen verwandt ist.
+
+Ein guter Ausgangspunkt ist je eine warme und eine kalte Version jeder Grundfarbe, dazu ein oder zwei Erdfarben:
+
+- ein warmes und ein kaltes Gelb,
+- ein warmes und ein kaltes Rot,
+- ein warmes und ein kaltes Blau,
+- eine gebrannte oder natürliche Siena, vielleicht ein Dunkel wie Neutraltinte oder Sepia.
+
+Das sind sechs bis acht Farben, und damit lässt sich fast alles mischen. Nimm eine Farbe nur dazu, wenn das Bild einen Ton verlangt, den diese nicht erreichen, etwa ein klares Türkis oder ein leuchtendes Violett.
+
+> **Gut zu wissen:** Ein kostenloses Konto mischt aus dem **Einsteigerkasten**: zwölf Farben, wie ein günstiger Schulmalkasten sie hat (zwei Gelb, zwei Rot, zwei Blau, ein Violett, ein Grün, drei Erdfarben und Schwarz). Du kannst unter ihnen wählen, aber keine eigenen Farben hinzufügen. Deine eigenen Farben und Farbkästen gibt es mit einem freigeschalteten Bild oder mit Pro; siehe [Konto, Pro und deine Daten](https://watercolourlove.de/de/handbuch/konto.html).
+
+## Farben hinzufügen
+
+Am Ende jedes Farbkastens ist ein leerer Platz mit einem **+**. Ein Klick darauf öffnet **Farbe hinzufügen** für diesen Kasten.
+
+*Screenshot: Farben zu einem Kasten hinzufügen*
+
+Die untere Hälfte, **Bibliothek**, zeigt die Farben, die du hinzufügen kannst, je Serie ein Abschnitt. Für alle die Farben des Bestands und **Gängige Farben**: 40 Farben, die fast jeder Hersteller führt, unter ihrem üblichen Namen und Pigment (C01 Zitronengelb bis C40 Neutraltinte), jede so, wie die Farbkarte eines Herstellers sie zeigt. Mit Pro außerdem die Farbkarten von vier Herstellern:
+
+- **Schmincke Horadam**,
+- **Winsor & Newton Professional** (116 Farben),
+- **Michael Harding** (136 Farben),
+- **Sennelier L'Aquarelle** (98 Farben).
+
+So findest du eine Farbe:
+
+- Die Knöpfe mit den Seriennamen blenden ihre Abschnitte ein und aus. Ein dunkler Knopf ist eingeblendet.
+- Tipp einen Teil des Namens oder die Nummer in das Suchfeld: „Ultramarin“, „494“ oder „Horadam 494“ funktionieren alle, ebenso Pigmentnamen wie „PB29“.
+- Die Farbquadrate daneben zeigen nur Rot, Orange, Gelb, Grün, Türkis, Blau, Violett, Braun oder Grau und Schwarz. Ein zweiter Klick auf das Quadrat zeigt wieder alle Farbtöne.
+- Der Knopf mit dem Radiergummi oben leert Suche und Filter.
+
+Ein Klick auf eine Farbe legt sie mit Namen und Referenzton in den Kasten. Eine Farbe, die schon im Kasten ist, ist blass dargestellt; ein Klick nimmt sie wieder heraus. Füg so viele hinzu, wie du magst, und schließ dann den Dialog. Eine Farbe mit gestricheltem Rand hat auf der Farbkarte ihres Herstellers keinen verlässlichen Referenzton: Ein Klick darauf füllt das Formular darüber aus, und du stellst den Ton selbst ein.
+
+### Eine eigene Farbe
+
+Für jede andere Farbe nimmst du oben **Eigene Farbe**. Du gibst an:
+
+- die **Farbe**, im Quadrat links: den Referenzton der Farbe,
+- die **Nummer**,
+- die **Serie**, so wie sie auf der Tube steht, zum Beispiel „Daniel Smith Extra Fine“. Ist es eine Serie mit Farbkarte in der App, füllt die Nummer Name und Farbe für dich aus,
+- den **Namen**,
+- die **Form**: **Näpfchen**, **Tube**, **Flüssig** oder **Anders**.
+
+Dann drückst du **Okay**: Die Farbe kommt in den Kasten, und der Dialog schließt sich.
+
+Der Referenzton ist das Wichtigste in diesem Formular. Wähl den Farbton deiner Farbe in ihrer **kräftigsten Lasur**: etwa gleich viel Farbe und Wasser, trocken auf weißem Papier. Nicht die Farbe direkt aus Näpfchen oder Tube: Farbe im Näpfchen ist dunkler und satter als jede Lasur, die du damit malst. Die App behandelt diesen Ton als das Dunkelste, was die Farbe je wird, und macht alles Hellere daraus mit Wasser. Ist er zu hell, werden alle Rezepte mit dieser Farbe zu vorsichtig, ist er zu dunkel, zu kräftig. Die beste Quelle ist dein eigener Farbaufstrich, auf deinem Papier gemalt und bei Tageslicht fotografiert oder eingescannt. Wie du ihn anlegst, zeigt das Kapitel [Farben kalibrieren](https://watercolourlove.de/de/handbuch/kalibrieren.html).
+
+Jede Farbe, die du selbst eingibst, steht außerdem unter **Deine eigenen Farben** unten im Farbkasten. Dort kannst du sie bearbeiten oder löschen: Den Knopf zum Löschen drückst du zweimal, damit nichts aus Versehen verschwindet.
+
+## Farbkästen verwalten
+
+Unter jedem Farbkasten stehen seine Aktionen:
+
+- **Umbenennen** gibt ihm einen neuen Namen.
+- **Farben entfernen** lässt dich die Farben anklicken, die aus dem Kasten sollen; mit **Fertig** schließt du ab.
+- **Exportieren** sichert den Kasten als Datei, als Sicherheitskopie oder für eine Freundin, die mit denselben Farben malt.
+- **Kasten löschen** entfernt den Kasten. Mindestens ein Kasten bleibt immer.
+
+Zwischen Palette und Kästen legt **Neuer Farbkasten** einen leeren Kasten an, und **Farbkasten importieren** liest einen ein, der vorher exportiert wurde. Mehr als ein Farbkasten geht mit Pro.
+
+## Wann die Mischungen neu berechnet werden
+
+Änderungen im Farbkasten erreichen das Bild nicht, solange du noch auswählst. Wenn du den Farbkasten schließt, berechnet die App alle Mischungen und Rezepte mit der neuen Palette neu. **Mischungen aktualisieren** oben im Farbkasten tut dasselbe, ohne ihn zu schließen, sodass du die Wirkung einer Änderung sofort siehst.
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/farbflaechen.html -->
+
+# Farbflächen
+
+Öffne die **Einstellungen** in der rechten Spalte. Alles in diesem Kapitel stellst du dort ein, bis auf die Ansichten am Ende, die bei den Werkzeugen des Bildes sitzen. Sobald du einen Regler loslässt, analysiert die App das Bild neu.
+
+*Screenshot: Die Einstellungen*
+
+1. Die Methode: **Mischen** (dieses Kapitel) oder **Schichten** (siehe [Schichten](https://watercolourlove.de/de/handbuch/schichten.html)).
+2. Die Flächen: **Organisch** oder **Geometrisch**.
+3. **Flächen vereinfachen**: wie groß und ruhig die Formen sind.
+4. **Farben**: die Zahl der Mischungen.
+5. **Details**: ob die Mischungen feine Abstufungen im ganzen Bild geben oder kleinen Flächen eines anderen Farbtons.
+6. **Max. Farben**: wie viele Farben eine Mischung enthalten darf.
+
+Der Knopf mit dem halb gefüllten Kreis neben den Flächen schaltet auf [Monochrom](https://watercolourlove.de/de/handbuch/tonwerte.html#monochrom-eine-temperatur-jeder-tonwert) um, eine Studie in Hell und Dunkel, gemalt mit deinen Farben (Pro). Für Licht und Schatten allein gibt es die Ansicht **Blocking**.
+
+## Farben: wie viele Mischungen
+
+**Farben** ist die Zahl der Mischungen auf deiner Palette, von 2 bis 32. Das ist die wichtigste Entscheidung über die Arbeit, die ein Bild macht, denn jede Mischung ist eine Pfütze, die du ansetzt, prüfst und feucht hältst.
+
+Die Zahl ist nicht die Zahl der Farben auf dem Papier. Jede Mischung wird in bis zu fünf Wasserstufen gemalt, ihren Lasuren; ein Bild mit 20 Mischungen zeigt in diesem Beispiel 52 verschiedene Farben. Töne, die sich nur in Hell und Dunkel unterscheiden, teilen sich eine Mischung; Töne, die sich im Farbton unterscheiden, bekommen eine eigene.
+
+*Screenshot: Dasselbe Foto mit 6 Mischungen*
+
+Sechs Mischungen geben ein kräftiges, plakatartiges Bild, das du an einem Nachmittag malst. Zwölf bis zwanzig ist der Bereich für die meisten Bilder. Über vierundzwanzig malst du sehr genau, und der Gewinn ist meist kleiner als die zusätzliche Arbeit.
+
+## Flächen vereinfachen
+
+Die Kamera hält jeden Grashalm fest. Ein Maler nicht. **Flächen vereinfachen** entscheidet, wie viel vom Detail des Fotos zu Formen auf deinem Papier wird.
+
+Bei **0**, wo jedes Bild startet, folgen die Flächen dem Foto eng, lassen aber das Rauschen weg: Einzelne Sprenkel gehen in ihren Nachbarn auf, und weiche Verläufe werden zu wenigen klaren Stufen. Jede Stufe nach oben fasst mehr kleine Formen zu größeren zusammen und rundet ihre Umrisse, bis **12**, wo nur noch die großen Massen bleiben.
+
+*Screenshot: Flächen vereinfachen ganz fein: Die Flächen folgen dem Foto*
+
+*Screenshot: Flächen vereinfachen auf 7: dieselben Mischungen in großen, ruhigen Formen*
+
+Mit Pro geht der Regler unter 0, bis **-2**. Dort nimmt die App Schritt für Schritt zurück, was die Flächen beruhigt, bis sie dem Foto fast Pixel für Pixel folgen. Das hilft bei einer genauen Studie, bei einem [Ausschnitt des Bildes](https://watercolourlove.de/de/handbuch/bilder.html#genauer-hinsehen-ausschnitte-des-bildes) oder einfach, um zu sehen, wie viel wirklich da ist. Zum Malen landen die meisten zwischen 3 und 8.
+
+> **Tipp:** Vereinfachen ändert nicht die Zahl der Mischungen, nur die Formen. Wirkt ein Bild unruhig, erhöh zuerst **Flächen vereinfachen**; wirkt es flach oder zu gleichförmig, erhöh **Farben**.
+
+## Details: welche Farben eine eigene Mischung bekommen
+
+Hat das Foto mehr Farben, als du verlangst, müssen sich einige eine Mischung teilen. **Details** entscheidet, welche.
+
+- **Hoch (Richtung 10)** hält das Bild als Ganzes so nah am Foto wie möglich. Die großen Flächen, ein Himmel, eine Wand, eine Straße, bekommen die feinsten Abstufungen, und eine kleine Fläche eines anderen Farbtons wird unter Umständen mit der nächsten großen Mischung gemalt.
+- **Niedrig (Richtung 0)** behält kleinen Flächen mit eigenem Farbton eine eigene Mischung: das rote Dach im grünen Tal, die Lippen im Porträt, ein einzelnes gelbes Boot. Dafür teilen sich ähnliche große Farben öfter eine Mischung, und ein Himmel wird unter Umständen eine einzige flache Farbe.
+
+Der Ausgangswert 5 ist ein Mittelweg. Senk ihn für Bilder, die von einem kleinen Akzent leben; erhöh ihn für ruhige Landschaften, in denen die großen Farbfelder am meisten zählen.
+
+## Max. Farben
+
+**Max. Farben** begrenzt jede Mischung auf eine, zwei oder drei Farben. Drei geben die genauesten Treffer. Zwei geben sauberere, leuchtendere Mischungen, die sich leichter wiederholen lassen. Eine heißt: Jede Farbe ist eine einzelne Farbe in irgendeiner Wasserstufe, eine strenge und schöne Übung.
+
+Drei Farben in einer Mischung sind im Aquarell völlig normal, aber jede weitere Farbe trübt eine Mischung ein wenig. Wenn deine Farben auf dem Papier schmutziger aussehen als am Bildschirm, versuch es mit zwei.
+
+## Sättigung und Kontrast
+
+Diese beiden Regler verändern das Foto, **bevor** es analysiert wird. An deinen Farben ändern sie nichts.
+
+**Sättigung** steht zu Beginn auf **200 %**. Das mag übertrieben aussehen, ist aber Absicht: Fotos, besonders vom Telefon, sind oft matt, und Malerinnen und Maler übertreiben Farbe ohnehin. Die doppelte Sättigung holt die Farbtöne hervor, die wirklich da sind, das Violett im Schatten, die Wärme im Stein, damit die Mischungen sie beschreiben. Senk sie für ein ruhigeres, gedämpfteres Bild; bei 0 % ist das Foto grau.
+
+**Kontrast** steht zu Beginn auf **100 %** und reicht von 50 % bis 200 %. Erhöh ihn, wenn ein dunstiges Foto zu wenige klare Dunkel ergibt, senk ihn, wenn ein hartes Mittagsfoto die Schatten zu schwer macht.
+
+Ein Doppelklick auf einen Regler setzt ihn auf 100 % zurück.
+
+## Organische oder geometrische Flächen
+
+**Organische** Flächen folgen den Umrissen im Foto. Sie sehen aus wie das Foto, vereinfacht.
+
+**Geometrisch** macht aus jeder Fläche ein Vieleck mit wenigen geraden Kanten, von groß nach klein übereinandergelegt. Das funktioniert in beiden Methoden und gibt ein Bild mit starkem grafischem Charakter, nah an einem kantigen oder kubistischen Stil. Mit dem Lineal ist es außerdem schnell gezeichnet. **Flächen vereinfachen** macht die Kanten länger und die Formen weniger.
+
+*Screenshot: Das Beispielfoto mit geometrischen Flächen*
+
+## Die Ansichten
+
+Die Werkzeuge des Bildes sitzen über ihm, links daneben **Einstellungen**. Auf dem Telefon liegen die Werkzeuge unten und **Einstellungen** oben.
+
+*Screenshot: Die Werkzeuge des Bildes*
+
+1. **Einstellungen** öffnet und schließt die Karte mit den Einstellungen.
+2. **Ausschnitt** zeigt einen Teil des Bildes für sich (siehe [Bilder](https://watercolourlove.de/de/handbuch/bilder.html#genauer-hinsehen-ausschnitte-des-bildes)).
+3. **Gemischte Farbe**: jede Fläche in dem Ton, den deine Farben tatsächlich erreichen. Nach dieser Ansicht malst du.
+4. **Fotofarbe**: jede Fläche in der Farbe des Fotos. Vergleich sie mit **Gemischte Farbe**, um zu sehen, wo deine Farben nicht hinkommen.
+5. **Foto**: das Original, mit Sättigung und Kontrast.
+6. **Blocking**: Licht und Schatten in großen Massen. Siehe [Tonwerte](https://watercolourlove.de/de/handbuch/tonwerte.html#blocking-licht-und-schatten-zuerst).
+7. **Raster**: quadratische Felder über dem Bild, in Weiß, Grau oder Schwarz. Siehe [Drucken](https://watercolourlove.de/de/handbuch/drucken.html#das-raster).
+8. **Umrisse** ein oder aus.
+9. **Nummern**: jeder Klick schaltet weiter, von Nummern zu Nummern auf Hintergrund zu keinen Nummern. Auf Hintergrund steht jede Nummer auf einem kleinen Quadrat, weiß mit dunkler Nummer auf dunklen Flächen und dunkel mit weißer Nummer auf hellen, so bleibt sie auf jeder Farbe lesbar.
+
+Sobald du in das Bild hineinzoomst, erscheint vorn bei den Werkzeugen **Anpassen**; es passt das Bild wieder ins Fenster.
+
+*Screenshot: Fotofarbe: was das Foto verlangt*
+
+*Screenshot: Foto: das Original*
+
+Ohne Umrisse und Nummern zeigt **Gemischte Farbe** das Bild so, wie es gemalt aussehen könnte, ein guter Test, ob der Plan als Bild funktioniert.
+
+*Screenshot: Gemischte Farbe ohne Umrisse und Nummern*
+
+**Nummerngröße** am Ende der Einstellungen macht die Nummern **Groß**, 1,4-mal so groß wie **Normal**, für ein Bild, das man von weiter weg ansieht oder klein druckt.
+
+*Screenshot: Große Nummern auf Hintergrund*
+
+## Einstellungen für typische Motive
+
+Das sind Ausgangspunkte, keine Regeln.
+
+| Motiv | Farben | Flächen vereinfachen | Details | Max. Farben |
+|---|---|---|---|---|
+| Landschaft, große Formen | 12 bis 20 | 4 bis 8 | 5 bis 7 | 2 oder 3 |
+| Porträt | 16 bis 24 | 2 bis 5 | 2 bis 4 | 2 oder 3 |
+| Architektur, Straßen | 14 bis 20 | 3 bis 6 oder **Geometrisch** | 5 | 2 |
+| Blumen, Stillleben | 10 bis 16 | 3 bis 6 | 2 bis 4 | 2 |
+| Schnelle Skizze, draußen | 6 bis 10 | 7 bis 10 | 7 | 2 |
+
+Bei Porträts tragen die kleinen Züge (Augen, Mund, der Schatten unter der Nase) die Ähnlichkeit, also halt **Details** und **Flächen vereinfachen** niedrig, oder leg einen [Ausschnitt](https://watercolourlove.de/de/handbuch/bilder.html#genauer-hinsehen-ausschnitte-des-bildes) vom Gesicht an. Bei Landschaften klappt meist das Gegenteil: wenige, große, ruhige Flächen, und die kleinen Akzente am Ende frei gemalt.
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/mischungen.html -->
+
+# Mischungen, Lasuren und Rezepte
+
+## Eine Pfütze, mehrere Lasuren
+
+Aquarell wird mit Wasser heller, nicht mit Weiß. Eine Farbe im Foto und ihre blassere Schwester sind im Aquarell dieselbe Mischung, nur mit mehr oder weniger Wasser. Watercolourlove plant das Bild genauso.
+
+Eine **Mischung** ist eine Kombination von Farben in einem festen Verhältnis: eine Pfütze auf der Palette. Eine **Lasur** ist diese Mischung bei einer bestimmten Wassermenge. Die App kennt fünf Stufen:
+
+| Buchstabe | Wassermenge | Am Maltisch |
+| --- | --- | --- |
+| W | sehr wässrig | getöntes Wasser, das Papier scheint fast unberührt durch |
+| L | leicht | eine blasse, klare Lasur |
+| M | mittel | die Farbe, wie du sie erwartest |
+| R | kräftig | stark, fließt aber noch leicht |
+| C | konzentriert | so viel Farbe, wie der Pinsel trägt, kaum Wasser |
+
+Jede Fläche im Bild trägt eine Beschriftung aus beidem: **6L** ist Mischung 6 als leichte Lasur, **6R** dieselbe Mischung als kräftige Lasur. Du mischst die 6 einmal, nimmst etwas davon für die L-Flächen, gibst Farbe dazu für die R-Flächen und musst nie eine Farbe zweimal treffen.
+
+Deshalb zählt **Farben** in den Einstellungen Mischungen, nicht Farben. Beim Beispielfoto Llyn Idwal mit Farben auf 20 steht in der Liste **52 in 20 Mischungen**: zweiundfünfzig Farben auf dem Papier aus zwanzig Pfützen auf der Palette.
+
+> **Gut zu wissen:** Keine Farbe wird je stärker verwendet als ihr eigenes Farbmuster. Wasser macht eine Farbe nur heller; eine Farbe, die dunkler ist als jede einzelne Farbe, braucht eine zweite Farbe in der Mischung. So verhält sich echte Farbe, und deshalb enthalten manche dunklen Mischungen drei Farben.
+
+## Die Farbliste
+
+Tippe rechts auf **Farben**, um die Liste zu öffnen. Sie zeigt einen Block pro Mischung, vom größten Anteil am Bild bis zum kleinsten.
+
+*Screenshot: Die Farbliste von Llyn Idwal*
+
+1. **52 in 20 Mischungen:** wie viele Farben das Bild hat und aus wie vielen Pfützen sie kommen.
+2. **Der Schlüssel** zu den Wasserstufen W bis C, wie sie im Bild und in den Balken stehen.
+3. **Eine Mischung:** ihre Nummer, ihre Grundfarbe, die Farben mit Nummer und Namen, wie viele Lasuren sie hat und wie viel vom Bild sie bedeckt. Darunter zwei Balken: die Farben im Verhältnis des Rezepts (die Zahlen sind Teile) und die Lasuren dieser Mischung nebeneinander, von wässrig bis konzentriert, jede in ihrer Farbe.
+
+Lies den ersten Balken als Rezept auf einen Blick: Ein langes blaues Stück mit 1,5 neben einem kurzen braunen mit 1 heißt anderthalb Teile Blau auf einen Teil Braun. Der zweite Balken sagt dir, wie weit die Pfütze reicht: Eine Mischung mit allen fünf Buchstaben wird vom Hauch einer Farbe bis zu ihrer vollen Kraft gemalt.
+
+### Eine Mischung allein zeigen
+
+Klicke eine Mischung in der Liste an, und der Rest des Bildes wird leer. Nur die Flächen dieser Mischung bleiben, in all ihren Lasuren. So siehst du genau, wohin die Pfütze gehört, bevor du sie anmischst.
+
+*Screenshot: Mischung 2 allein: jede Fläche, die aus dieser Pfütze gemalt wird*
+
+Aus dieser Ansicht malst du. Wähle eine Mischung, male jede Fläche mit ihrer Nummer, vom hellsten Buchstaben zum dunkelsten, und geh zur nächsten Mischung. Ein Klick auf den leeren Teil des Bildes holt das ganze Bild zurück.
+
+## Eine Farbe im Bild nachschlagen
+
+Tippe oder klicke eine Fläche im Bild an. Über dem Bild öffnet sich eine Karte mit dem, was du am Maltisch brauchst.
+
+*Screenshot: Die Karte einer angetippten Fläche*
+
+1. **Die Karte** nennt die Farbe (zum Beispiel **Farbe 1L**), zeigt ihren Anteil am Bild, die Wasserstufe und das empfohlene Rezept mit seinen Farben und dem Verhältnis als Balken. Die angetippte Stelle blinkt im Bild, damit du weißt, welche Fläche gemeint ist. Tippe dieselbe Fläche noch einmal an oder schließe die Karte, um sie wegzulegen.
+
+Die Karte lässt das Bild, wie es ist. Das ist Absicht: Eine Farbe lässt sich zwischen ihren Nachbarn besser beurteilen als allein. Am Computer erscheint dasselbe Rezept auch neben dem Mauszeiger, während du ihn über das Bild bewegst.
+
+## Alle Details
+
+**Alle Details** auf der Karte öffnet alles, was die App über diese Farbe weiß.
+
+*Screenshot: Alle Details einer Farbe*
+
+### Ziel und deine Mischung
+
+Links steht das **Ziel**, die Farbe, die das Foto verlangt. Rechts steht **Deine Mischung**, die Farbe, die das gewählte Rezept auf weißem Papier ergibt. Sehen die beiden gleich aus, ist das Rezept gut. Weichen sie ab, ist der Unterschied echt: Deine Farben erreichen das Ziel nicht, und die nächsten Abschnitte zeigen, was du dann tun kannst.
+
+### Das Ziel ändern
+
+Du malst, das Foto ist nur ein Vorschlag. **Farbe ändern** öffnet einen Farbwähler. Wähle ein wärmeres Grün, einen kühleren Schatten oder etwas ganz anderes, und die Rezepte werden für das neue Ziel neu berechnet. **Zurück zum Foto** holt die Farbe des Fotos zurück.
+
+Ein geändertes Ziel gilt für alle Flächen dieser Farbe. Soll nur die angeklickte Fläche anders werden, drücke vorher **Nur die angeklickte Fläche bearbeiten**. Die Fläche bekommt dann eine eigene Farbe, die du ändern kannst, ohne die anderen anzufassen. Der Knopf erscheint nur, wenn die Farbe mehr als eine Fläche hat.
+
+### Die Rezepte
+
+Darunter stehen bis zu fünf **Rezepte**, das beste zuerst. Jedes zeigt die Wasserstufe und den Treffer, dann die Farben mit ihren Teilen und das Verhältnis als Balken. Unter der Überschrift steht, welche anderen Beschriftungen dieselbe Pfütze teilen, etwa „Dieselbe Mischung wie 1W – nur die Wassermenge ist anders.“
+
+Klicke ein Rezept an, um es zu wählen. Das Bild, die Farbliste und der Ausdruck folgen deiner Wahl.
+
+## Ein Rezept lesen
+
+Nimm eine Rezeptzeile wie **1,5 x P 645** und **1 x T 515**:
+
+- **1,5 x** und **1 x** sind **Teile**. Zähle sie in Pinselladungen oder in Tropfen aus einer Pipette: anderthalb Ladungen der ersten Farbe auf eine der zweiten. Es kommt nur auf das Verhältnis an, 3 zu 2 ist dieselbe Mischung.
+- **P** heißt, die Farbe liegt als Näpfchen in deinem Kasten, **T** als Tube, **P/T**, dass du beides hast.
+- **645** und **515** sind die Farbnummern des Herstellers, dahinter steht der Name. Auf der Farbkarte von Schmincke Horadam ist 645 Caput mortuum und 515 Grünoliv.
+- Die Wasserstufe (leicht, mittel, kräftig …) sagt dir, wie viel Wasser in die Pfütze kommt, wenn die Farben beisammen sind.
+
+> **Tipp:** Gib zuerst die Farben in die Mulde und rühre sie zusammen, bevor das Wasser dazukommt. Ein Verhältnis lässt sich in einer kleinen, kräftigen Pfütze viel besser beurteilen als in einer großen, blassen.
+
+### Der Treffer
+
+Jedes Rezept trägt eine Zahl und ein Wort, zum Beispiel **1,2 · sehr gut**. Die Zahl ist der Abstand zwischen Ziel und Mischung, gemessen so, wie das Auge Farbe wahrnimmt (in OKLab, mal 100). Grob gesagt ist 1 der kleinste Unterschied, den ein geübtes Auge sieht; Weiß gegen Schwarz ist etwa 100.
+
+| Zahl | Bewertung | Was sie heißt |
+| --- | --- | --- |
+| unter 2 | sehr gut | auf normale Entfernung nicht zu unterscheiden |
+| unter 5 | gut | nah dran; direkt nebeneinander siehst du es vielleicht |
+| unter 10 | mäßig | dieselbe Familie, sichtbar anders |
+| ab 10 | grob | deine Farben erreichen diese Farbe nicht |
+
+### Wenn ein Treffer nur mäßig oder grob ist
+
+Ein mäßiger oder grober Treffer ist eine Auskunft, kein Fehler. Er sagt dir, dass die Farben deiner Palette diese Farbe nicht hergeben. Du hast vier Wege:
+
+1. **Ein anderes Rezept ansehen.** Das zweite oder dritte nimmt vielleicht Farben, die dir besser liegen, für etwas weniger Genauigkeit.
+2. **Mehr Farben pro Mischung erlauben.** **Max. Farben** in den Einstellungen geht bis drei. Eine dritte Farbe rettet oft ein Dunkel oder ein gebrochenes Grün.
+3. **Eine Farbe in die Palette nehmen.** Öffne den [Farbkasten](https://watercolourlove.de/de/handbuch/farbkasten.html) und nimm die Farbe dazu, die die Farbe zu brauchen scheint: ein kühleres Blau, ein echtes Violett, eine Erde. **Auto** kann auch eine Auswahl für dieses Bild treffen.
+4. **Das Ziel ändern.** Manchmal ist die ehrliche Antwort, die Farbe zu malen, die deine Farben gut können. Vergleiche die Ansichten **Gemischte Farbe** und **Fotofarbe**, um zu sehen, wo sich das Bild ändern würde.
+
+## Wie die App ein Rezept findet
+
+Aquarell ist eine durchscheinende Schicht auf weißem Papier. Das Licht geht durch die Farbe, wird vom Papier zurückgeworfen und geht noch einmal durch die Farbe; jedes Pigment nimmt einen Teil des Lichts weg. Die App behandelt jede Farbe genauso, als farbigen Filter, beschrieben durch die Farbe eines Farbmusters auf weißem Papier.
+
+Für eine Zielfarbe probiert sie jede Farbe deiner Palette allein, jedes Paar und jede Dreiergruppe (bis zu deinen **Max. Farben**) und findet für jede Kombination die Mengen, die am nächsten kommen. Die besten Kandidaten werden dann daran verfeinert, wie das Auge Farbe sieht, nicht wie ein Bildschirm Licht mischt. Eine Grenze dafür, wie dunkel eine Farbschicht werden kann, hält die Rezepte ehrlich: Drei leuchtende Farben ergeben zusammen kein Schwarz.
+
+Das Ergebnis ist eine Schätzung aus einem Farbmuster pro Farbe. Meist liegt sie nah dran; dein eigener Probestreifen entscheidet. Das Kapitel [Wie Aquarell funktioniert](https://watercolourlove.de/de/handbuch/wie-aquarell-funktioniert.html) erklärt das Modell genauer, und [Farben kalibrieren](https://watercolourlove.de/de/handbuch/kalibrieren.html) zeigt, wie die Farbmuster genau zu deinen Farben passen.
+
+> **Achtung:** Aquarell trocknet heller auf, als es nass aussieht. Beurteile einen Probestreifen immer trocken, neben dem Farbfeld auf dem Bildschirm oder dem Ausdruck.
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/schichten.html -->
+
+# Schichten
+
+## Lasieren statt mischen
+
+Beim Mischen wird jede Farbe auf der Palette gemischt und jede Fläche einmal gemalt. Die Methode **Schichten** geht andersherum vor, so wie viele Aquarellmaler ein Bild aufbauen: wenige durchscheinende Lasuren aus je einer einzigen Farbe, eine über der anderen. Gelb über Blau ergibt auf dem Papier Grün; eine zweite Lasur desselben Blaus über der ersten vertieft es; eine Erdfarbe über beidem beruhigt alles, was sie berührt.
+
+Stelle die Methode in den Einstellungen von **Mischen** auf **Schichten** um. Die App entscheidet dann für jede Fläche, welche Schichten sie bekommt und wie viele Lasuren von jeder, damit das fertige Bild dem Foto für die Arbeit, die es kostet, so nahe wie möglich kommt. Eine Lasur, die zu wenig bringt, lässt sie weg.
+
+*Screenshot: Schichten bei Llyn Idwal: vier Schichten und ein Akzent*
+
+### Wann du Schichten wählst
+
+- **Für leuchtende Farbe.** Farben, die durch Lasieren auf dem Papier entstehen, bleiben klarer als dieselben Farben aus dem Napf, weil jede Schicht ein einziges Pigment ist.
+- **Für große, ruhige Bilder.** Landschaften, Himmel und Wasser passen gut: Jede Lasur deckt große Teile des Papiers.
+- **Zum Lernen.** Du bereitest vier oder fünf Pfützen vor statt zwanzig und siehst genau, was jede Schicht beiträgt.
+
+Mischen ist die bessere Wahl für Bilder mit vielen kleinen, deutlich verschiedenen Farben, für deckende oder stark granulierende Farben und wenn du jede Fläche in einem Durchgang fertig malen willst. Das Kapitel [Lasieren](https://watercolourlove.de/de/handbuch/lasieren.html) behandelt die Maltechnik selbst.
+
+## Grundfarben und Einstellungen
+
+Die Methode Schichten malt mit wenigen **Grundfarben**, je einer Schicht, höchstens sechs. Sie sind getrennt von den Farben, die zum Mischen gewählt sind: Im selben Bild kannst du eine Palette von zwanzig Farben zum Mischen und vier Grundfarben für die Schichten haben.
+
+Die App schlägt Grundfarben für das Bild vor (**Auto**). Um sie selbst zu wählen, öffne den Farbkasten aus der Schichtenliste mit **Farbkasten zeigen**. Bei Schichten heißt sein oberer Teil **Farbkasten: Grundfarben**; ein Klick auf ein Farbfeld nimmt die Farbe dazu oder heraus. Bringt eine gewählte Farbe bei diesem Bild zu wenig, sagt die Liste es dir, etwa „Für dieses Bild nicht nötig“ oder dass es für diese Farbe keine Schicht gibt, weil sie hier zu wenig beiträgt.
+
+In den Einstellungen hat die Methode eigene Regler:
+
+| Einstellung | Was sie entscheidet |
+| --- | --- |
+| **Schichten** | Wie viele Grundfarben die App vorschlägt, 2 bis 6. Mit selbst gewählten Farben zeigt der Regler, wie viele du gewählt hast. |
+| **Akzente** | Bis zu drei kleine, kräftige Setzungen, zuletzt gemalt: zuerst für eine Farbe, die die Lasuren verfehlen, dann für die Dunkel. |
+| **Max. Lasuren** | Wie oft eine Lasur über sich selbst gemalt werden darf, 1 bis 3. Mehr Lasuren geben tiefere Töne aus weniger Farben, kosten aber mehr Trockenzeit. |
+| **Flächen vereinfachen** | Ein eigener Wert für die Schichten. Jede Schicht wird von Hand gemalt, ruhige Formen zählen hier noch mehr als beim Mischen. |
+
+## Die Schichtenliste
+
+Bei Schichten öffnet der Knopf unter **Einstellungen** in der rechten Spalte statt der Farben die Schichten: eine Karte über dem Bild, die du an ihrem Griff verschiebst und wieder schließt, genau wie die Farbliste. Der Knopf **Farbkasten** darunter öffnet den Farbkasten. Die Karte zeigt die Schichten in der Reihenfolge, in der du sie malst, von hell nach dunkel, und darunter die Akzente unter **Akzente, zuletzt gemalt**. Tippst du auf eine Stelle im Bild, zeigt die Karte diese Stelle oben an.
+
+Jede Zeile nennt die Farbe, wie du ihre Lasur ansetzt, und ihre Lasuren. Die Lasur steht als Verhältnis und als Konsistenz da, zum Beispiel **1:9 mit Wasser, wie Kaffee**: ein Teil Farbe auf neun Teile Wasser. Die Konsistenzen sind die, mit denen Maler sich verständigen:
+
+| Konsistenz | Wasser auf einen Teil Farbe | Gefühl |
+| --- | --- | --- |
+| Tee | 20 Teile und mehr | ein zarter Hauch, kaum gefärbt |
+| Kaffee | etwa 8 bis 15 Teile | deutlich gefärbt, noch sehr flüssig |
+| Milch | etwa 3 bis 7 Teile | eine volle Lasur |
+| Sahne | 1 bis 3 Teile | kräftig, fließt langsam |
+| Butter | kaum Wasser | Farbe, wie sie aus der Tube kommt |
+
+Das Farbfeld neben der Farbe zeigt einen Strich dieser Lasur auf weißem Papier. Prüfe deine Pfütze daran auf einem Rest desselben Papiers, bevor du anfängst.
+
+> **Gut zu wissen:** Die Verhältnisse gehen davon aus, dass das Farbmuster einer Farbe etwa ein Teil Farbe auf ein Teil Wasser ist. Wie jedes Rezept der App sind sie Schätzungen aus einem Farbmuster. Der Strich auf deinem Probestück entscheidet.
+
+### Häkchen und eine Schicht allein
+
+Das Kästchen vor einer Schicht schaltet sie im Bild an und aus. Nimm das Häkchen beim Gelb weg, und du siehst das Bild ohne Gelb. Die Häkchen ändern nur, was das Bild zeigt; die Farben selbst änderst du im Farbkasten.
+
+Klicke die Zeile einer Schicht an, und das Bild zeigt diese Schicht allein. Die Zahlen im Bild sind jetzt **Lasuren**: Male jede nummerierte Fläche einmal, lass sie trocknen, dann male die Flächen mit der 2 noch einmal.
+
+*Screenshot: Eine Schicht allein: die Zahlen sind Lasuren*
+
+**Alle** zeigt wieder alle Schichten.
+
+### Was eine Stelle bekommt
+
+Tippe eine Stelle im Bild an. Eine Karte zeigt **Diese Stelle**: die Farbe des Fotos neben der geschichteten Farbe, wie nah sie sich kommen, und **Schichten an dieser Stelle**, die Lasuren jeder Schicht, die sie bekommt. Schichten, die sie frei lassen, stehen auch da. Von der Karte springst du zu dem Schritt, der eine Lasur malt.
+
+## Schritt für Schritt malen
+
+**Schritt für Schritt malen** macht aus dem Plan eine Abfolge, der du am Maltisch folgen kannst. Jeder Schritt ist eine Lasur einer Schicht, in der Reihenfolge, in der du sie malst.
+
+*Screenshot: Schritt 3: wo die Lasur hinkommt*
+
+Jeder Schritt sagt dir, was du mischst, wo du es malst und dass du vor dem nächsten alles ganz trocknen lässt. Drei Ansichten zeigen den Schritt:
+
+- **Wo malen:** das Papier nach diesem Schritt, die Flächen, die jetzt gemalt werden, in voller Farbe, der Rest blass.
+- **Diese Lasur:** nur die Flächen dieses Schritts, gefüllt mit einem Strich der Lasur.
+- **Bisher:** das Papier mit allen Schichten bis einschließlich dieses Schritts. So sollte dein Bild jetzt aussehen.
+
+**Zurück** und **Weiter** blättern durch die Schritte. Der letzte Schritt sagt dir, dass du fertig bist.
+
+> **Tipp:** Lass **Bisher** auf dem Bildschirm, während das Papier trocknet. Es zeigt dir den nächsten Stand, bevor du dich festlegst, und ist der beste Moment zu entscheiden, ob die nächste Lasur wirklich nötig ist.
+
+## Die Schichten drucken
+
+**Drucken / PDF** gibt bei Schichten zuerst das fertige Bild aus, dann ein Blatt pro Schicht: ihre Farbe und Lasur, die Flächen mit ihren Lasurnummern und kurze Anweisungen wie „Lasur 1 auf jede nummerierte Fläche“ und welche Zahlen eine zweite Lasur bekommen. Die Akzente bekommen ein eigenes Blatt, zuletzt gemalt, wenn alles andere trocken ist. Mehr dazu unter [Drucken](https://watercolourlove.de/de/handbuch/drucken.html).
+
+*Photo: Ein Schichtenblatt neben dem trocknenden Bild*
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/tonwerte.html -->
+
+# Tonwerte
+
+## Warum die Tonwerte zuerst kommen
+
+Unter Malern heißt es: Der Tonwert macht die Arbeit, die Farbe bekommt den Applaus. Ein Bild mit den richtigen Hell und Dunkel wirkt stimmig, selbst in falschen Farben; ein Bild mit schönen Farben und verwaschenen Tonwerten fällt auseinander. Kneif die Augen vor einem Bild zusammen, das du bewunderst, und du siehst es: wenige große Formen aus Hell, Mittel und Dunkel, klar voneinander getrennt.
+
+Die App hat zwei Werkzeuge dafür. **Blocking** ist eine Ansicht: Sie zeigt dir Licht und Schatten des Fotos, sonst nichts, so wie du sie vor dem Malen anlegst. **Monochrom** ist eine Art zu malen: das ganze Bild in einer Temperatur, jeder Tonwert aus deinen Farben gemischt.
+
+## Blocking: Licht und Schatten zuerst
+
+Das Anlegen der großen Massen ist der erste Schritt vieler Bilder: Vor jeder Farbe setzt du die großen Flächen aus Hell und Dunkel, flach und ohne Einzelheiten. Alles Weitere fügt sich in sie ein. Die App macht das für dich, in der Ansicht **Blocking**, dem letzten Knopf der Ansichten (ein Quadrat mit einer dunklen Masse unter einer hellen).
+
+*Screenshot: Llyn Idwal im Blocking: Licht und Schatten*
+
+Das Bild wird zu **Papierweiß** und **einem kräftigen Dunkel**, in großen Formen, mit harten Kanten dazwischen. Die Töne sind in der Reihenfolge des Malens nummeriert: **1** ist der hellste, die letzte Zahl der dunkelste. Es geht beim Mischen und bei den Schichten.
+
+Solange Blocking an ist, zeigen die Einstellungen nur, was dazugehört; die Farbeinstellungen kommen mit den anderen Ansichten zurück.
+
+- **Töne:** **2** ist Licht gegen Schatten (in der japanischen Malerei heißt das *Notan*). **3** nimmt einen Mittelton dazu. Mehr Töne machen wieder eine Tonwertstudie daraus, darum hört Blocking bei drei auf.
+- **Licht / Schatten:** wo das Licht endet und der Schatten beginnt. Weiter links zählt mehr vom Bild als Licht. Die App beginnt dort, wo sich das Foto selbst in Hell und Dunkel teilt; **Teilen, wie das Foto es vorgibt** führt dorthin zurück, nachdem du den Regler bewegt hast. Bei drei Tönen gibt es zwei Regler, **Licht / Mittelton** und **Mittelton / Schatten**.
+- **Formen:** wie groß die Massen sind. Links bleiben kleinere Formen, rechts wird alles zu den größten Massen. Der Regler steht absichtlich hoch: Beim Blocking geht es um die großen Formen, nicht um die Einzelheiten.
+- **Deckkraft:** wie stark die Töne das Foto verdecken. Bei 100 % siehst du nur die Töne; darunter scheint das Foto durch, und du siehst, wofür jede Masse steht.
+- **Kontrast:** derselbe wie in den Farbeinstellungen. Mehr Kontrast zieht Hell und Dunkel weiter auseinander.
+
+Unter den Einstellungen stehen die Töne mit ihrem Anteil am Bild. Tipp einen an, dort oder im Bild, um ihn allein zu zeigen:
+
+*Screenshot: Nur der hellste Ton: das Papier, das frei bleibt*
+
+- **Der hellste Ton** ist das Papierweiß, das du aussparen musst. Mal um ihn herum oder maskiere ihn, bevor du anfängst.
+- **Der Mittelton** (bei drei Tönen) ist eine Lasur über alles außer dem Licht.
+- **Der dunkelste Ton** ist, was du zuletzt malst.
+
+Tipp denselben Ton noch einmal an, um wieder alle zu sehen.
+
+> **Tipp:** Blocking prüft auch deine Mischungen. In der Farbliste zeigt jede Mischung ihren Ton, und eine Mischung, die heller oder dunkler ausfällt als der Ton ihrer Fläche, sagt es in Rot. Ein falscher Farbton wird verziehen, ein falscher Tonwert nicht.
+
+Blocking gehört zu einem Bild, das du freigeschaltet hast, oder zu Pro. Siehe [Konto, Pro und deine Daten](https://watercolourlove.de/de/handbuch/konto.html).
+
+## Monochrom: eine Temperatur, jeder Tonwert
+
+Monochrom gehört zum Mischen und wird mit **Monochrom** in den Einstellungen eingeschaltet, dem Knopf mit dem halb gefüllten Kreis neben den Flächenarten. Ein zweiter Druck führt zurück zur Farbe. Es gehört zu Pro.
+
+*Screenshot: Llyn Idwal als Tonwertstudie*
+
+### Was Monochrom tut
+
+Mit eingeschaltetem **Monochrom** arbeitet die App so:
+
+1. **Das Foto wird in Grau analysiert.** Die Sättigung zählt nicht, nur die Helligkeit jeder Stelle. Das Bild wird in bis zu 24 Tonwerte geteilt, vom hellsten bis zum dunkelsten.
+2. **Jeder Tonwert wird mit deinen Farben gemalt, welcher Farbton sie auch haben.** Für jeden Tonwert sucht die App die Farbe oder Mischung deiner Palette, die genau diese Helligkeit mit der kleinsten Änderung an Wasser erreicht. Sie probiert jede Farbe allein, je zwei Farben im Verhältnis 1:1, 2:1 und 1:2 und bei einer kleinen Palette je drei zu gleichen Teilen.
+3. **Farben zählt weiter die Mischungen.** Mit **Farben** auf 4 bekommst du vier Pfützen; jede malt alle Tonwerte um ihren eigenen herum, mit mehr oder weniger Wasser.
+4. **Die Wasserstufen sind feiner.** Fünf Wasserstufen reichen für eine Tonwertstudie nicht, deshalb wird jede Stufe in fünf Schritte geteilt, von W1 bis C5. Eine Beschriftung wie **2L3** heißt Mischung 2, leicht, dritter Schritt: etwas kräftiger als 2L2.
+
+Der Treffer eines Rezepts ist bei Monochrom allein der Unterschied in der Helligkeit. Ein Blau, das genau so dunkel ist wie das Grau des Fotos, ist ein sehr guter Treffer, auch wenn das Foto grün war.
+
+> **Gut zu wissen:** Werden deine Farben nicht so dunkel wie die dunkelste Stelle des Fotos (ein Gelb allein zum Beispiel), verteilt die App die Tonwerte des Bildes auf den Bereich, den deine Farben erreichen: weißes Papier für das Hellste, deine dunkelste Mischung für das Dunkelste. So behält das Bild alle Stufen, statt in einem flachen Dunkel zu enden.
+
+### Wann du es nutzt
+
+- **Tonwertstudien vor einem Bild.** Eine kleine einfarbige Studie, zwanzig Minuten, vor der farbigen Fassung. Du weißt dann, wo die Lichter sind, bevor du sie verlierst.
+- **Einfarbige und zweifarbige Bilder.** Sepia, Indigo, Paynesgrau oder eine warme und eine kalte Farbe zusammen. Monochrom sagt dir, wie viel Wasser jede Fläche braucht.
+- **Sehen lernen.** Schalte beim selben Bild zwischen **Monochrom** und Farbe hin und her. Flächen, die farbig ganz verschieden aussehen, haben oft denselben Tonwert, und Flächen, die du gleich gemalt hättest, liegen weit auseinander.
+- **Einen Farbplan prüfen.** Wirkt die farbige Fassung flach, vergleiche sie mit der Tonwertstudie. Meist brauchen die Tonwerte Aufmerksamkeit, nicht die Farben.
+
+### Eine Übung mit einer Farbe
+
+Diese Übung dauert etwa eine Stunde und lehrt mehr über Aquarell als viele Nachmittage mit Farbe.
+
+1. Öffne ein Foto mit klarem Licht, zum Beispiel das Beispiel **Llyn Idwal**.
+2. Öffne den Farbkasten und nimm eine einzige dunkle Farbe in die Palette: Paynesgrau bläulich (787), Sepiabraun (663) oder Indigo (485).
+3. Schalte **Monochrom** ein, stelle **Farben** auf 1 und **Flächen vereinfachen** auf einen Wert, bei dem die Formen groß und ruhig sind.
+4. Lies die Beschriftungen: Mit einer Farbe ist jede Beschriftung dieselbe Mischung bei einem anderen Wasserschritt. Setze eine großzügige Pfütze in der kräftigsten Stufe an, die das Bild braucht, und stell ein Glas klares Wasser daneben.
+5. Male von den hellsten Beschriftungen zu den dunkelsten, gib dabei nach und nach Farbe in die Pfütze, und lass die Flächen ohne Beschriftung als weißes Papier stehen.
+
+*Photo: Die Studie mit einer Farbe neben dem Bildschirm*
+
+Versuch es danach mit zwei Farben, einer warmen und einer kalten, etwa Sepiabraun und Indigo, mit **Farben** auf 3. Die App wählt, welche der beiden oder welche Mischung aus ihnen jeden Tonwert malt, und du bekommst ein Bild in zwei Temperaturen, das trotzdem eine Tonwertstudie ist.
+
+> **Tipp:** Kneif abwechselnd vor deiner Studie und vor dem Bildschirm die Augen zusammen. Verschwimmen beide zu denselben großen Formen, hat die Studie ihren Zweck erfüllt.
+
+## Die Tonwerte und der Rest der App
+
+Monochrom arbeitet mit allem anderen beim Mischen zusammen: der Farbliste, der Karte einer angetippten Fläche, Alle Details und dem Drucken. Bei den Schichten gibt es Monochrom nicht, dort sind die Schichten auf Farbe abgestimmt. Das Kapitel [Tonwerte und Vereinfachen](https://watercolourlove.de/de/handbuch/tonwerte-und-vereinfachen.html) zeigt, wie du die Tonwerte eines Fotos liest, bevor du die App überhaupt öffnest.
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/drucken.html -->
+
+# Drucken und exportieren
+
+## Der Ausdruck
+
+**Drucken / PDF** in der Spalte links druckt das Bild auf einer eigenen Seite und danach seine Legende: jede Mischung mit ihren Farben, damit du ohne Bildschirm malen kannst.
+
+*Screenshot: Die Legende: jede Mischung als Karte mit ihren Lasuren und Farben, vier in einer Reihe*
+
+Der Ausdruck hat zwei Teile:
+
+- **Das Bild**, auf der ersten Seite, genau so, wie es beim Drucken gezeigt wird: in der Ansicht, die du gewählt hast, mit oder ohne Umrisse und Nummern. Für den Maltisch druckst du es in **Gemischte Farbe** mit Umrissen und Nummern, und mit Raster, wenn du die Zeichnung Feld für Feld überträgst (siehe unten).
+- **Die Legende**, ab der zweiten Seite, überschrieben mit dem Namen des Bildes. Eine Karte pro Mischung, vier in einer Reihe, so passen etwa zwanzig Mischungen auf eine Seite. Oben auf jeder Karte steht immer links die Mischung in voller Stärke, ihre C-Lasur, mit ihrer Nummer und ihrem Anteil am Bild; daneben ihre übrigen Lasuren, die dunkelste zuerst, mit Buchstaben und Anteil. Darunter steht das Rezept als Balken, dann die Farben untereinander mit ihren Teilen, Näpfchen oder Tube und Nummer. Mischungen, bei denen das Papier weiß bleibt, sagen das.
+
+Wähle im Druckdialog deines Browsers **Als PDF speichern** als Drucker, um den Ausdruck als Datei zu behalten, zum Beispiel auf einem Tablet neben dem Bild.
+
+> **Tipp:** Hake jede Mischung auf der gedruckten Legende ab, sobald ihre Flächen gemalt sind. So verlierst du in einem Bild mit zwanzig Mischungen am einfachsten nicht den Überblick.
+
+### Bei den Schichten
+
+Bei den Schichten ist der Ausdruck das fertige Bild und danach eine Seite pro Schicht: die Farbe und wie du ihre Lasur ansetzt, die Flächen mit ihren Lasurnummern und was zu tun ist („Lasur 1 auf jede nummerierte Fläche“, dann welche Nummern eine zweite Lasur bekommen). Die Akzente kommen zuletzt. Das Kapitel [Schichten](https://watercolourlove.de/de/handbuch/schichten.html) erklärt die Lasuren.
+
+## Das Raster
+
+**Raster** in den Werkzeugen über dem Bild, links neben **Umrisse**, legt ein Raster aus quadratischen Feldern über das Bild. Jeder Klick schaltet weiter, von keinem Raster zu weißen, grauen und schwarzen Linien, damit das Raster auf hellen wie auf dunklen Bildern sichtbar bleibt.
+
+*Screenshot: Das Raster: acht Spalten quadratischer Felder über dem Bild*
+
+**Rasterspalten** in den Einstellungen bestimmt, wie viele Felder quer über das Bild passen, von 2 bis 30. Die Zeilen sind so hoch, wie die Spalten breit sind, so ist jedes Feld quadratisch; die letzte Zeile endet, wo das Bild endet.
+
+Das Raster wird in jeder Ansicht gezeichnet und kommt mit auf den Ausdruck und ins JPG. Zeichne auf dein Papier gleich viele Spalten, mit Feldern so quadratisch wie am Bildschirm, dann kannst du das Bild Feld für Feld abzeichnen (siehe nächster Abschnitt).
+
+## Die Zeichnung übertragen
+
+Wenn du lieber auf dein eigenes Papier zeichnest, hast du mehrere Möglichkeiten, von der schnellsten bis zur persönlichsten:
+
+- **Leuchtplatte oder Fenster.** Klebe das gedruckte Bild, mit Umrissen, hinter das Aquarellpapier, halte beides gegen eine Leuchtplatte oder ein helles Fenster und zieh die Umrisse mit einem harten, hellen Bleistift nach (2H oder H).
+- **Graphitpause.** Schraffiere die Rückseite des Ausdrucks mit einem weichen Bleistift (4B), leg ihn auf das Papier und zieh die Linien mit einem Kugelschreiber nach. Drück so wenig wie möglich; Rillen im Papier fangen Farbe.
+- **Raster nach Augenmaß.** Schalte das Raster ein, drucke das Bild in **Gemischte Farbe** und zeichne dasselbe Raster aus hellen Linien auf das Papier. Übertrage ein Feld nach dem anderen. Das dauert länger und schult dein Auge.
+
+Schreib die Beschriftungen (6L, 3R) klein und blass in die Flächen. Eine helle Lasur lässt sie noch lesen, eine dunkle deckt sie. Du brauchst nicht jeden Umriss. Lass weg, was du lieber frei malst, dann wird das Bild deins und keine Kopie.
+
+*Photo: Die Zeichnung am Fenster durchpausen*
+
+## Papiergröße und Maßstab
+
+Das Papier bestimmt der Druckdialog des Browsers. Das Bild hat die erste Seite für sich und wird auf sie eingepasst. Auf einer A4-Seite wird ein Foto im Querformat etwa 19 mal 13 cm groß, eines im Hochformat bis etwa 26 cm hoch. Für ein größeres Bild:
+
+- wähle im Druckdialog ein größeres Papierformat, wenn dein Drucker es kann,
+- oder speichere als PDF und lass das Bild im Copyshop drucken,
+- oder vergrößere es von Hand mit dem Raster.
+
+Behalte das Seitenverhältnis des Fotos. Ein Bild mit anderem Ausschnitt als der Plan braucht einen eigenen Plan: Schneide zuerst das Foto zu und öffne es dann in der App.
+
+## Als JPG exportieren
+
+**Als JPG exportieren** sichert das Bild, wie es auf dem Bildschirm gezeichnet ist: die Ansicht, die Umrisse, die Nummern und bei den Schichten die gezeigten Schichten. Es hat die Größe des Bildes auf dem Bildschirm. Nutze es, um den Plan auf dein Tablet zu schicken, Stände einer Serie zu vergleichen oder deine Entscheidungen neben dem Foto festzuhalten.
+
+> **Gut zu wissen:** Drucken, als PDF speichern und als JPG exportieren gehören in der Web-App zu Pro. Siehe [Konto, Pro und deine Daten](https://watercolourlove.de/de/handbuch/konto.html).
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/konto.html -->
+
+# Konto, Pro und deine Daten
+
+## Anmelden
+
+Die Web-App bittet dich, dich anzumelden, bevor sie sich öffnet. Ein Passwort gibt es nicht: Du gibst deine E-Mail-Adresse ein und drückst **Schick mir einen Anmeldelink**. Eine Mail mit einem Link kommt; öffne ihn innerhalb von 15 Minuten auf demselben Gerät und im selben Browser, und du bist angemeldet. Kommt keine Mail, sieh im Spam-Ordner nach oder drücke **Andere Adresse verwenden**, um neu zu beginnen.
+
+Neu hier? Wähle **Jetzt registrieren** unter dem Formular. Die Registrierung funktioniert genauso, mit einem Feld mehr: **Einladungscode (optional)**. Ohne Code bekommst du ein kostenloses Konto; mit einem gültigen Code beginnt dein Konto mit einer Lebenszeit-Lizenz. Jeder Code gilt einmal.
+
+### Zwei Häkchen vor dem Start
+
+Bei der ersten Anmeldung fragt die App nach zwei Häkchen, bevor sie sich öffnet:
+
+1. dass du die Datenschutzerklärung und die AGB gelesen hast und ihnen zustimmst,
+2. dass du verstanden hast, wo deine Arbeit gespeichert wird: in diesem Browser auf diesem Gerät, nicht in der Cloud und nicht in deinem Konto.
+
+Das zweite ist wichtig, und der Rest dieses Kapitels erklärt, warum. Drücke **Weiter**, und die App öffnet sich.
+
+Auf diesem Gerät bleibst du 60 Tage angemeldet. **Abmelden** im Konto beendet das.
+
+## Kostenlos, ein Bild oder Pro
+
+Die kostenlose Version analysiert deine Fotos und gibt dir jedes Rezept, gemischt aus dem **Einsteigerkasten**: zwölf Farben, wie ein günstiger Schulmalkasten sie hat. Sie zeigt dir, wie Watercolourlove mit deinen eigenen Fotos arbeitet. Um ein Bild mit **deinen eigenen Farben** zu malen, schaltest du dieses Bild mit einem Guthaben frei, oder du nimmst Pro für jedes Bild.
+
+| | Kostenlos | Ein Bild (ein Guthaben) | Pro |
+| --- | --- | --- | --- |
+| Fotos analysieren, Mischen und Schichten, Farbliste, Rezepte | ja | ja | ja |
+| Farben zum Mischen | der Einsteigerkasten | deine eigenen Farben, in deinen Farbkästen | deine eigenen Farben, in beliebig vielen Farbkästen |
+| Blocking, Ausschnitte, Flächen vereinfachen unter 0 | | ja | ja |
+| Sichern, Drucken / PDF, Als JPG exportieren | | ja | ja |
+| Weitere Farbkästen, Farbkarten der Hersteller, Farbkasten importieren | | | ja |
+| Monochrom | | | ja |
+
+Die Beispielbilder stehen allen mit allem offen, was ein Bild haben kann; so probierst du jede Funktion zuerst an ihnen aus.
+
+Erreichst du eine Grenze, sagt dir die App, was sie aufheben würde, und bietet an, was passt: **Dieses Bild freischalten**, Pakete mit Bildern oder die Tarife. **Pro holen** bei den Werkzeugen des Bildes öffnet sie jederzeit; daneben siehst du, wie viele Bilder du noch freischalten kannst.
+
+### Bilder und Guthaben
+
+Ein Guthaben schaltet **ein Bild dauerhaft frei**. Jedes Konto beginnt mit einem; weitere gibt es in Paketen. Sie verfallen nicht, und sie bleiben, wenn ein Abo endet.
+
+- **Dieses Bild freischalten** fragt noch einmal nach und zeigt, wie viele dir bleiben. Danach gehört das Bild dir: öffnen, ändern, wieder drucken, so oft du willst. Ausschnitte und geänderte Einstellungen gehören dazu.
+- **Dasselbe Foto ist dasselbe Bild.** Dieselbe Datei noch einmal öffnen, oder das gesicherte Bild aus der Sammlung, kostet nichts. Ein anderes Foto ist ein anderes Bild. Freigeschaltete Bilder tragen in der Sammlung die Marke **Freigeschaltet**.
+- Mit einem Abo oder einer Lebenszeit-Lizenz verbrauchst du nie ein Guthaben.
+
+> **Gut zu wissen:** Das Foto verlässt dein Gerät trotzdem nie. Um ein Bild wiederzuerkennen, bildet die App einen Fingerabdruck der Fotodatei und schickt nur einen Schlüssel daraus und aus deinem Konto. Niemand kann das Foto daraus zurückgewinnen, und dasselbe Foto in einem anderen Konto ergibt einen anderen Schlüssel.
+
+### Tarife
+
+| Tarif | |
+| --- | --- |
+| **Monatlich** | verlängert sich jeden Monat, jederzeit kündbar |
+| **Jährlich** | verlängert sich jedes Jahr, jederzeit kündbar |
+| **Lebenszeit-Lizenz** | eine Zahlung, keine Verlängerung |
+
+Der Dialog zeigt die aktuellen Preise. Sie enthalten die Mehrwertsteuer. Die Zahlung wickelt Stripe ab; die App sieht deine Karte nie. „Lebenszeit“ meint die Lebenszeit des Produkts Watercolourlove. Die AGB erklären das genau.
+
+Was du in den letzten 30 Tagen für Bilder bezahlt hast, ziehen wir von deinem ersten Tarif ab: Der Dialog sagt dir, wie viel.
+
+Mit einem Abo kannst du jederzeit **Zur Lebenszeit-Lizenz wechseln**. Einen **Gutschein für eine Lebenszeit-Lizenz** löst du im Tarif-Dialog mit **Einlösen** ein; ein Gutschein gilt nur für die E-Mail-Adresse, auf die er ausgestellt ist.
+
+### Das Konto
+
+Das Personensymbol in der linken Spalte öffnet **Konto**. Es zeigt deine Adresse, deinen Tarif und wie viele Bilder du noch freischalten kannst, und bietet:
+
+- **Abo verwalten:** ein Abo ändern oder kündigen, die Zahlungsart ändern.
+- **Rechnungen:** deine Rechnungen zum Ansehen und Herunterladen.
+- **Meine Daten herunterladen:** alles, was zu deinem Konto gespeichert ist, als Datei.
+- **Abmelden.**
+- **Konto löschen:** siehe unten.
+
+## Sprache und Darstellung
+
+**Sprache** und **Darstellung** stehen im selben Dialog (ohne Konto heißt er **Sprache und Darstellung**).
+
+*Screenshot: Sprache und Darstellung*
+
+- **Sprache:** Deutsch oder Englisch. Alle Texte wechseln sofort, und die Farben erscheinen unter ihren Namen in dieser Sprache.
+- **Darstellung:** **Hell**, **Dunkel** oder **Automatisch**, das der Einstellung deines Geräts folgt. Dunkel schont abends die Augen; zum Beurteilen von Farbe ist Hell die sicherere Wahl, denn das Papier, auf dem du malst, ist weiß.
+
+Die Einstellungen liegen in diesem Browser, wie alles, was du in der App machst.
+
+## Wo deine Arbeit liegt
+
+Watercolourlove arbeitet ganz auf deinem Gerät. Dein Foto wird nie hochgeladen: Analyse, Mischungen und Schichten entstehen in deinem Browser. Was du behältst, behältst du auch dort:
+
+- die Bilder deiner Sammlung mit ihren Einstellungen und Farbänderungen,
+- deine Farbkästen und deine eigenen Farben,
+- deine Einstellungen und die Anordnung der Fenster.
+
+Nichts davon gehört zu deinem Konto. Das hat vier Folgen, die du kennen solltest:
+
+1. **Ein anderes Gerät ist ein Neuanfang.** Meldest du dich auf dem Tablet an, hast du dort deinen Tarif, aber nicht deine Sammlung und nicht deine Farbkästen.
+2. **Wer die Browserdaten löscht, löscht seine Arbeit.** „Browserdaten löschen“, „Cookies und Websitedaten löschen“ oder ein privates Fenster, das du schließt, entfernen sie alle, und niemand kann sie zurückholen.
+3. **Der Browser kann von sich aus aufräumen.** Safari löscht die Daten einer Website, die du sieben Tage lang nicht geöffnet hast, außer du hast sie zum Home-Bildschirm hinzugefügt. Jeder Browser kann gespeicherte Daten entfernen, wenn der Speicher des Geräts fast voll ist. Öffne die App also regelmäßig, oder sichere, was du behalten willst.
+4. **Deine Arbeit ist von Grund auf privat.** Niemand, auch wir nicht, kann deine Fotos oder deine Farben sehen.
+
+Was du sichern kannst:
+
+- **Farbkästen** als Datei: **Exportieren** unter jedem Kasten im Farbkasten, zurück mit **Farbkasten importieren**, auf diesem oder einem anderen Gerät.
+- **Das Ergebnis eines Bildes** als Ausdruck oder PDF mit allen Mischungen ([Drucken](https://watercolourlove.de/de/handbuch/drucken.html)) oder als JPG ([Ein Bild exportieren](https://watercolourlove.de/de/handbuch/bilder.html#ein-bild-exportieren)).
+- **Ein Bild mit allen Einstellungen und Farbänderungen** als Bilddatei (`.wcl`): Jedes **Sichern** lädt sie herunter, **Neues Bild** öffnet sie wieder, auf diesem oder einem anderen Gerät. Siehe [Die Bilddatei](https://watercolourlove.de/de/handbuch/bilder.html#die-bilddatei-wcl).
+
+> **Tipp:** Sichere deine Farbkästen. Im Farbkasten speichert **Exportieren** unter jedem Kasten ihn als Datei; **Farbkasten importieren** holt ihn zurück, auf diesem oder einem anderen Gerät. Ein Farbkasten mit deinen eigenen, kalibrierten Farben ist es wert, aufgehoben zu werden. Siehe [Farbkasten und Palette](https://watercolourlove.de/de/handbuch/farbkasten.html).
+
+### Das Konto löschen
+
+**Konto löschen** entfernt dein Konto endgültig. Ein Abo endet sofort; eine Lebenszeit-Lizenz geht verloren. Was in diesem Browser gesichert ist, bleibt: Die App fragt nach, und deine Bilder und Farbkästen sind danach noch da, bis du sie selbst löschst.
+
+## Cookies und Statistik
+
+Die App braucht zwei kleine Cookies, damit du angemeldet bleibst. Mit deiner Erlaubnis zählt sie außerdem Besuche mit Google Analytics, um zu erfahren, welche Teile der App genutzt werden. Ein Banner fragt beim ersten Öffnen:
+
+- **Alle akzeptieren** erlaubt die Statistik,
+- **Alle ablehnen** erlaubt nur, was für die Anmeldung nötig ist,
+- **Einstellungen** zeigt jede Kategorie, mit **Auswahl speichern**.
+
+Ohne deine Zustimmung wird nichts bei Google angefragt. Du kannst deine Wahl jederzeit mit **Cookies** unten auf der Seite ändern; nach 13 Monaten fragt die App erneut. Deine Fotos sind nie Teil einer Statistik.
+
+## Die Apps für iPhone, iPad und Mac
+
+Watercolourlove kommt auch als App für iPhone, iPad und Mac, mit derselben Analyse, denselben Rezepten und Schichten. Die Apps brauchen kein Konto: Alles bleibt auf dem Gerät, und ein einziger Kauf schaltet die Vollversion frei, ohne Abo. Deine Arbeit im Browser und in den Apps wird getrennt aufbewahrt; Farbkästen lassen sich als exportierte Dateien zwischen ihnen mitnehmen.
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/material.html -->
+
+# Material
+
+## Papier
+
+Beim Papier kostet Sparen am meisten. Im Aquarell ist das Papier keine Fläche, die du zudeckst: Es ist das Weiß des Bildes, das Licht hinter jeder Lasur, und es entscheidet, wie sich das Wasser bewegt.
+
+### Baumwolle oder Zellulose
+
+**Baumwollpapier** (oft als 100 % Baumwolle oder „Hadern“ verkauft) nimmt das Wasser tief in die Faser auf und gibt es langsam wieder ab. Eine Lasur bleibt lange genug offen, um sich auszugleichen, du kannst eine zweite Lasur über eine trockene erste legen, ohne sie anzulösen, und die Oberfläche hält Waschen und Abheben aus. **Zellulosepapier** (Holzschliff) hält das Wasser an der Oberfläche: Lasuren trocknen schnell und fleckig, Kanten werden hart, wo du sie nicht wolltest, und die Oberfläche raut auf, wenn du sie zweimal bearbeitest.
+
+Für Übungsblätter und Farbtabellen genügt Zellulose. Für alles, was du mit der App planst und richtig malen willst, nimm Baumwolle. Die Rezepte und Wasserstufen der App gehen von einem Papier aus, auf dem sich eine Lasur setzen kann.
+
+### Grammatur
+
+Aquarellpapier wird nach Gewicht pro Quadratmeter verkauft. **300 g/m²** ist der Standard: schwer genug, um eine nasse Lasur ohne starkes Wellen zu tragen, wenn es aufgeklebt ist. Leichteres Papier (200 g/m² und weniger) wirft Hügel und Täler, und die Farbe läuft in die Täler. 640 g/m² bewegt sich kaum, kostet aber entsprechend.
+
+### Oberfläche
+
+| Oberfläche | Auch genannt | Was sie tut |
+| --- | --- | --- |
+| Satiniert | HP, glatt, heißgepresst | Glatt; scharfe Details und feine Linien, aber Lasuren zeigen jeden Strich und trocknen schnell |
+| Matt | Feinkorn, kaltgepresst, NOT | Mittlere Struktur; die Allround-Oberfläche, gutmütig bei Lasuren und trotzdem fein genug für Details |
+| Rau | Grobkorn, Torchon | Tiefe Struktur; Granulation und Glitzern beim Trockenpinsel, weniger geeignet für kleine nummerierte Flächen |
+
+Für die flachen, nummerierten Flächen der App ist **Feinkorn** der beste Einstieg: Lasuren setzen sich gleichmäßig, und eine Umrisslinie hält trotzdem.
+
+### Leimung
+
+Aquarellpapier ist geleimt: mit Gelatine oder einem synthetischen Mittel behandelt, im Blatt und an der Oberfläche, damit es Farbe nicht aufsaugt wie Löschpapier. Die Leimung ist der Grund, warum die Farbe dort bleibt, wo du sie hinsetzt. Sie ist auch der Grund, warum du die Malfläche nicht mit den Fingern berühren solltest: Hautfett zerstört die Leimung, und eine spätere Lasur wird genau dort fleckig, wo deine Hand lag.
+
+### Blöcke, Bögen und Aufkleben
+
+Ein **Block** ist ein Stapel Blätter, an allen vier Seiten verleimt. Das Papier bleibt beim Malen flach, und du trennst das oberste Blatt mit einem Messer ab, wenn es trocken ist. Bequem, aber das Format liegt fest.
+
+**Bögen** sind günstiger und größer zu haben. Klebe sie an allen vier Seiten auf ein Brett, mit Nassklebeband (aufgespannt) oder mit leicht haftendem Kreppband (einfach aufgeklebt). Aufspannen heißt: Blatt anfeuchten, aufs Brett legen und nass mit Nassklebeband fixieren; es trocknet straff wie eine Trommel und bleibt bei jeder Lasur flach. Für 300 g/m² und die Formate, in denen die meisten nach der App malen, reicht trockenes Aufkleben mit Kreppband.
+
+*Photo: Ein Baumwollbogen, an allen vier Seiten auf ein Brett geklebt, das Band an jeder Kante fest angedrückt*
+
+## Pinsel
+
+Ein Aquarellpinsel hat eine Aufgabe: viel Wasser aufnehmen und es gleichmäßig wieder abgeben, aus einer feinen Spitze oder einer sauberen Kante.
+
+### Formen
+
+- **Rundpinsel:** das Arbeitspferd. Ein guter Rundpinsel hält viel Wasser im Bauch und kommt zu einer scharfen Spitze zurück. Große Rundpinsel legen Lasuren an, kleine malen die kleinen nummerierten Flächen.
+- **Flachpinsel:** eine gerade Kante; für gleichmäßige Lasuren über große Flächen und gerade Grenzen, etwa die geometrischen Flächen der App.
+- **Mop (Verwaschpinsel):** ein großer, weicher, runder Kopf, der sehr viel Wasser hält; für Himmel und große Flächen nass in nass.
+- **Schlepper (Rigger):** sehr lange, dünne Haare; für lange Linien wie Äste, Masten und Leitungen.
+
+### Naturhaar oder Synthetik
+
+Naturhaar (Kolinsky-Rotmarder, Fehhaar) hält mehr Wasser und gibt es gleichmäßiger ab; aus Fehhaar entstehen hervorragende Mops. Moderne Synthetikpinsel kommen nah heran, halten ihre Spitze gut und sind deutlich günstiger. Eine Mischung ist ein guter Kompromiss. Wichtiger als das Haar: Der Pinsel muss nach dem Ausschlagen zur Spitze zurückkommen, und der Bauch muss genug für eine Fläche in einem Zug fassen.
+
+### Drei Pinsel für den Anfang
+
+1. Ein **großer Rundpinsel** (Größe 12 bis 14, oder ein Mop) für Lasuren.
+2. Ein **mittlerer Rundpinsel** (Größe 8) für die meisten Flächen.
+3. Ein **kleiner Rundpinsel** (Größe 2 bis 4) für die Dunkelheiten und Details, die zuletzt kommen.
+
+Die Größen sind zwischen den Herstellern nicht genormt; vergleiche die Breite des Kopfes, nicht die Nummer.
+
+*Photo: Die drei Pinsel für den Anfang nebeneinander auf weißem Papier: großer Rundpinsel oder Mop, mittlerer Rundpinsel, kleiner Rundpinsel, jede Spitze gut zu sehen*
+
+## Farben
+
+### Künstler- und Studienqualität
+
+Künstlerfarbe enthält mehr Pigment und weniger Füllstoff. Das ist kein Luxus: Mit Studienfarbe braucht eine Lasur mehr Farbe für dieselbe Stärke, Mischungen werden früher stumpf, und viele Farben sind Mischungen aus zwei oder drei Pigmenten („Hue“ oder „Ton“ im Namen heißt meist: günstiger Ersatz). Die Rezepte der App stammen aus der Farbkarte von Schmincke Horadam, einer Künstlerqualität; Studienfarbe mischt heller und stumpfer, als die App es vorhersagt.
+
+### Näpfchen und Tuben
+
+**Näpfchen** sind trockene Farbkuchen in kleinen Schalen: kompakt, schnell angelöst, ideal für kleine Flächen und unterwegs. **Tuben** enthalten feuchte Farbe: Du drückst heraus, was du brauchst, und kräftige, große Lasuren gehen viel leichter.
+
+Die App kennt beides. Eine Farbe, die du als Näpfchen hast, trägt im Farbkasten und in jedem Rezept ein **P**, als Tube ein **T**, als beides **P/T** (siehe [Farbkasten und Palette](https://watercolourlove.de/de/handbuch/farbkasten.html)). Der Farbton ist derselbe; der Unterschied ist, wie schnell du zu einer kräftigen Lasur kommst.
+
+### Einpigmentfarben und Pigmentnummern
+
+Auf jedem Etikett stehen die Pigmente mit ihrer Colour-Index-Nummer: **PB29** ist Ultramarinblau, **PY150** ein Nickel-Azogelb, **PR101** ein rotes Eisenoxid, **PBk6** Rußschwarz. Eine Farbe mit einem Pigment mischt sauberer als eine mit drei, weil jedes weitere Pigment in einer Mischung etwas mehr Licht schluckt. Zwei Einpigmentfarben ergeben eine Mischung aus zwei Pigmenten; zwei Dreipigmentfarben ergeben sechs, und dort beginnt der Schlamm.
+
+Lies beim Kaufen die Pigmentnummern, nicht die Namen. „Saftgrün“ ist bei jedem Hersteller eine andere Mischung; PG7 ist überall dasselbe Pigment.
+
+### Lichtechtheit
+
+Pigmente halten Licht unterschiedlich gut aus. Die Hersteller drucken eine Lichtechtheit auf die Tube oder in ihre Farbkarte (Sterne oder ASTM I bis III). Für Bilder, die bleiben sollen, nimm die am besten bewerteten Farben. Manche alten Lieblinge (Alizarin-Krapplack, PR83) verblassen deutlich und haben moderne Nachfolger.
+
+## Palette und Wasser
+
+### Die Palette
+
+Eine gute Palette ist weiß, damit du eine Mischung vor demselben Weiß beurteilst wie auf dem Papier, und hat **Mulden**, die tief genug für eine Pfütze für eine ganze Fläche sind. Porzellan und Emaille verfärben nicht und lassen Wasser gleichmäßig stehen; Kunststoff geht auch, verfärbt aber und lässt Pfützen in Tröpfchen zerfallen. Halte genug getrennte Mulden bereit, um jede Mischung einer Malsitzung für sich zu haben: Die App kann dir 20 Mischungen geben, und zwei Mischungen, die ineinanderlaufen, ergeben eine einundzwanzigste, die du nicht geplant hast.
+
+### Zwei Gläser Wasser
+
+Ein Glas zum Auswaschen des Pinsels, eines, das sauber bleibt, zum Mischen und zum Anfeuchten des Papiers. Wechsle das Waschwasser, sobald es getönt ist; schmutziges Wasser vergraut jede helle Lasur.
+
+*Photo: Die Palette mit getrennten Mulden, in jeder eine Mischung, dahinter zwei Gläser Wasser, eines klar, eines getönt*
+
+## Alles andere
+
+- **Brett:** ein ebenes Brett, etwas größer als das Papier, leicht genug, um es mit einer Hand zu kippen.
+- **Klebeband:** leicht haftendes Kreppband zum trockenen Aufkleben, Nassklebeband zum Aufspannen.
+- **Bleistift:** HB bis 2H zum Übertragen der Umrisse. Weichere Minen schmieren und scheinen durch helle Lasuren; härtere ritzen das Papier.
+- **Radierer:** ein Knetradierer, um Bleistiftlinien vor dem Malen aufzuhellen. Radieren nach dem Malen beschädigt die Oberfläche.
+- **Küchenpapier oder ein Baumwolltuch:** um das Wasser im Pinsel zu steuern und Farbe abzuheben.
+- **Sprühflasche:** ein feiner Nebel hält die Farbe in den Mulden feucht und kann eine Fläche wieder anfeuchten.
+- **Föhn:** beschleunigt das Trocknen zwischen den Lasuren.
+
+> **Achtung:** Ein Föhn schiebt nasse Farbe vor sich her und kann den Rand einer Lasur vor ihrer Mitte trocknen. Warte, bis der Glanz weg ist, halte den Föhn auf Armlänge und bewege ihn ständig.
+
+## Das Licht, in dem du malst
+
+Male bei Tageslicht von der Seite, am besten an einem Nordfenster. Warmes Lampenlicht lässt Gelb kräftiger und Blau stumpfer aussehen, und du mischst gegen einen Farbstich an, der gar nicht auf dem Papier ist. Wenn du bei Lampenlicht malen musst, nimm eine Tageslichtlampe mit hohem Farbwiedergabeindex (CRI 90 oder mehr). Vergleiche die trockene Farbe mit dem gedruckten Blatt im selben Licht; siehe [Drucken](https://watercolourlove.de/de/handbuch/drucken.html).
+
+## Eine Grundausstattung
+
+| Was | Empfehlung |
+| --- | --- |
+| Papier | 100 % Baumwolle, 300 g/m², Feinkorn; ein Block oder Bögen auf einem Brett |
+| Pinsel | Großer Rundpinsel oder Mop, Rundpinsel Größe 8, Rundpinsel Größe 2 bis 4 |
+| Farben | 8 bis 12 Einpigmentfarben in Künstlerqualität: ein warmer und ein kalter Ton jeder Grundfarbe, ein gebranntes Orange oder Siena gebrannt, eine Dunkelheit wie Indanthronblau oder Neutraltinte, eine Erdfarbe |
+| Palette | Weißes Porzellan oder Emaille mit tiefen Mulden, genug für die Mischungen eines Bildes |
+| Wasser | Zwei Gläser |
+| Sonstiges | Brett, Kreppband, Bleistift HB bis 2H, Knetradierer, Küchenpapier, Sprühflasche |
+
+> **Tipp:** Fang auch in der App mit einer kleinen Palette an. Mit acht gut gewählten Einpigmentfarben erreichst du fast jede Farbe einer Landschaft wie Llyn Idwal. (Die kostenlose Version im Web mischt aus ihrem Einsteigerkasten mit zwölf Schulfarben; deine eigenen Farben gibt es mit einem freigeschalteten Bild oder mit Pro.)
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/wie-aquarell-funktioniert.html -->
+
+# Wie Aquarell funktioniert
+
+## Licht durch Farbe
+
+Bei Öl oder Gouache trifft das Licht auf die Farbe und wird von der Farbe selbst zurückgeworfen. Beim Aquarell nicht. Das Pigment liegt so dünn auf dem Papier, dass das meiste Licht hindurchgeht, auf das weiße Papier trifft, zurückgeworfen wird und auf dem Weg zu deinem Auge ein zweites Mal durch das Pigment geht. Unterwegs schluckt das Pigment einen Teil des Lichts: Ein blaues Pigment nimmt Rot und etwas Grün weg, zurück kommt Blau.
+
+Darum leuchtet ein Aquarell. Das Licht kommt von hinter der Farbe, vom Papier.
+
+Daraus folgt:
+
+- **Es gibt keine weiße Farbe.** Das Weiß in einem Aquarell ist Papier, das du nicht bemalt hast. Lichter, Glitzern auf dem Wasser, die helle Seite einer Wolke werden vor der ersten Lasur geplant, nicht am Ende aufgesetzt.
+- **Mehr Farbe ist dunkler, nie heller.** Jede Pigmentschicht nimmt etwas mehr Licht weg. Du kannst nur von hell nach dunkel arbeiten.
+- **Wasser ist dein Weiß.** Eine Lasur ist heller, weil weniger Pigment pro Quadratzentimeter liegt und weniger Licht geschluckt wird.
+
+*Photo: Eine einzige Farbe in einem Streifen von sehr wässrig bis konzentriert auf weißem Papier, an einem Ende das unbemalte Weiß*
+
+## Warum Farbe heller auftrocknet
+
+Eine nasse Lasur wirkt dunkler und satter als dieselbe Lasur trocken. Solange sie nass ist, füllt Wasser die Zwischenräume zwischen Papierfasern und Pigmentteilchen, und die Oberfläche streut weniger Licht: Du siehst mehr Farbe. Verdunstet das Wasser, tritt Luft an seine Stelle, die Oberfläche streut mehr Licht, und die Farbe wird heller und etwas weniger leuchtend. Bei den meisten Farben ist der Unterschied groß genug, um zu zählen: Eine Lasur, die nass richtig aussieht, ist trocken meist zu blass.
+
+Darum beurteilst du eine Farbe **trocken**, auf einem Rest desselben Papiers, nie auf der Palette und nie nass. [Mischen in der Praxis](https://watercolourlove.de/de/handbuch/mischen.html#vor-dem-malen-testen) zeigt, wie.
+
+## Was Pigmente unterschiedlich machen
+
+Nicht jede Farbe verhält sich wie ein perfekter, klarer Filter. Drei Eigenschaften lohnt es sich für jede Farbe zu kennen, die du besitzt; die Hersteller drucken sie in ihre Farbkarten.
+
+### Lasierend, halb deckend, deckend
+
+**Lasierende** Pigmente (die meisten modernen organischen Pigmente wie Phthaloblau PB15, Chinacridone PV19, PR122) schlucken Licht, ohne viel davon zu streuen: Sie lasieren sauber über andere Farben. **Deckende** Pigmente (Cadmiumfarben, Coelinblau PB35, viele Erden, Chromoxidgrün PG17) werfen zusätzlich Licht von den Teilchen selbst zurück, decken also, was darunter liegt, und können in einer Lasur kreidig wirken. **Halb deckende** Farben liegen dazwischen.
+
+### Färbend und abhebbar
+
+**Färbende** Pigmente (Staining; Phthalos, Chinacridone) färben die Papierfaser ein und bleiben, wo sie landen: Mit einem feuchten Pinsel hebst du sie nicht mehr ab. **Nicht färbende** Pigmente (Ultramarin, die meisten Erden) liegen auf der Oberfläche und lassen sich später abheben oder weicher machen. Färbende Farben sind unter einer Lasur verlässlich; an der falschen Stelle verzeihen sie nichts.
+
+### Granulation
+
+Manche Pigmente haben schwere oder grobe Teilchen, die sich in den Tälern des Papiers absetzen und eine gesprenkelte Struktur ergeben: Ultramarin PB29, Coelinblau, viele Erden und Kobaltpigmente. Andere flocken aus und ballen sich zu einem feinen Muster. Granulation ist schön in Himmeln, Stein und Wasser; auf Feinkorn oder rauem Papier gehört sie zum Charakter der Farbe.
+
+*Photo: Dieselbe Fläche zweimal nebeneinander gemalt: einmal mit granulierendem Ultramarin, einmal mit nicht granulierendem Phthaloblau, nah genug, um die Struktur zu sehen*
+
+## Wie die App Farbe beschreibt
+
+Die App behandelt jede Farbe so, wie das Licht sie behandelt: als **lasierenden Filter** auf weißem Papier.
+
+Von jeder Farbe kennt sie eine Farbe, die ihres Aufstrichs. Daraus berechnet sie, getrennt für rotes, grünes und blaues Licht, wie viel die Farbe schluckt. Mischst du Farben, addiert sich ihr Schlucken, jedes gewichtet nach dem Anteil dieser Farbe in der Mischung. Das ist subtraktives Mischen, dasselbe Gesetz, das farbiges Glas oder Tinte im Wasser beschreibt (Physiker nennen es Lambert-Beer). Blau und Gelb ergeben Grün, weil das Blau das Rot wegnimmt und das Gelb das Blau, und nur grünes Licht kommt durch beide.
+
+Wasser wirkt anders. Die App berechnet zuerst die Mischung in voller Stärke und legt sie dann über das Papier, so wie ein Bildschirm eine Farbe mit geringerer Deckkraft zeigt: Eine M-Lasur in halber Stärke ist die volle Mischung zu 50 %, eine L-Lasur zu einem Viertel ist die Mischung zu 25 %. So wird eine Lasur zum Papier hin blasser und behält nicht das Leuchten der vollen Farbe. Auch ein Türkis ganz ohne Rot wird mit Wasser zu einem blassen, weichen Türkis, wie auf dem Papier.
+
+### Warum drei leuchtende Farben kein Schwarz ergeben
+
+Auf dem Papier macht mehr Farbe eine Lasur nicht endlos dunkler. Ein Pinsel trägt nur so viel Pigment, und eine dicke Lasur nähert sich dem **Masston** der Farbe, ihrer Farbe in voller Stärke, und hört dort auf. Die App bildet das als Tiefengrenze für die Mischung als Ganzes ab: Eine leuchtende Farbe kann nur wenig dunkler werden als ihr Aufstrich (etwa das 1,6-Fache ihres Schluckens), während Grau, Schwarz und Erden, deren Masston viel dunkler ist als ihre Lasur, viel tiefer gehen können (bis zum 4-Fachen). In der App wie auf dem Papier ergeben drei leuchtende Farben, dick gemischt, also eine tiefe, stumpfe Farbe, kein Schwarz.
+
+### Stärke 1: das Dunkelste, was die App von einer Farbe nimmt
+
+Der Aufstrich jeder Farbe gilt als **Stärke 1**. Stärker setzt die App eine Farbe nie ein: Wasser macht eine Farbe heller, und mehr tut es nie. Ist eine Farbe im Foto dunkler als jede deiner Farben in Stärke 1, erreicht die App sie, indem sie eine zweite, dunklere Farbe dazumischt, genau wie du es am Tisch tun würdest. Die Rezepte verlangen also Farbe und Wasser, die du aus Näpfchen oder Tube wirklich herstellen kannst.
+
+> **Gut zu wissen:** Die Farben des Bestands stammen aus der Farbkarte von Schmincke Horadam, und die zeigt eine mittelstarke Lasur. Bei leuchtenden Farben liegt das nah an ihrer kräftigsten Farbe. Dunkle Farben wie Paynesgrau, die Schwarztöne und Sepia sind in voller Stärke viel dunkler als auf der Karte, also behandelt die App sie heller, als sie sein können. Wirkt eine dunkle Fläche in der App zu blass, liegt es daran; [Farben kalibrieren](https://watercolourlove.de/de/handbuch/kalibrieren.html) zeigt, wie du eine Farbe des Bestands durch deinen eigenen Aufstrich ersetzt.
+
+### Masston und Unterton
+
+Der **Masston** ist die Farbe dick, der **Unterton** die Farbe dünn. Bei vielen Pigmenten unterscheiden sich beide im Farbton, nicht nur in der Helligkeit: Ein Chinacridon ist im Masston ein tiefes Rot und im Unterton ein kühles Rosa; Siena gebrannt ist im Masston ein dunkles Braun und im Unterton ein warmes Orange. Die App folgt der Farbe des Aufstrichs und dunkelt sie zur Tiefengrenze hin ab; eine Verschiebung des Farbtons zwischen beiden kennt sie nicht. Für Lasuren in den hellen und mittleren Stufen ist der Aufstrich ein guter Anhalt; für konzentrierte Lasuren vertrau deinem eigenen Probestreifen.
+
+### Schichten addieren sich anders
+
+Im [Schichtmodus](https://watercolourlove.de/de/handbuch/schichten.html) trocknet jede Lasur, bevor die nächste darüberkommt. Jede trockene Schicht ist ein eigener Filter, also addiert sich ihr Schlucken voll: Eine trockene blaue Schicht unter einer trockenen gelben ergibt ein Grün ohne die Tiefengrenze, die eine einzelne nasse Mischung hat. Darum erreicht Lasieren saubere Dunkelheiten, die eine einzelne Mischung nicht schafft, und darum ist [Lasieren](https://watercolourlove.de/de/handbuch/lasieren.html) eine eigene Methode.
+
+## Die Grenzen des Modells
+
+Ein Modell ist nur so gut wie das, was es weiß. Was die App über deine Farben nicht weiß:
+
+- **Eine Bezugsfarbe pro Farbe.** Deine Farbe kann von der Karte abweichen: eine andere Charge, ein anderer Hersteller, ein Näpfchen, das seit Jahren eintrocknet. Die Rezepte sind Schätzungen; dein Probestreifen entscheidet.
+- **Deckkraft.** Das Modell behandelt jede Farbe als lasierend. Eine deckende Farbe über einer anderen deckt mehr, als die App erwartet, und eine deckende Mischung wirkt heller und kreidiger als vorhergesagt.
+- **Granulation und Färbekraft.** Nicht abgebildet. Eine granulierende Mischung wirkt strukturiert, wo die App eine glatte Farbe zeigt.
+- **Papier und Wasser.** Die App geht von weißem Baumwollpapier und einer Lasur aus, die sich gleichmäßig setzt. Ein cremefarbenes Papier, ein Papier, das schnell aufsaugt, oder eine Lasur, die ungleichmäßig trocknet, verschieben das Ergebnis.
+
+## Was das für dich heißt
+
+- Plane die **Lichter** zuerst; sie sind Papier.
+- Arbeite **von hell nach dunkel**; zurück geht es nicht.
+- Beurteile jede Farbe **trocken**.
+- Nimm zum Mischen und Lasieren bevorzugt **lasierende Einpigmentfarben**; deckende Farben dort, wo sie obenauf sitzen sollen.
+- Nimm das Rezept der App als sehr guten **Ausgangspunkt** und deinen Probestreifen als letztes Wort. Die Zahl neben einem Rezept sagt dir, wie nah die App glaubt heranzukommen; siehe [Mischungen, Lasuren und Rezepte](https://watercolourlove.de/de/handbuch/mischungen.html).
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/mischen.html -->
+
+# Mischen in der Praxis
+
+## Vom Rezept zur Pfütze
+
+Jede Mischung in der App kommt mit einem Rezept: die Farben, ihre Teile und das Wasser. In **Alle Details** einer Farbe siehst du es neben der Zielfarbe, mit bis zu fünf Rezepten zur Auswahl.
+
+*Screenshot: Alle Details einer Farbe: Ziel und Mischung nebeneinander, darunter die Rezepte*
+
+Ein Rezept wie **3 x P 672** plus **1 x T 525** heißt: drei Teile Farbe 672 aus dem Näpfchen auf einen Teil Farbe 525 aus der Tube. Die Wasserstufe (**sehr wässrig**, **leicht**, **mittel**, **kräftig** oder **konzentriert**) sagt, wie viel Wasser die ganze Pfütze bekommt. [Mischungen, Lasuren und Rezepte](https://watercolourlove.de/de/handbuch/mischungen.html) erklärt jeden Teil der Anzeige; hier geht es darum, wie du es am Tisch machst.
+
+### In Pinselladungen zählen
+
+Ein **Teil** ist eine Pinselladung: derselbe Pinsel, jedes Mal gleich geladen. Pinsel anfeuchten, durch die Farbe ziehen, bis der Bauch voll ist, und die Ladung in die Mulde geben. Für drei Teile drei Ladungen. Bei Näpfchen löst du die Farbe vorher mit ein paar Tropfen Wasser an, bis sie sahnig ist, damit jede Ladung gleich viel trägt. Bei Tuben drückst du einen kleinen Klecks in eine eigene Mulde und nimmst die Ladungen von dort.
+
+Genaues Zählen ist weniger wichtig als Gleichmäßigkeit. Sind deine Ladungen großzügig, sind sie es für jede Farbe, und das Verhältnis stimmt.
+
+### Genug mischen
+
+Misch mehr, als du zu brauchen glaubst. Geht dir mitten in einer Fläche die Farbe aus, mischst du neu, während der Rand trocknet, und die zweite Pfütze trifft die erste nie ganz. Für eine große Fläche misch etwa das Doppelte von dem, was reichlich aussieht. Reste trocknen in der Mulde und lassen sich später wieder anlösen.
+
+### Die Reihenfolge
+
+1. Fang mit der **helleren oder schwächeren** Farbe an: das Gelb vor dem Blau, die Erde vor dem Schwarz.
+2. Gib die **stärkere** Farbe in kleinen Mengen dazu und rühr mit dem Pinsel. Starke Farben (Phthalos, Dioxazinviolett, die Schwarztöne) überrollen eine Mischung mit einer einzigen Ladung; dazugeben ist leicht, wegnehmen unmöglich.
+3. Das **Wasser** kommt zuletzt, für die Stufe, die du brauchst. Eine Mischung dient oft mehreren Lasuren (6L und 6R auf der Karte sind dieselbe Pfütze), also misch die Farbe für die kräftigste Lasur zuerst und verdünn einen Teil davon für die helleren.
+
+*Photo: Drei Ladungen einer Farbe und eine Ladung einer anderen in derselben Mulde, der Pinsel in der Pfütze*
+
+## Zwei und drei Farben
+
+Je weniger Farben in einer Mischung, desto sauberer ist sie. Jedes Pigment nimmt einen Teil des Lichts weg; zwei Pigmente lassen mehr Licht übrig als vier.
+
+- **Eine Farbe** mit Wasser ergibt die saubersten Farben überhaupt. Viele Flächen einer Landschaft sind eine Farbe in verschiedenen Stärken.
+- **Zwei Farben** erreichen fast alles: Grün, Orange, Violett, Braun und Grau.
+- **Drei Farben** sind für die Farben, die zwei nicht schaffen, meist ein stumpfer oder dunkler Ton, bei dem eine dritte Farbe den Farbton verschiebt.
+
+In den Einstellungen begrenzt **Max. Farben** jedes Rezept auf eine, zwei oder drei Farben. Willst du sauberere Farben und nimmst in Kauf, dass ein paar etwas weiter vom Foto wegliegen, stell es auf zwei.
+
+## Grau, Braun und neutrale Töne
+
+Die schönsten Grautöne im Aquarell kommen nicht aus Schwarz und Weiß: Sie sind **Komplementärpaare**, zwei Farben, die sich im Farbkreis gegenüberliegen und gegenseitig aufheben.
+
+| Paar | Ergibt |
+| --- | --- |
+| Ultramarin und Siena gebrannt | Warme und kühle Grautöne, von Blaugrau bis Braungrau; der Klassiker für Himmel, Fels und Schatten |
+| Ultramarin und ein warmes Orange | Saubere dunkle Grautöne und Schiefer |
+| Ein Grün (Phthalo) und ein Karmin | Tiefe neutrale Dunkelheiten, kräftig fast Schwarz |
+| Ein Violett und lichter Ocker | Weiche, warme Grautöne für die Ferne |
+
+Verschieb das Verhältnis, und das Grau neigt sich zur einen Seite. Im Beispiel Llyn Idwal macht die App genau das: Die braunen Hänge sind **Paynesgrau bläulich** mit **Lasurorange**, ein neutraler Ton, der je nach Teilen warm oder kühl kippt.
+
+## Warum Mischungen schlammig werden
+
+„Schlamm“ ist eine Mischung, die ihr Leben verloren hat: stumpf, schwer, etwas braun, weder die gewollte Farbe noch ein ehrliches Grau. Es gibt ein paar Ursachen, und alle lassen sich vermeiden.
+
+- **Zu viele Pigmente.** Vier oder fünf Pigmente in einer Pfütze schlucken fast alles Licht. Prüf die Pigmentnummern: Zwei Farben mit je drei Pigmenten sind schon sechs.
+- **Deckende Farben in einer dunklen Mischung.** Deckende Pigmente streuen Licht und machen Dunkelheiten kreidig. Bau Dunkelheiten aus lasierenden Farben.
+- **Nachmischen auf dem Papier.** Farbe, die auf dem Papier herumgeschoben wird, während sie trocknet, löst die Schicht darunter an und rührt beide zu einer stumpfen Schicht. Lasur anlegen und liegen lassen.
+- **Schmutziges Wasser, schmutzige Palette.** Ein getöntes Waschglas und alte Farbe am Rand einer Mulde bringen Pigmente hinein, die du nicht geplant hast.
+
+## Vor dem Malen testen
+
+Aquarell trocknet heller und stumpfer auf, als es nass aussieht (siehe [Wie Aquarell funktioniert](https://watercolourlove.de/de/handbuch/wie-aquarell-funktioniert.html#warum-farbe-heller-auftrocknet)). Darum bekommt jede neue Mischung einen Probestrich:
+
+1. Leg einen Streifen desselben Papiers neben dich. Abschnitte vom Rand des Bogens sind ideal.
+2. Mal einen Strich der Mischung in der Wasserstufe der Fläche, die du gleich malst.
+3. Lass ihn ganz trocknen. Ein Föhn hilft.
+4. Halt den trockenen Strich neben das Farbfeld dieser Mischung auf dem gedruckten Blatt, im selben Licht.
+
+*Photo: Ein trockener Probestrich neben dem passenden Farbfeld auf dem gedruckten Blatt, beides im Tageslicht*
+
+### Nachjustieren
+
+| Der Test ist | Dann |
+| --- | --- |
+| Zu blass | Farbe im selben Verhältnis dazugeben, nicht mehr von einer Farbe |
+| Zu kräftig | Wasser dazugeben |
+| Zu warm (zu orange, zu gelb) | Etwas von der kühleren Farbe des Rezepts dazu |
+| Zu kühl (zu blau) | Etwas von der wärmeren Farbe dazu |
+| Zu bunt | Ein Hauch der Komplementärfarbe oder der dunkelsten Farbe des Rezepts |
+| Zu stumpf | Leuchtender machen lässt sich eine Mischung nicht. Neu mischen mit weniger Farben oder ein anderes Rezept in **Alle Details** wählen |
+
+> **Gut zu wissen:** Die Bewertung der App (etwa 0,8 · sehr gut) vergleicht das Rezept mit der Fotofarbe am Bildschirm. Dein Probestreifen vergleicht deine Farbe mit dem gedruckten Farbfeld. Beides kann abweichen: Deine Farbe ist nicht die der Farbkarte, und ein Drucker ist kein Bildschirm. Sind sie sich uneinig, gewinnt der Probestreifen.
+
+## Eine Farbe halten und neu mischen
+
+Eine Pfütze in einer Porzellanmulde bleibt lange verarbeitbar. Ein feiner Nebel aus der Sprühflasche hält sie offen; ein Deckel oder ein feuchtes Tuch über der Palette hält sie über Nacht. Farbe, die in der Mulde eingetrocknet ist, lässt sich wieder anlösen, kommt aber oft etwas schwächer zurück und braucht eine frische Ladung der stärksten Farbe.
+
+Musst du dieselbe Farbe noch einmal mischen, misch sie nach dem Rezept, nicht aus dem Gedächtnis nach Augenmaß, und prüf sie an der alten Fläche, wenn beides trocken ist. Weil das Rezept in der App dasselbe bleibt, startet die zweite Pfütze viel näher als jede Schätzung.
+
+## Grün: gemischt oder aus der Tube
+
+Landschaften sind voller Grün, und beim Grün zählt das Mischen am meisten. Ein Grün direkt aus der Tube (Phthalogrün, Saftgrün, Permanentgrün) ist für die Natur oft zu bunt und zu gleichförmig.
+
+Grün aus **Blau und Gelb** gemischt ist vielfältiger und natürlicher: Ein warmes Gelb mit Ultramarin ergibt Oliv und Moos, ein kühles Zitronengelb mit Phthaloblau frisches, scharfes Grün, und ein Hauch Rot oder Siena gebrannt dreht jedes Grün zu den Brauntönen eines Hangs. Ein Tubengrün ist trotzdem eine gute Basis: etwas Rot oder eine Erde dazu, und es wird lebendig.
+
+Die App bevorzugt weder das eine noch das andere: Sie nimmt, was in deiner Palette ist. Nimmst du die Tubengrüns aus der Palette, mischt sie jedes Grün aus Blau und Gelb; das allein lässt eine Landschaft oft natürlicher wirken. Im Beispiel Llyn Idwal kombiniert die App **Permanentgrün** mit **Kadmiumrot mittel**: ein Tubengrün, bewusst mit seiner Komplementärfarbe gedämpft.
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/lavieren.html -->
+
+# Lavieren
+
+## Die fünf Wasserstufen am Tisch
+
+Auf der Karte trägt jede Fläche einen Buchstaben für ihre Wasserstufe: **W** sehr wässrig, **L** leicht, **M** mittel, **R** kräftig, **C** konzentriert. Der Buchstabe sagt, wie voll die Lasur im Vergleich zum Aufstrich der Farbe ist. Am Tisch wird daraus ein Verhältnis von Farbe zu Wasser und eine Konsistenz, die du in der Mulde siehst.
+
+| Stufe | Farbe zu Wasser, ungefähr | In der Mulde wie | Wofür |
+| --- | --- | --- | --- |
+| **W** sehr wässrig | 1 zu mehr als 10 | Tee | Getöntes Papier: Himmel am Horizont, Dunst, die Lichtseite von Schnee |
+| **L** leicht | 1 zu 4 bis 1 zu 10 | Kaffee | Helle Lasuren über große Flächen, erste Schichten |
+| **M** mittel | 1 zu 2 bis 1 zu 4 | Milch | Der Körper der meisten Flächen |
+| **R** kräftig | etwa 1 zu 1,5 | Sahne | Kräftige Farbe, Schatten, Vordergrund |
+| **C** konzentriert | etwa 1 zu 1 | Butter, fließt kaum | Die dunkelsten Dunkelheiten, kleine Akzente, die zuletzt kommen |
+
+„Ein Teil Farbe“ heißt Farbe, wie sie aus der Tube kommt, oder ein Näpfchen, das zur selben sahnigen Konsistenz angelöst ist. Die Verhältnisse sind Schätzungen: Sie gehen davon aus, dass der Aufstrich einer Farbe ein Teil Farbe auf ein Teil Wasser ist. Deine Farbe und dein Papier entscheiden. Mal einmal einen Streifen einer Farbe durch alle fünf Stufen (siehe [Wie Aquarell funktioniert](https://watercolourlove.de/de/handbuch/wie-aquarell-funktioniert.html#licht-durch-farbe)) und behalt ihn neben dir: Es ist die nützlichste Referenz, die du dir machen kannst.
+
+*Photo: Dieselbe Farbe in fünf Feldern von W bis C auf einem Papierstreifen, jedes Feld mit seinem Buchstaben beschriftet*
+
+## Die gleichmäßige Lasur
+
+Eine gleichmäßige (flache) Lasur ist eine einzige ebene Farbe über eine ganze Fläche, ohne Streifen und ohne sichtbare Striche. Sie ist die Grundlasur der App: Jede Fläche der Karte ist als eine solche gedacht.
+
+1. **Genug mischen.** Eine gleichmäßige Lasur lässt sich nicht unterbrechen, um nachzumischen.
+2. **Brett kippen**, etwas zu dir hin, etwa 10 bis 15 Grad, damit die Farbe sanft nach unten läuft.
+3. **Pinsel voll laden** und einen Strich über den oberen Rand der Fläche ziehen. Die Schwerkraft sammelt die Farbe an der Unterkante des Strichs zu einem **Wulst**: einem schmalen, nassen Farbrand.
+4. **Den Wulst aufnehmen** mit dem nächsten Strich, leicht überlappend, und nach unten weitertragen. Nachladen, bevor der Pinsel leer ist; der Wulst darf nie antrocknen.
+5. Unten **den letzten Wulst abnehmen** mit einem ausgedrückten Pinsel, sonst kriecht er in die Lasur zurück und hinterlässt einen Blumenkohlrand.
+
+Bei kleinen Flächen gilt dasselbe im Kleinen: ein geladener Pinsel, eine Bewegung, von der oberen Kante nach unten, und liegen lassen.
+
+*Photo: Eine gleichmäßige Lasur im Entstehen auf einem gekippten Brett, der nasse Wulst an der Unterkante der Farbe gut zu sehen*
+
+## Verlaufende und wechselnde Lasuren
+
+Eine **verlaufende Lasur** geht in einer Fläche von kräftig nach hell (oder umgekehrt): ein Himmel, der zum Horizont hin heller wird, Wasser, das zum Ufer hin dunkler wird. Leg sie an wie eine gleichmäßige Lasur, gib aber vor jedem neuen Strich etwas Wasser in die Pfütze, sodass jedes Band etwas schwächer ist als das vorige. Gut gemacht gibt es keine Bänder, nur einen weichen Übergang.
+
+Eine **wechselnde Lasur** ändert die Farbe statt der Stärke: oben eine Farbe, unten eine andere, beide noch nass, wo sie sich treffen, sodass sie auf dem Papier ineinanderlaufen. In der App sind Farben flache Flächen mit klaren Grenzen; mit einer wechselnden Lasur machst du den Schritt zwischen zwei benachbarten Mischungen weich, wo das Foto einen Verlauf zeigt.
+
+## Nass in nass und nass auf trocken
+
+**Nass auf trocken** heißt Farbe auf trockenes Papier. Die Kanten bleiben, wo du sie setzt, scharf und kontrolliert. Das ist die Methode für die nummerierten Flächen der Karte: Jede Fläche bekommt ihre Lasur und behält ihre Form.
+
+**Nass in nass** heißt Farbe in eine nasse Fläche setzen: klares Wasser oder eine Lasur, die noch nass ist. Die Farbe breitet sich aus und verschwimmt, Kanten verschwinden, Farben verlaufen ineinander. Das ist die Methode für Himmel, Dunst, ferne Hügel und Spiegelungen.
+
+Die Kunst ist das Timing. Auf sehr nassem Papier läuft die Farbe weit und weich. Je trockener das Papier, desto kleiner das Auslaufen und desto fester die Kanten. Ist der Glanz weg, das Papier aber noch kühl, macht neue Farbe Blumenkohlränder (siehe unten). Achte auf den Glanz: Eine glänzende Fläche nimmt Farbe weich an, eine matte, aber feuchte nicht.
+
+> **Tipp:** In der App zeigt die Ansicht **Foto**, wo das Foto weiche Übergänge und wo es harte Kanten hat. Male weiche Übergänge nass in nass und nimm die nummerierte Grenze nur als Anhalt.
+
+## Kanten
+
+Jede Grenze zwischen zwei Flächen ist eine Entscheidung: **hart** oder **weich**.
+
+- Eine **harte Kante** ist eine Lasur, die mit klarer Grenze aufgetrocknet ist, nass auf trocken gemalt. Harte Kanten ziehen den Blick an: Nimm sie für das Motiv, für Hell gegen Dunkel, für die Kanten im Fokus.
+- Eine **weiche Kante** geht in ihre Umgebung über. Du machst sie, indem du in eine feuchte Fläche malst oder mit einem sauberen, feuchten Pinsel an der Kante einer frischen Lasur entlangfährst, bevor sie trocknet.
+- Eine **verlorene Kante** verschwindet ganz, wo zwei Flächen ähnlicher Helligkeit aufeinandertreffen.
+
+Die Karte gibt dir jede Kante als Linie. Ein gutes Bild behält nicht alle: Mach weich, was im Hintergrund oder im Schatten liegt, und heb die harten Kanten für die Stellen auf, an die der Blick gehen soll.
+
+*Photo: Dieselbe Grenze zweimal gemalt: einmal als harte Kante nass auf trocken, einmal nass mit einem feuchten Pinsel weich gemacht*
+
+## Hell zuerst, und die Lichter aussparen
+
+Aquarell geht von hell nach dunkel. Fang mit den Mischungen an, die die hellsten Lasuren haben (W und L), mal alle ihre Flächen und schließ jede Mischung mit ihren kräftigeren Lasuren ab, bevor du zu dunkleren Mischungen gehst. Die konzentrierten Lasuren kommen zuletzt, mit dem kleinen Pinsel: Es sind die kleinsten Flächen, und sie tun am meisten für die Ähnlichkeit.
+
+Das Weiß des Papiers ist das Hellste, was du hast, und einmal bemalt ist es weg. Such vor der ersten Lasur auf der Karte nach Flächen, die die App als Papier lässt (**Papier weiß lassen**), und nach Lichtern, die das Foto braucht: Glitzern auf dem Wasser, eine weiße Wand, eine beleuchtete Kante. Lass sie trocken. Für kleine, verstreute Lichter kannst du Maskierflüssigkeit nehmen, vor dem Malen aufgetragen und abgerubbelt, wenn alles trocken ist.
+
+## Trocknen, und wann es trocken ist
+
+Eine Lasur trocknet in Stufen: nass und glänzend, dann feucht und matt, dann trocken. Nur trockenes Papier nimmt die nächste Lasur an, ohne die darunter anzulösen.
+
+Um zu prüfen, ob das Papier trocken ist, schau flach gegen das Licht darauf: Jeder Schimmer ist Wasser. Dann berühr es leicht mit dem **Handrücken** (nie mit den Fingerspitzen, die hinterlassen Fett): Fühlt es sich kühl an, verdunstet noch Wasser. Baumwollpapier hält Wasser lange; an einem kühlen Tag braucht eine nasse Lasur zwanzig Minuten oder mehr.
+
+> **Achtung:** Ein Föhn spart Zeit zwischen den Lasuren, aber erst, wenn der Glanz weg ist. Auf einer glänzenden Lasur bläst er die Farbe übers Papier und trocknet die Ränder zuerst, und es entsteht ein harter Rand.
+
+## Typische Fehler und was hilft
+
+| Was du siehst | Warum | Was hilft |
+| --- | --- | --- |
+| **Blumenkohl** oder **Rücklauf** (ein ausgefranster Rand mitten in einer Lasur) | Nassere Farbe oder Wasser ist in eine Lasur gelaufen, die schon anzutrocknen begann | Nicht in eine trocknende Lasur zurückgehen. Den letzten Wulst unten abnehmen. Trocken lässt er sich mit feuchtem Pinsel und Küchenpapier mildern oder als Struktur behalten |
+| **Streifen** oder **Bänder** | Der Wulst ist zwischen den Strichen angetrocknet, oder der Pinsel war ungleich geladen | Mehr mischen, voll laden, zügiger arbeiten, das Brett etwas mehr kippen |
+| **Harte Kante, wo keine sein sollte** | Die Kante ist getrocknet, bevor die Nachbarlasur sie erreichte | Die Fläche jenseits der Kante vorher anfeuchten oder die Kante nass mit einem feuchten Pinsel weich machen |
+| **Fleckige Lasur** | Papier mit den Fingern berührt, oder die Lasur wurde beim Trocknen überstrichen | Hände von der Malfläche; Lasur anlegen und liegen lassen |
+| **Lasur trocken zu blass** | Farbe trocknet heller auf | Vorher testen (siehe [Mischen in der Praxis](https://watercolourlove.de/de/handbuch/mischen.html#vor-dem-malen-testen)); ist sie trocken zu blass, eine zweite Lasur derselben Mischung darüber |
+| **Lasur zu dunkel** | Zu wenig Wasser | Nass mit einem ausgedrückten Pinsel abnehmen; trocken lässt sich eine nicht färbende Farbe mit feuchtem Pinsel und Küchenpapier abheben, eine färbende nicht |
+
+Ist eine Fläche zu blass, wenn alles trocken ist, lasiere sie noch einmal mit derselben Mischung, wie im letzten Schritt von [Vom Foto zum Bild](https://watercolourlove.de/de/handbuch/schnellstart.html). [Lasieren](https://watercolourlove.de/de/handbuch/lasieren.html) erklärt, wie du eine Lasur über eine andere legst, ohne die erste anzulösen.
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/lasieren.html -->
+
+# Lasieren
+
+## Warum Lasuren leuchten
+
+Mischst du Gelb und Blau auf der Palette, bekommst du ein Grün. Malst du eine gelbe Lasur, lässt sie ganz trocknen und legst eine blaue darüber, bekommst du auch ein Grün, aber ein anderes. Im gemischten Grün liegen die beiden Pigmente nebeneinander in einem Farbfilm. Im lasierten Grün liegen sie in zwei getrennten Filmen übereinander: Das Licht geht durch das Blau, durch das Gelb, wird vom weißen Papier zurückgeworfen und kommt durch beide Schichten wieder heraus.
+
+Darum wirkt lasierte Farbe so leuchtend: Nichts in ihr streut das Licht, bevor es das Papier erreicht. Und darum ist das Lasieren die eigentliche Aquarelltechnik. Öl und Gouache können decken, Aquarell kann nur filtern. Beim Lasieren wird diese Grenze zur Methode.
+
+Der Farbkreis gilt für Lasuren genauso wie für Mischungen, nur sauberer:
+
+| Erste Schicht | Lasur darüber | Ergebnis |
+|---|---|---|
+| Gelb | Blau | Grün |
+| Gelb | Rot | Orange |
+| Rot | Blau | Violett |
+| Eine Farbe | Ihre Komplementärfarbe | Ein ruhiges Neutral oder Grau |
+| Blau | Siena gebrannt oder eine andere Erde | Ein tiefes, lebendiges Dunkel |
+
+Ein Dunkel aus zwei oder drei Lasuren wirkt fast immer reicher als derselbe Tonwert in einem Zug gemischt, weil jede Schicht transparent bleibt.
+
+*Photo: Drei Streifen Gelb, Rot und Blau quer übereinander auf weißem Papier gemalt, jede Kreuzung zeigt die lasierte Mischfarbe*
+
+## Farben zum Lasieren auswählen
+
+Nicht jede Farbe lasiert gut. Drei Eigenschaften entscheiden, und die Farbkarte von Schmincke (wie die meisten Herstellerkarten) nennt sie für jede Farbe.
+
+- **Transparenz.** Transparente Farben lasieren sauber. Halbtransparente gehen in dünnen Schichten. Deckende Farben, die Kadmiumtöne, Neapelgelb, Coelinblau und viele Erden, legen einen Schleier über das, was darunter liegt. Nimm sie für die oberste Schicht oder gar nicht.
+- **Färbend.** Eine stark färbende Farbe, Phthaloblau, die Chinacridone, Preußischblau, zieht in die Papierfasern ein und bewegt sich nach dem Trocknen kaum noch. Damit ist sie eine ideale erste Schicht: Die nächste Lasur kann sie nicht anlösen.
+- **Granulierend.** Granulierende Farben, Ultramarin, die Kobalttöne, viele Erden, setzen sich in die Körnung des Papiers. In einer Lasur bleibt diese Struktur durch alles sichtbar, was darüber kommt. Schön im steinigen Vordergrund, störend im klaren Himmel.
+
+> **Tipp:** Male die ersten Schichten mit färbenden, transparenten Farben und heb dir die granulierenden und deckenden für später auf. Die Reihenfolge schützt, was schon auf dem Papier ist.
+
+## Die Reihenfolge der Schichten
+
+### Von hell nach dunkel
+
+Jede Lasur kann nur dunkler machen. Zum Licht des Papiers kommst du nur durch Auswaschen zurück, und Auswaschen beschädigt in einem lasierten Bild die Schichten darunter. Plane deshalb zuerst das Licht: Was bleibt weiß, was bekommt nur die erste helle Schicht, und arbeite dich zu den dunklen Stellen vor.
+
+### Warm und kalt
+
+Eine kalte Lasur über einer warmen schiebt eine Stelle nach hinten, eine warme über einer kalten holt sie nach vorn. Landschaftsmaler nutzen das ständig: Eine dünne blaue Lasur über einem fernen Bergrücken lässt ihn zurücktreten, ein Hauch warmes Orange über einem Felsen im Vordergrund bringt ihn näher. Entscheide, wofür eine Schicht da ist, bevor du den Pinsel füllst.
+
+### Wie viele Schichten
+
+So viele, wie das Bild braucht, und keine mehr. Drei bis fünf Schichten tragen die meisten Bilder. Jede kostet Trockenzeit und ein kleines Risiko, das darunter anzulösen. Wenn eine vierte Schicht nur noch wenig verändert, lass sie weg: Eine frische Stelle ist mehr wert als ein perfekter Tonwert.
+
+## Eine Lasur malen
+
+1. **Lass die Schicht darunter ganz trocknen.** Nicht grifftrocken, sondern trocken: Das Papier liegt wieder flach und fühlt sich mit dem Handrücken nicht mehr kühl an. Eine Schicht, die innen noch feucht ist, löst sich an und wird schmutzig.
+2. **Misch genug an.** Eine Lasur wird in einem Durchgang gemalt. Geht dir in der Mitte die Farbe aus, bleibt dort eine harte Kante.
+3. **Nimm einen weichen, gut gefüllten Pinsel.** Der Pinsel soll die Farbe tragen, nicht auf das Papier reiben. Lass am unteren Rand des Strichs eine Farbperle mitlaufen und nimm sie mit dem nächsten Strich auf.
+4. **Geh nicht zurück.** Ein Durchgang über jede Stelle. Ein zweiter Strich in eine Lasur, die schon anzieht, löst die Schicht darunter an und hinterlässt Streifen.
+5. **Lass sie flach trocknen** oder in dem Winkel, in dem du gemalt hast, damit die Farbe nicht zur Seite läuft.
+
+*Photo: Ein weicher Rundpinsel legt eine hellblaue Lasur über eine trockene gelbe Schicht, am unteren Rand des Strichs sieht man die Farbperle*
+
+> **Achtung:** Ein Föhn beschleunigt das Trocknen, kann aber nasse Farbe zu Blumenkohlrändern blasen und die Papieroberfläche austrocknen. Halte Abstand, nimm eine niedrige Stufe und fang erst an, wenn der Glanz von der Lasur verschwunden ist.
+
+## Wie die App Lasuren plant
+
+Der Modus **Schichten** ist dieses Kapitel als Plan. Die App wählt ein paar Grundfarben aus deinem Farbkasten, eine Schicht je Farbe, und rechnet für jede Fläche aus, welche Schichten sie bekommt und wie viele Lasuren jeder Farbe. Jede getrocknete Lasur ist für sie ein eigener Filter: Die Schichten summieren sich ohne die Grenze, die innerhalb einer nassen Mischung gilt. Lasuren derselben Farbe teilen sich dagegen deren Grenze, denn eine zweite Lasur derselben Farbe wird nur so dunkel wie die Farbe selbst.
+
+Sie entscheidet so sparsam, wie es ein Maler tun würde. Eine Lasur oder eine Schicht, die das Bild zu wenig näher ans Foto bringt, lässt sie weg, und neutrale Farben hält sie von reinen Farben fern. Bis zu drei Akzente, eine kräftige Lasur auf kleinen Flächen, kommen zuletzt: zuerst für eine Farbe, die die Schichten nicht treffen, dann für die dunklen Stellen.
+
+Wie du in der App damit arbeitest, vom An- und Abhaken der Schichten bis zum Schritt-für-Schritt-Malen, steht unter [Schichten](https://watercolourlove.de/de/handbuch/schichten.html).
+
+*Screenshot: Die Schichten, die die App für Llyn Idwal vorschlägt, mit der Stärke jeder Lasur und ihren Durchgängen*
+
+## Übung: drei Lasuren auf Llyn Idwal
+
+Öffne das Beispiel **Llyn Idwal**, stell auf **Schichten** um und setz **Schichten** auf 3 und **Akzente** auf 0. Die App schlägt jetzt drei Farben vor, meist ein Gelb, ein Blau und eine Erde oder ein Rot.
+
+1. Übertrage die Umrisse leicht mit Bleistift.
+2. Drück auf **Schritt für Schritt malen**. Der erste Schritt zeigt, wohin die erste Lasur kommt und wie du sie ansetzt, zum Beispiel 1:9 mit Wasser. Misch sie an, mach einen Probestrich auf einem Rest Papier und vergleich ihn mit dem Farbfeld des Schritts.
+3. Male alle Flächen des ersten Schritts und lass das Papier ganz trocknen.
+4. Geh mit **Weiter** zum nächsten Schritt. Schau vor jedem Schritt auf **Bisher**: Dort siehst du, wie das Papier danach aussehen soll.
+5. Leg deine Studie nach dem letzten Schritt neben den Bildschirm, in der Ansicht **Geschichtete Farbe**.
+
+*Screenshot: Schritt 3 beim Schritt-für-Schritt-Malen von Llyn Idwal: wo gemalt wird und welche Lasur anzusetzen ist*
+
+Du wirst sehen, dass das Grün der Hänge von selbst entsteht, wo sich Gelb und Blau überlagern, und dass die dunkelsten Felsen aus allen drei Schichten zusammen kommen. In diesem Moment versteht man das Lasieren.
+
+*Photo: Die fertige Studie von Llyn Idwal in drei Schichten neben den gedruckten Blättern der Schichten*
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/tonwerte-und-vereinfachen.html -->
+
+# Tonwerte und Vereinfachen
+
+## Der Tonwert trägt das Bild
+
+Der Tonwert ist, wie hell oder dunkel eine Farbe ist, unabhängig vom Farbton. Ein helles Gelb und ein helles Blau können denselben Tonwert haben, ein tiefes Rot und ein mittleres Grün auch. Wer einen Ort in einem Bild wiedererkennt, erkennt sein Muster aus Hell und Dunkel, lange bevor er die Farben wahrnimmt. Ein Schwarzweißfoto eines guten Aquarells funktioniert immer noch. Ein Bild mit falschen Tonwerten fällt in Grau auseinander.
+
+### Der Blinzeltest
+
+Kneif die Augen halb zu und schau auf das Foto, dann auf dein Bild. Beim Blinzeln verschwimmen die Einzelheiten, die Farbe geht unter, und übrig bleibt das Tonwertmuster: ein paar große Formen in Hell, Mittel und Dunkel. Stimmen die beiden Muster überein, trägt das Bild. Springt im Bild eine Stelle hervor, die im Foto zurücktritt, stimmt ihr Tonwert nicht, egal welche Farbe sie hat.
+
+### Drei Tonwerte, dann fünf
+
+Die meisten starken Bilder lassen sich mit drei Tonwerten beschreiben: hell, mittel, dunkel. Leg vor dem Malen für jede große Form fest, zu welchem der drei sie gehört. Teil dann jeden in zwei, wenn du es brauchst, und du hast fünf: das Weiß des Papiers, hell, mittel, dunkel und die dunkelsten Akzente.
+
+Ein *Notan*, das japanische Wort für das Gleichgewicht von Hell und Dunkel, ist die radikalste Form: das ganze Bild in zwei Tonwerten, Schwarz und Weiß. Zehn Minuten mit einem Filzstift und ein Notan zeigen dir, ob eine Komposition eine klare Struktur hat, bevor du auch nur einen Pinsel nass gemacht hast.
+
+*Photo: Ein kleines Notan von Llyn Idwal mit schwarzem Filzstift neben einer Skizze in fünf grauen Tonwerten, beide nicht größer als eine Postkarte*
+
+## Entscheiden, was wegfällt
+
+Ein Foto zeigt alles. Ein Bild wählt aus. Die schwierigste und persönlichste Entscheidung im Aquarell ist, was wegfällt, und die App gibt dir zwei Regler, mit denen du diese Entscheidung sehen kannst.
+
+- **Flächen vereinfachen** fasst kleine Formen zu größeren, ruhigeren zusammen. Jede Stufe nimmt eine Ebene Einzelheiten weg: zuerst die Sprenkel, dann die Struktur, dann die kleinen Formen in den großen. Schau aufs Bild, während du den Regler bewegst, und hör auf, wenn das Motiv noch klar da ist und die Formen aussehen, als könntest du jede in einem Zug malen.
+- **Farben** legt fest, wie viele Mischungen es gibt. Weniger Mischungen zwingen verwandte Farben zusammen, und das ist dasselbe wie Tonwerte zu gruppieren: Die vielen Grüns eines Hangs werden ein Grün in drei Lasuren.
+
+*Screenshot: Llyn Idwal mit hoch eingestelltem Flächen vereinfachen: die Hänge als wenige ruhige Formen, der See als eine*
+
+Eine richtige Einstellung gibt es nicht. Eine schnelle Studie will wenige große Formen, ein sorgfältiges Bild eines einzelnen Motivs vielleicht viele. Die Frage ist immer: Würde ich diese Form für sich malen, oder ließe ich sie in ihre Nachbarin übergehen?
+
+> **Tipp:** Stell **Flächen vereinfachen** höher ein, als es sich bequem anfühlt, und hol Einzelheiten nur dort zurück, wo sie zählen: das Auge in einem Porträt, die Dachkante vor dem Himmel. Eine solche Stelle kannst du dir mit **Ausschnitt** für sich ansehen, siehe [Bilder](https://watercolourlove.de/de/handbuch/bilder.html).
+
+## Auch Kanten vereinfachen
+
+Jede Form auf dem Papier hat Kanten, und jede Kante ist eine Entscheidung. Eine harte Kante, Farbe auf trockenem Papier, sagt: Hier ist eine Grenze, schau hin. Eine weiche Kante, Farbe auf feuchtem Papier oder mit einem sauberen feuchten Pinsel vertrieben, sagt: Das geht weiter, bleib hier nicht stehen. Eine verlorene Kante verschwindet ganz, wo zwei Formen gleichen Tonwerts aufeinandertreffen.
+
+Die Karte der Farbflächen zeigt jede Fläche mit einer Linie drumherum, weil die App dir sagen muss, wohin jede Mischung gehört. Diese Linien sind keine Aufforderung, überall harte Kanten zu malen. Wo zwei benachbarte Flächen fast denselben Tonwert haben, lass sie nass ineinanderlaufen. Wo der Tonwert springt, behalt die Kante. Im Foto von Llyn Idwal heißt das: eine harte Kante, wo der helle See auf das dunkle Ufer trifft, weiche und verlorene Kanten über die Hänge der Berge.
+
+## Fotos lügen in den Schatten
+
+Eine Kamera sieht nicht so wie du. Sie entscheidet sich für eine Belichtung für das ganze Bild, und alles, was dunkler ist, als sie fassen kann, wird zu flachem Schwarz, alles Hellere zu flachem Weiß. Dein Auge sieht vor demselben See Farbe in den Schatten und Struktur in den Wolken.
+
+Übernimm die dunkelsten Stellen eines Fotos deshalb nicht wörtlich. Ein Schatten im Foto ist meist dunkler und grauer, als er war. Mal ihn etwas heller und gib ihm Farbe: Ein Schatten auf Gras hat Grün in sich, ein Schatten auf Stein die Farbe des Steins. Dasselbe gilt für ausgefressene Himmel: Das Papier darf weiß bleiben, aber eine helle Lasur holt oft zurück, was die Kamera verloren hat.
+
+Das ist auch ein Grund, warum die App die **Sättigung** vor der Analyse auf 200 % stellt: Sie holt Farbe zurück, die die Kamera abgeflacht hat, so wie ein Maler sie ohnehin übertreiben würde.
+
+## Tonwerte in der App prüfen
+
+Zwei Ansichten und eine Einstellung helfen dir, Tonwerte ohne die Ablenkung der Farbe zu beurteilen.
+
+- **Fotofarbe** zeigt jede Fläche in der durchschnittlichen Farbe des Fotos an dieser Stelle. Das ist das Foto, reduziert auf seine Formen, ohne Einzelheiten, und die beste Ansicht für einen Blinzeltest am Bildschirm.
+- **Blocking** zeigt nur Licht und Schatten: zwei oder drei flache Töne in großen Massen, vom hellsten an nummeriert. Es ist der Blinzeltest, für dich erledigt, und es zeigt das Papierweiß, das du aussparen musst. Siehe [Tonwerte](https://watercolourlove.de/de/handbuch/tonwerte.html#blocking-licht-und-schatten-zuerst).
+- **Monochrom** in den Einstellungen geht weiter: Das Bild wird in Grau analysiert und in bis zu 24 Tonwerte geteilt, und jeder Tonwert wird mit einer Farbe deiner Palette gemalt, egal welchen Farbton sie hat. Heraus kommt eine Tonwertstudie in deinen eigenen Farben. Die Einstellungen dazu stehen unter [Tonwerte](https://watercolourlove.de/de/handbuch/tonwerte.html).
+
+*Screenshot: Die Ansicht Fotofarbe: jede Fläche in der durchschnittlichen Farbe des Fotos*
+
+Schalte zwischen **Fotofarbe** und **Gemischte Farbe** hin und her und blinzle. Springt eine Fläche deiner Mischungen hervor, wo die Fotofarbe ruhig ist, stimmt ihr Tonwert nicht: Eine andere Wassermenge oder ein anderes Rezept bringt das in Ordnung.
+
+## Übung: fünf Tonwerte mit einer Farbe
+
+Diese Übung bringt deine Malerei weiter als jede Farbübung.
+
+1. Öffne **Llyn Idwal**, drück in den Einstellungen auf **Monochrom** und stell **Farben** auf den kleinsten Wert, 2.
+2. Öffne den **Farbkasten** und leg eine einzige dunkle, transparente Farbe in die Palette, zum Beispiel eine Neutraltinte, eine Sepia oder ein Indigo.
+3. Stell **Flächen vereinfachen** so hoch, dass du nicht mehr als etwa dreißig Flächen zählst.
+4. Druck das Blatt, übertrag die Umrisse und male die Studie mit den Lasuren, die die App dir gibt, von der hellsten zur dunkelsten.
+5. Leg sie, wenn sie trocken ist, neben einen grauen Ausdruck des Fotos und blinzle auf beide.
+
+*Screenshot: Llyn Idwal in Monochrom mit einer Farbe: das Bild in Grau, jeder Tonwert mit einer einzigen Farbe der Palette gemalt*
+
+Du wirst sehen, dass die Studie schon wie der Ort aussieht. Genau darum geht es: Die Farbe, die du später dazugibst, muss nur noch auf einem Gerüst sitzen, das schon trägt.
+
+*Photo: Die fertige Tonwertstudie von Llyn Idwal in einer Farbe neben einem Graustufenausdruck des Fotos*
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/kalibrieren.html -->
+
+# Deine Farben kalibrieren
+
+## Warum die Rezepte davon abhängen
+
+Die App kennt jede Farbe durch einen einzigen Farbwert: die Farbe dieser Farbe als Lasur auf weißem Papier. Daraus rechnet sie, wie sich die Farbe verhält, wenn sie mit Wasser verdünnt wird, und wie sie in einer Mischung oder Lasur das Licht filtert. Alles andere, die Rezepte, die Wasserstufen, die Bewertung der Treffer, folgt daraus.
+
+Für die Farben, die mit der App kommen, stammt dieser Wert aus der Farbkarte von Schmincke Horadam. Eine gedruckte oder digitale Karte ist ein guter Anfang, aber sie ist nicht deine Farbe:
+
+- **Chargen unterscheiden sich.** Zwei Tuben derselben Farbe aus verschiedenen Jahren sind selten gleich.
+- **Papier verändert die Farbe.** Dieselbe Lasur wirkt auf naturweißem Papier wärmer als auf hochweißem, und eine raue Oberfläche lässt sie heller wirken als eine glatte.
+- **Dunkle Farben sind zu hell erfasst.** Die Karte zeigt jede Farbe als mittelstarke Lasur. Für die meisten Farben liegt das nahe an der Stärke, mit der die App rechnet. Bei den dunklen, Paynesgrau, den Schwarztönen, Sepia, Indigo, ist der Wert der Karte aber deutlich heller als die Farbe in voller Stärke. Da die App keine Farbe dunkler verwendet als ihren erfassten Wert, fallen Rezepte mit diesen Farben in den Tiefen etwas vorsichtig aus.
+
+Wenn du vor allem mit ein paar Farben arbeitest, ist ihr Kalibrieren das Beste, was du für die Rezepte tun kannst.
+
+## Eine Farbkarte malen
+
+Nimm das Papier, auf dem du malst, und schneide es in einen Streifen oder ein Kärtchen je Farbe, oder male alle Streifen auf ein Blatt.
+
+1. **Ein Streifen je Farbe.** Fang in voller Stärke an, mit so wenig Wasser, wie die Farbe zum Fließen braucht, und gib nach und nach Wasser dazu, sodass der Streifen in fünf oder sechs Stufen von der kräftigsten Farbe bis zu einem sehr wässrigen Hauch läuft.
+2. **Markier den Referenzwert.** Male irgendwo im Streifen ein Feld mit Farbe und Wasser zu etwa gleichen Teilen, gut gemischt und gleichmäßig aufgetragen. Das ist die Farbe, die die App haben will: die Farbe in der Stärke, die sie als ihre dunkelste behandelt.
+3. **Beschrifte sie** mit Bleistift: Hersteller, Nummer und Form (Näpfchen oder Tube).
+4. **Lass sie ganz trocknen**, mindestens eine Stunde, besser über Nacht. Aquarell trocknet heller und oft etwas kühler auf, als es nass aussieht; nur die trockene Farbe zählt.
+
+*Photo: Eine Farbkarte auf Aquarellpapier: ein Streifen je Farbe von voller Stärke bis zu einem hellen Hauch, jeder mit Bleistiftnummer und markiertem Referenzfeld*
+
+> **Tipp:** Mal die Referenzfelder etwas größer als einen Daumennagel. Kleine Felder lassen sich schwer fotografieren, ohne dass die Farbe des Papiers oder des Nachbarstreifens hineinkommt.
+
+## Die Farbe messen
+
+### Mit einem Foto
+
+1. Fotografier die Karte **bei Tageslicht**, nah am Fenster, aber nicht in der direkten Sonne, ohne Blitz. Halte die Kamera gerade über das Papier, damit das Licht gleichmäßig fällt.
+2. **Stell den Weißabgleich auf das Papier ein.** In der Kamera oder in einer Foto-App nimmst du mit der Weißabgleich-Pipette eine unbemalte Stelle des Papiers. Das Papier muss neutral weiß herauskommen; jede Farbe der Karte wird daran gemessen.
+3. Keine Filter, kein Kontrast, keine Sättigung. Du willst die Farben, wie sie sind.
+
+*Photo: Die Farbkarte wird am Fenster bei Tageslicht fotografiert, das Handy gerade über dem Papier*
+
+### Die Farbe aufnehmen
+
+Im Formular für eine eigene Farbe öffnet das Feld **Farbe** die Farbauswahl deines Geräts. In den meisten Browsern hat sie eine Pipette: Öffne das Foto deiner Karte auf demselben Bildschirm und nimm die Mitte des Referenzfelds auf, weg von den Rändern.
+
+> **Gut zu wissen:** Ein Colorimeter oder Spektralfotometer misst genauer als jedes Foto, falls du eins hast. Miss das trockene Referenzfeld auf weißem Papier und gib den Wert als Hex-Farbe ein.
+
+## Eine eigene Farbe eingeben
+
+Öffne den **Farbkasten**, drück auf das **+** am Ende des Kastens, in den die Farbe gehört, und wähl **Oder eine eigene Farbe eingeben**.
+
+- **Hersteller und Serie**, wie es auf der Tube oder dem Näpfchen steht, zum Beispiel Schmincke Horadam.
+- **Nummer** der Farbe. Bei einer Serie, deren Farbkarte die App mitbringt, füllt die Nummer Name und Farbe aus (mit Pro); die Farbe ersetzt du dann durch deine gemessene.
+- **Form**: **Näpfchen** oder **Tube**.
+- **Name** der Farbe.
+- **Farbe**: die Farbe deines Referenzfelds, aufgenommen wie oben.
+
+Dann sicherst du mit **Farbe hinzufügen**. Die Farbe erscheint im Kasten und unter **Deine eigenen Farben**, wo du sie später mit dem Stift-Knopf bearbeitest.
+
+Die Farben des Grundbestands lassen sich nicht ändern. Willst du für eine davon deinen gemessenen Wert verwenden, leg sie als eigene Farbe mit derselben Serie und Nummer an, nimm deine Fassung in die Palette und die aus dem Grundbestand heraus. Mehr zum Farbkasten unter [Farbkasten und Palette](https://watercolourlove.de/de/handbuch/farbkasten.html).
+
+## Ein Rezept prüfen
+
+Die Kalibrierung ist fertig, wenn sich die Farbe auf dem Papier so verhält, wie die App es sagt.
+
+1. Such dir eine Farbe deines Bildes, deren Rezept die kalibrierte Farbe verwendet, und öffne **Alle Details**.
+2. Misch das Rezept wie angegeben: Zähl die Teile in Pinselladungen und gib das Wasser für die angezeigte Lasur dazu.
+3. Male ein Feld auf einen Rest desselben Papiers und lass es trocknen.
+4. Halte es neben das Farbfeld **Deine Mischung** am Bildschirm oder besser neben das gedruckte Blatt bei Tageslicht.
+
+Ist das trockene Feld über mehrere Rezepte hinweg immer heller oder dunkler, stimmt der erfasste Wert nicht: Miss noch einmal. Liegt ein Rezept daneben und die anderen passen, ist das Ziel mit dieser Kombination einfach schwer zu erreichen; wähl ein anderes Rezept oder lass eine weitere Farbe zu.
+
+*Photo: Ein getrocknetes Probefeld neben dem Farbfeld des gedruckten Blatts, um die Mischung mit ihrem Rezept zu vergleichen*
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/glossar.html -->
+
+# Glossar
+
+## Bezeichnungen und Zahlen
+
+Was du auf dem Bild, in der Farbliste und in den Rezepten liest.
+
+| Bezeichnung | Englisch | Bedeutung |
+|---|---|---|
+| 0,8 | 0.8 | Der Abstand zwischen Ziel und Mischung, in Schritten, die das Auge gerade noch unterscheidet (siehe Treffer). |
+| 1, 2 (auf einer Schicht) | 1, 2 | Schichten, eine Schicht allein gezeigt: wie viele Lasuren eine Fläche bekommt. |
+| 1:9 mit Wasser | 1:9 with water | Schichten: ein Teil Farbe auf neun Teile Wasser, mit einem Vergleich wie „wie Kaffee“. |
+| 3 x P 672 | 3 x P 672 | Drei Teile der Farbe 672 aus dem Näpfchen. Die Teile zählst du in Pinselladungen. |
+| 52 in 20 Mischungen | 52 in 20 mixes | 52 Farben auf dem Papier, aus 20 Pfützen in verschiedenen Lasuren. |
+| 6L, 6R | 6L, 6R | Mischung 6 als leichte (L) oder kräftige Lasur (R). Die Zahl ist die Mischung, der Buchstabe die Wassermenge. |
+| A1, A2 | A1, A2 | Schichten: Akzente, nummeriert in der Reihenfolge, in der sie gemalt werden, ganz zuletzt. |
+| C | C, concentrated | Konzentriert: Farbe, die kaum noch fließt. |
+| L | L, light | Leichte Lasur. |
+| M | M, medium | Mittlere Lasur. |
+| P, T, P/T | P, T, P/T | Näpfchen (pan), Tube oder beides: in welcher Form du eine Farbe besitzt. |
+| R | R, rich | Kräftige Lasur: wenig Wasser, starke Farbe. |
+| W | W, very watery | Sehr wässrig: kaum mehr als gefärbtes Wasser. |
+| W1 bis C5 | W1 to C5 | Bei Tonwerten feinere Wasserstufen innerhalb jeder Stufe. |
+
+## In der App
+
+| Begriff | Englisch | Bedeutung |
+|---|---|---|
+| Akzent | Accent | Schichten: eine kräftige Lasur auf kleinen Flächen, zuletzt gemalt, zuerst für eine Farbe, die die Schichten nicht treffen, dann für die dunklen Stellen. |
+| Alle Details | Full breakdown | Ziel und Mischung nebeneinander, die Farbe von Hand und alle Rezepte einer Farbe. |
+| Ausschnitt | Detail | Ein Teil des Bildes, als eigenes Bild analysiert. Pro. |
+| Auto | Auto | Die App wählt die Farben, die zum Bild passen, aus den Kästen mit **Für „Auto“ nutzen**. |
+| Deine Mischung | Your mix | Die Farbe, die das Rezept auf weißem Papier ergibt. |
+| Details | Details | Die Einstellung, ob die Mischungen feine Abstufungen im ganzen Bild geben (hoch) oder kleinen Flächen eines anderen Farbtons (niedrig). |
+| Farben | Colours | Die Einstellung für die Anzahl der Mischungen und ihre Liste. |
+| Farbfläche | Colour area | Eine Form des Bildes, die eine Lasur einer Mischung bekommt. |
+| Farbkasten | Paint box | Eine benannte Sammlung deiner Farben, zum Beispiel deine Näpfchen oder ein Reiseset. |
+| Flächen vereinfachen | Simplify areas | Fasst kleine Formen zu größeren, ruhigeren zusammen. |
+| Fotofarbe | Photo colour | Die Ansicht jeder Fläche in der durchschnittlichen Farbe des Fotos dort. |
+| Geometrisch | Geometric | Flächen als Vielecke mit geraden Kanten statt ihres organischen Umrisses. |
+| Gemischte Farbe | Mixed paint | Die Ansicht dessen, was deine Farben erreichen. |
+| Geschichtete Farbe | Layered paint | Schichten: die Ansicht des fertigen Bildes, alle Schichten zusammen. |
+| Grundfarbe | Base paint | Schichten: eine Farbe, die eine eigene Schicht bekommt. |
+| Lasur | Wash | Eine Mischung in einer Wasserstufe. |
+| Lasur, Durchgang | Coat | Schichten: ein Auftrag der Lasur einer Schicht. Eine Fläche kann dieselbe Lasur ein-, zwei- oder dreimal bekommen. |
+| Max. Farben | Max. paints | Aus wie vielen Farben eine Mischung bestehen darf: einer, zwei oder drei. |
+| Max. Lasuren | Max. coats | Schichten: wie oft eine Lasur über sich selbst gemalt werden darf. |
+| Mischung | Mix | Eine Pfütze Farbe auf der Palette, mit einer Nummer. Sie kann in mehreren Lasuren gemalt werden. |
+| Organisch | Organic | Flächen, die den Umrissen des Fotos folgen. |
+| Palette | Palette | Die Farben, aus denen ein Bild gemischt wird. Sie wird mit dem Bild gesichert. |
+| Raster | Grid | Quadratische Felder über dem Bild, um es Feld für Feld auf Papier zu übertragen. |
+| Rezept | Recipe | Welche Farben, in wie vielen Teilen, mit wie viel Wasser, für eine Farbe. |
+| Schicht | Layer | Schichten: die Lasur einer Grundfarbe, über die trockenen Schichten davor gemalt. |
+| Schichten | Layer mode | Die Methode, ein paar Lasuren übereinander zu legen, statt jede Farbe zu mischen. |
+| Tonwerte | Values | Das Bild in Grau analysiert; jeder Tonwert wird mit einer Farbe der Palette gemalt. |
+| Treffer | Match quality | Wie nah ein Rezept seinem Ziel kommt: sehr gut (unter 2), gut (unter 5), mäßig (unter 10), grob (ab 10). Englisch: excellent, good, fair, rough. |
+| Ziel | Target | Die Farbe, die das Foto an einer Stelle verlangt. |
+
+## Malbegriffe
+
+| Begriff | Englisch | Bedeutung |
+|---|---|---|
+| Auswaschen, Anlösen | Lifting | Farbe mit feuchtem Pinsel oder Tuch vom Papier nehmen; auch das ungewollte Lösen einer trockenen Schicht durch die nächste. |
+| Blumenkohlrand | Backrun, bloom | Ein ausgefranster Rand, wo nassere Farbe in eine schon antrocknende Lasur zurückläuft. |
+| Deckend | Opaque | Eine Farbe, die das darunter abdeckt, statt es zu filtern. |
+| Färbend | Staining | Eine Farbe, die in die Papierfasern zieht und sich trocken kaum noch auswaschen lässt. |
+| Granulation | Granulation | Pigmentteilchen, die sich in die Körnung des Papiers setzen und Struktur geben. |
+| Kante, hart, weich, verloren | Edge, hard, soft, lost | Die Grenze einer Form: auf trockenem Papier gemalt, vertrieben oder in die Nachbarform aufgelöst. |
+| Komplementärfarben | Complementary colours | Farben, die sich im Farbkreis gegenüberliegen; gemischt neutralisieren sie sich. |
+| Lasur | Glaze | Eine dünne transparente Farbschicht über einer trockenen. |
+| Leimung | Sizing | Die Gelatine oder andere Leimung in und auf dem Papier, die verhindert, dass die Farbe wie Tinte im Löschpapier einsinkt. |
+| Matt, kaltgepresst | Cold-pressed, NOT | Papier mit mittlerer Körnung, die übliche Wahl für Aquarell. |
+| Nass auf trocken | Wet-on-dry | Farbe auf trockenem Papier, für klare Kanten. |
+| Nass in nass | Wet-in-wet | Farbe in eine noch nasse Lasur oder auf nasses Papier, sodass sie weich verläuft. |
+| Purton | Masstone | Die Farbe einer Farbe in voller Stärke. |
+| Rau, Torchon | Rough | Papier mit starker Körnung. |
+| Satiniert, heißgepresst | Hot-pressed | Glattes Papier, gut für feine Einzelheiten, schwieriger für gleichmäßige Lasuren. |
+| Schmutz | Mud | Eine stumpfe, leblose Mischung, meist aus zu vielen Farben oder vom Arbeiten in eine antrocknende Lasur. |
+| Tonwert | Value | Wie hell oder dunkel eine Farbe ist, unabhängig vom Farbton. |
+| Transparent, lasierend | Transparent | Eine Farbe, die das Licht bis zum Papier durchlässt. |
+| Unterton | Undertone | Die Farbe einer Farbe in dünner Lasur, die von ihrem Purton abweichen kann. |
+
+---
+
+<!-- https://watercolourlove.de/de/handbuch/probleme.html -->
+
+# Wenn etwas nicht klappt
+
+## Das Bild
+
+### Die Karte hat viel zu viele winzige Flächen
+
+Stell **Flächen vereinfachen** höher. Jede Stufe fasst kleine Formen mit ihren Nachbarn zusammen; etwa in der Mitte des Bereichs werden die meisten Fotos malbar. Weniger **Farben** helfen auch, weil weniger Mischungen weniger Grenzen zwischen ihnen bedeuten. Siehe [Farbflächen](https://watercolourlove.de/de/handbuch/farbflaechen.html).
+
+### Eine wichtige Einzelheit ist verschwunden
+
+Kleine Flächen, die sich im Farbton von ihrer Umgebung abheben, ein rotes Dach, die Lippen in einem Porträt, behalten eine eigene Mischung, wenn **Details** niedrig steht. Ist die Einzelheit auch klein, verschwindet sie beim Vereinfachen; sieh dir diesen Teil des Bildes mit **Ausschnitt** für sich an, dort bekommt er feinere Flächen und eigene Mischungen (Pro). Siehe [Bilder](https://watercolourlove.de/de/handbuch/bilder.html).
+
+### Die Farben wirken stumpf oder viel zu laut
+
+Die App stellt die **Sättigung** vor der Analyse auf 200 %, weil Fotos meist flacher wirken als der Ort. Bei einem Foto, das schon kräftig ist, nimm sie Richtung 100 % zurück. **Kontrast** wirkt genauso auf den Unterschied zwischen Hell und Dunkel. Beide ändern nur die Analyse, nie das Foto selbst.
+
+## Die Rezepte
+
+### Eine Farbe bekommt nur „mäßig“ oder „grob“
+
+Die Farben deiner Palette erreichen diese Farbe nicht genau. Vergleich die Ansichten **Fotofarbe** und **Gemischte Farbe**: Stört dich der Unterschied nicht, lass ihn. Sonst kannst du
+
+- mit **Max. Farben** drei Farben je Mischung zulassen,
+- eine Farbe in die Palette nehmen, die näher an der gesuchten liegt, oft ein reineres Gelb, Rot oder Blau,
+- oder das Ziel in **Alle Details** ändern: Du bist der Maler, und eine etwas andere Farbe, die du sauber mischen kannst, ist oft besser als die genaue im Schmutz.
+
+### Ein Rezept verwendet eine Farbe, die ich nicht will
+
+Öffne **Alle Details** und wähl eines der anderen Rezepte. Willst du die Farbe in diesem Bild gar nicht, nimm sie im **Farbkasten** aus der Palette und drück auf **Mischungen aktualisieren**.
+
+### Eine dunkle Farbe wird nicht erreicht
+
+Keine Farbe wird dunkler verwendet als ihr erfasster Wert, ihr Farbmuster. Ein Dunkel, das jenseits jeder einzelnen Farbe liegt, braucht eine Mischung aus zwei oder drei. Lass mehr Farben je Mischung zu, nimm eine dunkle Farbe wie Indigo, Sepia oder Neutraltinte in die Palette, oder lass im Modus **Schichten** die dunklen Stellen aus mehreren Schichten entstehen. Sind die dunklen Stellen immer etwas zu hell, sind die erfassten Werte deiner dunklen Farben vielleicht heller als deine echten Farben: siehe [Deine Farben kalibrieren](https://watercolourlove.de/de/handbuch/kalibrieren.html).
+
+### Meine Farbe ist nicht im Farbkasten
+
+Drück auf das **+** am Ende eines Kastens. Such nach Serie, Nummer oder Name; mit Pro werden auch die Farbkarten von Schmincke Horadam, Winsor & Newton Professional und Michael Harding durchsucht. Ist deine Farbe nicht dabei, wähl **Oder eine eigene Farbe eingeben**. Siehe [Farbkasten und Palette](https://watercolourlove.de/de/handbuch/farbkasten.html).
+
+## Beim Malen
+
+### Die Mischung sieht trocken anders aus
+
+Aquarell trocknet heller und oft etwas kühler und stumpfer auf, als es nass aussieht. Beurteile einen Probestrich immer auf einem Rest desselben Papiers, wenn er ganz trocken ist. Ist er zu blass, gib Farbe dazu; ist er zu kräftig, Wasser.
+
+### Meine Farben werden schmutzig
+
+Schmutz hat meist drei Ursachen: zu viele Farben in einer Mischung, Zurückarbeiten in eine Lasur, die schon antrocknet, und Malen über eine Schicht, die noch nicht ganz trocken ist. Bleib bei zwei oder drei Farben je Mischung, male jede Fläche in einem Durchgang und warte. Siehe [Mischen in der Praxis](https://watercolourlove.de/de/handbuch/mischen.html).
+
+### In meinen Lasuren entstehen ausgefranste Ränder
+
+Das sind Blumenkohlränder: Nassere Farbe ist in eine Lasur zurückgelaufen, die schon anzutrocknen begann. Arbeite entweder, solange die ganze Fläche gleichmäßig nass ist, oder warte, bis sie ganz trocken ist. Ein feuchter, nicht nasser Pinsel nimmt überschüssiges Wasser am Rand einer Lasur auf. Siehe [Lavieren](https://watercolourlove.de/de/handbuch/lavieren.html).
+
+### Eine Lasur hat die Schicht darunter angelöst
+
+Die Schicht darunter war nicht ganz trocken, oder der Pinsel ist mehr als einmal darübergegangen. Lass jede Schicht ganz trocknen, nimm einen weichen Pinsel, trag die Farbe und reib nicht. Für erste Schichten sind färbende Farben am sichersten. Siehe [Lasieren](https://watercolourlove.de/de/handbuch/lasieren.html).
+
+## Die App
+
+### Ich habe die Farben geändert, aber nichts passiert
+
+Änderungen im Farbkasten wirken, wenn du auf **Mischungen aktualisieren** drückst. Einstellungen wie **Farben** oder **Flächen vereinfachen** analysieren das Bild neu, sobald du den Regler loslässt.
+
+### Ein gesichertes Bild ist verschwunden
+
+Bilder, Farbkästen und die Sammlung liegen im Browser auf diesem Gerät, nicht in deinem Konto und nicht in einer Cloud. Löschst du die Browserdaten, nutzt ein privates Fenster oder wechselst Browser oder Gerät, sind sie dort nicht da. Bewahr Bilder, die dir wichtig sind, mit **Drucken / PDF** als PDF auf.
+
+### Ich kann nicht sichern, drucken oder exportieren
+
+In der kostenlosen Version im Web lassen sich keine Bilder sichern, drucken oder exportieren, und die Palette mischt aus dem Einsteigerkasten statt aus deinen eigenen Farben. Ein Bild, das du mit einem Guthaben freischaltest, hebt diese Grenzen für dieses Bild auf; Pro für jedes Bild. Siehe [Konto, Pro und deine Daten](https://watercolourlove.de/de/handbuch/konto.html).
+
+### Der Anmeldelink funktioniert nicht
+
+Ein Anmeldelink funktioniert einmal und 15 Minuten lang, auf dem Gerät, auf dem du ihn angefordert hast. Ist er abgelaufen oder schon benutzt, fordere auf der Anmeldeseite einen neuen an. Kommt keine Mail, schau im Spam-Ordner nach.
+
+### Etwas anderes
+
+Schreib an [support@markus-freise.de](mailto:support@markus-freise.de). Sag, was du getan hast, was du erwartet hast und was stattdessen passiert ist; ein Bildschirmfoto hilft.

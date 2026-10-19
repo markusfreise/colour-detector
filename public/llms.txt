@@ -1,0 +1,84 @@
+# Watercolourlove
+
+> Watercolourlove turns a photo into a plan for a real watercolour: it finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas you can transfer to paper.
+
+A web app at https://watercolourlove.de/ (free account with just an e-mail address; prepaid picture packs or Pro for more), also for iPhone, iPad and Mac. Everything is worked out on the device: photos are never uploaded, and pictures, paint boxes and collection stay in the browser. It knows 40 common colours and, with Pro, the colour charts of Schmincke Horadam, Winsor & Newton Professional, Michael Harding and Sennelier L'Aquarelle. Two methods: mix every colour on the palette, or glaze a few base paints in layers. The manual, in English and German, explains the app and painting with watercolour.
+
+## About
+
+- [About Watercolourlove](https://watercolourlove.de/about/): what the app does, how it works, what it costs
+- [Über Watercolourlove](https://watercolourlove.de/de/ueber/): the same in German
+- [Prices](https://watercolourlove.de/pricing/): free, prepaid picture packs, Pro monthly, yearly or lifetime
+- [Watercolourlove for iPhone, iPad and Mac](https://watercolourlove.de/app/): the native app, with support and privacy
+
+## Manual
+
+### Getting started
+
+- [Welcome to Watercolourlove](https://watercolourlove.de/manual/): Watercolourlove turns a photo into a plan for a real watercolour. It finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas you can transfer to paper.
+- [From photo to painting](https://watercolourlove.de/manual/quick-start.html): One picture from the first click to the last brush stroke. Steps 1 to 7 happen in the app and take about ten minutes; steps 8 to 14 happen at the desk.
+
+### The app
+
+- [Pictures](https://watercolourlove.de/manual/pictures.html): A good plan starts with a good reference. This chapter is about choosing the photo, opening it, saving it in your collection, looking closer at one part of it, and taking it with you as a JPG.
+- [Paint box and palette](https://watercolourlove.de/manual/paint-box.html): The recipes can only be as good as the paints they are made from. The paint box holds every paint you own; the palette is the handful of them a picture is mixed from.
+- [Colour areas](https://watercolourlove.de/manual/colour-areas.html): How many mixes, how large the shapes, which colours deserve their own puddle of paint. The settings decide how much work a picture is, and how it will look.
+- [Mixes, washes and recipes](https://watercolourlove.de/manual/mixes.html): A mix is one puddle on your palette. Thinned or strengthened with water, the same puddle paints several colours of the picture. This chapter shows how to read the colour list, look up a colour and choose the recipe you will actually mix.
+- [Layer mode](https://watercolourlove.de/manual/layer-mode.html): Instead of mixing every colour on the palette, you prepare a few thin washes and glaze them over each other, from light to dark. Greens, oranges and darks appear on the paper where the layers add up. This chapter explains the method, the settings and the guided walk through the painting.
+- [Values](https://watercolourlove.de/manual/values.html): Value is how light or dark a colour is, regardless of its hue. Blocking shows the photo as two or three flat tones, so that you find light, shadow and the large forms before you paint. Monochrome turns the photo into a study in light and dark and paints it with whatever paints you give it.
+- [Printing and exporting](https://watercolourlove.de/manual/printing.html): The plan is made on the screen, the painting at the desk. This chapter shows how to take the plan with you: as a printed sheet or PDF with every mix, with a grid to copy it square by square, and as a picture file.
+- [Account, Pro and your data](https://watercolourlove.de/manual/account.html): Your account is only your e-mail address, your plan and your picture credits. Your photos, paint boxes and saved pictures never leave the device you work on. This chapter explains signing in, the free version and Pro, the preferences, and what happens to your data.
+
+### Painting with watercolour
+
+- [Materials](https://watercolourlove.de/manual/materials.html): Watercolour forgives very little at the material end. Good paper, three good brushes and a handful of single-pigment paints do more for your painting than any number of gadgets.
+- [How watercolour works](https://watercolourlove.de/manual/how-watercolour-works.html): A watercolour is light passing twice through thin layers of pigment and bouncing off white paper. Once you see it that way, mixing, washes and glazing stop being rules to remember and become things you can work out.
+- [Mixing in practice](https://watercolourlove.de/manual/mixing.html): A recipe tells you which paints, in what proportion and with how much water. Turning it into a puddle that matches the colour on the sheet is a craft of its own, and a quick one to learn.
+- [Washes](https://watercolourlove.de/manual/washes.html): A wash is paint and water laid down in one movement and left to settle. Every numbered area in the app is a wash, so this is the technique the whole painting rests on.
+- [Glazing](https://watercolourlove.de/manual/glazing.html): A glaze is a thin, transparent wash laid over a dry one. Colour built up this way glows, because the light passes through every layer to the white paper and back.
+- [Values and simplifying](https://watercolourlove.de/manual/values-and-simplifying.html): A painting holds together through its lights and darks, not through its colours. Get the values right and you can be free with colour; get them wrong and no colour will save the picture.
+- [Calibrating your paints](https://watercolourlove.de/manual/calibrating.html): Every recipe is only as good as the app's idea of your paints. An afternoon with a swatch chart makes the recipes fit the paints on your desk, not the ones on a printed chart.
+
+### Reference
+
+- [Glossary](https://watercolourlove.de/manual/glossary.html): Every term of the app and of this manual, with its German name, for painting from a German book or talking to German painters.
+- [Troubleshooting](https://watercolourlove.de/manual/troubleshooting.html): The questions painters ask most often, about the picture, the recipes, the paper and the app, with what to do about each.
+
+## Handbuch (Deutsch)
+
+### Erste Schritte
+
+- [Willkommen bei Watercolourlove](https://watercolourlove.de/de/handbuch/): Watercolourlove macht aus einem Foto den Plan für ein echtes Aquarell. Die App findet die Farben, auf die es ankommt, sagt dir, wie du jede aus deinen eigenen Farben mischst, und zeigt das Foto als flache, nummerierte Flächen, die du aufs Papier übertragen kannst.
+- [Vom Foto zum Bild](https://watercolourlove.de/de/handbuch/schnellstart.html): Ein Bild vom ersten Klick bis zum letzten Pinselstrich. Die Schritte 1 bis 7 passieren in der App und dauern etwa zehn Minuten, die Schritte 8 bis 14 am Maltisch.
+
+### Die App
+
+- [Bilder](https://watercolourlove.de/de/handbuch/bilder.html): Ein guter Plan beginnt mit einer guten Vorlage. In diesem Kapitel geht es um die Wahl des Fotos, das Öffnen, das Sichern in deiner Sammlung, den genaueren Blick auf einen Ausschnitt und den Export als JPG.
+- [Farbkasten und Palette](https://watercolourlove.de/de/handbuch/farbkasten.html): Die Rezepte können nur so gut sein wie die Farben, aus denen sie gemischt werden. Der Farbkasten enthält jede Farbe, die du besitzt; die Palette ist die Handvoll davon, aus der ein Bild gemischt wird.
+- [Farbflächen](https://watercolourlove.de/de/handbuch/farbflaechen.html): Wie viele Mischungen, wie groß die Formen, welche Farben eine eigene Pfütze verdienen. Die Einstellungen entscheiden, wie viel Arbeit ein Bild macht und wie es aussehen wird.
+- [Mischungen, Lasuren und Rezepte](https://watercolourlove.de/de/handbuch/mischungen.html): Eine Mischung ist eine Pfütze auf deiner Palette. Mit mehr oder weniger Wasser malt dieselbe Pfütze mehrere Farben des Bildes. Dieses Kapitel zeigt, wie du die Farbliste liest, eine Farbe nachschlägst und das Rezept wählst, das du wirklich anmischst.
+- [Schichten](https://watercolourlove.de/de/handbuch/schichten.html): Statt jede Farbe auf der Palette zu mischen, bereitest du wenige dünne Lasuren vor und legst sie übereinander, von hell nach dunkel. Grüntöne, Orange und Dunkel entstehen auf dem Papier, wo sich die Schichten addieren. Dieses Kapitel erklärt die Methode, die Einstellungen und den geführten Weg durch das Bild.
+- [Tonwerte](https://watercolourlove.de/de/handbuch/tonwerte.html): Der Tonwert ist, wie hell oder dunkel eine Farbe ist, ganz gleich welcher Farbton. Blocking zeigt das Foto als zwei oder drei flache Töne, damit du Licht, Schatten und die großen Formen findest, bevor du malst. Monochrom macht aus dem Foto eine Studie in Hell und Dunkel und malt sie mit den Farben, die du ihr gibst.
+- [Drucken und exportieren](https://watercolourlove.de/de/handbuch/drucken.html): Geplant wird am Bildschirm, gemalt am Maltisch. Dieses Kapitel zeigt, wie du den Plan mitnimmst: als Ausdruck oder PDF mit jeder Mischung, mit einem Raster zum Abzeichnen Feld für Feld und als Bilddatei.
+- [Konto, Pro und deine Daten](https://watercolourlove.de/de/handbuch/konto.html): Dein Konto ist nur deine E-Mail-Adresse, dein Tarif und dein Guthaben an Bildern. Deine Fotos, Farbkästen und gesicherten Bilder verlassen nie das Gerät, auf dem du arbeitest. Dieses Kapitel erklärt die Anmeldung, die kostenlose Version und Pro, die Einstellungen zu Sprache und Darstellung und was mit deinen Daten geschieht.
+
+### Malen mit Aquarell
+
+- [Material](https://watercolourlove.de/de/handbuch/material.html): Beim Material verzeiht Aquarell wenig. Gutes Papier, drei gute Pinsel und eine Handvoll Einpigmentfarben bringen deinem Bild mehr als jedes Zubehör.
+- [Wie Aquarell funktioniert](https://watercolourlove.de/de/handbuch/wie-aquarell-funktioniert.html): Ein Aquarell ist Licht, das zweimal durch dünne Pigmentschichten geht und von weißem Papier zurückgeworfen wird. Wer das einmal so sieht, muss sich Mischen, Lavieren und Lasieren nicht mehr als Regeln merken, sondern kann es herleiten.
+- [Mischen in der Praxis](https://watercolourlove.de/de/handbuch/mischen.html): Ein Rezept sagt dir, welche Farben, in welchem Verhältnis und mit wie viel Wasser. Daraus eine Pfütze zu machen, die zur Farbe auf dem Blatt passt, ist ein Handwerk für sich, und eines, das man schnell lernt.
+- [Lavieren](https://watercolourlove.de/de/handbuch/lavieren.html): Eine Lasur ist Farbe und Wasser, in einer Bewegung aufgetragen und dann in Ruhe gelassen. Jede nummerierte Fläche der App ist eine Lasur, also ist das die Technik, auf der das ganze Bild ruht.
+- [Lasieren](https://watercolourlove.de/de/handbuch/lasieren.html): Eine Lasur ist eine dünne, transparente Farbschicht über einer getrockneten. So aufgebaute Farbe leuchtet, weil das Licht durch jede Schicht bis zum weißen Papier und wieder zurück geht.
+- [Tonwerte und Vereinfachen](https://watercolourlove.de/de/handbuch/tonwerte-und-vereinfachen.html): Ein Bild hält durch sein Hell und Dunkel zusammen, nicht durch seine Farben. Stimmen die Tonwerte, kannst du mit der Farbe frei umgehen; stimmen sie nicht, rettet keine Farbe das Bild.
+- [Deine Farben kalibrieren](https://watercolourlove.de/de/handbuch/kalibrieren.html): Jedes Rezept ist nur so gut, wie die App deine Farben kennt. Ein Nachmittag mit einer Farbkarte sorgt dafür, dass die Rezepte zu den Farben auf deinem Tisch passen, nicht zu denen auf einer gedruckten Karte.
+
+### Nachschlagen
+
+- [Glossar](https://watercolourlove.de/de/handbuch/glossar.html): Alle Begriffe der App und dieses Handbuchs, mit ihrem englischen Namen, für englische Bücher, Videos und Gespräche mit Malern aus aller Welt.
+- [Wenn etwas nicht klappt](https://watercolourlove.de/de/handbuch/probleme.html): Die häufigsten Fragen zum Bild, zu den Rezepten, zum Papier und zur App, und was du jeweils tun kannst.
+
+## Optional
+
+- [The whole manual as Markdown](https://watercolourlove.de/llms-full.txt)
+- [Das ganze Handbuch als Markdown](https://watercolourlove.de/de/llms-full.txt)
+- [The whole manual on one page](https://watercolourlove.de/manual/all.html)

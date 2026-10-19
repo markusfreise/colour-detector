@@ -12,6 +12,12 @@
 //   ![Caption](photo:<name>) a photo of the painting process, public/manual/photos/<name>.webp;
 //                           until it is there, a frame that says a photo follows
 //   > **Tip:** / **Note:** / **Caution:** (German: Tipp, Gut zu wissen, Achtung) become boxes.
+//
+// For search engines and language models it also writes, from the chapters and the pages in public/:
+//   public/llms.txt                     what the site is, with every page and chapter (llmstxt.org)
+//   public/llms-full.txt, public/de/llms-full.txt   the whole manual as Markdown
+//   public/sitemap.xml                  every page except the noindex ones and public/preview/
+//   public/robots.txt                   pointing to the sitemap
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -23,12 +29,14 @@ const HERE = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 const ROOT = path.resolve(HERE, '../..')
 const PUBLIC = path.join(ROOT, 'public')
 const ASSETS = path.join(PUBLIC, 'manual')
+const SITE = 'https://watercolourlove.de'
 const META = JSON.parse(fs.readFileSync(path.join(HERE, 'shots.json'), 'utf8'))
 
 // Per language: where it goes, how it reaches the shared files, and the words of the frame.
 const LANGS = {
   en: {
     out: path.join(PUBLIC, 'manual'),
+    base: 'manual/',
     assets: '',
     app: '../',
     all: 'all',
@@ -52,6 +60,7 @@ const LANGS = {
   },
   de: {
     out: path.join(PUBLIC, 'de/handbuch'),
+    base: 'de/handbuch/',
     assets: '../../manual/',
     app: '../../',
     all: 'alles',
@@ -287,6 +296,90 @@ function photoList() {
   fs.writeFileSync(path.join(HERE, 'photos.md'), lines.join('\n'))
 }
 
+// ------------------------------------------------------------ For crawlers
+
+const url = (rel) => `${SITE}/${rel}`
+const chapterUrl = (lang, c) => url(`${LANGS[lang].base}${c.slug === 'index' ? '' : `${c.slug}.html`}`)
+
+/** A chapter as plain Markdown: links made absolute, screenshots and photos as their captions. */
+function markdown(lang, c) {
+  return c.body
+    .replace(/!\[([^\]]*)\]\(shot:[^)]+\)/g, (_, text) => `*Screenshot: ${text}*`)
+    .replace(/!\[([^\]]*)\]\(photo:[^)]+\)/g, (_, text) => `*Photo: ${text}*`)
+    .replace(/\]\(([a-z0-9-]+)\.html(#[^)]*)?\)/g, (_, slug, hash) => `](${url(`${LANGS[lang].base}${slug === 'index' ? '' : `${slug}.html`}`)}${hash ?? ''})`)
+    .trim()
+}
+
+/** Every page of public/ that may be indexed, as its address. */
+function pages() {
+  const found = []
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const file = path.join(dir, entry.name)
+      const rel = path.relative(PUBLIC, file).split(path.sep).join('/')
+      if (entry.isDirectory()) {
+        if (rel !== 'preview') walk(file)
+      } else if (entry.name.endsWith('.html') && !/<meta name="robots" content="[^"]*noindex/.test(fs.readFileSync(file, 'utf8'))) {
+        found.push(rel.replace(/(^|\/)index\.html$/, '$1'))
+      }
+    }
+  }
+  walk(PUBLIC)
+  return ['', ...found.sort()]
+}
+
+function crawlFiles(books) {
+  const list = (lang) => {
+    let part = ''
+    return books[lang].flatMap((c) => {
+      const head = c.part !== part ? ['', `### ${c.part}`, ''] : []
+      part = c.part
+      return [...head, `- [${c.title}](${chapterUrl(lang, c)}): ${c.lead}`]
+    })
+  }
+  const llms = [
+    '# Watercolourlove',
+    '',
+    '> Watercolourlove turns a photo into a plan for a real watercolour: it finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas you can transfer to paper.',
+    '',
+    `A web app at ${SITE}/ (free account with just an e-mail address; prepaid picture packs or Pro for more), also for iPhone, iPad and Mac. Everything is worked out on the device: photos are never uploaded, and pictures, paint boxes and collection stay in the browser. It knows 40 common colours and, with Pro, the colour charts of Schmincke Horadam, Winsor & Newton Professional, Michael Harding and Sennelier L'Aquarelle. Two methods: mix every colour on the palette, or glaze a few base paints in layers. The manual, in English and German, explains the app and painting with watercolour.`,
+    '',
+    '## About',
+    '',
+    `- [About Watercolourlove](${url('about/')}): what the app does, how it works, what it costs`,
+    `- [Über Watercolourlove](${url('de/ueber/')}): the same in German`,
+    `- [Prices](${url('pricing/')}): free, prepaid picture packs, Pro monthly, yearly or lifetime`,
+    `- [Watercolourlove for iPhone, iPad and Mac](${url('app/')}): the native app, with support and privacy`,
+    '',
+    '## Manual',
+    ...list('en'),
+    '',
+    '## Handbuch (Deutsch)',
+    ...list('de'),
+    '',
+    '## Optional',
+    '',
+    `- [The whole manual as Markdown](${url('llms-full.txt')})`,
+    `- [Das ganze Handbuch als Markdown](${url('de/llms-full.txt')})`,
+    `- [The whole manual on one page](${url('manual/all.html')})`,
+    '',
+  ]
+  fs.writeFileSync(path.join(PUBLIC, 'llms.txt'), llms.join('\n'))
+
+  for (const [lang, file, title] of [['en', 'llms-full.txt', 'Watercolourlove manual'], ['de', 'de/llms-full.txt', 'Watercolourlove Handbuch']]) {
+    const text = books[lang].map((c) => `<!-- ${chapterUrl(lang, c)} -->\n\n${markdown(lang, c)}`).join('\n\n---\n\n')
+    fs.writeFileSync(path.join(PUBLIC, file), `# ${title}\n\n> ${books[lang][0].lead}\n\n${text}\n`)
+  }
+
+  const urls = pages().map((rel) => `  <url><loc>${esc(url(rel))}</loc></url>`)
+  fs.writeFileSync(
+    path.join(PUBLIC, 'sitemap.xml'),
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`,
+  )
+  fs.writeFileSync(path.join(PUBLIC, 'robots.txt'), `User-agent: *\nDisallow: /preview/\nDisallow: /admin/\nDisallow: /api/\n\nSitemap: ${url('sitemap.xml')}\n`)
+  return urls.length
+}
+
 function build() {
   LOGO = fs.readFileSync(path.join(ROOT, 'resources/logo.svg'), 'utf8').replace(/fill="black"/g, 'fill="currentColor"').replace(/<svg /, '<svg aria-hidden="true" ')
   const books = Object.fromEntries(Object.keys(LANGS).map((lang) => [lang, readChapters(lang)]))
@@ -338,6 +431,7 @@ function build() {
   fs.writeFileSync(path.join(ASSETS, 'manual.css'), css)
   fs.copyFileSync(path.join(HERE, 'lightbox.js'), path.join(ASSETS, 'manual.js'))
   photoList()
+  report.push(`crawlers: llms.txt, llms-full.txt (en, de), sitemap.xml with ${crawlFiles(books)} pages, robots.txt`)
   console.log(report.join('\n'))
 }
 

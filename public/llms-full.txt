@@ -1,0 +1,1812 @@
+# Watercolourlove manual
+
+> Watercolourlove turns a photo into a plan for a real watercolour. It finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas you can transfer to paper.
+
+<!-- https://watercolourlove.de/manual/ -->
+
+# Welcome to Watercolourlove
+
+## The idea
+
+Every painter who works from a photo faces the same two questions. Which colours are really in this picture, once you look past the thousand small variations a camera records? And how do I mix each of them from the paints in my box, with how much water?
+
+Watercolourlove answers both. It reduces the photo to a manageable number of mixes, works out a recipe for every mix from your own paints, and shows you where each one goes. The result is a paint-by-numbers plan, but one that is made for watercolour: it knows that paint is transparent, that water makes a colour lighter, and that the white of the paper is the lightest thing you have.
+
+*Screenshot: The app at a glance, with the sample photo Llyn Idwal*
+
+1. **New picture** and the other buttons for the picture: samples, saving, the collection, printing, exporting.
+2. The tools of the picture: look at a detail, and fit it to the window again once you have zoomed in.
+3. The views: mixed paint, the colours of the photo, the photo itself.
+4. **Colours**: every mix with its paints and its washes.
+5. **Settings**: how many mixes, how simple the areas, the method.
+6. **Paint box**: the paints you own and the palette of this picture.
+7. **Help** shows the names of all buttons at once.
+
+## Who it is for
+
+Watercolourlove is made for people who take watercolour seriously. Perhaps you have painted for years and want a faster, more reliable way from a reference photo to a plan. Perhaps you are learning and want to understand why a colour turns out the way it does, instead of guessing. Either way, the app does the measuring, and you keep the decisions.
+
+It is not a filter that makes a photo look painted. Nothing here paints for you. The app proposes; you choose the colours, the shapes and the order, and the brush is in your hand.
+
+## What it can and cannot do
+
+The recipes are calculated, not measured on your paper. The app knows one reference colour for each paint and models how paints combine and how water thins them. That is a good estimate, often a very good one, but your paper, your water, your brush and the particular tube in front of you all have a say. Treat every recipe as a starting point and let a test strip on the same paper decide. The chapter [Calibrating your paints](https://watercolourlove.de/manual/calibrating.html) shows how to bring the reference colours closer to your own.
+
+Two more limits worth knowing from the start:
+
+- A paint is never used darker than its reference colour. Watercolour cannot get darker by adding more of the same paint beyond a certain point; it needs a second, darker paint. The recipes follow that rule.
+- Very small, very dark details (an eye, a gap between stones) are easier to paint by eye at the end than to follow as areas. The app keeps them as separate small areas, but you decide how literally to take them.
+
+## Two ways to paint
+
+**Mix.** Every colour of the picture is mixed on the palette, and each area is painted once with its mix. One mix is used at up to five strengths of water, from a very watery wash to a concentrated one, so twenty mixes give you far more than twenty colours on paper. This is the method most of this manual describes, and the one to start with.
+
+**Layer.** A few base paints are glazed over each other, light to dark, each as one prepared wash. Greens, oranges and darks appear where the layers overlap. It is the classic glazing technique, planned for you step by step. The chapter [Layer mode](https://watercolourlove.de/manual/layer-mode.html) explains it.
+
+## What you need
+
+- A photo. Clear light and a few large shapes work best; the chapter [Pictures](https://watercolourlove.de/manual/pictures.html) explains why.
+- Your watercolours, and the knowledge of which ones you own. The [paint box](https://watercolourlove.de/manual/paint-box.html) knows the colours of Schmincke Horadam, Winsor & Newton Professional and Michael Harding, and takes any other paint as a colour of your own.
+- Watercolour paper (300 g/m², ideally cotton), taped to a board, two or three brushes, a palette with wells, two jars of water and a pencil.
+- A printer or a second screen beside your desk, for the plan.
+
+## How this manual is organised
+
+The manual has four parts.
+
+- **Getting started.** This introduction, and [From photo to painting](https://watercolourlove.de/manual/quick-start.html): one picture from the first click to the last brush stroke, in fourteen steps. If you read only one chapter, read that one.
+- **The app.** Every part of the app in depth: [pictures](https://watercolourlove.de/manual/pictures.html), the [paint box](https://watercolourlove.de/manual/paint-box.html), the [colour areas](https://watercolourlove.de/manual/colour-areas.html), [mixes and recipes](https://watercolourlove.de/manual/mixes.html), [layer mode](https://watercolourlove.de/manual/layer-mode.html), [values](https://watercolourlove.de/manual/values.html), [printing](https://watercolourlove.de/manual/printing.html) and your [account](https://watercolourlove.de/manual/account.html).
+- **Painting with watercolour.** What the app assumes and what you do at the desk: [materials](https://watercolourlove.de/manual/materials.html), [how watercolour works](https://watercolourlove.de/manual/how-watercolour-works.html), [mixing](https://watercolourlove.de/manual/mixing.html), [washes](https://watercolourlove.de/manual/washes.html), [glazing](https://watercolourlove.de/manual/glazing.html), [values and simplifying](https://watercolourlove.de/manual/values-and-simplifying.html) and [calibrating your paints](https://watercolourlove.de/manual/calibrating.html). These chapters stand on their own, with or without the app.
+- **Reference.** The [glossary](https://watercolourlove.de/manual/glossary.html) with every term in English and German, and [troubleshooting](https://watercolourlove.de/manual/troubleshooting.html).
+
+Throughout the manual you will see one picture: the sample photo **Llyn Idwal**, a lake below the mountains of Snowdonia in Wales, analysed with the Schmincke Horadam paints of the stock and twenty mixes. The app finds 52 colours in those 20 mixes. You can open the same photo under **Samples** and follow along.
+
+## Your pictures stay with you
+
+Everything is worked out on your device. The photo is never uploaded, and your pictures, paint boxes and collection are kept in this browser on this device, not in your account.
+
+---
+
+<!-- https://watercolourlove.de/manual/quick-start.html -->
+
+# From photo to painting
+
+This chapter is the short way through. Each step says what to do and why, and points to the chapter that goes deeper. The pictures show the sample photo **Llyn Idwal**; open it under **Samples** to follow along.
+
+## Part 1: Plan the picture in the app
+
+### 1. Choose a photo
+
+Press **New picture** and pick a photo. On a phone or tablet the same button also offers the camera. **Samples** opens five example photos if you would like to try the app first.
+
+*Screenshot: The empty app, waiting for the first photo*
+
+1. **New picture** opens a photo from your device.
+2. **Samples** opens the example photos.
+3. You can also click anywhere on the empty page to choose a photo.
+
+The app starts analysing at once. Photos with clear light and shadow and a few large shapes work best. More on choosing and preparing a reference in [Pictures](https://watercolourlove.de/manual/pictures.html).
+
+### 2. Tell the app which paints you own
+
+Open the **Paint box** from the right-hand column. Every paint is a chip in its own colour, with its number; P and T stand for pan and tube. The **Palette** at the top holds the paints this picture may be mixed from. Click a chip to move it in or out.
+
+If you are not sure which paints to choose, leave it to **Auto**: the app picks a small set that suits this picture from the boxes you allow. When you close the paint box, the mixes are worked out again. The chapter [Paint box and palette](https://watercolourlove.de/manual/paint-box.html) covers boxes, brands and colours of your own.
+
+### 3. Decide how much work the picture should be
+
+Open **Settings**. Three sliders decide most of it:
+
+- **Colours** is the number of mixes on your palette. Start with 12 to 20.
+- **Simplify areas** merges small shapes into bigger, calmer ones. The higher, the fewer and larger the areas.
+- **Max. paints** limits a mix to one, two or three paints. Fewer paints give cleaner mixes.
+
+*Screenshot: The settings*
+
+1. The method: **Mix** or **Layer**.
+2. The areas: organic or geometric.
+3. **Simplify areas**.
+4. **Colours**, the number of mixes.
+5. **Details**: whether the mixes go to fine steps across the picture or to small areas of another hue.
+6. **Max. paints** per mix.
+
+Every slider is explained in [Colour areas](https://watercolourlove.de/manual/colour-areas.html).
+
+### 4. Read the map
+
+Every area carries a label such as **3M**. The number is the mix, the letter how much water goes into it: **W** very watery, **L** light, **M** medium, **R** rich, **C** concentrated. So 3L and 3C come from the same puddle of paint, once thinned and once strong. That is why 20 mixes give many more colours on paper: 52 in this sample.
+
+*Screenshot: The colour list*
+
+1. How many colours the picture has, in how many mixes.
+2. The key to the water levels.
+3. One block per mix: its paints as a bar in the proportions of the recipe, and its washes below.
+
+What the bars mean in detail, and how the water levels work, is in [Mixes, washes and recipes](https://watercolourlove.de/manual/mixes.html).
+
+### 5. Look up a mix
+
+Click an area in the picture. A card opens with the number of the colour, its share of the picture and the recipe to mix it.
+
+*Screenshot: A tapped area and its card*
+
+1. The card: colour, share, recipe, and **Full breakdown** for everything else.
+
+A recipe reads like a kitchen recipe: **1 x P 494** and **1 x P 218** mean one part of pan 494 to one part of pan 218. The water level and a rating such as **0.8 · excellent** say how much water to add and how close the mix comes to the photo. **Full breakdown** shows the target colour next to your mix and up to five alternative recipes. Click a mix in the **Colours** list to see only its areas; click the blank part to bring the picture back.
+
+### 6. Change what you do not like
+
+You are the painter; the photo is only a suggestion. In the full breakdown, **Change colour** gives a mix a new target, warmer, cooler or entirely different, and the recipes follow. **Edit only the clicked area** separates one area from the others that share its colour. **Reset to photo** brings the colour of the photo back.
+
+Press **Save** to keep the picture with its settings, its palette and your changes in the **Collection**.
+
+### 7. Print the plan
+
+**Print / PDF** gives the picture followed by every mix with its paints. Print it for the desk, or choose "Save as PDF" in the print dialog and keep it on a tablet. **Grid** lays square cells over the picture, to copy the drawing onto your paper cell by cell. Details in [Printing](https://watercolourlove.de/manual/printing.html).
+
+## Part 2: Paint it
+
+### 8. Lay out the desk
+
+Tape the paper to a board on all four sides. Put the printed plan where you can see it without reaching over wet paint, the paint box and palette on the side of your painting hand, and two jars of water behind them: one for rinsing, one that stays clean for mixing.
+
+*Photo: Everything you need, laid out on the desk*
+
+### 9. Transfer the drawing
+
+Copy the outlines onto the paper with a light pencil, H or HB: trace them against a window or a light pad, or draw them by eye with the plan beside you. Write the labels small and faint inside the areas; a light wash will still let you read them, a heavy line will show through for ever.
+
+You do not need every outline. Leave out what you would rather paint freely, especially in soft passages such as sky or water.
+
+*Photo: Tracing the outlines onto taped watercolour paper*
+
+### 10. Mix the first colour and test it
+
+Start with the mix that has the lightest washes. Count the parts in brush loads: for 3 parts of one paint and 1 of another, three loads of the first into a well, one of the second. Then add water for the wash you need: a lot for W and L, little for R and C.
+
+Paint a stroke on a scrap of the same paper, let it dry and hold it next to the colour on the plan. Watercolour dries lighter than it looks wet. Too pale: more paint. Too strong: more water. Too warm or too cool: a touch more of the other paint.
+
+*Photo: A test strip held next to the colour on the printed plan*
+
+> **Tip:** The recipes are estimates from one reference colour per paint. Trust the dried test strip more than the numbers. [Mixing in practice](https://watercolourlove.de/manual/mixing.html) explains how to correct a mix quickly.
+
+### 11. Paint the light areas first
+
+Fill every area of this mix at its lightest wash, then strengthen the same puddle for its stronger letters. Select the mix in the app to see only its areas. Work from light to dark and from large areas to small ones.
+
+Do not paint an area next to one that is still wet, unless you want the two to run into each other. Wet next to wet blends; wet next to dry keeps a crisp edge. [Washes](https://watercolourlove.de/manual/washes.html) has the techniques.
+
+*Photo: The first pale wash on white paper*
+
+### 12. Let it dry
+
+Wait until the paper is flat again and no longer feels cool against the back of your hand. Use the pause to mix the next colour and tick off the finished mixes on the plan.
+
+### 13. Work through the mixes down to the darks
+
+Repeat steps 10 to 12 for every mix. The picture comes together with the middle tones; the darkest, most concentrated washes go on last with a small brush. They are the smallest areas and do the most for the likeness: the shadow side of a rock, the edge of the water, the darkest crevices.
+
+*Photo: The darks, last and small*
+
+### 14. Compare, correct, take off the tape
+
+Put the painting next to the screen in the view **Mixed paint**. Where an area is too pale, glaze it once more with the same mix. When everything is completely dry, pull the tape off slowly, flat and away from the picture, to get a clean white edge.
+
+*Photo: The finished watercolour beside the photo it came from*
+
+## Painting in layers instead
+
+If you would rather glaze a few transparent washes over each other than mix every colour, switch the method to **Layer** in the settings. The app then plans a handful of washes and leads you through them step by step. The chapter [Layer mode](https://watercolourlove.de/manual/layer-mode.html) explains how.
+
+---
+
+<!-- https://watercolourlove.de/manual/pictures.html -->
+
+# Pictures
+
+## What makes a good reference photo
+
+The app will analyse any photo, but some photos make much better watercolours than others. A watercolour is built from a limited number of transparent washes on white paper. The photos that translate well have the same qualities.
+
+**Clear light.** Sunlight from one side gives every form a light side and a shadow side. That is what makes a rock look solid and a house look like a house. Flat, overcast light gives you colour but little form, and the plan will have many areas of nearly the same value.
+
+**A few large shapes.** A lake, a mountain, a sky, a stretch of moor: big shapes become big, calm washes. A photo full of small, equally important things (a crowded market, a bush in full leaf seen up close) becomes hundreds of small areas, and that is tiring to paint and rarely beautiful.
+
+**A real range from light to dark.** The lightest light in a watercolour is the paper. If the photo has bright highlights and deep shadows, the app can use the full range from white paper to the concentrated darks. A hazy, grey photo stays grey.
+
+**A subject you care about.** You will spend hours with this picture. Choose one that still interests you after the first look.
+
+> **Tip:** Crop before you open the photo. Most photos improve when you take away a third of them: the empty foreground, the distracting edge, the second subject that competes with the first. A tighter picture also gives larger areas on the same sheet of paper.
+
+Photos taken with a phone are perfectly good. Resolution matters less than you might think, because the app works on a reduced copy anyway; the composition and the light matter far more.
+
+## Opening a picture
+
+Press **New picture** in the left-hand column and choose a photo. On a phone or tablet the same button also offers the camera, so you can photograph a subject and plan it on the spot. Any picture format your browser can show will do: JPG, PNG, WebP, HEIC on Apple devices. The same button also opens a saved picture file (`.wcl`).
+
+**Samples** opens five example photos by the author: a town, a lake in the mountains, rooftops at dusk, winter fields and an old town in snow. They are a good way to explore the app before you bring your own photos, and they are the pictures this manual uses.
+
+*Screenshot: The sample photos*
+
+As soon as a picture is open, the app analyses it with the current settings and your palette. On a large photo this takes a moment; the status is shown over the picture.
+
+## The collection
+
+Your picture is not saved automatically. Press **Save** to keep it, and the **Collection** opens with **Save this picture**. Give it a name you will recognise later.
+
+*Screenshot: The collection*
+
+What is saved:
+
+- the photo itself,
+- every setting (method, colours, simplification, details, saturation, contrast and the rest),
+- the palette, the paints this picture is mixed from,
+- every change you made to a colour: new targets, chosen recipes, areas you separated.
+
+When you open a saved picture later, it comes back exactly as you left it, even if you have changed your paint boxes in the meantime. After you change a saved picture, the button reads **Save changes**. In the collection you can also **Rename** and **Delete** a picture.
+
+### The picture file (.wcl)
+
+Every save also downloads the picture as a file, for example `Llyn-Idwal.wcl`. It holds the photo and everything listed above, and is about as large as the photo. Keep it wherever you like: in the folder of your painting, in the cloud, on a stick. Open it with **New picture** and the picture comes back exactly as it was, on this device or another, in any browser. A picture you unlocked stays unlocked in your account; for anybody else the file unlocks nothing.
+
+> **Note:** The collection lives in this browser on this device. It is not part of your account and does not travel to another computer. If you clear your browser's data for this site, the collection is gone. Saving pictures needs Pro.
+
+## Looking closer: details of the picture
+
+Some pictures have one part that deserves more attention than the rest: a face in a landscape, the window of a house, a boat on a lake. The **Detail** tool lets you treat that part as a picture of its own.
+
+Press **Detail** among the tools of the picture and drag a frame over the part you want. The app cuts that part out of the original photo at full resolution, enlarges a small part up to four times, and analyses it with its own areas and its own mixes. Painted in a separate study, or as a guide for the most important passage of the large painting, this gives you far more precise information than the overall plan.
+
+*Screenshot: A detail of the sample photo, analysed as a picture of its own*
+
+Every detail you make stays as a small picture in a strip under the main picture. Click one to go back to it; the small cross on it removes it. **Back** returns to the whole picture. Colour changes you make in the whole picture and in each detail are kept while you switch between them.
+
+> **Note:** Details are a Pro feature. They are not yet saved with a picture in the collection: when you open a saved picture, make the details again.
+
+**Fit** fits the picture to the window again after you have zoomed or moved it.
+
+## Exporting a picture
+
+**Export as JPG** saves the picture exactly as it is shown: in the current view, with or without outlines and numbers, at the size it is drawn. Use it to keep a record of a plan, to look at it on another device, or to send it to someone. For a plan to paint from, [Print / PDF](https://watercolourlove.de/manual/printing.html) is usually better, because it includes the recipes.
+
+## On a phone, and when you need help
+
+On a phone the picture comes first. The panels start folded, and the buttons of the left-hand column sit behind the **Menu** button at the top left. Open it to reach **New picture**, the samples, saving and printing. The app works on a phone, but planning is far more comfortable on a tablet or a computer.
+
+*Screenshot: The app on a phone*
+
+Most buttons show only an icon. With a mouse, hover over one to see its name. On a touch screen, or whenever you want to see all of them at once, press **Help** at the bottom of the right-hand column: every button shows its label until you press **Help** again.
+
+*Screenshot: All labels shown with Help*
+
+---
+
+<!-- https://watercolourlove.de/manual/paint-box.html -->
+
+# Paint box and palette
+
+## Palette and paint boxes
+
+Two ideas run through this chapter, and it helps to keep them apart.
+
+A **paint box** is a set of paints you own, the way they sit in a real box or drawer: your pans, your tubes, the little travel box you take outdoors. You can have as many paint boxes as you like.
+
+The **palette** is the set of paints one picture is mixed from. It is chosen from your paint boxes, and it belongs to the picture: when you save a picture, its palette is saved with it, and when you open it again, the palette comes back. Another picture can have a completely different palette.
+
+Open the paint box with **Paint box** in the right-hand column or at the top of the colour list.
+
+*Screenshot: The paint box: the palette at the top, the paint boxes below*
+
+At the top is the **Palette**. Below it are your paint boxes. At the start these are the Schmincke Horadam pans and tubes of the stock, a travel box, and one box for every further series you add. Click a chip in a box to put the paint into the palette; click it in the palette to take it out again.
+
+## Reading a chip
+
+Every paint is a chip in its own colour.
+
+- The **number** is the maker's number, the one printed on the pan or tube.
+- The **name** follows it, in the language of the app.
+- **P** and **T** in the corner of a chip in the palette say whether you own the paint as a pan, as a tube, or both (**P/T**). Pan and tube of the same paint are the same colour; the mark only helps you find it on your desk.
+- In the palette, the names of the paints that the current mixes actually use are printed in bold. Paints without bold names are selected but not needed for this picture.
+
+Hover over a chip to see the maker, the series and the paint's name in the other language.
+
+## Auto: let the app choose
+
+Choosing the right five to twelve paints for a picture is a skill of its own. **Auto**, the first button at the top of the paint box, does it for you: the app looks at the colours of the picture and picks a small set of paints that can mix all of them well, from the paint boxes you allow.
+
+Every paint box has a tick **Use for Auto**. Untick it for a box that should not be part of the proposal, for example the travel box when you paint at home, or an expensive tube you want to save. Auto is on at the start and switches off as soon as you put a paint into the palette or take one out by hand; press **Auto** again to get a fresh proposal.
+
+Next to it, **Revert** goes back to the standard selection, and **Clear** empties the palette so you can build it up yourself.
+
+> **Tip:** Auto is an excellent teacher. Let it choose, look at which paints it picked and why (the colour list shows which mixes use them), then change one paint and compare. You will learn a lot about your own box this way.
+
+## How many paints make a good palette
+
+More paints do not make better pictures. Every additional paint is another option for every mix, so the app finds closer matches, but on paper the picture loses its unity. Painters have long known that a picture mixed from a few paints holds together, because every colour in it is related to every other.
+
+A good starting point is a warm and a cool version of each primary, plus one or two earths:
+
+- a warm and a cool yellow,
+- a warm and a cool red,
+- a warm and a cool blue,
+- a burnt or raw sienna, perhaps a dark such as a neutral tint or sepia.
+
+That is six to eight paints, and it mixes almost everything. Add a paint only when the picture asks for a colour these cannot reach, such as a clear turquoise or an intense violet.
+
+> **Note:** A free account mixes from the **Starter box**: twelve colours as a cheap student set has them (two yellows, two reds, two blues, a violet, a green, three earths and black). You can choose among them, but not add your own paints. Your own paints and paint boxes come with a picture you unlocked, or with Pro; see [Account, Pro and your data](https://watercolourlove.de/manual/account.html).
+
+## Adding paints
+
+At the end of every paint box is an empty place with a **+**. Click it to open **Add colour** for that box.
+
+*Screenshot: Adding colours to a box*
+
+The lower half, **Library**, lists the colours you can add, one section per series. For everybody, the paints of the stock and **Common colours**: 40 colours that most makers have, under their usual name and pigment (C01 Lemon Yellow to C40 Neutral Tint), each as one maker's chart shows it. With Pro, also the colour charts of four makers:
+
+- **Schmincke Horadam**,
+- **Winsor & Newton Professional** (116 colours),
+- **Michael Harding** (136 colours),
+- **Sennelier L'Aquarelle** (98 colours).
+
+To find a colour:
+
+- The buttons with the series names show or hide their sections. A dark button is shown.
+- Type part of the name or the number into the search field: "ultramarin", "494" or "Horadam 494" all work, and so do pigment names such as "PB29".
+- The colour squares next to it show only reds, oranges, yellows, greens, turquoises, blues, violets, browns, or greys and blacks. Click the square again to see every hue.
+- The button with the eraser at the top empties the search and the filters.
+
+Click a colour and it joins the box with its name and its reference colour. A colour that is in the box already is ghosted; click it again to take it out. Add as many as you like, then close the dialog. A colour with a dashed outline has no reliable reference colour on its maker's chart: clicking it fills in the form above, where you set the colour yourself.
+
+### A colour of your own
+
+For any other paint, use **Own colour** at the top. You enter:
+
+- the **colour**, in the square on the left: the reference colour of the paint,
+- the **number**,
+- the **series**, as it is written on the tube, for example "Daniel Smith Extra Fine". If it is a series with a colour chart in the app, entering a number fills in name and colour for you,
+- the **name**,
+- the **form**: **Pan**, **Tube**, **Liquid** or **Other**.
+
+Then press **Okay**: the paint joins the box and the dialog closes.
+
+The reference colour matters more than anything else on this form. Pick the colour of the paint at its **strongest wash**: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube: paint in the pan is darker and more saturated than any wash you will lay with it. The app treats this colour as the darkest the paint ever gets and makes everything lighter from it with water, so a colour that is too light makes every recipe with this paint too cautious, and one that is too dark makes them too strong. The best source is your own swatch, painted on your paper and photographed or scanned in daylight. The chapter [Calibrating your paints](https://watercolourlove.de/manual/calibrating.html) shows how to make one.
+
+Every colour you enter yourself is also listed under **Your own paints** at the bottom of the paint box. There you can edit it, or delete it: press the delete button twice, so that nothing goes by accident.
+
+## Managing paint boxes
+
+Under each paint box are its actions:
+
+- **Rename** gives it a new name.
+- **Remove colours** lets you click the colours that should leave the box; click **Done** when you have finished.
+- **Export** saves the box as a file, to keep as a backup or to give to a friend who paints with the same set.
+- **Delete box** removes the box. At least one box always stays.
+
+Between the palette and the boxes, **New paint box** starts an empty box and **Import paint box** reads one that was exported before. More than one paint box needs Pro.
+
+## When the mixes are updated
+
+Changes in the paint box do not reach the picture while you are still choosing. When you close the paint box, the app works out all mixes and recipes again with the new palette. **Update mixes**, at the top of the paint box, does the same without closing it, so you can see the effect of a change at once.
+
+---
+
+<!-- https://watercolourlove.de/manual/colour-areas.html -->
+
+# Colour areas
+
+Open **Settings** in the right-hand column. Everything in this chapter is set there, apart from the views at the end, which sit among the tools of the picture. When you let go of a slider, the app analyses the picture again.
+
+*Screenshot: The settings*
+
+1. The method: **Mix** (this chapter) or **Layer** (see [Layer mode](https://watercolourlove.de/manual/layer-mode.html)).
+2. The areas: **Organic** or **Geometric**.
+3. **Simplify areas**: how large and calm the shapes are.
+4. **Colours**: the number of mixes.
+5. **Details**: whether the mixes go to fine steps across the picture or to small areas of another hue.
+6. **Max. paints**: how many paints one mix may contain.
+
+The button with the half-filled circle beside the areas switches to [Monochrome](https://watercolourlove.de/manual/values.html#monochrome-one-temperature-every-value), a study in light and dark painted with your paints (Pro). For light and shadow alone, use the **Blocking** view.
+
+## Colours: how many mixes
+
+**Colours** is the number of mixes on your palette, from 2 to 32. It is the most important decision about the work a picture takes, because every mix is a puddle you prepare, test and keep wet.
+
+The number is not the number of colours on the paper. Every mix is painted at up to five strengths of water, its washes, so a picture with 20 mixes in this sample shows 52 different colours. Colours that differ only in how light or dark they are share one mix; colours that differ in hue get their own.
+
+*Screenshot: The same photo with 6 mixes*
+
+Six mixes give a bold, poster-like picture that you can paint in an afternoon. Twelve to twenty is the range for most paintings. Above twenty-four you are painting very precisely, and the gain is usually smaller than the extra work.
+
+## Simplify areas
+
+The camera records every blade of grass. A painter does not. **Simplify areas** decides how much of the photo's detail becomes shapes on your paper.
+
+At **0**, where every picture opens, the areas follow the photo closely but leave out the noise: single specks are absorbed into their neighbours, and soft gradients become a few clear steps. Each step up merges more small shapes into larger ones and rounds their outlines, up to **12**, where only the big masses remain.
+
+*Screenshot: Simplify areas at its finest: the areas follow the photo*
+
+*Screenshot: Simplify areas at 7: the same mixes in large, calm shapes*
+
+With Pro the slider goes below 0, down to **-2**. There the app takes back step by step what calms the areas, until they follow the photo almost pixel by pixel. That is useful for a detailed study, for a [detail of the picture](https://watercolourlove.de/manual/pictures.html#looking-closer-details-of-the-picture), or simply to see how much is really there. For painting, most people end up between 3 and 8.
+
+> **Tip:** Simplify does not change the number of mixes, only the shapes. If a picture feels busy, raise **Simplify areas** first; if it feels flat or too uniform, raise **Colours**.
+
+## Details: which colours get their own mix
+
+When the photo has more colours than you asked for, some of them have to share a mix. **Details** decides which.
+
+- **High (towards 10)** keeps the picture as a whole as close to the photo as possible. The large areas, a sky, a wall, a street, get the finest steps, and a small area of another hue may be painted with the nearest large mix.
+- **Low (towards 0)** keeps small areas of a distinct hue in a mix of their own: the red roof in a green valley, the lips in a portrait, a single yellow boat. In exchange, similar large colours share mixes more often, and a sky may become one flat colour.
+
+The default of 5 is a balance. Lower it for pictures that live from a small accent; raise it for quiet landscapes where the large colour fields matter most.
+
+## Max. paints
+
+**Max. paints** limits every mix to one, two or three paints. Three gives the closest matches. Two gives cleaner, brighter mixes that are easier to repeat. One means every colour is a single paint at some strength of water, a strict and beautiful exercise.
+
+Three paints in one mix are perfectly normal in watercolour, but every extra paint dulls a mix a little. If your colours on paper look muddier than on screen, try two.
+
+## Saturation and contrast
+
+These two sliders change the photo **before** it is analysed. They do not change your paints.
+
+**Saturation** starts at **200%**. That may look excessive, but it is deliberate: photos, especially from phones, are often dull, and painters exaggerate colour anyway. A doubled saturation brings out the hues that are really there, the violet in a shadow, the warmth in a stone, so that the mixes describe them. Lower it for a quieter, more muted picture; at 0% the photo is grey.
+
+**Contrast** starts at **100%** and goes from 50% to 200%. Raise it when a hazy photo gives too few clear darks, lower it when a harsh midday photo makes the shadows too heavy.
+
+Double-click a slider to set it back to 100%.
+
+## Organic or geometric areas
+
+**Organic** areas follow the outlines in the photo. They look like the photo, simplified.
+
+**Geometric** turns every area into a polygon with a few straight edges, laid over each other from large to small. It works in both methods and gives a picture with a strong graphic character, close to a hard-edged or cubist style. It is also quick to draw with a ruler. **Simplify areas** makes the edges longer and the shapes fewer.
+
+*Screenshot: The sample photo with geometric areas*
+
+## The views
+
+The tools of the picture sit above it, with **Settings** on their left. On a phone the tools are at the bottom and **Settings** at the top.
+
+*Screenshot: The tools of the picture*
+
+1. **Settings** opens and closes the card with the settings.
+2. **Detail** lets you look at a part of the picture on its own (see [Pictures](https://watercolourlove.de/manual/pictures.html#looking-closer-details-of-the-picture)).
+3. **Mixed paint**: every area in the colour your paints actually reach. This is the view to paint from.
+4. **Photo colour**: every area in the colour of the photo. Compare it with **Mixed paint** to see where your paints fall short.
+5. **Photo**: the original, with saturation and contrast applied.
+6. **Blocking**: light and shadow in large masses. See [Values](https://watercolourlove.de/manual/values.html#blocking-light-and-shadow-first).
+7. **Grid**: square cells over the picture, in white, grey or black. See [Printing](https://watercolourlove.de/manual/printing.html#the-grid).
+8. **Outlines** on or off.
+9. **Numbers**: each click steps on from numbers to numbers on a backdrop to no numbers. On a backdrop every number sits on a small square, white with a dark number on dark areas and dark with a white number on light ones, so it stays readable on any colour.
+
+Once you zoom into the picture, **Fit** appears at the start of the tools; it fits the picture to the window again.
+
+*Screenshot: Photo colour: what the photo asks for*
+
+*Screenshot: Photo: the original*
+
+With outlines and numbers off, **Mixed paint** shows the picture as it might look painted, a good test of whether the plan works as a picture.
+
+*Screenshot: Mixed paint without outlines and numbers*
+
+**Number size** at the end of the settings makes the numbers **Large**, 1.4 times the **Normal** size, for a picture seen from further away or printed small.
+
+*Screenshot: Large numbers on a backdrop*
+
+## Settings for typical subjects
+
+These are starting points, not rules.
+
+| Subject | Colours | Simplify areas | Details | Max. paints |
+|---|---|---|---|---|
+| Landscape, large shapes | 12 to 20 | 4 to 8 | 5 to 7 | 2 or 3 |
+| Portrait | 16 to 24 | 2 to 5 | 2 to 4 | 2 or 3 |
+| Architecture, streets | 14 to 20 | 3 to 6, or **Geometric** | 5 | 2 |
+| Flowers, still life | 10 to 16 | 3 to 6 | 2 to 4 | 2 |
+| Quick sketch, plein air | 6 to 10 | 7 to 10 | 7 | 2 |
+
+For portraits, the small features (eyes, mouth, the shadow under the nose) carry the likeness, so keep **Details** and **Simplify areas** low, or make a [detail](https://watercolourlove.de/manual/pictures.html#looking-closer-details-of-the-picture) of the face. For landscapes, the opposite usually works: few, large, calm areas, and the small accents painted freely at the end.
+
+---
+
+<!-- https://watercolourlove.de/manual/mixes.html -->
+
+# Mixes, washes and recipes
+
+## One puddle, several washes
+
+Watercolour gets lighter with water, not with white. A colour in the photo and a paler version of it are, for a watercolourist, the same mixture of paints with more or less water. Watercolourlove plans the picture the same way.
+
+A **mix** is a combination of paints in a fixed ratio: one puddle on the palette. A **wash** is that mix at one water level. The app knows five:
+
+| Letter | Water level | At the desk |
+| --- | --- | --- |
+| W | very watery | tinted water, the paper shines through almost untouched |
+| L | light | a pale, clear wash |
+| M | medium | the colour as you would expect it |
+| R | rich | strong, still flowing easily |
+| C | concentrated | as much paint as the brush will carry, hardly any water |
+
+Every area on the picture carries a label made of both: **6L** is mix 6 as a light wash, **6R** the same mix as a rich wash. You mix 6 once, take some of it for the L areas, add paint for the R areas, and never have to match a colour twice.
+
+That is why **Colours** in the settings counts mixes, not colours. With the sample photo Llyn Idwal and Colours at 20, the list says **52 in 20 mixes**: fifty-two colours on the paper, from twenty puddles on the palette.
+
+> **Note:** No paint is ever used stronger than its own swatch. Water only makes a paint lighter; a colour darker than any single paint can be needs a second paint in the mix. That is how real paint behaves, and it is why some dark mixes contain three paints.
+
+## The colour list
+
+Press **Colours** on the right to open the list. It shows one block per mix, from the largest share of the picture to the smallest.
+
+*Screenshot: The colour list of Llyn Idwal*
+
+1. **52 in 20 mixes:** how many colours the picture has, and how many puddles they come from.
+2. **The key** to the water levels, W to C, as they appear on the picture and in the bars.
+3. **One mix:** its number, its base colour, the paints by number and name, how many washes it has and how much of the picture it covers. Below, two bars: the paints in the proportions of the recipe (the numbers are parts), and the washes of this mix side by side, from watery to concentrated, each in its own colour.
+
+Read the first bar as the recipe at a glance: a long blue segment marked 1.5 next to a short brown one marked 1 means one and a half parts of the blue to one part of the brown. The second bar tells you how far the puddle will travel: a mix with all five letters is painted from a whisper of colour to its full strength.
+
+### Showing one mix on its own
+
+Click a mix in the list and the rest of the picture goes blank. Only the areas of this mix stay, in all their washes, so you see exactly where the puddle goes before you mix it.
+
+*Screenshot: Mix 2 on its own: every area painted from this puddle*
+
+This is the view to paint from. Select a mix, paint every area that carries its number, from the lightest letter to the darkest, then move on to the next mix. Click the blank part of the picture to bring the whole picture back.
+
+## Looking up a colour on the picture
+
+Tap or click an area on the picture. A card opens over it with what you need at the desk.
+
+*Screenshot: The card of a tapped area*
+
+1. **The card** names the colour (for example **Colour 1L**), shows how much of the picture it covers, the water level and the recommended recipe with its paints and the ratio as a bar. The tapped spot blinks on the picture so you know which area you are looking at. Tap the same area again or close the card to put it away.
+
+The card leaves the picture as it is. That is deliberate: a colour is easier to judge among its neighbours than alone. On a computer the same recipe also appears next to the pointer as you move it over the picture.
+
+## The full breakdown
+
+**Full breakdown** on the card opens everything the app knows about this colour.
+
+*Screenshot: The full breakdown of one colour*
+
+### Target and your mix
+
+On the left is the **Target**, the colour the photo asks for. On the right is **Your mix**, the colour the chosen recipe gives on white paper. When the two look alike, the recipe is good. When they differ, the difference is real: your paints cannot reach the target, and the next sections show what to do about it.
+
+### Changing the target
+
+You are the painter; the photo is only a suggestion. **Change colour** opens a colour picker. Choose a warmer green, a cooler shadow or something else entirely, and the recipes are worked out again for the new target. **Reset to photo** brings back the colour of the photo.
+
+A target you change applies to every area of this colour. If only the clicked area should be different, press **Edit only the clicked area** first. The area gets a colour of its own, which you can then change without touching the others. The button appears only when the colour covers more than one area.
+
+### The recipes
+
+Below are up to five **Recipes**, the best first. Each shows the water level and the match, then the paints with their parts, and the ratio as a bar. Under the heading the app tells you which other labels share the puddle, for example "Same mix as 1W, only the amount of water differs".
+
+Click a recipe to choose it. The picture, the colour list and the printed sheet all follow your choice.
+
+## Reading a recipe
+
+Take a recipe line such as **1.5 x P 645** and **1 x T 515**:
+
+- **1.5 x** and **1 x** are **parts**. Count them in brush loads or in drops from a pipette: one and a half loads of the first paint to one of the second. Only the ratio matters, so 3 to 2 is the same mix.
+- **P** means the paint is in your box as a pan, **T** as a tube, **P/T** that you have both.
+- **645** and **515** are the paint numbers of the manufacturer, followed by the name. On the Schmincke Horadam chart 645 is Caput mortuum and 515 Olive green.
+- The water level (light, medium, rich ...) tells you how much water goes into the puddle once the paints are together.
+
+> **Tip:** Put the paints into the well first and stir them together before you add the water. A ratio is much easier to judge in a small, strong puddle than in a big pale one.
+
+### Match quality
+
+Every recipe carries a number and a word, for example **1.2 · excellent**. The number is the distance between target and mix, measured the way the eye perceives colour (in OKLab, multiplied by 100). Roughly, 1 is the smallest difference a trained eye notices; white against black is about 100.
+
+| Number | Rating | What it means |
+| --- | --- | --- |
+| below 2 | excellent | indistinguishable at a normal viewing distance |
+| below 5 | good | close; side by side you may see it |
+| below 10 | fair | the same family, visibly different |
+| 10 and above | rough | your paints do not reach this colour |
+
+### When a match is only fair or rough
+
+A fair or rough match is information, not a fault. It tells you that the paints in your palette cannot make this colour. You have four ways forward:
+
+1. **Look at another recipe.** The second or third may use different paints that suit you better, at a small cost in accuracy.
+2. **Allow more paints per mix.** **Max. paints** in the settings goes up to three. A third paint often rescues a dark or a muted green.
+3. **Add a paint to the palette.** Open the [paint box](https://watercolourlove.de/manual/paint-box.html) and add the paint the colour seems to need: a cooler blue, a real violet, an earth. **Auto** can also pick a set for this picture.
+4. **Change the target.** Sometimes the honest answer is to paint the colour your paints make well. Compare the views **Mixed paint** and **Photo colour** to see where the picture would change.
+
+## How the app finds a recipe
+
+Watercolour is a transparent layer on white paper. Light passes through the paint, bounces off the paper and passes through the paint again; each pigment takes away part of the light. The app treats every paint the same way, as a coloured filter, described by the colour of one swatch on white paper.
+
+For a target colour it tries every paint in your palette on its own, every pair and every group of three (up to your **Max. paints**), and for each combination finds the amounts that come closest. The best candidates are then refined against how the eye sees colour, not how a screen mixes light. A limit for how dark a layer of paint can get keeps the recipes honest: three bright paints do not add up to black.
+
+The result is an estimate from one swatch per paint. It is usually close; your own test strip decides. Chapter [How watercolour works](https://watercolourlove.de/manual/how-watercolour-works.html) explains the model in more depth, and [Calibrating your paints](https://watercolourlove.de/manual/calibrating.html) shows how to make the swatches match your paints exactly.
+
+> **Caution:** Watercolour dries lighter than it looks wet. Always judge a test strip dry, next to the chip on the screen or the printed sheet.
+
+---
+
+<!-- https://watercolourlove.de/manual/layer-mode.html -->
+
+# Layer mode
+
+## Glazing instead of mixing
+
+In mix mode every colour is mixed on the palette and every area is painted once. Layer mode works the other way round, the way many watercolourists build a painting: a few transparent washes, each from a single paint, laid one over the other. A yellow over a blue gives green on the paper; a second coat of the same blue over the first deepens it; an earth over both quietens everything it touches.
+
+Switch the method in the settings from **Mix** to **Layer**. The app then chooses for every area which layers it receives and how many coats of each, so that the finished glaze comes as close to the photo as possible for the work it costs. A coat that would add too little is left out.
+
+*Screenshot: Layer mode with Llyn Idwal: four layers and one accent*
+
+### When to choose layer mode
+
+- **For luminous colour.** Colours mixed on the paper by glazing stay clearer than the same colours mixed in a well, because each layer is a single pigment.
+- **For large, calm pictures.** Landscapes, skies and water suit it well: each wash covers large parts of the paper.
+- **For learning.** You prepare four or five puddles instead of twenty, and you see exactly what each layer contributes.
+
+Mix mode is the better choice for pictures with many distinct, small colours, for opaque or strongly granulating paints, and when you want each area finished in one pass. Chapter [Glazing](https://watercolourlove.de/manual/glazing.html) covers the painting technique itself.
+
+## Base paints and settings
+
+Layer mode paints with a few **base paints**, one layer each, at most six. They are kept apart from the paints selected for mixing: you can have a palette of twenty for mix mode and four base paints for layer mode in the same picture.
+
+The app proposes base paints for the picture (**Auto**). To choose them yourself, open the paint box from the layer list with **Show paint box**. In layer mode its top part is called **Paint box: base paints**; click a chip to add or remove it. When a paint you chose adds too little to this picture, the list says so, for example "Not needed for this picture" or "No layer for ... it adds too little here".
+
+In the settings, layer mode has its own controls:
+
+| Setting | What it decides |
+| --- | --- |
+| **Layers** | How many base paints the app proposes, 2 to 6. With paints chosen by hand it shows how many you chose. |
+| **Accents** | Up to three small, strong touches painted last: first for a colour the washes miss, then for the darks. |
+| **Max. coats** | How often one wash may be painted over itself, 1 to 3. More coats give deeper tones from fewer paints, at the cost of more drying. |
+| **Simplify areas** | Its own value in layer mode. Every layer has to be painted by hand, so calm shapes matter even more than in mix mode. |
+
+## The layer list
+
+In layer mode the button below **Settings** in the right column opens the layers instead of the colours: a card over the picture that you can move by its handle and close again, like the colour list. The **Paint box** button below it opens the paint box. The card shows each layer in painting order, from light to dark, and the accents below it under **Accents, painted last**. When you tap a spot in the picture, the card shows that spot at the top.
+
+Each row gives the paint, how to prepare its wash, and its coats. The wash is written as a ratio and a consistency, for example **1:9 with water, like coffee**: one part paint to nine parts water. The consistencies are the ones painters use:
+
+| Consistency | Water to one part paint | Feel |
+| --- | --- | --- |
+| tea | 20 parts and more | a faint tint, barely coloured |
+| coffee | about 8 to 15 parts | clearly coloured, still very fluid |
+| milk | about 3 to 7 parts | a full wash |
+| cream | 1 to 3 parts | strong, flows slowly |
+| butter | hardly any water | paint as it comes from the tube |
+
+The chip next to the paint shows one stroke of this wash on white paper. Test your puddle against it on a scrap of the same paper before you start.
+
+> **Note:** The ratios assume that the swatch of a paint is about one part paint to one part water. Like every recipe in the app, they are estimates from one swatch. The stroke on your scrap decides.
+
+### Ticking and showing a layer alone
+
+The box in front of a layer switches it on and off in the picture. Untick the yellow and you see what the picture would be without it. The ticks only change what the picture shows; the paints themselves are changed in the paint box.
+
+Click a layer's row and the picture shows that layer alone. The numbers on the picture are now **coats**: paint every numbered area once, let it dry, then paint the areas marked 2 again.
+
+*Screenshot: One layer alone: the numbers are coats*
+
+**All** shows every layer again.
+
+### What a spot receives
+
+Tap a spot on the picture. A card shows **This spot**: the colour of the photo next to the layered colour, how close they are, and **Layers on this spot**, the coats of every layer it gets. Layers that leave it unpainted are named too. From the card you can jump to the step that paints a coat.
+
+## Painting step by step
+
+**Paint step by step** turns the plan into a sequence you can follow at the desk. Every step is one coat of one layer, in the order you paint them.
+
+*Screenshot: Step 3: where to paint the wash*
+
+Each step tells you what to mix, where to paint it and to let it dry completely before the next. Three views show the step:
+
+- **Where to paint:** the paper after this step, with the areas painted now in full colour and the rest faded.
+- **This wash:** only the areas of this step, filled with one stroke of the wash.
+- **So far:** the paper with every layer up to and including this step. This is what your painting should look like now.
+
+**Previous** and **Next** move through the steps. The last step tells you that you are done.
+
+> **Tip:** Keep **So far** on screen while the paper dries. It shows the next stage before you commit to it, and it is the best moment to decide whether the next coat is really needed.
+
+## Printing the layers
+
+**Print / PDF** in layer mode gives the finished picture first, then one sheet per layer: its paint and wash, the areas to paint with their coat numbers, and short instructions such as "Coat 1 on every numbered area" and which numbers get a second coat. Accents get a sheet of their own, to be painted last when everything else is dry. See [Printing](https://watercolourlove.de/manual/printing.html).
+
+*Photo: A layer sheet beside the drying painting*
+
+---
+
+<!-- https://watercolourlove.de/manual/values.html -->
+
+# Values
+
+## Why values come first
+
+Painters say that value does the work and colour gets the credit. A picture with the right lights and darks reads as true even in the wrong colours; a picture with beautiful colours and muddled values falls apart. Squint at a painting you admire and you will see it: a few large shapes of light, middle and dark, clearly separated.
+
+The app has two tools for it. **Blocking** is a view: it shows you the light and the shadow of the photo, nothing else, as you block them in before painting. **Monochrome** is a way of painting: the whole picture in one temperature, every value mixed from your paints.
+
+## Blocking: light and shadow first
+
+Blocking in is the first step of many paintings: before any colour, you put down the large masses of light and dark, flat and without detail. Everything that follows is fitted into them. The app does this for you, in the **Blocking** view, the last button of the views row (a square with a dark mass under a light one).
+
+*Screenshot: Llyn Idwal blocked in: light and shadow*
+
+The picture turns into **paper white** and **a strong dark**, in large shapes, with hard edges between them. The tones are numbered in painting order: **1** is the lightest, the last number the darkest. It works in mix mode and in layer mode.
+
+While Blocking is on, the settings show only what belongs to it; the colour settings come back with the other views.
+
+- **Tones:** **2** is light against shadow (in Japanese painting this is called *notan*). **3** adds a middle tone. More tones turn it back into a value study, so Blocking stops at three.
+- **Light / shadow:** where light ends and shadow begins. Further left, more of the picture counts as light. The app starts where the photo itself divides into light and dark; **Split as the photo divides** goes back there after you have moved it. With three tones there are two sliders, **Light / middle** and **Middle / shadow**.
+- **Forms:** how large the masses are. Left keeps smaller shapes, right joins everything into the largest masses. It starts high on purpose: blocking is about the big forms, not the details.
+- **Opacity:** how strongly the tones cover the photo. At 100 % you see only the tones; lower, the photo shows through, so you can see what each mass stands for.
+- **Contrast:** the same as in the colour settings. More contrast pulls light and dark further apart.
+
+Under the settings, the tones are listed with their share of the picture. Tap one, there or in the picture, to show it on its own:
+
+*Screenshot: Only the lightest tone: the paper to save*
+
+- **The lightest tone** is the paper white you have to save. Paint around it, or mask it before you start.
+- **The middle tone** (with three tones) is one wash over everything but the light.
+- **The darkest tone** is what you paint last.
+
+Tap the same tone again to see all of them.
+
+> **Tip:** Blocking also checks your mixes. In the colour list, every mix shows its tone, and a mix that comes out lighter or darker than the tone of its area says so in red. A wrong hue is forgiven; a wrong value is not.
+
+Blocking is part of a picture you unlocked, or of Pro. See [Account, Pro and your data](https://watercolourlove.de/manual/account.html).
+
+## Monochrome: one temperature, every value
+
+Monochrome belongs to mix mode and is switched on with **Monochrome** in the settings, the button with the half-filled circle next to the area options. Press it again to return to colour. It is part of Pro.
+
+*Screenshot: Llyn Idwal as a value study*
+
+### What Monochrome does
+
+With **Monochrome** on, the app works as follows:
+
+1. **The photo is analysed in grey.** Saturation is ignored; only the lightness of every part of the picture counts. The picture is split into up to 24 values, from the lightest to the darkest.
+2. **Every value is painted with your paints, whatever their hue.** For each value the app looks for the paint or mix of your palette that reaches exactly that lightness with the least change in water. It tries every paint alone, every two paints in the ratios 1:1, 2:1 and 1:2, and, with a small palette, every three in equal parts.
+3. **Colours still counts mixes.** With **Colours** at 4 you get four puddles; each of them paints all the values around its own, with more or less water.
+4. **The water steps are finer.** Five water levels are not enough for a value study, so each level is split into five steps, from W1 to C5. A label like **2L3** means mix 2, light, third step: a little stronger than 2L2.
+
+The match of a recipe in Monochrome is the difference in lightness alone. A blue that is exactly as dark as the grey of the photo is an excellent match, even though the photo was green.
+
+> **Note:** If your paints cannot get as dark as the darkest part of the photo (a yellow on its own, for example), the app spreads the values of the picture over the range your paints can reach: blank paper for the lightest, your darkest mix for the darkest. The picture keeps all its steps instead of ending in one flat dark.
+
+### When to use it
+
+- **Value studies before a painting.** A small monochrome study, twenty minutes, before the colour version. You will know where the lights are before you lose them.
+- **Monochrome and two-colour paintings.** Sepia, indigo, Payne's grey, or a warm and a cool paint together. Monochrome tells you how much water every area needs.
+- **Learning to see.** Switch between **Monochrome** and colour on the same picture. Areas that look very different in colour often share a value, and areas you would have painted alike turn out to be far apart.
+- **Checking a colour plan.** If the colour version looks flat, compare it with the value study. Most of the time the values, not the colours, need attention.
+
+### An exercise with one paint
+
+This exercise takes about an hour and teaches more about watercolour than many afternoons of colour.
+
+1. Open a photo with a clear light, for example the sample **Llyn Idwal**.
+2. Open the paint box and put a single dark paint in the palette: Payne's grey bluish (787), Sepia brown (663) or Indigo (485).
+3. Switch on **Monochrome**, set **Colours** to 1 and **Simplify areas** to a value where the shapes are large and calm.
+4. Read the labels: with one paint, every label is the same mix at a different water step. Mix a generous puddle at the strongest level the picture needs and keep a jar of clean water beside it.
+5. Paint from the lightest labels to the darkest, adding paint to the puddle as you go, and leave the areas without a label as white paper.
+
+*Photo: The one-paint study next to the screen*
+
+Then try it with two paints, a warm and a cool one, for example Sepia brown and Indigo, with **Colours** at 3. The app chooses which of the two, or which mix of them, paints each value, and you get a picture in two temperatures that is still a value study.
+
+> **Tip:** Squint at your study and at the screen in turn. When both blur into the same big shapes, the study has done its job.
+
+## Values and the rest of the app
+
+Monochrome works with everything else in mix mode: the colour list, the card of a tapped area, the full breakdown and printing. It does not exist in layer mode, where the layers are fitted to colour. Chapter [Values and simplifying](https://watercolourlove.de/manual/values-and-simplifying.html) shows how to read the values of a photo before you even open the app.
+
+---
+
+<!-- https://watercolourlove.de/manual/printing.html -->
+
+# Printing and exporting
+
+## The printed sheet
+
+**Print / PDF** in the column on the left prints the picture on a page of its own, followed by its legend: every mix with its paints, so that you can paint without the screen.
+
+*Screenshot: The legend: every mix as a card with its washes and paints, four to a row*
+
+The sheet has two parts:
+
+- **The picture**, on the first page, exactly as it is shown at the moment of printing: the view you chose, with or without outlines and numbers. For the desk, print it in **Mixed paint** with outlines and numbers on, and with the grid if you copy the drawing square by square (see below).
+- **The legend**, from the second page, headed with the name of the picture. One card per mix, four to a row, so that about twenty mixes fit on a page. At the top of each card, always on the left, is the mix at full strength, its C wash, with its number and its share of the picture; next to it its other washes, darkest first, with their letters and shares. Below it is the recipe as a bar, then the paints, one under the other, with their parts, pan or tube and number. Mixes that are left as white paper say so.
+
+Choose **Save as PDF** as the printer in the print dialog of your browser to keep the sheet as a file, for example on a tablet next to the painting.
+
+> **Tip:** Tick off each mix on the printed legend once its areas are painted. It is the simplest way not to lose your place in a picture with twenty mixes.
+
+### In layer mode
+
+In layer mode the sheet is the finished picture followed by one page per layer: the paint and how to prepare its wash, the areas to paint with their coat numbers, and what to do ("Coat 1 on every numbered area", then which numbers get a second coat). The accents follow last. Chapter [Layer mode](https://watercolourlove.de/manual/layer-mode.html) explains the coats.
+
+## The grid
+
+**Grid** in the tools above the picture, left of **Outlines**, lays a grid of square cells over the picture. Each click steps on from no grid to white, grey and black lines, so that the grid stays visible on light and on dark pictures.
+
+*Screenshot: The grid: eight columns of square cells over the picture*
+
+**Grid columns** in the settings decides how many cells fit across the picture, from 2 to 30. The rows have the same height as the columns are wide, so every cell is square; the last row is cut off where the picture ends.
+
+The grid is drawn in every view and goes onto the printed sheet and into the JPG. Draw the same number of columns on your paper, with cells as square as on the screen, and the picture is ready to copy cell by cell (see the next section).
+
+## Transferring the drawing
+
+If you would rather draw on your own paper, you have several options, from fastest to most personal:
+
+- **Light box or window.** Tape the printed picture, outlines on, behind the watercolour paper against a light box or a sunny window and trace the outlines with a hard, light pencil (2H or H).
+- **Graphite transfer.** Shade the back of the printout with a soft pencil (4B), lay it on the paper, and trace the lines with a ballpoint. Use as little pressure as you can; dents in the paper catch paint.
+- **Grid by eye.** Turn on the grid, print the picture with **Mixed paint** and draw the same grid of light lines on the paper. Copy one square at a time. It is slower and trains your eye.
+
+Write the labels (6L, 3R) small and faint inside the areas. A light wash will still let you read them; a dark wash covers them. You do not need every outline. Leave out what you would rather paint freely, and the painting will be yours, not a copy.
+
+*Photo: Tracing the drawing at the window*
+
+## Paper size and scale
+
+The browser's print dialog decides the paper. The picture has the first page to itself and is fitted to it. On an A4 or Letter page a landscape photo comes out at about 19 by 13 cm, a portrait photo at up to about 26 cm high. For a larger painting:
+
+- choose a larger paper size in the print dialog if your printer has it,
+- or save as PDF and print the picture at a copy shop,
+- or use the grid method to scale it up by hand.
+
+Keep the ratio of the photo. A painting cropped differently from the plan will need its own plan: crop the photo first, then open it in the app.
+
+## Export as JPG
+
+**Export as JPG** saves the picture as it is drawn on the screen: the view, the outlines, the numbers and, in layer mode, the layers that are shown. It has the size of the picture on the screen. Use it to send the plan to your tablet, to compare stages of a series, or to keep a record of your choices next to the photo.
+
+> **Note:** Printing, saving as PDF and exporting as JPG are part of Pro in the web app. See [Account, Pro and your data](https://watercolourlove.de/manual/account.html).
+
+---
+
+<!-- https://watercolourlove.de/manual/account.html -->
+
+# Account, Pro and your data
+
+## Signing in
+
+The web app asks you to sign in before it opens. There is no password: you enter your e-mail address and press **Send me a sign-in link**. A mail arrives with a link; open it on the same device and in the same browser, within 15 minutes, and you are signed in. If the mail does not come, look in your spam folder or press **Use different address** to start again.
+
+New here? Choose **Sign up** under the form. Signing up works the same way, with one extra field: **Invitation code (optional)**. Without a code you get a free account; with a valid code your account starts with a lifetime licence. Each code works once.
+
+### Two statements before you start
+
+The first time you sign in, the app asks for two ticks before it opens:
+
+1. that you have read and agree to the privacy policy and the terms,
+2. that you understand where your work is stored: in this browser on this device, not in the cloud and not in your account.
+
+The second one matters, and the rest of this chapter explains why. Press **Continue** and the app opens.
+
+You stay signed in on this device for 60 days. **Sign out** in the account dialog ends it.
+
+## Free, a picture, or Pro
+
+The free version analyses your photos and gives you every recipe, mixed from the **Starter box**: twelve colours as a cheap student set has them. It shows you how Watercolourlove works with your own photos. To paint a picture with **your own paints**, unlock that picture with a credit, or go Pro for every picture.
+
+| | Free | One picture (a credit) | Pro |
+| --- | --- | --- | --- |
+| Analyse photos, mix and layer mode, colour list, recipes | yes | yes | yes |
+| Paints to mix from | the Starter box | your own paints, in the boxes you have | your own paints, in as many boxes as you like |
+| Blocking, close-ups, Simplify below 0 | | yes | yes |
+| Save, Print / PDF, Export as JPG | | yes | yes |
+| More paint boxes, brand colour charts, importing a paint box | | | yes |
+| Monochrome | | | yes |
+
+The samples are open to everybody with everything a picture can have, so you can try each feature on them first.
+
+When you reach a limit, the app tells you what would allow it and offers what fits: **Unlock this picture**, packs of pictures, or the plans. **Get pro** among the tools of the picture opens them at any time; beside it you see how many pictures you can still unlock.
+
+### Pictures and credits
+
+A credit unlocks **one picture for good**. Every account starts with one; more come in packs. They do not expire, and they stay when a subscription ends.
+
+- **Unlock this picture** asks once more and shows how many you have left. Then the picture is yours: open it, change it, print it again, as often as you like. Close-ups and changed settings stay part of it.
+- **The same photo is the same picture.** Opening the same file again, or the saved picture in the collection, costs nothing. Another photo is another picture. Pictures you unlocked carry the mark **Unlocked** in the collection.
+- With a subscription or a lifetime licence you never spend a credit.
+
+> **Note:** The photo still never leaves your device. To know a picture again, the app works out a fingerprint of the photo's file and sends only a key made from it and your account. Nobody can rebuild the photo from it, and the same photo in another account gives another key.
+
+### Plans
+
+| Plan | |
+| --- | --- |
+| **Monthly** | renews every month, cancel at any time |
+| **Yearly** | renews every year, cancel at any time |
+| **Lifetime licence** | one payment, no renewal |
+
+The dialog shows the current prices. They include VAT. Payment is handled by Stripe; the app never sees your card. "Lifetime" means the lifetime of the product, Watercolourlove. The terms explain this in full.
+
+What you paid for pictures in the last 30 days comes off your first plan: the dialog says how much.
+
+With a subscription you can **Switch to a lifetime licence** at any time. A **Voucher for a lifetime licence** is redeemed in the plan dialog with **Redeem**; a voucher only works with the e-mail address it was made out to.
+
+### The account dialog
+
+The person icon in the left column opens **Account**. It shows your address, your plan and how many pictures you can still unlock, and offers:
+
+- **Manage subscription:** change or cancel a subscription, update the payment method.
+- **Invoices:** your invoices, to view and download.
+- **Download my data:** everything stored about your account, as a file.
+- **Sign out.**
+- **Delete account:** see below.
+
+## Preferences
+
+**Language** and **Appearance** are in the same dialog (without an account it is called **Preferences**).
+
+*Screenshot: Language and appearance*
+
+- **Language:** English or German. All texts change at once, and the paints appear under their names in that language.
+- **Appearance:** **Light**, **Dark** or **Automatic**, which follows the setting of your device. Dark is kind to the eyes in the evening; for judging colour, light is the safer choice, because the paper you paint on is white.
+
+The preferences are stored in this browser, like everything you make in the app.
+
+## Where your work lives
+
+Watercolourlove does its work entirely on your device. Your photo is never uploaded: the analysis, the mixing and the layers are worked out in your browser. What you keep, you keep there too:
+
+- the pictures in your collection, with their settings and colour changes,
+- your paint boxes and the colours of your own,
+- your preferences and the arrangement of the panels.
+
+None of this is part of your account. That has four consequences you should know:
+
+1. **Another device is a fresh start.** Sign in on your tablet and you have your plan there, but not your collection or your paint boxes.
+2. **Clearing the browser's data deletes your work.** "Clear browsing data", "Delete cookies and site data" or a private window that you close all remove it, and nobody can bring it back.
+3. **The browser can clear up on its own.** Safari deletes the data of a website you have not opened for seven days, unless you added it to your home screen. Any browser may remove stored data when the device is nearly full. So open the app regularly, or back up what you want to keep.
+4. **Your work is private by design.** Nobody, including us, can see your photos or your paints.
+
+What you can back up:
+
+- **Paint boxes** as a file: **Export** under each box in the paint box, back with **Import paint box**, on this device or another.
+- **The result of a picture** as a printed sheet or PDF with every mix ([Printing](https://watercolourlove.de/manual/printing.html)) or as a JPG ([Exporting a picture](https://watercolourlove.de/manual/pictures.html#exporting-a-picture)).
+- **A picture with all its settings and colour changes** as a picture file (`.wcl`): every **Save** downloads it, **New picture** opens it again, on this device or another. See [The picture file](https://watercolourlove.de/manual/pictures.html#the-picture-file-wcl).
+
+> **Tip:** Back up your paint boxes. In the paint box, **Export** under each box saves it as a file; **Import paint box** brings it back, on this device or another. A paint box with your own calibrated colours is worth keeping. See [Paint box and palette](https://watercolourlove.de/manual/paint-box.html).
+
+### Deleting your account
+
+**Delete account** removes your account for good. A subscription ends at once; a lifetime licence is lost. What is saved in this browser stays: the app asks you to confirm, and your pictures and paint boxes are still there afterwards, until you clear them yourself.
+
+## Cookies and statistics
+
+The app needs two small cookies to keep you signed in. With your permission it also counts visits with Google Analytics, to learn which parts of the app are used. A banner asks the first time you open the app:
+
+- **Accept all** allows the statistics,
+- **Reject all** allows only what is needed to sign in,
+- **Settings** shows each category, with **Save choice**.
+
+Without your consent, nothing is requested from Google. You can change your choice at any time with **Cookies** at the bottom of the page; the app asks again after 13 months. Your photos are never part of any statistics.
+
+## The apps for iPhone, iPad and Mac
+
+Watercolourlove will also come as an app for iPhone, iPad and Mac, with the same analysis, recipes and layers. The apps need no account: everything stays on the device, and a single purchase unlocks the full version, with no subscription. Your work in the browser and in the apps is kept separately; paint boxes can be moved between them as exported files.
+
+---
+
+<!-- https://watercolourlove.de/manual/materials.html -->
+
+# Materials
+
+## Paper
+
+Paper is the one material where saving money costs you the most. In watercolour the paper is not a surface you cover: it is the white of the picture, the light behind every wash, and the thing that decides how the water moves.
+
+### Cotton or cellulose
+
+**Cotton paper** (often sold as 100 % cotton or "rag") takes water deep into its fibres and gives it back slowly. A wash stays open long enough to even out, you can lay a second wash over a dry first one without lifting it, and the surface survives scrubbing and lifting. **Cellulose paper** (wood pulp) holds the water near the surface: washes dry fast and unevenly, edges go hard where you did not want them, and the surface tears when you work it twice.
+
+For practice sheets and colour swatches cellulose is fine. For anything you plan with the app and want to paint properly, use cotton. The recipes and water levels in the app assume a paper that lets a wash settle.
+
+### Weight
+
+Watercolour paper is sold by weight per square metre. **300 g/m²** (140 lb) is the standard: heavy enough to take a wet wash without buckling badly when it is taped down. Lighter paper (200 g/m² and below) cockles into hills and valleys, and the paint runs into the valleys. 640 g/m² hardly moves at all but costs accordingly.
+
+### Surface
+
+| Surface | Also called | What it does |
+| --- | --- | --- |
+| Hot pressed | HP, satin, smooth | Smooth; crisp detail and fine lines, but washes show every stroke and dry quickly |
+| Cold pressed | NOT, fine grain | Medium texture; the all-round surface, forgiving in washes and still fine for detail |
+| Rough | Torchon | Deep texture; granulation and dry-brush sparkle, less suited to small numbered areas |
+
+For the flat, numbered areas of the app, **cold pressed** is the best start: it lets washes settle evenly and still holds an outline.
+
+### Sizing
+
+Watercolour paper is sized: treated with gelatine or a synthetic agent, inside the sheet and on its surface, so that it does not soak up paint like blotting paper. The sizing is why paint stays where you put it. It is also why you should not touch the painting area with your fingers: skin oil breaks the sizing, and a wash later goes patchy exactly where your hand rested.
+
+### Blocks, sheets and taping
+
+A **block** is a stack of sheets glued on all four sides. The paper stays flat while you paint and you cut the top sheet off with a knife when it is dry. Convenient, but the format is fixed.
+
+**Sheets** are cheaper and come in larger formats. Tape them to a board on all four sides with gummed paper tape (stretched paper) or with low-tack masking tape (simply taped). Stretching means wetting the sheet, laying it on the board and taping it with gummed tape while it is wet; it dries drum-tight and stays flat in any wash. For 300 g/m² and the sizes most people paint from the app, taping dry with masking tape is enough.
+
+*Photo: A cotton sheet taped to a board on all four sides, the tape pressed down firmly along every edge*
+
+## Brushes
+
+A watercolour brush has one job: to carry a lot of water and to give it up evenly, from a fine point or a clean edge.
+
+### Shapes
+
+- **Round:** the workhorse. A good round holds a large belly of water and comes back to a sharp point. Large rounds lay washes, small rounds paint the small numbered areas.
+- **Flat:** a straight edge; for even washes over large areas and straight boundaries, for example the geometric areas of the app.
+- **Mop:** a large, soft, round head that holds a great deal of water; for skies and big wet-in-wet areas.
+- **Rigger** (liner): very long, thin hair; for long lines such as branches, masts and wires.
+
+### Natural or synthetic
+
+Natural hair (kolinsky sable, squirrel) holds more water and releases it more evenly; squirrel especially makes superb mops. Modern synthetics come close, keep their point well and are much cheaper. A mixed blend is a good compromise. What matters more than the hair: the brush must come back to a point when you flick the water out, and the belly must hold enough for one area in one go.
+
+### Three brushes to start
+
+1. A **large round** (size 12 to 14, or a mop) for washes.
+2. A **medium round** (size 8) for most areas.
+3. A **small round** (size 2 to 4) for the darks and details painted last.
+
+Sizes are not standardised between makers; compare the width of the head, not the number.
+
+*Photo: The three starting brushes side by side on a white sheet: large round or mop, medium round, small round, each with its point visible*
+
+## Paints
+
+### Artist and student grade
+
+Artist-grade paint contains more pigment and less filler. That is not luxury: with student paint, a wash needs more paint to reach the same strength, mixes go dull sooner, and many colours are mixtures of two or three pigments ("hue" in the name usually means a cheaper substitute). The recipes in the app come from the Schmincke Horadam chart, an artist-grade range; student paint will mix lighter and duller than the app predicts.
+
+### Pans and tubes
+
+**Pans** are dry cakes in small trays: compact, quick to wet, ideal for small areas and travel. **Tubes** are moist paint: you squeeze out what you need, which makes large, strong washes much easier.
+
+The app knows both. A paint you own as a pan is marked **P**, as a tube **T**, as both **P/T**, in the paint box and in every recipe (see [Paint box and palette](https://watercolourlove.de/manual/paint-box.html)). The colour is the same; the difference is how quickly you get to a strong wash.
+
+### Single-pigment paints and pigment codes
+
+Every paint label lists its pigments by Colour Index code: **PB29** is ultramarine blue, **PY150** a nickel azo yellow, **PR101** a red iron oxide, **PBk6** carbon black. A paint with one pigment mixes cleaner than a paint with three, because every pigment you add to a mix takes a little more light away. Two single-pigment paints give you a mix of two pigments; two three-pigment paints give you six, and that is where mud starts.
+
+When you buy, read the pigment codes, not the names. "Sap green" is a different mixture at every maker; PG7 is the same pigment everywhere.
+
+### Lightfastness
+
+Pigments differ in how well they stand light. Makers print a lightfastness rating on the tube or in their chart (stars, or ASTM I to III). For paintings you want to keep, use paints rated highest. Some old favourites (alizarin crimson, PR83) fade noticeably and have modern replacements.
+
+## Palette and water
+
+### The palette
+
+A good palette is white, so that you judge a mix against the same white as the paper, and has **wells** deep enough to hold a puddle for a whole area. Porcelain and enamel do not stain and let water bead evenly; plastic works but stains and makes puddles break up into droplets. Keep enough separate wells to hold every mix of one painting session apart: the app may give you 20 mixes, and two mixes running into each other make a twenty-first you did not plan.
+
+### Two jars of water
+
+One jar to rinse the brush, one that stays clean for mixing and for wetting the paper. Change the rinse water as soon as it is tinted; dirty water greys every light wash.
+
+*Photo: The palette with separate wells, each holding one mix, and two jars of water behind it, one clean, one tinted*
+
+## Everything else
+
+- **Board:** a flat board slightly larger than the paper, light enough to tilt with one hand.
+- **Tape:** low-tack masking tape for dry taping, gummed paper tape for stretching.
+- **Pencil:** HB to 2H for transferring the outlines. Softer leads smear and show through light washes; harder leads score the paper.
+- **Eraser:** a kneaded eraser, to lighten pencil lines before you paint. Erasing after painting damages the surface.
+- **Kitchen paper or a cotton cloth:** to control the water in the brush and to lift paint.
+- **Spray bottle:** a fine mist keeps paint in the wells workable and can re-wet an area.
+- **Hair dryer:** speeds up drying between washes.
+
+> **Caution:** A hair dryer pushes wet paint around and can dry the edge of a wash before its middle. Wait until the shine has gone, hold the dryer at arm's length and keep it moving.
+
+## The light you paint in
+
+Paint in daylight from the side, ideally from a north-facing window (south-facing in the southern hemisphere). Warm lamps make yellows look stronger and blues duller, and you mix to correct for a colour cast that is not on the paper. If you have to paint by lamp, use a daylight lamp with a high colour rendering index (CRI 90 or higher). Compare the dry paint with the printed sheet in the same light; see [Printing](https://watercolourlove.de/manual/printing.html).
+
+## A starter kit
+
+| What | Recommendation |
+| --- | --- |
+| Paper | 100 % cotton, 300 g/m², cold pressed; a block or sheets on a board |
+| Brushes | Large round or mop, round size 8, round size 2 to 4 |
+| Paints | 8 to 12 single-pigment artist-grade paints: a warm and a cool of each primary, a burnt orange or burnt sienna, a dark such as indanthrone blue or a neutral tint, an earth |
+| Palette | White porcelain or enamel with deep wells, enough for the mixes of one picture |
+| Water | Two jars |
+| Other | Board, masking tape, HB to 2H pencil, kneaded eraser, kitchen paper, spray bottle |
+
+> **Tip:** Start with a small palette in the app too. With eight well-chosen single-pigment paints you can reach nearly every colour of a landscape like Llyn Idwal. (The free version on the web mixes from its Starter box of twelve student colours; your own paints come with an unlocked picture or Pro.)
+
+---
+
+<!-- https://watercolourlove.de/manual/how-watercolour-works.html -->
+
+# How watercolour works
+
+## Light through paint
+
+In oil or gouache, light hits the paint and bounces back from the paint itself. In watercolour it does not. The pigment lies on the paper in a layer so thin that most light goes through it, reaches the white paper, bounces back and goes through the pigment a second time on its way to your eye. On the way the pigment absorbs part of the light: a blue pigment takes away red and some green, so what comes back is blue.
+
+That is why a watercolour glows. The light comes from behind the colour, from the paper.
+
+It also means:
+
+- **There is no white paint.** The white in a watercolour is paper you did not paint. Highlights, sparkle on water, the bright side of a cloud are planned before the first wash, not added at the end.
+- **More paint is darker, never lighter.** Every layer of pigment takes a little more light away. You can only go from light to dark.
+- **Water is your white.** A wash is lighter because there is less pigment per square centimetre, so less light is absorbed.
+
+*Photo: A single paint in a strip from very watery to concentrated on white paper, with the white of the paper left at one end*
+
+## Why paint dries lighter
+
+A wet wash looks darker and richer than the same wash dry. While it is wet, water fills the gaps between the paper fibres and the pigment particles, and the surface reflects less stray light: you see more colour. As the water evaporates, air takes its place, the surface scatters more light, and the colour lightens and loses some saturation. With most paints the difference is large enough to matter: a wash that looks right wet is usually too pale when dry.
+
+So you judge a colour **dry**, on a scrap of the same paper, never on the palette and never wet. [Mixing in practice](https://watercolourlove.de/manual/mixing.html#test-before-you-paint) shows how.
+
+## What pigments do differently
+
+Not every paint behaves like a perfect, clear filter. Three properties are worth knowing for every paint you own; makers print them in their charts.
+
+### Transparent, semi-opaque, opaque
+
+**Transparent** pigments (most modern organic pigments, such as phthalo blue PB15, quinacridones PV19, PR122) absorb light without scattering much of it: they glaze cleanly over other colours. **Opaque** pigments (cadmiums, cerulean PB35, many earths, chromium oxide green PG17) also scatter light back from the particles themselves, so they cover what is underneath and can look chalky in a glaze. **Semi-opaque** paints lie in between.
+
+### Staining and lifting
+
+**Staining** pigments (phthalos, quinacridones) dye the paper fibres and stay where they land: you cannot lift them out with a damp brush. **Non-staining** pigments (ultramarine, most earths) sit on the surface and can be lifted or softened later. Staining paints are reliable underneath a glaze; they are unforgiving if you put them in the wrong place.
+
+### Granulation
+
+Some pigments have heavy or coarse particles that settle into the valleys of the paper and give a speckled texture: ultramarine PB29, cerulean, many earths and cobalt pigments. Others flocculate, clumping together into a fine pattern. Granulation is beautiful in skies, stone and water; on a cold-pressed or rough paper it is part of the character of the paint.
+
+*Photo: The same area painted twice side by side: once with a granulating ultramarine, once with a non-granulating phthalo blue, close enough to see the texture*
+
+## How the app models paint
+
+The app treats every paint the way the light treats it: as a **transparent filter** on white paper.
+
+For each paint it knows one colour, the colour of its swatch. From that it works out, for red, green and blue light separately, how much the paint absorbs. When you mix paints, their absorptions add up, each weighted by how much of that paint is in the mix. That is subtractive mixing, the same law that describes coloured glass or ink in water (physicists call it Beer-Lambert). Blue and yellow give green because the blue takes away the red and the yellow takes away the blue, and only green light survives both.
+
+Water works differently. The app first works out the mix at full strength, then lays it over the paper the way a screen lays a colour at reduced opacity: an M wash at half strength is the full mix at 50 %, an L wash at a quarter is the mix at 25 %. So a wash grows paler toward the paper and does not keep the glow of the full colour. A turquoise with no red in it at all still turns into a pale, soft turquoise when you add water, as it does on paper.
+
+### Why three bright paints do not make black
+
+On paper, adding paint does not darken a wash forever. A brush only carries so much pigment, and a thick wash approaches the paint's **masstone**, the colour of the paint at full strength, and stops there. The app models this as a depth limit for the mix as a whole: a bright paint can go only a little darker than its swatch (about 1.6 times its absorption), while greys, blacks and earths, whose masstone is far darker than their wash, can go much deeper (up to 4 times). So in the app, as on paper, three bright colours mixed thickly give a deep dull colour, not black.
+
+### Strength 1: the darkest the app uses a paint
+
+Each paint's swatch counts as **strength 1**. The app never uses a paint stronger than that: water makes a paint lighter, and that is all it ever does to it. When a colour in the photo is darker than any of your paints at strength 1, the app reaches it by mixing in a second, darker paint, exactly as you would at the desk. Recipes therefore ask for paint and water you can actually produce from a pan or a tube.
+
+> **Note:** The stock colours come from the Schmincke Horadam colour chart, which shows a mid-strength wash. For bright paints that is close to their strongest colour. Dark paints such as Payne's grey, the blacks and sepia are much darker at full strength than on the chart, so the app treats them as lighter than they can be. If a dark area looks too pale in the app, that is why; [Calibrating your paints](https://watercolourlove.de/manual/calibrating.html) shows how to replace a stock colour with your own swatch.
+
+### Masstone and undertone
+
+The **masstone** is the paint thick, the **undertone** the paint thin. With many pigments the two differ in hue, not only in lightness: a quinacridone is a deep red in masstone and a cool pink in undertone; burnt sienna is a dark brown in masstone and a warm orange in undertone. The app follows the swatch colour and darkens it towards the depth limit; it does not know a shift of hue between the two. For washes in the light and middle levels the swatch is a good guide; for concentrated washes, trust your own test strip.
+
+### Layers add up differently
+
+In [layer mode](https://watercolourlove.de/manual/layer-mode.html) every glaze dries before the next goes over it. Each dry layer is its own filter, so their absorptions add up fully: a dry blue layer under a dry yellow layer gives a green without the depth limit that a single wet mix has. That is why glazing can reach clean darks that a single mix cannot, and why [Glazing](https://watercolourlove.de/manual/glazing.html) is a method of its own.
+
+## The limits of the model
+
+A model is only as good as what it knows. What the app does not know about your paints:
+
+- **One reference colour per paint.** Your paint may differ from the chart: another batch, another maker, a pan that has dried for years. The recipes are estimates; your test strip decides.
+- **Opacity.** The model treats every paint as transparent. An opaque paint glazed over another covers more than the app expects, and an opaque mix looks lighter and chalkier than predicted.
+- **Granulation and staining.** Not modelled. A granulating mix will look textured where the app shows a flat colour.
+- **Paper and water.** The app assumes a white cotton paper and a wash that settles evenly. A cream paper, a paper that soaks up quickly, or a wash that dries unevenly will all shift the result.
+
+## What it means for you
+
+- Plan the **whites** first; they are paper.
+- Work **from light to dark**; you cannot go back.
+- Judge every colour **dry**.
+- Prefer **transparent, single-pigment** paints for mixing and glazing; keep opaque paints for where you want them to sit on top.
+- Treat the app's recipe as a very good **starting point** and your test strip as the final word. The number next to a recipe tells you how close the app thinks it gets; see [Mixes, washes and recipes](https://watercolourlove.de/manual/mixes.html).
+
+---
+
+<!-- https://watercolourlove.de/manual/mixing.html -->
+
+# Mixing in practice
+
+## From recipe to puddle
+
+Every mix in the app comes with a recipe: the paints, their parts and the water. In the full breakdown of a colour you see it next to the target colour, with up to five recipes to choose from.
+
+*Screenshot: The full breakdown of one colour: target and mix side by side, the recipes below*
+
+A recipe such as **3 x P 672** plus **1 x T 525** means three parts of paint 672 from the pan to one part of paint 525 from the tube. The water level (**very watery**, **light**, **medium**, **rich** or **concentrated**) says how much water the whole puddle gets. [Mixes, washes and recipes](https://watercolourlove.de/manual/mixes.html) explains every part of the display; here is how to do it at the desk.
+
+### Count in brush loads
+
+A **part** is a brush load: the same brush, loaded the same way, every time. Wet the brush, take it through the paint until the belly is full, and put that load into the well. For three parts, three loads. With pans, work the paint up first with a few drops of water until it is creamy, so that every load carries the same amount. With tubes, squeeze a small blob into a separate well and take your loads from there.
+
+Exact counting matters less than consistency. If your loads are generous, they are generous for every paint, and the proportion stays right.
+
+### Mix enough
+
+Mix more than you think you need. Running out in the middle of an area means mixing again while the edge dries, and the second puddle never quite matches the first. For a large area, mix about twice what looks enough. Left-over paint dries in the well and can be re-wetted later.
+
+### The order
+
+1. Start with the **lighter or weaker** paint: the yellow before the blue, the earth before the black.
+2. Add the **stronger** paint in small amounts and stir with the brush. Strong paints (phthalos, dioxazine violet, the blacks) can swamp a mix in a single load; it is easy to add more, impossible to take any away.
+3. Add the **water** last, for the level you need. One mix often serves several washes (6L and 6R on the map are the same puddle), so mix the paint for the strongest wash first and thin a part of it for the lighter ones.
+
+*Photo: Three loads of one paint and one load of another going into the same well, brush in the puddle*
+
+## Two and three paints
+
+The fewer paints in a mix, the cleaner it is. Every pigment takes a share of the light away; two pigments leave more light than four.
+
+- **One paint** with water gives the cleanest colours there are. Many areas in a landscape are one paint at different strengths.
+- **Two paints** reach nearly everything: greens, oranges, violets, browns and greys.
+- **Three paints** are for the colours two cannot reach, usually a dull or dark colour where a third paint shifts the hue.
+
+In the settings, **Max. paints** limits every recipe to one, two or three paints. If you want cleaner colours and accept that a few come a little further from the photo, set it to two.
+
+## Greys, browns and neutrals
+
+The richest greys in a watercolour are not black and white: they are **complementary pairs**, two paints opposite each other on the colour wheel that cancel each other out.
+
+| Pair | Gives |
+| --- | --- |
+| Ultramarine and burnt sienna | Warm and cool greys, from blue-grey to brown-grey; the classic for skies, rock and shadow |
+| Ultramarine and a warm orange | Clean dark greys and slate |
+| A green (phthalo) and a crimson | Deep neutral darks, nearly black when strong |
+| A violet and a yellow ochre | Soft, warm greys for distance |
+
+Shift the proportion and the grey leans towards one side. In the Llyn Idwal sample the app does exactly this: the brown slopes are **Payne's grey bluish** with **Transparent orange**, a neutral that leans warm or cool depending on the parts.
+
+## Why mixes go muddy
+
+"Mud" is a mix that has lost its life: dull, heavy, a little brown, neither the colour you wanted nor an honest grey. It has a few causes, and all of them can be avoided.
+
+- **Too many pigments.** Four or five pigments in one puddle absorb nearly all light. Check the pigment codes: two paints that each contain three pigments are already six.
+- **Opaque paints in a dark mix.** Opaque pigments scatter light and make darks chalky. Build darks from transparent paints.
+- **Over-mixing on the paper.** Paint that is pushed around on the paper while it dries lifts the layer beneath and stirs both into one dull layer. Lay the wash and leave it.
+- **Dirty water and a dirty palette.** A tinted rinse jar and old paint at the edge of a well add pigments you did not plan.
+
+## Test before you paint
+
+Watercolour dries lighter and duller than it looks wet (see [How watercolour works](https://watercolourlove.de/manual/how-watercolour-works.html#why-paint-dries-lighter)). So every new mix gets a test stroke:
+
+1. Keep a strip of the same paper beside you. Offcuts from the edge of the sheet are ideal.
+2. Paint one stroke of the mix at the water level of the area you are about to paint.
+3. Let it dry completely. A hair dryer helps.
+4. Hold the dry stroke next to the chip of that mix on the printed sheet, in the same light.
+
+*Photo: A dry test stroke held against the matching chip on the printed sheet, both in daylight*
+
+### Adjusting
+
+| The test is | Do this |
+| --- | --- |
+| Too pale | Add paint in the same proportion, not more of one paint |
+| Too strong | Add water |
+| Too warm (too orange, too yellow) | Add a little of the cooler paint of the recipe |
+| Too cool (too blue) | Add a little of the warmer paint |
+| Too bright | A touch of the complementary colour, or of the recipe's darkest paint |
+| Too dull | You cannot make a mix brighter. Mix again with fewer paints, or choose another recipe in the breakdown |
+
+> **Note:** The app's match rating (for example 0.8 · excellent) compares the recipe with the photo colour on screen. Your test strip compares your paint with the printed chip. The two can differ: your paint is not the chart's paint, and a printer is not a screen. When they disagree, the test strip wins.
+
+## Keeping and re-mixing a colour
+
+A puddle in a porcelain well stays workable for a long while. A fine mist from the spray bottle keeps it open; a lid or a damp cloth over the palette keeps it overnight. Paint that has dried in the well can be re-wetted, though it often comes back a little weaker and needs a fresh load of the strongest paint.
+
+If you have to mix the same colour again, mix it from the recipe, not by eye from memory, and test it against the old area once both are dry. Because the recipe is the same in the app, the second puddle starts much closer than any guess.
+
+## Greens: mixed or from the tube
+
+Landscapes are full of greens, and greens are where mixing matters most. A tube green straight from the tube (phthalo green, sap green, permanent green) is often too bright and too uniform for nature.
+
+Greens mixed from a **blue and a yellow** are more varied and more natural: a warm yellow with ultramarine gives olive and moss, a cool lemon with a phthalo blue gives fresh, sharp greens, and a touch of red or burnt sienna turns any green towards the browns of a hillside. A tube green is still useful as a base: a little red in it, or an earth, and it comes alive.
+
+The app does not prefer one or the other: it uses whatever is in your palette. If you take the tube greens out of the palette, it mixes every green from blues and yellows; that alone often makes a landscape look more natural. In the Llyn Idwal sample, the app combines **Permanent green** with **Cadmium red medium**: a tube green, deliberately dulled with its complement.
+
+---
+
+<!-- https://watercolourlove.de/manual/washes.html -->
+
+# Washes
+
+## The five water levels at the desk
+
+On the map every area carries a letter for its water level: **W** very watery, **L** light, **M** medium, **R** rich, **C** concentrated. The letter says how full the wash is compared with the paint's swatch. At the desk that becomes a proportion of paint to water, and a consistency you can see in the well.
+
+| Level | Paint to water, roughly | In the well, like | What it is for |
+| --- | --- | --- | --- |
+| **W** very watery | 1 to more than 10 | tea | Tinted paper: skies near the horizon, mist, the light side of snow |
+| **L** light | 1 to 4 up to 1 to 10 | coffee | Light washes over large areas, first layers |
+| **M** medium | 1 to 2 up to 1 to 4 | milk | The body of most areas |
+| **R** rich | about 1 to 1.5 | cream | Strong colour, shadows, foreground |
+| **C** concentrated | about 1 to 1 | butter, it barely flows | The darkest darks, small accents painted last |
+
+"One part paint" means paint as it comes from the tube, or a pan worked up to the same creamy consistency. These proportions are estimates: they assume that the paint's swatch is one part paint to one part water. Your paint and your paper decide. Paint a strip of one paint through all five levels once (see [How watercolour works](https://watercolourlove.de/manual/how-watercolour-works.html#light-through-paint)) and keep it beside you: it is the most useful reference you will make.
+
+*Photo: The same paint in five patches from W to C on one strip of paper, each patch labelled with its letter*
+
+## The flat wash
+
+A flat wash is one even colour over a whole area, with no streaks and no visible strokes. It is the basic wash of the app: every area on the map is meant to be one.
+
+1. **Mix enough.** A flat wash cannot be interrupted to mix more.
+2. **Tilt the board** a little towards you, about 10 to 15 degrees, so that the paint runs gently downwards.
+3. **Load the brush fully** and draw a stroke across the top of the area. Gravity collects the paint at the lower edge of the stroke into a **bead**: a thin, wet rim of paint.
+4. **Pick up the bead** with the next stroke, slightly overlapping, and carry it down. Reload the brush before it runs dry; the bead must never dry out.
+5. At the bottom, **lift the last bead** with a squeezed-out brush, otherwise it creeps back into the wash and leaves a bloom.
+
+For small areas the same principle applies on a smaller scale: one loaded brush, one movement, from the top edge down, and leave it.
+
+*Photo: A flat wash in progress on a tilted board, the wet bead visible along the lower edge of the paint*
+
+## Graded and variegated washes
+
+A **graded wash** goes from strong to light (or the reverse) in one area: a sky that lightens towards the horizon, water that darkens towards the bank. Lay it like a flat wash, but add a little water to the puddle before every new stroke, so that each band is a little weaker than the one before. Done well, there are no bands, only a smooth change.
+
+A **variegated wash** changes colour instead of strength: one colour at the top, another at the bottom, both still wet where they meet so that they blend on the paper. In the app, colours are flat areas with clear borders; a variegated wash is how you soften the step between two neighbouring mixes when the photo shows a gradient.
+
+## Wet-in-wet and wet-on-dry
+
+**Wet-on-dry** is paint laid on dry paper. Edges stay where you put them, crisp and controlled. This is the method for the numbered areas of the map: each area gets its wash and keeps its shape.
+
+**Wet-in-wet** is paint dropped into a wet surface: clear water or a wash that is still wet. The paint spreads and blurs, edges disappear, colours mingle. It is the method for skies, mist, distant hills and reflections.
+
+The art is timing. On very wet paper the paint spreads far and softly. As the paper dries, the spread gets smaller and the edges firmer. When the shine has gone but the paper still feels cool, new paint makes backruns (see below). Watch the shine: a glossy surface takes paint softly, a matt but damp one does not.
+
+> **Tip:** In the app, the view **Photo** shows where the photo has soft transitions and where it has hard edges. Paint soft transitions wet-in-wet and keep the numbered boundary only as a guide.
+
+## Edges
+
+Every boundary between two areas is a decision: **hard** or **soft**.
+
+- A **hard edge** is a wash that dried with a clear border, painted wet-on-dry. Hard edges draw the eye: use them for the subject, for light against dark, for the edges in focus.
+- A **soft edge** blends into its surroundings. Make it by painting into a damp area, or by running a clean, damp brush along the edge of a fresh wash before it dries.
+- A **lost edge** disappears entirely, where two areas of similar value meet.
+
+The map gives you every edge as a line. A good painting does not keep them all: soften what is in the background or in shadow, and keep the hard edges for where you want the viewer to look.
+
+*Photo: The same boundary painted twice: once as a hard edge wet-on-dry, once softened with a damp brush while wet*
+
+## Light first, and keep the whites
+
+Watercolour goes from light to dark. Start with the mixes that have the lightest washes (W and L), paint every area of them, and finish each mix with its stronger washes before moving to darker mixes. The concentrated washes come last, with the small brush: they are the smallest areas and do most for the likeness.
+
+The white of the paper is the brightest thing you have, and once painted it is gone. Before the first wash, look at the map for areas the app leaves as paper (**Leave the paper white**) and for highlights the photo needs: sparkle on the water, a white wall, a lit edge. Leave them dry. For small, scattered whites you can use masking fluid, applied before painting and rubbed off when everything is dry.
+
+## Drying, and knowing when it is dry
+
+A wash dries in stages: wet and glossy, then damp and matt, then dry. Only dry paper takes the next wash without disturbing the one below.
+
+To tell whether the paper is dry, look at it against the light from a low angle: any sheen means water. Then touch it lightly with the **back of your hand** (never the fingertips, which leave oil): if it feels cool, water is still evaporating from it. Cotton paper holds water for a long time; on a cool day a heavy wash can take twenty minutes or more.
+
+> **Caution:** A hair dryer saves time between washes, but only once the shine has gone. Used on a glossy wash, it blows the paint across the paper and dries the edges first, which makes a hard rim.
+
+## Common faults and how to fix them
+
+| What you see | Why | What helps |
+| --- | --- | --- |
+| **Bloom** or **backrun** (a cauliflower-shaped edge inside a wash) | Wetter paint or water ran into a wash that had begun to dry | Do not go back into a drying wash. Lift the last bead at the bottom. Once dry, a bloom can be softened with a damp brush and kitchen paper, or kept as texture |
+| **Streaks** or **bands** | The bead dried between strokes, or the brush was not loaded evenly | Mix more, load fully, work faster, tilt the board a little more |
+| **Hard edge where you wanted none** | The edge dried before the neighbouring wash met it | Wet the area beyond the edge first, or soften the edge with a damp brush while it is still wet |
+| **Patchy wash** | Paper touched by fingers, or the wash was brushed over while drying | Keep hands off the painting area; lay the wash and leave it |
+| **Wash too pale when dry** | Paint dries lighter | Test first (see [Mixing in practice](https://watercolourlove.de/manual/mixing.html#test-before-you-paint)); if it is dry and too pale, a second wash of the same mix over it |
+| **Wash too dark** | Too little water | While wet, lift with a squeezed brush; once dry, a non-staining paint can be lifted with a damp brush and kitchen paper, a staining one cannot |
+
+Where an area is too pale once everything is dry, glaze it once more with the same mix, as in the last step of [From photo to painting](https://watercolourlove.de/manual/quick-start.html). [Glazing](https://watercolourlove.de/manual/glazing.html) explains how to lay one wash over another without disturbing the first.
+
+---
+
+<!-- https://watercolourlove.de/manual/glazing.html -->
+
+# Glazing
+
+## Why glazes glow
+
+Mix yellow and blue in the palette and you get a green. Paint a yellow wash, let it dry completely, and paint a blue wash over it, and you also get a green, but a different one. In the mixed green the two pigments lie side by side in one film of paint. In the glazed green they lie in two separate films, one on top of the other, and the light travels down through the blue, through the yellow, bounces off the white paper and comes back up through both.
+
+That is why glazed colour reads as luminous: nothing in it scatters the light before it reaches the paper. It is also why glazing is the most watercolour of all watercolour techniques. Oil and gouache can cover; watercolour can only filter. Glazing takes that limitation and makes it the method.
+
+The colour wheel works in glazes just as it does in mixes, only more cleanly:
+
+| First layer | Glaze over it | Result |
+|---|---|---|
+| Yellow | Blue | Green |
+| Yellow | Red | Orange |
+| Red | Blue | Violet |
+| Any colour | Its complementary | A quiet neutral or grey |
+| Blue | Burnt sienna or another earth | A deep, living dark |
+
+A dark built from two or three glazes nearly always looks richer than the same value mixed in one go, because each layer stays transparent.
+
+*Photo: Three stripes of yellow, red and blue painted across each other on white paper, each crossing showing the glazed secondary colour*
+
+## Choosing paints for glazing
+
+Not every paint glazes well. Three properties decide, and the Schmincke chart (and most manufacturers' charts) lists them for every paint.
+
+- **Transparency.** Transparent paints glaze cleanly. Semi-transparent ones are fine in thin layers. Opaque paints, the cadmiums, Naples yellow, the cerulean and many earths, veil what lies below them. Use them in the top layer or not at all.
+- **Staining.** A staining paint, phthalo blue, the quinacridones, Prussian blue, bites into the paper fibres and hardly moves once dry. That makes it an ideal first layer: the next glaze cannot lift it.
+- **Granulation.** Granulating paints, ultramarine, the cobalts, many earths, settle into the grain of the paper. In a glaze that texture stays visible through everything painted over it. Beautiful in a stony foreground, distracting in a clear sky.
+
+> **Tip:** Paint your first layers with staining, transparent paints and keep the granulating and opaque ones for later layers. The order protects the work you have already done.
+
+## The order of layers
+
+### Light to dark
+
+Every glaze can only darken. There is no way back to the light of the paper except by lifting, and lifting in a glazed painting damages the layers below. So plan the light first: what stays white, what gets only the first pale layer, and work towards the darks.
+
+### Warm and cool
+
+A cool glaze over a warm one pushes a passage back; a warm glaze over a cool one brings it forward. Landscape painters use this all the time: a thin blue glaze over a distant ridge makes it recede, a touch of warm orange over a foreground rock brings it towards you. Decide what each layer is for before you load the brush.
+
+### How many layers
+
+As many as the picture needs and no more. Three to five layers carry most paintings. Each one costs drying time and a small risk of disturbing what lies below. If a fourth layer brings only a slight shift, leave it out; a fresh passage is worth more than a perfect value.
+
+## Painting a glaze
+
+1. **Let the layer below dry completely.** Not touch-dry: dry. The paper is flat again and no longer cool against the back of your hand. A layer that is still damp inside will lift and turn muddy.
+2. **Mix enough.** A glaze is painted in one pass. Running out in the middle leaves a hard edge where you stopped.
+3. **Use a soft brush, well loaded.** The brush should carry the paint, not scrub it on. Let a bead of paint run along the lower edge of the stroke and pick it up with the next stroke.
+4. **Do not go back.** One pass over each part of the area. A second stroke into a glaze that has started to set lifts the layer below and leaves streaks.
+5. **Let it dry flat** or at the angle you painted it, so the paint does not run to one side.
+
+*Photo: A soft round brush laying a pale blue glaze over a dry yellow layer, the bead of paint visible along the lower edge of the stroke*
+
+> **Caution:** A hair dryer speeds things up but can blow wet paint into blooms and cook the surface of the paper. Hold it at a distance, on a low setting, and only once the shine has gone from the wash.
+
+## How the app plans glazes
+
+Layer mode is this chapter turned into a plan. The app chooses a few base paints from your paint box, one layer each, and works out for every area which layers it gets and how many coats of each. It treats every dried wash as a filter of its own: the layers add up without the limit that holds inside one wet mix, while coats of the same paint still share that paint's limit, because a second coat of the same paint only goes as dark as the paint itself.
+
+It decides with the same economy a painter would. A coat or a layer that brings the picture too little closer to the photo is left out, and neutral paints are kept off clean colour. Up to three accents, a strong wash on small areas, come last: first for a colour the layers miss, then for the darks.
+
+How to work with it in the app, from ticking layers on and off to the step-by-step walk, is in [Layer mode](https://watercolourlove.de/manual/layer-mode.html).
+
+*Screenshot: The layers the app proposes for Llyn Idwal, with the strength of each wash and its coats*
+
+## Exercise: three glazes on Llyn Idwal
+
+Open the sample **Llyn Idwal**, switch to **Layer** and set **Layers** to 3 and **Accents** to 0. The app now proposes three paints, typically a yellow, a blue and an earth or red.
+
+1. Transfer the outlines lightly with pencil.
+2. Press **Paint step by step**. The first step shows where the first wash goes and how to prepare it, for example 1:9 with water. Mix it, test a stroke on a scrap and compare it with the chip of the step.
+3. Paint every area of the first step, then let the paper dry completely.
+4. Move on with **Next**. Look at **So far** before each step: it shows what the paper should look like afterwards.
+5. After the last step, put your study next to the screen in the view **Layered paint**.
+
+*Screenshot: Step 3 of the step-by-step walk for Llyn Idwal: where to paint, and the wash to mix*
+
+You will notice that the greens of the hillsides appear on their own where the yellow and the blue overlap, and that the darkest rocks come from all three layers together. That is the moment glazing makes sense.
+
+*Photo: The finished three-layer study of Llyn Idwal beside the printed layer sheets*
+
+---
+
+<!-- https://watercolourlove.de/manual/values-and-simplifying.html -->
+
+# Values and simplifying
+
+## Value is the backbone
+
+Value is how light or dark a colour is, regardless of its hue. A pale yellow and a pale blue can have the same value; a deep red and a mid green can too. When people recognise a place in a painting, they recognise its pattern of values long before they register its colours. A black and white photograph of a good watercolour still works. A badly valued painting falls apart in grey.
+
+### The squint test
+
+Half close your eyes and look at the photo, then at your painting. Squinting blurs the detail and drowns the colour, and what remains is the value pattern: a few big shapes of light, middle and dark. If the two patterns match, the painting will read. If a passage jumps out in the painting that sinks in the photo, its value is wrong, whatever its colour.
+
+### Three values, then five
+
+Most strong paintings can be described with three values: light, middle, dark. Before you paint, decide for each big shape of the picture which of the three it belongs to. Then split each into two if you need it, and you have five: the white of the paper, light, middle, dark, and the darkest accents.
+
+A *notan*, the Japanese word for the balance of light and dark, is the most radical version: the whole picture in two values, black and white. Ten minutes with a marker and a notan will tell you whether a composition has a clear structure, before you have wet a single brush.
+
+*Photo: A small notan of Llyn Idwal in black marker beside a five-value thumbnail in grey wash, both no larger than a postcard*
+
+## Deciding what to leave out
+
+A photo shows everything. A painting chooses. The hardest and most personal decision in watercolour is what to leave out, and the app gives you two controls to make that decision visible.
+
+- **Simplify areas** merges small shapes into larger, calmer ones. Each step up removes a level of detail: first the specks, then the texture, then the small shapes inside larger ones. Watch the picture as you move the slider and stop at the point where the subject is still clearly there and the shapes look paintable in one stroke each.
+- **Colours** sets how many mixes there are. Fewer mixes force related colours together, which is the same as grouping values: the many greens of a hillside become one green in three washes.
+
+*Screenshot: Llyn Idwal with Simplify areas set high: the hillsides as a few calm shapes, the lake as one*
+
+There is no correct setting. A quick study wants few, large shapes; a careful painting of a single motif may want many. The question to ask is always: would I paint this shape on its own, or would I let it dissolve into its neighbour?
+
+> **Tip:** Set **Simplify areas** higher than feels comfortable, then bring back detail only where it matters: the eye of a portrait, the edge of a roof against the sky. You can look at such a place on its own with **Detail**, see [Pictures](https://watercolourlove.de/manual/pictures.html).
+
+## Edges simplify too
+
+Every shape on paper has edges, and every edge is a decision. A hard edge, paint on dry paper, says: here is a boundary, look at it. A soft edge, paint on damp paper or softened with a clean damp brush, says: this goes on, do not stop here. A lost edge disappears entirely where two shapes of the same value meet.
+
+The map of colour areas shows every area with a line around it, because the app has to tell you where each mix goes. Those lines are not an instruction to paint hard edges everywhere. Where two neighbouring areas have nearly the same value, let them run into each other while both are wet. Where the value jumps, keep the edge. In the photo of Llyn Idwal that means: a hard edge where the bright lake meets the dark shore, soft and lost edges across the slopes of the hills.
+
+## Photos lie in the shadows
+
+A camera does not see the way you do. It decides on one exposure for the whole picture, and everything darker than it can handle turns into flat black, everything brighter into flat white. Your eye, standing in front of the same lake, sees colour in the shadows and texture in the clouds.
+
+So do not copy the darkest darks of a photo literally. A shadow in a photo is usually darker and greyer than it was. Paint it a little lighter and give it colour: a shadow on grass has green in it, a shadow on stone the colour of the stone. The same goes for burnt-out skies: the paper can stay white, but a pale wash often brings back what the camera lost.
+
+That is also one reason why the app raises **Saturation** to 200% before the analysis: it brings back colour the camera flattened, the way a painter would exaggerate it anyway.
+
+## Checking values in the app
+
+Two views and a setting help you judge values without the distraction of colour.
+
+- **Photo colour** shows each area in the average colour of the photo there. It is the photo reduced to its shapes, without detail, and it is the best view for a squint test on screen.
+- **Blocking** shows only light and shadow: two or three flat tones in large masses, numbered from the lightest. It is the squint test done for you, and it marks the paper white you have to save. See [Values](https://watercolourlove.de/manual/values.html#blocking-light-and-shadow-first).
+- **Monochrome** in the settings goes further: the picture is analysed in grey and split into up to 24 values, and each value is painted with one of the paints of your palette, whatever its hue. The result is a value study in your own paints. See [Values](https://watercolourlove.de/manual/values.html) for the settings.
+
+*Screenshot: The view Photo colour: every area in the average colour of the photo*
+
+Switch between **Photo colour** and **Mixed paint** and squint. If an area of your mixes jumps out where the photo colour is quiet, its value is off: the recipe with a different water level, or a different recipe, will fix it.
+
+## Exercise: five values in one paint
+
+This exercise does more for your painting than any colour exercise.
+
+1. Open **Llyn Idwal**, press **Monochrome** in the settings and set **Colours** to its lowest, 2.
+2. Open the **Paint box** and put a single dark, transparent paint in the palette, for example a neutral tint, a sepia or an indigo.
+3. Set **Simplify areas** high enough that you count no more than about thirty areas.
+4. Print the sheet, transfer the outlines and paint the study with the washes the app gives you, from the lightest to the darkest.
+5. When it is dry, put it next to a grey print of the photo and squint at both.
+
+*Screenshot: Llyn Idwal in Monochrome with one paint: the picture in grey, each value painted with a single colour of the palette*
+
+You will find that the study already looks like the place. That is the point: the colour you add later only has to sit on a structure that already works.
+
+*Photo: The finished one-paint value study of Llyn Idwal beside a greyscale print of the photo*
+
+---
+
+<!-- https://watercolourlove.de/manual/calibrating.html -->
+
+# Calibrating your paints
+
+## Why the recipes depend on it
+
+The app knows each paint by a single colour: the colour of that paint as a wash on white paper. From that one colour it works out how the paint behaves when it is thinned with water and how it filters light in a mix or a glaze. Everything else, the recipes, the water levels, the match ratings, follows from it.
+
+For the paints that come with the app, that colour was taken from the Schmincke Horadam colour chart. A printed or screen chart is a good start, but it is not your paint:
+
+- **Batches differ.** Two tubes of the same paint from different years are rarely identical.
+- **Paper changes colour.** The same wash looks warmer on a natural white paper than on a bright white one, and a rough surface makes it read lighter than a smooth one.
+- **Dark paints are recorded too light.** The chart shows each paint as a mid-strength wash. For most paints that is close to the strength the app works with, but for the dark ones, Payne's grey, the blacks, sepia, indigo, the chart colour is noticeably lighter than the paint at full strength. Since the app never uses a paint darker than its recorded colour, recipes with these paints come out a little cautious in the darks.
+
+If you work mostly with a few paints, calibrating them is the single best thing you can do for the recipes.
+
+## Painting a swatch chart
+
+Use the paper you paint on and cut it into a strip or a card per paint, or paint all stripes on one sheet.
+
+1. **One stripe per paint.** Start at full strength, with as little water as the paint needs to flow, and add water as you go, so the stripe runs from the strongest the paint gets to a very watery tint in five or six steps.
+2. **Mark the reference.** Somewhere in the stripe, paint one patch with paint and water in about equal parts, well mixed and laid evenly. This is the colour the app wants: the paint at the strength it treats as its darkest.
+3. **Label it** in pencil with the brand, the number and the form (pan or tube).
+4. **Let it dry completely**, at least an hour, better overnight. Watercolour dries lighter and often a little cooler than it looks wet; only the dry colour counts.
+
+*Photo: A swatch chart on watercolour paper: one stripe per paint from full strength to a pale tint, each with a pencilled number and a marked reference patch*
+
+> **Tip:** Paint the reference patches a little larger than a thumbnail. Small patches are hard to photograph without the colour of the paper or the neighbouring stripe creeping in.
+
+## Measuring the colour
+
+### With a photo
+
+1. Photograph the chart **in daylight**, near a window but not in direct sun, without flash. Hold the camera square to the paper, so the light falls evenly.
+2. **Set the white balance against the paper.** In the camera or in any photo app, use the white balance picker on an unpainted part of the paper. The paper must come out neutral white; every colour on the chart is measured relative to it.
+3. Do not apply filters, contrast or saturation. You want the colours as they are.
+
+*Photo: Photographing the swatch chart by a window in daylight, the phone held square above the paper*
+
+### Picking the colour
+
+In the form for a colour of your own, the field **Colour** opens the colour picker of your device. In most browsers it has an eyedropper: open the photo of your chart on the same screen and pick the middle of the reference patch, away from its edges.
+
+> **Note:** A colorimeter or a spectrophotometer measures more precisely than any photo, if you have one. Measure the dry reference patch on white paper and enter the value as a hex colour.
+
+## Entering a colour of your own
+
+Open the **Paint box**, press the **+** at the end of the box the paint belongs in and choose **Or enter a colour of your own**.
+
+- **Vendor and Series** as it is written on the tube or pan, for example Schmincke Horadam.
+- **Number** of the paint. For a series whose colour chart comes with the app, the number fills in name and colour (with Pro); you then replace the colour with your measured one.
+- **Form**: **Pan** or **Tube**.
+- **Name** of the paint.
+- **Colour**: the colour of your reference patch, picked as above.
+
+Then save with **Add paint**. The paint appears in the box and under **Your own paints**, where the pencil button edits it later.
+
+The paints of the stock cannot be changed. To use your measured colour for one of them, add it as a colour of your own with the same series and number, put your version into the palette and take the stock version out. More about the paint box in [Paint box and palette](https://watercolourlove.de/manual/paint-box.html).
+
+## Checking a recipe
+
+Calibration is done when the paint behaves on the paper the way the app says it will.
+
+1. Pick a colour of your picture whose recipe uses the calibrated paint and open **Full breakdown**.
+2. Mix the recipe as written: count the parts in brush loads and add the water for the wash shown.
+3. Paint a patch on a scrap of the same paper and let it dry.
+4. Hold it next to the chip **Your mix** on screen, or better, next to the printed sheet in daylight.
+
+If the dry patch is consistently lighter or darker across several recipes, the recorded colour is off: measure again. If one recipe is off and the others fit, the target is simply hard to reach with that combination; choose another recipe or allow another paint.
+
+*Photo: A dried test patch held beside the colour chip of the printed sheet to compare the mix with its recipe*
+
+---
+
+<!-- https://watercolourlove.de/manual/glossary.html -->
+
+# Glossary
+
+## Labels and numbers
+
+What you read on the picture, in the colour list and in the recipes.
+
+| Label | German | Meaning |
+|---|---|---|
+| 6L, 6R | 6L, 6R | Mix 6, painted as a light wash (L) or a rich wash (R). The number is the mix, the letter the amount of water. |
+| W | W, sehr wässrig | Very watery: hardly more than tinted water. |
+| L | L, leicht | Light wash. |
+| M | M, mittel | Medium wash. |
+| R | R, kräftig | Rich wash: little water, strong colour. |
+| C | C, konzentriert | Concentrated: paint that hardly flows. |
+| W1 to C5 | W1 bis C5 | In values mode, finer steps of water within each level. |
+| A1, A2 | A1, A2 | Layer mode: accents, numbered in the order they are painted, last of all. |
+| 1, 2 (on a layer) | 1, 2 | Layer mode, one layer shown on its own: the number of coats an area gets. |
+| P, T, P/T | P, T, P/T | Pan, tube, or both: the forms in which you own a paint. |
+| 3 x P 672 | 3 x P 672 | Three parts of paint 672 from the pan. Parts are counted in brush loads. |
+| 1:9 with water | 1:9 mit Wasser | Layer mode: one part paint to nine parts water, with a comparison such as "like coffee". |
+| 0.8 | 0,8 | The distance between target and mix, in steps the eye can just tell apart (see Match quality). |
+| 52 in 20 mixes | 52 in 20 Mischungen | 52 colours on the paper, made from 20 puddles in different washes. |
+
+## In the app
+
+| Term | German | Meaning |
+|---|---|---|
+| Accent | Akzent | Layer mode: a strong wash on small areas, painted last, first for a colour the layers miss, then for the darks. |
+| Auto | Auto | Lets the app choose the paints that suit the picture, from the boxes ticked **Use for Auto**. |
+| Base paint | Grundfarbe | Layer mode: a paint that gets a layer of its own. |
+| Coat | Lasur (Durchgang) | Layer mode: one pass of a layer's wash. An area can get the same wash once, twice or three times. |
+| Colour area | Farbfläche | A shape of the picture that gets one wash of one mix. |
+| Colours | Farben | The setting for the number of mixes, and the list of them. |
+| Detail | Ausschnitt | A part of the picture analysed as a picture of its own. Pro. |
+| Details | Details | The setting that decides whether the mixes go to fine steps across the picture (high) or to small areas of another hue (low). |
+| Full breakdown | Alle Details | Target and mix side by side, the colour by hand and every recipe of a colour. |
+| Geometric | Geometrisch | Areas as polygons with straight edges instead of their organic outline. |
+| Grid | Raster | Square cells over the picture, to copy it onto paper cell by cell. |
+| Layer | Schicht | Layer mode: the wash of one base paint, painted over the dry layers before it. |
+| Layer mode | Schichten | The method of glazing a few washes over each other instead of mixing every colour. |
+| Layered paint | Geschichtete Farbe | Layer mode: the view of the finished picture, all layers together. |
+| Match quality | Treffer | How close a recipe gets to its target: excellent (below 2), good (below 5), fair (below 10), rough (10 and above). German: sehr gut, gut, mäßig, grob. |
+| Max. coats | Max. Lasuren | Layer mode: how often one wash may be painted over itself. |
+| Max. paints | Max. Farben | How many paints a mix may have: one, two or three. |
+| Mix | Mischung | One puddle of paint on the palette, with a number. It can be painted in several washes. |
+| Mixed paint | Gemischte Farbe | The view of what your paints can reach. |
+| Organic | Organisch | Areas that follow the outlines of the photo. |
+| Paint box | Farbkasten | A named set of paints you own, for example your pans or a travel set. |
+| Palette | Palette | The paints a picture is mixed from. It is saved with the picture. |
+| Photo colour | Fotofarbe | The view of each area in the average colour of the photo there. |
+| Recipe | Rezept | Which paints, in how many parts, with how much water, for one colour. |
+| Simplify areas | Flächen vereinfachen | Merges small shapes into larger, calmer ones. |
+| Target | Ziel | The colour the photo asks for in an area. |
+| Values | Tonwerte | The picture analysed in grey; each value is painted with one paint of the palette. |
+| Wash | Lasur | A mix at one water level. |
+| Your mix | Deine Mischung | The colour the recipe gives on white paper. |
+
+## Painting terms
+
+| Term | German | Meaning |
+|---|---|---|
+| Backrun, bloom | Blumenkohlrand | A frilled edge where wetter paint runs back into a wash that has begun to dry. |
+| Cold-pressed paper, NOT | Matt, kaltgepresst | Paper with a medium grain, the usual choice for watercolour. |
+| Complementary colours | Komplementärfarben | Colours opposite each other on the colour wheel; mixed, they neutralise each other. |
+| Edge, hard, soft, lost | Kante, hart, weich, verloren | The boundary of a shape: painted on dry paper, softened, or dissolved into its neighbour. |
+| Glaze | Lasur | A thin transparent wash over a dry one. |
+| Granulation | Granulation | Pigment particles that settle into the grain of the paper and give texture. |
+| Hot-pressed paper | Satiniert, heißgepresst | Smooth paper, good for fine detail, harder for even washes. |
+| Lifting | Auswaschen, Anlösen | Taking paint off the paper with a damp brush or tissue; also the unwanted disturbing of a dry layer by the next one. |
+| Masstone | Purton | The colour of a paint at full strength. |
+| Mud | Schmutz | A dull, lifeless mix, usually from too many paints or from working into a drying wash. |
+| Opaque | Deckend | A paint that covers what is below it rather than filtering it. |
+| Rough paper | Rau, Torchon | Paper with a strong grain. |
+| Sizing | Leimung | The gelatine or other size in and on the paper that keeps paint from sinking in like ink in blotting paper. |
+| Staining | Färbend | A paint that bites into the paper fibres and can hardly be lifted once dry. |
+| Transparent | Transparent, lasierend | A paint that lets light through to the paper. |
+| Undertone | Unterton | The colour of a paint in a thin wash, which can differ from its masstone. |
+| Value | Tonwert | How light or dark a colour is, regardless of its hue. |
+| Wet-in-wet | Nass in nass | Paint laid into a wash or onto paper that is still wet, so it spreads softly. |
+| Wet-on-dry | Nass auf trocken | Paint laid onto dry paper, for crisp edges. |
+
+---
+
+<!-- https://watercolourlove.de/manual/troubleshooting.html -->
+
+# Troubleshooting
+
+## The picture
+
+### The map has far too many tiny areas
+
+Raise **Simplify areas**. Every step merges small shapes into their neighbours; around the middle of the range most photos become paintable. Lowering **Colours** helps too, because fewer mixes mean fewer boundaries between them. See [Colour areas](https://watercolourlove.de/manual/colour-areas.html).
+
+### An important detail has disappeared
+
+Small areas that differ in hue from their surroundings, a red roof, the lips in a portrait, keep a mix of their own when **Details** is set low. If the detail is also small in size, simplifying merges it away; look at that part of the picture on its own with **Detail**, where it gets finer areas and mixes of its own (Pro). See [Pictures](https://watercolourlove.de/manual/pictures.html).
+
+### The colours look dull, or far too loud
+
+The app raises **Saturation** to 200% before it analyses the photo, because photos usually look flatter than the place did. For a photo that is already strongly coloured, lower it towards 100%. **Contrast** works the same way for the difference between light and dark. Both change only the analysis, never the photo itself.
+
+## The recipes
+
+### A colour only gets "fair" or "rough"
+
+The paints in your palette cannot reach that colour closely. Compare the views **Photo colour** and **Mixed paint**: if the difference does not bother you, leave it. Otherwise:
+
+- allow three paints per mix with **Max. paints**,
+- put a paint into the palette that lies closer to the colour, often a cleaner yellow, red or blue,
+- or change the target in **Full breakdown**: you are the painter, and a slightly different colour that you can mix cleanly is often better than the exact one in mud.
+
+### A recipe uses a paint I do not want
+
+Open **Full breakdown** and choose one of the other recipes. If you never want that paint in this picture, take it out of the palette in the **Paint box** and press **Update mixes**.
+
+### A dark colour cannot be reached
+
+No paint is used darker than its recorded colour, its swatch. A dark that lies beyond every single paint needs a mix of two or three. Allow more paints per mix, add a dark paint such as indigo, sepia or a neutral tint to the palette, or in layer mode let the darks come from several layers. If the darks are always a little too light, the recorded colours of your dark paints may be lighter than your real paints: see [Calibrating your paints](https://watercolourlove.de/manual/calibrating.html).
+
+### My paint is not in the paint box
+
+Press the **+** at the end of a box. Search by series, number or name; with Pro the colour charts of Schmincke Horadam, Winsor & Newton Professional and Michael Harding are searched too. If your paint is not there, choose **Or enter a colour of your own**. See [Paint box and palette](https://watercolourlove.de/manual/paint-box.html).
+
+## Painting
+
+### The mix looks different when it is dry
+
+Watercolour dries lighter, and often a little cooler and duller, than it looks wet. Always judge a test stroke on a scrap of the same paper after it has dried completely. If it is too pale, add paint; if it is too strong, add water.
+
+### My colours turn muddy
+
+Mud has three usual causes: too many paints in one mix, working back into a wash that has started to dry, and painting over a layer that is not completely dry. Keep mixes to two or three paints, paint each area in one pass, and wait. See [Mixing in practice](https://watercolourlove.de/manual/mixing.html).
+
+### Frilled edges appear in my washes
+
+Those are backruns, or blooms: wetter paint has run back into a wash that had begun to dry. Either work while the whole area is evenly wet, or wait until it is completely dry. A damp, not wet, brush picks up excess water at the edge of a wash. See [Washes](https://watercolourlove.de/manual/washes.html).
+
+### A glaze lifted the layer below
+
+The layer below was not quite dry, or the brush went over it more than once. Let every layer dry fully, use a soft brush, carry the paint and do not scrub. For first layers, staining paints are safest. See [Glazing](https://watercolourlove.de/manual/glazing.html).
+
+## The app
+
+### I changed the paints, but nothing happened
+
+Changes in the paint box take effect when you press **Update mixes**. Settings such as **Colours** or **Simplify areas** analyse the picture again as soon as you let go of the slider.
+
+### A saved picture has disappeared
+
+Pictures, paint boxes and the collection are stored in the browser on this device, not in your account and not in a cloud. Clearing the browser's data, using a private window or switching to another browser or device means they are not there. Keep the pictures that matter to you as a PDF with **Print / PDF**.
+
+### I cannot save, print or export
+
+In the free version on the web, pictures cannot be saved, printed or exported, and the palette mixes from the Starter box instead of your own paints. Unlocking the picture with a credit lifts these limits for that picture; Pro lifts them for every picture. See [Account, Pro and your data](https://watercolourlove.de/manual/account.html).
+
+### The sign-in link does not work
+
+A sign-in link works once and for 15 minutes, on the device where you asked for it. If it has expired or was already used, ask for a new one on the sign-in page. If no mail arrives, look in the spam folder.
+
+### Something else
+
+Write to [support@markus-freise.de](mailto:support@markus-freise.de). Say what you did, what you expected and what happened instead; a screenshot helps.

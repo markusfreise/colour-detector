@@ -105,14 +105,14 @@ Spec: [`PRD_ColourDetector_v1.0.0.md`](PRD_ColourDetector_v1.0.0.md) · Backlog:
 
 ## Deploy
 
-The app runs at https://watercolourlove.de (Mittwald, web root `~/html/_sites/watercolourlove`). A push to `main` deploys it: a GitHub webhook calls `webhook.php` in the web root, which checks the signature and starts `deploy/deploy.sh` in the checkout `~/colour-detector` (fetch `main` → `npm ci` → tests → `npm run build` → rsync `dist/` into the web root, `server/` into `api/`). The checkout lives outside the web root, so a failed build leaves the site as it was; `.htaccess`, `webhook.php`, `webhook-config.php` and `api/config.php` in the web root are kept. The log is `~/colour-detector-deploy.log`.
+The app runs at https://watercolourlove.de (Mittwald, web root `~/html/_sites/watercolourlove`). A push to `main` deploys it: a GitHub webhook calls `webhook.php` in the web root, which checks the signature and starts `deploy/deploy.sh` in the checkout `~/html/_sites/colour-detector` (fetch `main` → `npm ci` → tests → `npm run build` → rsync `dist/` into the web root, `server/` into `api/`). The checkout is not the web root (no domain points at it), so a failed build leaves the site as it was; `.htaccess`, `webhook.php`, `webhook-config.php` and `api/config.php` in the web root are kept. The log is `~/colour-detector-deploy.log`.
 
-One-time setup on the host (SSH), once the checkout exists (`git clone -b main git@github.com:markusfreise/colour-detector.git ~/colour-detector`, private repo: read-only deploy key, `core.sshCommand` set to use it):
+One-time setup on the host (SSH), once the checkout exists (`git clone -b main git@github.com:markusfreise/colour-detector.git ~/html/_sites/colour-detector`, private repo: read-only deploy key, `core.sshCommand` set to use it):
 
 ```bash
 # build settings, not in the repo: VITE_ACCOUNT_API is required, VITE_GA_ID optional
-nano ~/colour-detector/.env.production.local
-bash ~/colour-detector/_bootstrap/bootstrap-server.sh ~/html/_sites/watercolourlove https://watercolourlove.de
+nano ~/html/_sites/colour-detector/.env.production.local
+bash ~/html/_sites/colour-detector/_bootstrap/bootstrap-server.sh ~/html/_sites/watercolourlove https://watercolourlove.de
 ```
 
 The script checks the host, creates `webhook-config.php` with a random secret (only if it is missing), runs the first deploy and prints the values for GitHub → Settings → Webhooks:
@@ -124,7 +124,7 @@ The script checks the host, creates `webhook-config.php` with a random secret (o
 | Secret | printed by the script |
 | Events | Just the push event |
 
-Requirements on the host: git, Node 18 or newer with npm (nvm is picked up), rsync, `flock`, and PHP with `exec()` enabled. `webhook-config.php` holds the secret and is never committed. A deploy by hand: `bash ~/colour-detector/deploy/deploy.sh ~/colour-detector ~/html/_sites/watercolourlove main`.
+Requirements on the host: git, Node 18 or newer with npm (nvm is picked up), rsync, `flock`, and PHP with `exec()` enabled. `webhook-config.php` holds the secret and is never committed. A deploy by hand: `bash ~/html/_sites/colour-detector/deploy/deploy.sh ~/html/_sites/colour-detector ~/html/_sites/watercolourlove main`.
 
 Before this, batcave built `main` and copied it over (`deploy/remote-deploy.sh`, started by a manual hook); it is switched off once the GitHub webhook works.
 

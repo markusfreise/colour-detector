@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # One-time setup on the public host (Mittwald), run there over SSH once the checkout exists.
+# The checkout is the one this script lives in.
 # Usage: bash bootstrap-server.sh <web-root> [public-url]
-#   e.g. bash ~/colour-detector/_bootstrap/bootstrap-server.sh ~/html/_sites/watercolourlove https://watercolourlove.de
+#   e.g. bash ~/html/_sites/colour-detector/_bootstrap/bootstrap-server.sh ~/html/_sites/watercolourlove https://watercolourlove.de
 # Idempotent, fail-closed: writes webhook-config.php only if it is missing, then runs the first deploy.
 set -euo pipefail
 SLUG="colour-detector"
 WEB_ROOT="${1:?usage: bootstrap-server.sh <web-root> [public-url]}"
 URL="${2:-https://watercolourlove.de}"
-REPO_DIR="$HOME/$SLUG"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOG_FILE="$HOME/$SLUG-deploy.log"
 
-for bin in git rsync php flock openssl; do command -v "$bin" >/dev/null || { echo "FAILED: $bin missing"; exit 1; }; done
+for bin in git rsync php flock; do command -v "$bin" >/dev/null || { echo "FAILED: $bin missing"; exit 1; }; done
 if [ -s "$HOME/.nvm/nvm.sh" ]; then . "$HOME/.nvm/nvm.sh" >/dev/null; fi
 command -v npm >/dev/null || { echo "FAILED: node/npm missing (install via nvm)"; exit 1; }
 php -r 'exit(function_exists("exec") && !in_array("exec", array_map("trim", explode(",", ini_get("disable_functions")))) ? 0 : 1);' \
@@ -25,7 +26,7 @@ if [ -f "$WEB_ROOT/webhook-config.php" ]; then
   echo "OK: webhook-config.php exists - not touching it"
   SECRET="(unchanged, see $WEB_ROOT/webhook-config.php)"
 else
-  SECRET="$(openssl rand -hex 32)"
+  SECRET="$(php -r 'echo bin2hex(random_bytes(32));')"
   cat > "$WEB_ROOT/webhook-config.php" <<PHP
 <?php
 return [

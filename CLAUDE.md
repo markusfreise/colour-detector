@@ -11,7 +11,7 @@ Finds the main colours in a photo, mixes each from Markus' own watercolours and 
 |---|---|
 | Name | Watercolourlove (until 2026-10-12: Colour Detector; repo, folder, slug and storage keys keep the old name) |
 | Slug | `colour-detector` |
-| Live | https://watercolourlove.de (Mittwald, `_sites/watercolourlove`; a push to `main` deploys it: GitHub webhook → `webhook.php` → `deploy/deploy.sh` builds in the checkout `~/colour-detector` there; see README, Deploy) |
+| Live | https://watercolourlove.de (Mittwald, `_sites/watercolourlove`; a push to `main` deploys it: GitHub webhook → `webhook.php` → `deploy/deploy.sh` builds in the checkout `~/html/_sites/colour-detector` there; see README, Deploy) |
 | Old address | https://watercolourlove.markus-freise.de (the build before the domain; to be redirected to the domain) |
 | Repo | git@github.com:markusfreise/colour-detector.git |
 | Local | ~/Sites/colour-detector |

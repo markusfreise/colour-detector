@@ -400,7 +400,6 @@ export default {
   'This is not a Watercolourlove picture file.': 'Das ist keine Bilddatei von Watercolourlove.',
   'This picture file comes from a newer version of the app.': 'Diese Bilddatei stammt aus einer neueren Version der App.',
   'Saved in the collection, but the picture file could not be made.': 'In der Sammlung gesichert, aber die Bilddatei ließ sich nicht erstellen.',
-  'Sign in for free to use the app. Your account is only your e-mail address; your pictures stay in this browser and are never uploaded.': 'Melde dich kostenlos an, um die App zu nutzen. Dein Konto ist nur deine E-Mail-Adresse; deine Bilder bleiben in diesem Browser und werden nie hochgeladen.',
   'Continue with {name}': 'Weiter mit {name}',
   'Local test, no mail sent. The sign-in link for': 'Lokaler Test, keine Mail verschickt. Der Anmeldelink für',
   'Use different address': 'Andere Adresse verwenden',
@@ -408,7 +407,7 @@ export default {
   '. Open it on this device; it works for 15 minutes.': '. Öffne ihn auf diesem Gerät; er gilt 15 Minuten.',
   'Or with a link by e-mail': 'Oder mit einem Link per E-Mail',
   'Your e-mail address': 'Deine E-Mail-Adresse',
-  'you@example.org': 'du@beispiel.de',
+  'Your e-mail address': 'Deine E-Mail-Adresse',
   'Invitation code (optional)': 'Einladungscode (optional)',
   'Send me a sign-in link': 'Schick mir einen Anmeldelink',
   'Try again': 'Noch einmal versuchen',
@@ -478,8 +477,7 @@ export default {
   'Accept all': 'Alle akzeptieren',
   // Signing in and signing up (AccountGate)
   'Sign in with e-mail': 'Anmelden mit E-Mail',
-  'Sign up with e-mail': 'Registrieren mit E-Mail',
-  'Sign up for free': 'Jetzt kostenlos registrieren',
+  'Sign up for free': 'Kostenlos registrieren',
   'Sign in with account': 'Jetzt anmelden',
   'Create my account': 'Konto anlegen',
   // Menu button on a phone (App)

@@ -68,9 +68,6 @@
       </template>
 
       <template v-else>
-        <p v-if="!account.sentTo" class="gate__text">
-          {{ t('Sign in for free to use the app. Your account is only your e-mail address; your pictures stay in this browser and are never uploaded.') }}
-        </p>
         <!-- The early bird of plans.json, until its last day. -->
         <template v-if="!account.sentTo && earlyBird">
           <p class="gate__text gate__offer">
@@ -99,15 +96,15 @@
         <form v-else-if="!signingUp" class="gate__form" @submit.prevent="account.sendLink(email)">
           <label class="field gate__field">
             <span class="field__label">{{ t('Sign in with e-mail') }}</span>
-            <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
+            <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('Your e-mail address')" />
           </label>
           <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Send me a sign-in link') }}</button>
           <button class="gate__link gate__switch" type="button" @click="signingUp = true">{{ t('Sign up for free') }}</button>
         </form>
         <form v-else class="gate__form" @submit.prevent="account.sendLink(email, code)">
           <label class="field gate__field">
-            <span class="field__label">{{ t('Sign up with e-mail') }}</span>
-            <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
+            <span class="field__label">{{ t('Sign up for free') }}</span>
+            <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('Your e-mail address')" />
           </label>
           <!-- Optional: a code unlocks everything for good. Without one the account is a free one. -->
           <label v-if="account.invitation" class="field gate__field">

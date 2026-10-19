@@ -19,6 +19,9 @@ const VOUCHER_TRIES = 10;
 // Magic links per hour: for one address, and from one network address.
 const MAGIC_PER_EMAIL = 5;
 const MAGIC_PER_IP = 20;
+// How long an admin stays signed in as somebody else.
+const IMPERSONATION_MINUTES = 60;
+const BANNED = 'This account is closed.';
 
 function config(?string $key = null): mixed
 {
@@ -252,20 +255,28 @@ function http(string $method, string $url, array $fields = [], array $headers = 
 
 // --- Sessions ---------------------------------------------------------------------------------
 
-/** A new session for the account; returns the value only the visitor keeps. */
-function newSession(int $userId): string
+/**
+ * A new session for the account; returns the value only the visitor keeps. A banned account gets
+ * none. $adminId: an admin who signs in as this account (admin.php), for a short time.
+ */
+function newSession(int $userId, ?int $adminId = null): string
 {
+    if (row("SELECT id FROM users WHERE id = ? AND status = 'banned'", [$userId])) {
+        fail(403, BANNED);
+    }
     $value = token();
     run('DELETE FROM sessions WHERE expires_at < ?', [time()]);
-    run('INSERT INTO sessions (hash, user_id, expires_at) VALUES (?, ?, ?)', [hash('sha256', $value), $userId, time() + SESSION_DAYS * 86400]);
+    run('INSERT INTO sessions (hash, user_id, expires_at, admin_id) VALUES (?, ?, ?, ?)', [
+        hash('sha256', $value), $userId, time() + ($adminId === null ? SESSION_DAYS * 86400 : IMPERSONATION_MINUTES * 60), $adminId,
+    ]);
     return $value;
 }
 
 /** A session in a cookie, for the browser. */
-function startSession(int $userId): void
+function startSession(int $userId, ?int $adminId = null): void
 {
-    setcookie(SESSION_COOKIE, newSession($userId), [
-        'expires' => time() + SESSION_DAYS * 86400,
+    setcookie(SESSION_COOKIE, newSession($userId, $adminId), [
+        'expires' => time() + ($adminId === null ? SESSION_DAYS * 86400 : IMPERSONATION_MINUTES * 60),
         'path' => cookiePath(),
         'secure' => secure(),
         'httponly' => true,
@@ -299,8 +310,10 @@ function currentUser(): ?array
     if ($value === '') {
         return null;
     }
+    // acting_admin: the admin who signed in as this account, if one did.
     return row(
-        'SELECT users.* FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.hash = ? AND sessions.expires_at > ?',
+        "SELECT users.*, sessions.admin_id AS acting_admin FROM sessions JOIN users ON users.id = sessions.user_id
+         WHERE sessions.hash = ? AND sessions.expires_at > ? AND users.status != 'banned'",
         [hash('sha256', $value), time()],
     );
 }
@@ -310,12 +323,15 @@ function requireUser(): array
     return currentUser() ?? fail(401, 'Please sign in.');
 }
 
-/** The account that belongs to an address, created on first sight. */
+/** The account that belongs to an address, created on first sight, unless the address was banned. */
 function userByEmail(string $email): array
 {
     $email = strtolower(trim($email));
     $user = row('SELECT * FROM users WHERE email = ?', [$email]);
     if (!$user) {
+        if (row('SELECT hash FROM banned_emails WHERE hash = ?', [bannedKey($email)])) {
+            fail(403, BANNED);
+        }
         run('INSERT INTO users (email, created_at, picture_salt) VALUES (?, ?, ?)', [$email, time(), bin2hex(random_bytes(16))]);
         $user = row('SELECT * FROM users WHERE email = ?', [$email]);
         grantWelcomeCredits(db(), (int) $user['id']);
@@ -323,11 +339,29 @@ function userByEmail(string $email): array
     return $user;
 }
 
+/** How a banned address is kept once its account is deleted: a keyed hash, never the address. */
+function bannedKey(string $email): string
+{
+    return hash_hmac('sha256', 'banned:' . strtolower(trim($email)), (string) config('secret'));
+}
+
+/** Superadmins are named in config.php ('superadmins'); nobody can take that away on the admin page. */
+function isSuperadmin(array $user): bool
+{
+    return in_array($user['email'], array_map(fn (string $e) => strtolower(trim($e)), config('superadmins') ?? []), true);
+}
+
+function isAdmin(array $user): bool
+{
+    return ($user['role'] ?? 'user') === 'admin' || isSuperadmin($user);
+}
+
 // --- What an account may use --------------------------------------------------------------------
 
 function isPro(array $user): bool
 {
-    if ((int) $user['lifetime'] === 1) {
+    // Unlocked by hand on the admin page: everything, as with a licence.
+    if ((int) $user['lifetime'] === 1 || ($user['status'] ?? '') === 'unlocked') {
         return true;
     }
     // A payment that is late keeps the plan until Stripe gives up and cancels it.
@@ -340,10 +374,11 @@ function describeUser(array $user): array
     return [
         'email' => $user['email'],
         'pro' => isPro($user),
-        'plan' => (int) $user['lifetime'] === 1 ? 'lifetime' : (isPro($user) ? 'subscription' : null),
-        'until' => (int) $user['lifetime'] === 1 ? null : ($user['sub_until'] ? (int) $user['sub_until'] : null),
+        'plan' => planOf($user),
+        'until' => planOf($user) === 'lifetime' ? null : ($user['sub_until'] ? (int) $user['sub_until'] : null),
         'consent' => $user['consent_version'] === config('consent_version'),
         'billing' => $user['stripe_customer'] !== null,
+        'admin' => isAdmin($user),
     ] + describeCredits($user);
 }
 
@@ -392,4 +427,39 @@ function enabledProducts(): array
         }
     }
     return $products;
+}
+
+/** Everything stored about an account: what the user downloads, and the admin page too. */
+function accountData(array $user): array
+{
+    return [
+        'email' => $user['email'],
+        'created' => date('c', (int) $user['created_at']),
+        'consent' => $user['consent_at'] ? ['version' => $user['consent_version'], 'given' => date('c', (int) $user['consent_at'])] : null,
+        'signInWith' => array_column(run('SELECT provider FROM identities WHERE user_id = ?', [$user['id']])->fetchAll(), 'provider'),
+        'licenceWithoutEnd' => (int) $user['lifetime'] === 1,
+        'subscription' => $user['sub_id'] ? ['status' => $user['sub_status'], 'paidUntil' => $user['sub_until'] ? date('c', (int) $user['sub_until']) : null] : null,
+        'stripeCustomer' => $user['stripe_customer'],
+        'credits' => [
+            'balance' => creditBalance((int) $user['id']),
+            'ledger' => array_map(
+                fn (array $l) => ['change' => (int) $l['delta'], 'kind' => $l['kind'], 'reason' => $l['reason'], 'at' => date('c', (int) $l['created_at'])],
+                run('SELECT delta, kind, reason, created_at FROM credit_ledger WHERE user_id = ? ORDER BY id', [$user['id']])->fetchAll(),
+            ),
+            'unlockedPictures' => array_map(
+                fn (array $u) => ['key' => $u['picture_key'], 'at' => date('c', (int) $u['created_at'])],
+                run('SELECT picture_key, created_at FROM picture_unlocks WHERE user_id = ? ORDER BY created_at', [$user['id']])->fetchAll(),
+            ),
+            'packs' => array_map(
+                fn (array $p) => ['product' => $p['product'], 'pictures' => (int) $p['quantity'], 'paid' => $p['amount'] / 100, 'currency' => $p['currency'], 'refunded' => $p['refunded_amount'] / 100, 'at' => date('c', (int) $p['created_at'])],
+                run('SELECT * FROM purchases WHERE user_id = ? ORDER BY id', [$user['id']])->fetchAll(),
+            ),
+        ],
+        'vouchers' => array_map(
+            fn (array $v) => ['made' => date('c', (int) $v['created_at']), 'used' => $v['redeemed_at'] ? date('c', (int) $v['redeemed_at']) : null],
+            run('SELECT created_at, redeemed_at FROM vouchers WHERE email = ?', [$user['email']])->fetchAll(),
+        ),
+        'role' => isSuperadmin($user) ? 'superadmin' : $user['role'],
+        'status' => $user['status'],
+    ];
 }

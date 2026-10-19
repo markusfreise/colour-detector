@@ -1,3 +1,4 @@
-// Aggregator for the screens: the app itself and the sign-in gate before it.
+// Aggregator for the screens: the app itself, the sign-in gate before it, and the admin page.
 @use "views/app";
 @use "views/gate";
+@use "views/admin";

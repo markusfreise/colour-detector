@@ -19,6 +19,7 @@
           {{ account.user.plan === 'subscription' ? t('Manage subscription') : t('Invoices') }}
         </button>
         <a class="button button--ghost" :href="account.exportUrl()" target="_blank" rel="noopener">{{ t('Download my data') }}</a>
+        <a v-if="account.user.admin && !account.impersonatedBy" class="button button--ghost" :href="account.adminUrl()">{{ t('Admin') }}</a>
         <button class="button button--ghost" type="button" :disabled="account.busy" @click="account.signOut()">{{ t('Sign out') }}</button>
       </div>
 

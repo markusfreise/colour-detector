@@ -76,6 +76,7 @@ export const useAccountStore = defineStore('account', {
     offline: false, // the API could not be reached: `user` is the one last told
     keys: {}, // hash of a photo -> its key in this account (lib/picture.js)
     invitation: false, // new accounts need an invitation code
+    impersonatedBy: '', // an admin signed in as this account: their address (server/admin.php)
     busy: false,
     error: null,
     notice: null, // { kind, text } after coming back from signing in or paying
@@ -158,6 +159,7 @@ export const useAccountStore = defineStore('account', {
         this.providers = data.providers
         this.products = data.products ?? []
         this.invitation = Boolean(data.invitation)
+        this.impersonatedBy = data.impersonatedBy ?? ''
         writeCache(this.user)
       }, false)
       this.loaded = true
@@ -265,6 +267,14 @@ export const useAccountStore = defineStore('account', {
       await this.attempt(async () => window.location.assign((await call('billing/portal', { lang: currentLocale() })).url))
     },
     exportUrl: () => `${ACCOUNT_API}/export`,
+    adminUrl: () => 'admin/',
+    /** Ends signing in as somebody else and goes back to the admin page as the admin. */
+    async returnToAdmin() {
+      if (await this.attempt(() => call('admin/return', {}))) {
+        writeCache(null)
+        window.location.href = this.adminUrl()
+      }
+    },
     async remove() {
       if (await this.attempt(() => call('delete', {}))) {
         this.user = null

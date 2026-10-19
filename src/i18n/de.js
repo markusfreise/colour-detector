@@ -580,4 +580,8 @@ export default {
   'Blocking': 'Blocking',
   'Blocking: light and shadow in large masses': 'Blocking: Licht und Schatten in großen Massen',
   'block in light and shadow': 'Licht und Schatten anzulegen',
+  'This account is closed.': 'Dieses Konto ist gesperrt.',
+  'Admin': 'Admin',
+  'Signed in as {email} by {admin}.': 'Als {email} angemeldet durch {admin}.',
+  'Back to admin': 'Zurück zum Admin',
 }

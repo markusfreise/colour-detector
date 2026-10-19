@@ -247,9 +247,12 @@ function sendMagicLink(): never
     if ($test !== null) {
         send(['sent' => true, 'link' => $link]);
     }
-    // The language the app is shown in; English for anything else.
+    // The language the app is shown in; English for anything else. A banned address gets no mail.
     $lang = (body()['lang'] ?? '') === 'de' ? 'de' : 'en';
-    sendMail($email, ...signInMail($link, $lang));
+    $closed = row("SELECT id FROM users WHERE email = ? AND status = 'banned'", [$email]) || row('SELECT hash FROM banned_emails WHERE hash = ?', [bannedKey($email)]);
+    if (!$closed) {
+        sendMail($email, ...signInMail($link, $lang));
+    }
     // The same answer whether or not the address has an account.
     send(['sent' => true]);
 }
@@ -435,8 +438,15 @@ function finishOauth(string $provider): never
     if ($subject === '') {
         $back('failed');
     }
+    // A banned address that was deleted stays out; so does a banned account.
+    if ($email !== '' && row('SELECT hash FROM banned_emails WHERE hash = ?', [bannedKey($email)])) {
+        $back('closed');
+    }
     // Without an address there is nothing to hang a new account on.
     $userId = accountFor($provider, $subject, $email, $answer, $settings['client_id']) ?? $back('no-email');
+    if (row("SELECT id FROM users WHERE id = ? AND status = 'banned'", [$userId])) {
+        $back('closed');
+    }
     if ($app !== '') {
         $code = token();
         run('DELETE FROM app_handoffs WHERE expires_at < ?', [time()]);

@@ -1,4 +1,5 @@
 <template>
+  <ImpersonationBar />
   <!-- With accounts on, the app opens after signing in and agreeing to the two statements. -->
   <AccountGate v-if="!account.ready" />
   <div v-else class="app" :class="{ 'app--layer': analysis.layerMode, 'app--hints': hints }">
@@ -109,6 +110,7 @@ import AccountGate from './components/AccountGate.vue'
 import AccountDialog from './components/AccountDialog.vue'
 import { useConsentStore } from './stores/consent.js'
 import { useAccountStore } from './stores/account.js'
+import ImpersonationBar from './components/ImpersonationBar.vue'
 import { isNative } from './lib/native.js'
 import { useProStore } from './stores/pro.js'
 import { useCollectionStore } from './stores/collection.js'

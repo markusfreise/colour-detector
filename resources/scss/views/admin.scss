@@ -1,0 +1,199 @@
+@use "../functions" as *;
+
+// The admin page (admin/index.html): a list of accounts and the one picked beside it.
+
+.admin {
+    width: min(100% - var(--gap-2x), #{pxtorem(1280)});
+    margin-inline: auto;
+    padding-block: var(--gap-2x);
+    color: var(--c-copy);
+
+    &__head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--gap);
+        margin-bottom: var(--gap-15x);
+    }
+
+    &__title {
+        font-size: var(--fs-large);
+        font-weight: 700;
+        margin-right: auto;
+    }
+
+    &__me {
+        color: var(--c-copy-light);
+    }
+
+    &__message {
+        margin-bottom: var(--gap);
+        padding: #{pxtorem(10)} #{pxtorem(14)};
+        border-radius: var(--radius-medium);
+        background: var(--c-corporate-soft);
+
+        &--error {
+            color: var(--c-danger);
+        }
+    }
+
+    &__search {
+        display: flex;
+        gap: #{pxtorem(8)};
+        max-width: #{pxtorem(560)};
+        margin-bottom: var(--gap);
+    }
+
+    &__layout {
+        display: grid;
+        gap: var(--gap-15x);
+        align-items: start;
+
+        @media (min-width: 1024px) {
+            grid-template-columns: minmax(0, 1fr) #{pxtorem(400)};
+        }
+    }
+
+    &__list {
+        min-width: 0;
+        overflow-x: auto;
+    }
+
+    &__count {
+        margin-bottom: #{pxtorem(6)};
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+    }
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--fs-small);
+
+        th,
+        td {
+            padding: #{pxtorem(8)} #{pxtorem(10)};
+            border-bottom: 1px solid var(--c-border);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th {
+            color: var(--c-copy-light);
+            font-weight: 600;
+        }
+    }
+
+    &__number {
+        text-align: right !important;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__row {
+        cursor: pointer;
+
+        &:hover {
+            background: var(--c-border-light);
+        }
+
+        &--selected,
+        &--selected:hover {
+            background: var(--c-corporate-soft);
+        }
+
+        &--banned {
+            color: var(--c-copy-light);
+            text-decoration: line-through;
+        }
+    }
+
+    &__pick {
+        border: 0;
+        padding: 0;
+        background: none;
+        color: inherit;
+        font: inherit;
+        font-weight: 600;
+        text-decoration: inherit;
+        cursor: pointer;
+    }
+
+    &__empty {
+        color: var(--c-copy-light);
+    }
+
+    &__paging {
+        display: flex;
+        gap: #{pxtorem(6)};
+        margin-top: var(--gap);
+    }
+
+    &__detail {
+        padding: #{pxtorem(20)};
+
+        @media (min-width: 1024px) {
+            position: sticky;
+            top: var(--gap);
+        }
+    }
+
+    &__detail-title {
+        font-size: var(--fs-medium);
+        font-weight: 700;
+        overflow-wrap: anywhere;
+        margin-bottom: var(--gap-05x);
+    }
+
+    &__facts {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: #{pxtorem(4)} var(--gap);
+        font-size: var(--fs-small);
+
+        dt {
+            color: var(--c-copy-light);
+        }
+    }
+
+    &__hint {
+        margin-top: var(--gap);
+        color: var(--c-copy-light);
+    }
+
+    &__inline {
+        display: flex;
+        gap: #{pxtorem(8)};
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: #{pxtorem(6)};
+        margin-top: #{pxtorem(12)};
+
+        &--block {
+            margin-top: var(--gap-15x);
+            padding-top: var(--gap);
+            border-top: 1px solid var(--c-border);
+        }
+    }
+
+    &__confirm {
+        display: flex;
+        flex-direction: column;
+        gap: #{pxtorem(8)};
+        margin-top: var(--gap);
+        padding: #{pxtorem(14)};
+        border-radius: var(--radius-medium);
+        background: var(--c-corporate-soft);
+    }
+
+    &__danger {
+        background: var(--c-danger);
+        color: var(--c-white);
+    }
+
+    &__danger-text {
+        color: var(--c-danger);
+    }
+}

@@ -114,9 +114,21 @@ php voucher.php revoke someone@example.org   # removes unused vouchers of that a
 
 The holder signs in with that address and enters the code under "Unlock everything". A code works once and only for the account with that address.
 
+## Admin page
+
+`<app_url>admin/` lists the accounts (search by address) and changes one by hand. Only for admins, signed in to the app as themselves; the account dialog in the app links to it.
+
+- **Superadmins** are named in `config.php` (`superadmins`). They are always admins, are the only ones who can make others admins (role `user` or `admin`) or change another admin, and nobody can change or delete them on the page. Nobody acts on their own account there.
+- **Status:** `regular` (what was paid for counts), `unlocked` (everything, as with a lifetime licence, without paying), `banned` (signed out at once, a running subscription ends at Stripe, never signs in again). A banned account that is deleted leaves a keyed hash of its address in `banned_emails`, so the address cannot sign up again; lifting a ban (status back to regular or unlocked) removes it.
+- **E-mail address:** changed for the account; it must be free.
+- **Download data:** the same JSON the user gets under "Download my data", plus role and status.
+- **Log in as this user:** a session for that account in the admin's browser, for an hour, marked with the admin. The app shows a bar with "Back to admin", which ends it and signs the admin in again. While acting as somebody, the admin has no admin rights.
+- **Back to free:** the subscription ends at Stripe at once, without a refund; licence and unlock are taken away; the account, its credits and unlocked pictures stay. Refunds are made in the Stripe dashboard.
+- **Delete for good:** as when the user deletes the account (subscription ended, Apple sign-in revoked), after typing the address.
+
 ## Routes
 
-`GET me` · `POST auth/magic` · `POST auth/magic/verify` · `GET auth/<provider>/start` · `GET|POST auth/<provider>/callback` · `POST auth/app/exchange` · `POST auth/apple/native` · `POST consent` · `POST logout` · `GET export` · `POST delete` · `POST billing/checkout` · `POST billing/portal` · `POST billing/voucher` · `POST credits/unlock` · `POST stripe/webhook`
+`GET me` · `POST auth/magic` · `POST auth/magic/verify` · `GET auth/<provider>/start` · `GET|POST auth/<provider>/callback` · `POST auth/app/exchange` · `POST auth/apple/native` · `POST consent` · `POST logout` · `GET export` · `POST delete` · `POST billing/checkout` · `POST billing/portal` · `POST billing/voucher` · `POST credits/unlock` · `POST stripe/webhook` · `GET admin/users` · `GET admin/users/<id>/export` · `POST admin/users/<id>` (role, status, email) · `POST admin/users/<id>/free` · `POST admin/users/<id>/impersonate` · `POST admin/users/<id>/delete` · `POST admin/return`
 
 ## Limits
 

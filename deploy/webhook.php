@@ -66,8 +66,10 @@ if ($ref !== "refs/heads/$branch") {
     respond(202, "Ignored ref: $ref");
 }
 
+// Mittwald's web PHP has no nohup and a short PATH: the deploy runs in the background with its
+// output in the log and no input, which is enough to outlive the request.
 $command = sprintf(
-    'nohup bash %s %s %s %s >> %s 2>&1 &',
+    'PATH=/usr/local/bin:/usr/bin:/bin /bin/bash %s %s %s %s >> %s 2>&1 < /dev/null &',
     escapeshellarg($repoDir . '/deploy/deploy.sh'),
     escapeshellarg($repoDir),
     escapeshellarg(__DIR__),

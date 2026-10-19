@@ -1,0 +1,10 @@
+/* The about pages: the colours of the legal pages (legal.css), a picture of the app and the way in. */
+.about { max-width: 52rem; }
+.about__lead { margin: 0 0 1.5rem; font-size: 1.25rem; color: var(--ink-soft); }
+.about__shot { margin: 0 0 2rem; }
+.about__shot img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 12px; }
+.about__shot figcaption { margin-top: 0.5rem; color: var(--ink-soft); font-size: 0.9375rem; }
+.about__steps { margin: 0 0 1rem; padding-left: 1.25rem; }
+.about__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.5rem 0 2rem; }
+.about__cta { display: inline-block; padding: 0.6rem 1rem; border-radius: 8px; background: var(--accent); color: var(--paper) !important; font-weight: 600; text-decoration: none; }
+.about__cta--ghost { background: var(--accent-soft); color: var(--ink) !important; }

@@ -68,18 +68,9 @@
       </template>
 
       <template v-else>
-        <p v-if="!account.sentTo" class="gate__text">
-          {{ t('Sign in for free to use the app. Your account is only your e-mail address; your pictures stay in this browser and are never uploaded.') }}
-        </p>
-        <!-- The early bird of plans.json, until its last day. -->
-        <template v-if="!account.sentTo && earlyBird">
-          <p class="gate__text gate__offer">
-            {{ t('40% off the') }} <a :href="legalPage('pricing')" target="_blank" rel="noopener">{{ t('Pro version') }}</a>{{ t(', yearly or lifetime, for the first 100 users.*') }}
-          </p>
-          <p class="gate__footnote">{{ t('*Offer valid until 30 November 2026.') }}</p>
-        </template>
         <div v-if="buttons.length && !account.sentTo" class="gate__providers">
           <button v-for="p in buttons" :key="p.id" class="button button--secondary gate__provider" type="button" @click="account.signInWith(p.id)">
+            <span v-if="p.id !== 'meta'" :class="['gate__mark', `gate__mark--${p.id}`]" aria-hidden="true"></span>
             {{ t('Continue with {name}', { name: p.name }) }}
           </button>
         </div>
@@ -95,27 +86,36 @@
         </div>
         <!-- Signing in and signing up are the same link by e-mail; the second form is there for
              people who look for one. Only signing up asks for an invitation code. -->
+        <!-- The address, the button, and the way to the other form; the placeholder says what goes
+             in, the label is only for screen readers. -->
         <form v-else-if="!signingUp" class="gate__form" @submit.prevent="account.sendLink(email)">
-          <label class="field gate__field">
-            <span class="field__label">{{ t('Sign in with e-mail') }}</span>
-            <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
-          </label>
-          <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Send me a sign-in link') }}</button>
+          <input v-model.trim="email" class="input gate__email" type="email" required autocomplete="email" :aria-label="t('Sign in with e-mail')" :placeholder="t('Your e-mail address')" />
+          <button class="button button--secondary gate__submit" type="submit" :disabled="account.busy || !email">{{ t('Get a sign-in link') }}</button>
           <button class="gate__link gate__switch" type="button" @click="signingUp = true">{{ t('Sign up for free') }}</button>
         </form>
         <form v-else class="gate__form" @submit.prevent="account.sendLink(email, code)">
-          <label class="field gate__field">
-            <span class="field__label">{{ t('Sign up with e-mail') }}</span>
-            <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
-          </label>
+          <input v-model.trim="email" class="input gate__email" type="email" required autocomplete="email" :aria-label="t('Sign up for free')" :placeholder="t('Your e-mail address')" />
           <!-- Optional: a code unlocks everything for good. Without one the account is a free one. -->
           <label v-if="account.invitation" class="field gate__field">
             <span class="field__label">{{ t('Invitation code (optional)') }}</span>
             <input v-model.trim="code" class="input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
           </label>
-          <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Create my account') }}</button>
+          <button class="button button--secondary gate__submit" type="submit" :disabled="account.busy || !email">{{ t('Create my account') }}</button>
           <button class="gate__link gate__switch" type="button" @click="signingUp = false">{{ t('Sign in with account') }}</button>
         </form>
+
+        <!-- Below the form: the early bird of plans.json until its last day, then the Pro version
+             and the manual side by side. -->
+        <template v-if="!account.sentTo">
+          <p v-if="earlyBird" class="gate__offer">
+            <strong class="gate__offer-percent">{{ early.percent_off }}%</strong>
+            <span class="gate__offer-terms">{{ t('off yearly and lifetime') }}<br />{{ t('early bird until 30 Nov 2026') }}</span>
+          </p>
+          <div class="gate__more">
+            <a class="button gate__more-link" :href="legalPage('pricing')" target="_blank" rel="noopener">{{ t('Pro version') }}</a>
+            <a v-if="!isNative" class="button gate__more-link" :href="legalPage('manual')" target="_blank" rel="noopener">{{ t('Manual') }}</a>
+          </div>
+        </template>
       </template>
 
       <p v-if="account.error" class="gate__error">{{ account.error }}</p>
@@ -162,6 +162,7 @@ import signinImage from '../../resources/howto/signin.webp'
 import { useConsentStore } from '../stores/consent.js'
 import { usePreferencesStore } from '../stores/preferences.js'
 import { useText } from '../i18n/index.js'
+import { isNative } from '../lib/native.js'
 
 const { t, legalPage } = useText()
 const consent = useConsentStore()

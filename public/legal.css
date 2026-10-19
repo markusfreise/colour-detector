@@ -15,4 +15,4 @@ body { margin: 0; background: var(--paper); color: var(--ink); font: 1.0625rem/1
 .legal ul { padding-left: 1.25rem; }
 .legal a { color: var(--accent); }
 .legal__open { background: var(--accent-soft); padding: 0 0.25rem; border-radius: 3px; }
-.legal__nav { display: flex; gap: 1rem; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.legal__nav { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); }

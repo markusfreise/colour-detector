@@ -33,7 +33,7 @@ Vue 3 (Composition API, `<script setup>`) · Pinia · Vite 5 · Vitest · Web Wo
 - `src/lib/` – pure logic (colour maths, mixing model, segmentation). Keep it framework-free and tested.
 - `src/stores/` – `paints` (stock + enabled set, localStorage) and `analysis` (image, settings, segmentation, palette entries).
 - `src/data/paints.js` – hard-coded stock. `hex` = colour at strength 1, and since 2026-10-12 the darkest the paint is ever used: more of one paint than strength 1 does not exist (`MAX_AMOUNT` in `lib/mixing.js`). Darker needs a second paint. The stock values come from the Horadam chart, which shows a mid-strength wash, so dark paints are recorded lighter than they are at full strength.
-- `docs/manual/` – the manual (EN `public/manual/`, DE `public/de/handbuch/`), built by `docs/manual/build.sh`: chapters in Markdown, screenshots of the app via Playwright. After a UI change, re-run it and re-read the chapters that show the changed screens.
+- `docs/manual/` – the manual (EN `public/manual/`, DE `public/de/handbuch/`), built by `docs/manual/build.sh`: chapters in Markdown, screenshots of the app via Playwright. After a UI change, re-run it and re-read the chapters that show the changed screens. The same build writes `public/llms.txt`, `llms-full.txt` (EN, DE), `sitemap.xml` and `robots.txt`; after adding or removing a page in `public/`, run `docs/manual/build.sh --pages`.
 - `deploy/` – `webhook.php` + `deploy.sh` for the live server.
 - `app/` – native app **Watercolourlove** (SwiftUI, iOS/iPadOS/macOS, bundle ID `de.markusfreise.watercolourlove`, until 2026-10-15 named Tintmap); its support and privacy pages are `public/app/`. `app/Sources/Core/` is a port of `src/lib/`: change both sides together. Details in `app/README.md`.
 

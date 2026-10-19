@@ -11,7 +11,7 @@
  *     'secret'     => 'long-random-string',          // same as in GitHub → Settings → Webhooks
  *     'repo_dir'   => '/home/www/p123456/colour-detector',  // git checkout, outside the web root
  *     'branch'     => 'main',
- *     'log_file'   => __DIR__ . '/../colour-detector-deploy.log', // outside the web root
+ *     'log_file'   => '/home/www/p123456/html/_sites/colour-detector/.deploy.log', // in the checkout
  *   ];
  */
 

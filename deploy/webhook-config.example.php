@@ -4,5 +4,5 @@ return [
     'secret'   => 'CHANGE-ME-long-random-string',
     'repo_dir' => '/home/www/pXXXXXX/html/_sites/colour-detector',
     'branch'   => 'main',
-    'log_file' => '/home/www/pXXXXXX/colour-detector-deploy.log',
+    'log_file' => '/home/www/pXXXXXX/html/_sites/colour-detector/.deploy.log', // the home directory is not writable
 ];

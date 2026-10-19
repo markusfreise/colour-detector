@@ -105,7 +105,7 @@ Spec: [`PRD_ColourDetector_v1.0.0.md`](PRD_ColourDetector_v1.0.0.md) · Backlog:
 
 ## Deploy
 
-The app runs at https://watercolourlove.de (Mittwald, web root `~/html/_sites/watercolourlove`). A push to `main` deploys it: a GitHub webhook calls `webhook.php` in the web root, which checks the signature and starts `deploy/deploy.sh` in the checkout `~/html/_sites/colour-detector` (fetch `main` → `npm ci` → tests → `npm run build` → rsync `dist/` into the web root, `server/` into `api/`). The checkout is not the web root (no domain points at it), so a failed build leaves the site as it was; `.htaccess`, `webhook.php`, `webhook-config.php` and `api/config.php` in the web root are kept. The log is `~/colour-detector-deploy.log`.
+The app runs at https://watercolourlove.de (Mittwald, web root `~/html/_sites/watercolourlove`). A push to `main` deploys it: a GitHub webhook calls `webhook.php` in the web root, which checks the signature and starts `deploy/deploy.sh` in the checkout `~/html/_sites/colour-detector` (fetch `main` → `npm ci` → tests → `npm run build` → rsync `dist/` into the web root, `server/` into `api/`). The checkout is not the web root (no domain points at it), so a failed build leaves the site as it was; `.htaccess`, `webhook.php`, `webhook-config.php` and `api/config.php` in the web root are kept. The log is `.deploy.log` in the checkout (the home directory on Mittwald is not writable).
 
 One-time setup on the host (SSH), once the checkout exists (`git clone -b main git@github.com:markusfreise/colour-detector.git ~/html/_sites/colour-detector`, private repo: read-only deploy key, `core.sshCommand` set to use it):
 

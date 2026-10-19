@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll } from 'vitest'
 import { pictureColours, layerImage as layerImageWith, compositeColours, renderLayers } from '../lib/layers.js'
 import { colourSet, proposeLayerPaints, fitLayers, coatDepth, washGuide, planLayersFor } from '../lib/layerPlan.js'
-import { absorbanceFromHex, depthLimit, depth, mixHex } from '../lib/mixing.js'
+import { absorbanceFromHex, depthLimit, depth, mixHex, paintFilter } from '../lib/mixing.js'
 import { hexToRgb, hexToOklab, rgbToHex, linearToRgb, deltaE } from '../lib/color.js'
 import { mulberry32 } from '../lib/segment.js'
 
@@ -17,9 +17,7 @@ const black = { id: 'k', hex: '#1b1811' }
 function glaze(...washes) {
   const linear = [1, 1, 1]
   for (const [paint, amount] of washes) {
-    const A = absorbanceFromHex(paint.hex)
-    const d = depth(amount, depthLimit(A))
-    A.forEach((v, j) => { linear[j] *= Math.exp(-d * v) })
+    paintFilter(absorbanceFromHex(paint.hex), amount).forEach((v, j) => { linear[j] *= v })
   }
   return rgbToHex(linearToRgb(linear))
 }
@@ -301,7 +299,8 @@ describe('accents', () => {
   })
 
   it('keeps thin dark lines that the blur of the washes wipes out', async () => {
-    const pale = hexToRgb(glaze([blue, 0.2])), dark = hexToRgb(glaze([blue, 0.2], [black, 1]))
+    // The field a pale blue, not paper white: near-neutral marks on paper are clutter no accent goes on.
+    const pale = hexToRgb(glaze([blue, 0.3])), dark = hexToRgb(glaze([blue, 0.3], [black, 1]))
     // 3 px lines, 40 px apart: a few percent of the picture.
     const rgba = makeImage(120, 120, (x, y) => ((x + 2 * y) % 80 < 3 ? dark : pale))
     const plain = await layerImage(rgba, 120, 120, [blue, black], { paintIds: ['b', 'k'], maxCoats: 2, simplify: 4, accents: 0 })

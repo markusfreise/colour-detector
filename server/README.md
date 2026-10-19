@@ -2,7 +2,7 @@
 
 Small PHP service for sign-in, payment and mixing. No framework, no packages: PDO with SQLite, curl, openssl. Pictures never come here.
 
-An account is an e-mail address, the consent given and what was paid for (`users`); plus the identifiers of Google, Apple and Meta (`identities`), sessions and sign-in links, all stored as hashes.
+An account is an e-mail address, the consent given and what was paid for (`users`); plus the identifiers of Google, Apple and Meta (`identities`, with Apple's refresh token to take the sign-in back on deletion), and sessions, sign-in links and app handoffs, stored as hashes.
 
 ## Switching accounts on
 
@@ -53,9 +53,24 @@ All redirect addresses are `<app_url>api/auth/<provider>/callback`.
 |---|---|---|
 | Google | Google Cloud console, OAuth client of type "Web application", scopes `openid email` | `client_id`, `client_secret` |
 | Meta | developers.facebook.com, app with "Facebook Login", permission `email` | `client_id` (app ID), `client_secret` |
-| Apple | developer.apple.com: an App ID with Sign in with Apple, a Services ID (the `client_id`) with domain and return address, a key (.p8) | `client_id`, `team_id`, `key_id`, `key_file` |
+| Apple | developer.apple.com: the App ID `de.markusfreise.watercolourlove` with Sign in with Apple (as primary App ID), a Services ID grouped under it (the `client_id`) with domain and return address, a key (.p8) with Sign in with Apple for that primary App ID | `client_id`, `app_id` (the bundle ID, for the native app), `team_id`, `key_id`, `key_file` |
 | Stripe | Run `php stripe-setup.php` in the folder of the API on the server (see below) | written by the script |
 | Mail | The host must be able to send as the `from` address (SPF, DKIM) | `mail.from` |
+
+Google needs only the web client: the native app signs in with Google through the same web flow, in a browser sheet. Its consent screen must be published ("In production"), with the app's home page, privacy policy and the domain `watercolourlove.de` as authorised domain; with scopes `openid email` Google does not review it.
+
+Apple gives the same subject to the web and the app only when the Services ID is grouped under the app's App ID, so that one person has one account on both.
+
+## The native app
+
+The app has the same accounts. Its session is a bearer token (`Authorization: Bearer ...`), kept in the keychain; everything else is the same routes.
+
+- **Sign in with Apple** happens in the app. It sends the code Apple gave it to `POST auth/apple/native`, which redeems it for the bundle ID (`apple.app_id`) and answers with a session.
+- **Google** (and Meta) open the web flow in a browser sheet: `GET auth/<provider>/start?app=<challenge>`, where the challenge is the SHA-256 (base64url) of a secret only the app knows. The callback sends the browser to `de.markusfreise.watercolourlove://signed-in?code=...`, and the app collects the session with `POST auth/app/exchange` and its secret. The code works once, for five minutes.
+- `GET me` lists the ways the app can offer under `appProviders`.
+- Deleting the account takes back Apple's sign-ins at Apple (`auth/revoke`, Apple's rule for apps); the refresh token is kept for that alone.
+
+A plan or licence bought on the web unlocks the app as well (App Review guideline 3.1.3(b), multiplatform services: the same full version can be bought in the app).
 
 ## Stripe
 
@@ -72,6 +87,7 @@ A restricted key (`rk_live_...`) works, with these permissions (everything else 
 | Resource | Permission | Used by |
 |---|---|---|
 | Products, Prices, Tax rates | Write | setup |
+| Coupons, Promotion codes | Write | setup (early bird) |
 | Webhook endpoints | Write | setup |
 | Customer portal (billing portal configurations and sessions) | Write | setup, "Manage subscription" |
 | Checkout Sessions | Write | buying |
@@ -79,6 +95,8 @@ A restricted key (`rk_live_...`) works, with these permissions (everything else 
 | Subscriptions | Read | webhook |
 
 It creates the product, a price for every product in `plans.json`, the 19 % VAT rate, the webhook to `<app_url>api/stripe/webhook` and the customer portal (cancel at the end of the period, switch between monthly and yearly, invoices, card), reuses what is already there, and writes key, webhook secret and price IDs into `config.php`. Run it again after changing a price in `PLANS`; the old price stays for its existing subscribers. With a `sk_test_` key it sets up the test mode the same way.
+
+**Early bird.** `early_bird` in `plans.json` makes a promotion code (default `EARLYBIRD`): a percentage off the first payment of every plan of at least `minimum_amount` (the yearly plan and the lifetime licence, not the monthly plan or picture packs), for the first `max_redemptions` buyers, until the end of the day `ends`. Customers type it at checkout. A checkout that already carries the credit-pack deduction takes no code (Stripe allows one or the other). Changed terms make a new coupon and code on the next run; to end it early, deactivate the promotion code in the Stripe dashboard and set `active` to false. The pricing pages (`public/pricing/`, `public/de/preise/`) show it while it runs.
 
 In the Stripe dashboard, once: public details (terms and privacy URL, support address) and the VAT ID on the invoices.
 
@@ -120,7 +138,7 @@ The holder signs in with that address and enters the code under "Unlock everythi
 
 ## Routes
 
-`GET me` · `POST auth/magic` · `POST auth/magic/verify` · `GET auth/<provider>/start` · `GET|POST auth/<provider>/callback` · `POST consent` · `POST logout` · `GET export` · `POST delete` · `POST billing/checkout` · `POST billing/portal` · `POST billing/voucher` · `POST credits/unlock` · `POST stripe/webhook`
+`GET me` · `POST auth/magic` · `POST auth/magic/verify` · `GET auth/<provider>/start` · `GET|POST auth/<provider>/callback` · `POST auth/app/exchange` · `POST auth/apple/native` · `POST consent` · `POST logout` · `GET export` · `POST delete` · `POST billing/checkout` · `POST billing/portal` · `POST billing/voucher` · `POST credits/unlock` · `POST stripe/webhook`
 
 ## Limits
 

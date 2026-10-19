@@ -1,6 +1,7 @@
 @use "../functions" as *;
 
 // The colours with their mixes on the printed sheet (PrintLegend.vue); shown by print.scss.
+// Four colours to a row, each one a card: base colour and washes on top, the paints below.
 
 .legend {
     display: none;
@@ -21,34 +22,29 @@
     }
 
     &__list {
-        display: flex;
-        flex-direction: column;
-        gap: #{pxtorem(7)};
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: #{pxtorem(28)} #{pxtorem(10)};
+        align-items: start;
     }
 
     &__item {
-        display: grid;
-        grid-template-columns: #{pxtorem(22)} #{pxtorem(170)} minmax(0, 1fr) #{pxtorem(34)};
-        gap: var(--gap-05x);
-        align-items: stretch;
+        display: flex;
+        flex-direction: column;
+        gap: #{pxtorem(4)};
+        min-width: 0;
         break-inside: avoid;
-    }
-
-    &__number {
-        align-self: center;
-        font-weight: 700;
-        text-align: right;
-        font-variant-numeric: tabular-nums;
     }
 
     &__washes {
         display: flex;
-        min-height: #{pxtorem(40)};
+        min-height: #{pxtorem(42)};
         border: 1px solid var(--c-chip-border);
         border-radius: var(--radius-small);
         overflow: hidden;
     }
 
+    &__base,
     &__wash {
         flex: 1 1 0;
         min-width: 0;
@@ -57,40 +53,56 @@
         align-items: center;
         justify-content: center;
         font-size: #{pxtorem(9)};
-        line-height: 1.3;
+        line-height: 1.25;
 
         strong {
             font-size: #{pxtorem(11)};
         }
-
-        & + & {
-            box-shadow: -1px 0 0 rgba(0, 0, 0, 0.18);
-        }
     }
 
-    &__recipe {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: #{pxtorem(3)};
-        min-width: 0;
+    &__base {
+        flex-grow: 1.4;
+        box-shadow: 1px 0 0 rgba(0, 0, 0, 0.35);
+        z-index: 1;
+    }
+
+    &__base &__number {
+        font-size: #{pxtorem(16)};
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__wash + &__wash {
+        box-shadow: -1px 0 0 rgba(0, 0, 0, 0.18);
     }
 
     &__paints {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: #{pxtorem(6)};
+        display: flex;
+        flex-direction: column;
+        gap: #{pxtorem(3)};
     }
 
     &__paint {
-        min-height: #{pxtorem(22)};
-        padding-block: var(--gap-025x);
+        justify-content: flex-start;
+        gap: 0.4em;
+        min-height: 0;
+        padding: #{pxtorem(3)} #{pxtorem(6)};
+        font-size: #{pxtorem(9)};
+
+        .chip__text {
+            overflow: visible;
+            white-space: normal;
+        }
+    }
+
+    &__amount {
+        flex: none;
+        white-space: nowrap;
     }
 
     &__bar {
         display: flex;
-        height: #{pxtorem(12)};
-        border: 1px solid rgba(0, 0, 0, 0.18);
+        height: #{pxtorem(30)};
+        border: 1px solid #000;
         border-radius: #{pxtorem(4)};
         overflow: hidden;
     }
@@ -102,19 +114,17 @@
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        font-size: #{pxtorem(9)};
+        font-size: #{pxtorem(12)};
         font-weight: 700;
         line-height: 1;
+
+        & + & {
+            box-shadow: -1px 0 0 #000;
+        }
     }
 
     &__paper {
+        font-size: #{pxtorem(9)};
         font-style: italic;
-    }
-
-    &__share {
-        align-self: center;
-        color: var(--c-copy-light);
-        font-size: #{pxtorem(12)};
-        text-align: right;
     }
 }

@@ -6,6 +6,20 @@ import { useAnalysisStore } from './analysis.js'
 import { useProStore, FREE_IMAGES } from './pro.js'
 import { useAccountStore } from './account.js'
 import { t } from '../i18n/index.js'
+import { wclFile, wclName } from '../lib/wcl.js'
+import { isNative } from '../lib/native.js'
+import { version as APP_VERSION } from '../../package.json'
+
+// The picture as a .wcl file in the downloads: every save is also a copy outside the browser.
+// Not in the app's web view, where a download does not work.
+async function downloadWcl(record) {
+  if (isNative) return
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(await wclFile(record, { appVersion: APP_VERSION }))
+  link.download = wclName(record.name)
+  link.click()
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000)
+}
 
 const STORE_SIZE = 1600 // longest side of the stored picture
 const THUMB_SIZE = 320
@@ -43,7 +57,10 @@ export const useCollectionStore = defineStore('collection', {
       }
     },
 
-    /** Save the current picture with its settings and colour changes; updates it when it is already saved. */
+    /**
+     * Save the current picture with its settings and colour changes; updates it when it is already
+     * saved. In the browser it also downloads the picture as a .wcl file (lib/wcl.js).
+     */
     async saveCurrent() {
       const analysis = useAnalysisStore()
       if (!analysis.image) return false
@@ -53,7 +70,7 @@ export const useCollectionStore = defineStore('collection', {
       try {
         const id = analysis.savedId ?? `img-${Date.now().toString(36)}`
         const existing = isNew ? null : await getImage(id)
-        await putImage({
+        const record = {
           id,
           name: analysis.imageName,
           blob: existing?.blob ?? (await scaled(analysis.image, STORE_SIZE, 'blob', 0.9)),
@@ -63,9 +80,13 @@ export const useCollectionStore = defineStore('collection', {
           palette: structuredClone(toRaw(usePaintsStore().palette)),
           picture: existing?.picture ?? { ...analysis.picture },
           updatedAt: Date.now(),
-        })
+        }
+        await putImage(record)
         analysis.savedId = id
         await this.refresh()
+        await downloadWcl(record).catch(() => {
+          this.error = t('Saved in the collection, but the picture file could not be made.')
+        })
         return true
       } catch (e) {
         this.error = t('Could not save the picture: {reason}', { reason: t(e.message) })

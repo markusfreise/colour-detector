@@ -71,20 +71,65 @@ extension View {
     func floatShadow() -> some View { shadow(color: .black.opacity(0.18), radius: 15, y: 8) }
 }
 
-/// The web app's square icon button: white with a thin border, in the primary colour when it is on.
+/// A button that is on, in light and dark alike: real black with a white icon that glows a
+/// little; in dark mode a white outline as well, so that it stands off the dark page.
+struct ActiveLook: ViewModifier {
+    let active: Bool
+    var shape = RoundedRectangle(cornerRadius: Theme.radiusSmall)
+    @Environment(\.colorScheme) private var scheme
+
+    func body(content: Content) -> some View {
+        if active {
+            content
+                .foregroundStyle(.white)
+                .shadow(color: .white.opacity(0.55), radius: 2.5)
+                .background(.black, in: shape)
+                .overlay(shape.strokeBorder(scheme == .dark ? .white : .clear))
+        } else {
+            content
+        }
+    }
+}
+
+extension EnvironmentValues {
+    /// The side of the icon buttons where it differs from Theme.iconButton: smaller on a phone,
+    /// so that the row of tools fits and every button has the same size.
+    @Entry var iconButtonSize: CGFloat?
+}
+
+/// An icon of the interface: an SF Symbol, or one of the web's icons from the asset catalogue
+/// ("icon.blocking"), drawn at the size of an SF Symbol in a button of side `size`.
+struct Glyph: View {
+    let name: String
+    let size: CGFloat
+
+    var body: some View {
+        if name.hasPrefix("icon.") {
+            // The web's icons fill about 52 of their 72 units.
+            Image(name).resizable().scaledToFit().frame(width: size * 0.62, height: size * 0.62)
+        } else {
+            Image(systemName: name).font(.system(size: size * 0.45))
+        }
+    }
+}
+
+/// The web app's square icon button: white with a thin border, black when it is on.
 struct IconButtonStyle: ButtonStyle {
     var active = false
-    var size = Theme.iconButton
+    var size: CGFloat?
     @Environment(\.isEnabled) private var enabled
+    @Environment(\.iconButtonSize) private var defaultSize
 
     func makeBody(configuration: Configuration) -> some View {
+        let size = size ?? defaultSize ?? Theme.iconButton
         configuration.label
             .labelStyle(.iconOnly)
             .font(.system(size: size * 0.45))
-            .foregroundStyle(active ? Theme.onCorporate : configuration.isPressed ? Theme.corporate : Theme.copy)
+            .foregroundStyle(configuration.isPressed ? Theme.corporate : Theme.copy)
             .frame(width: size, height: size)
-            .background(active ? Theme.corporate : Theme.raised, in: RoundedRectangle(cornerRadius: Theme.radiusSmall))
-            .overlay(RoundedRectangle(cornerRadius: Theme.radiusSmall).strokeBorder(active ? .clear : Theme.border))
+            .background(Theme.raised, in: RoundedRectangle(cornerRadius: Theme.radiusSmall))
+            .overlay(RoundedRectangle(cornerRadius: Theme.radiusSmall).strokeBorder(Theme.border))
+            .modifier(ActiveLook(active: active))
             .flatShadow()
             .opacity(enabled ? 1 : 0.45)
             .contentShape(Rectangle())
@@ -97,17 +142,98 @@ struct IconButton: View {
     let title: String
     let symbol: String
     var active = false
-    var size = Theme.iconButton
+    /// Part of the full version, not bought: ghosted. A tap still offers it.
+    var locked = false
+    var size: CGFloat?
+    /// The short label shown with Help on; the title when there is none.
+    var hint: String? = nil
+    /// Below a row of tools: 1 puts the label a line lower than its neighbours'.
+    var hintRow = 0
     let action: () -> Void
+    @Environment(\.iconButtonSize) private var defaultSize
 
     var body: some View {
-        Button(L(title), systemImage: symbol, action: action)
-            .buttonStyle(IconButtonStyle(active: active, size: size))
-            .help(L(title))
+        let size = size ?? defaultSize ?? Theme.iconButton
+        Button(action: action) {
+            Label { Text(L(title)) } icon: { Glyph(name: symbol, size: size).opacity(locked && !active ? 0.4 : 1) }
+        }
+        .buttonStyle(IconButtonStyle(active: active, size: size))
+        .help(L(title))
+        .hint(hint ?? title, size: size, row: hintRow)
     }
 }
 
-/// A row of options in one frame, divided by thin lines; the chosen one in the primary colour.
+/// Where the labels of the buttons go while Help is on: beside a column of buttons, on the side
+/// away from the edge of the window, or below a row of tools (above it at the bottom of a phone).
+enum HintSide {
+    case leading, trailing, below, above
+}
+
+extension EnvironmentValues {
+    /// Help is on: every button shows its label, as the web's .app--hints.
+    @Entry var showHints = false
+    @Entry var hintSide = HintSide.trailing
+}
+
+extension View {
+    /// The label of a button of side `size`, shown beside it while Help is on. Below a row of tools
+    /// every second label (`row` 1) sits a line lower, so that neighbours do not run into each other.
+    func hint(_ text: String, size: CGFloat? = nil, row: Int = 0) -> some View {
+        modifier(HintLabel(text: text, given: size, row: row))
+    }
+}
+
+private struct HintLabel: ViewModifier {
+    let text: String
+    let given: CGFloat?
+    let row: Int
+    @Environment(\.showHints) private var shown
+    @Environment(\.hintSide) private var side
+    @Environment(\.iconButtonSize) private var defaultSize
+    private var size: CGFloat { given ?? defaultSize ?? Theme.iconButton }
+
+    func body(content: Content) -> some View {
+        content.overlay(alignment: alignment) {
+            if shown {
+                placed
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+                    .transition(.opacity)
+            }
+        }
+    }
+
+    private var bubble: some View {
+        Text(L(text))
+            .font(.caption2.weight(.medium))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(Theme.onCorporate)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 3)
+            .background(Theme.corporate.opacity(0.9), in: RoundedRectangle(cornerRadius: Theme.radiusSmall))
+    }
+
+    @ViewBuilder private var placed: some View {
+        switch side {
+        case .leading: bubble.fixedSize().offset(x: -(size + 6))
+        case .trailing: bubble.fixedSize().offset(x: size + 6)
+        case .below: bubble.frame(width: 96).fixedSize().offset(y: size + 4 + CGFloat(row) * 26)
+        case .above: bubble.frame(width: 96).fixedSize().offset(y: -(size + 4 + CGFloat(row) * 26))
+        }
+    }
+
+    /// The side of the button the label starts from, before it is moved past the button.
+    private var alignment: Alignment {
+        switch side {
+        case .leading: .trailing
+        case .trailing: .leading
+        case .below: .top
+        case .above: .bottom
+        }
+    }
+}
+
+/// A row of options in one frame, divided by thin lines; the chosen one black (ActiveLook).
 struct SegmentedGroup<Option: Hashable>: View {
     let options: [Option]
     let selection: Option?
@@ -115,6 +241,10 @@ struct SegmentedGroup<Option: Hashable>: View {
     let symbol: (Option) -> String
     let choose: (Option) -> Void
     var size = Theme.iconButton
+    /// Short labels for Help; the titles when there are none.
+    var hint: ((Option) -> String)? = nil
+    /// Options of the full version, not bought: ghosted.
+    var locked: (Option) -> Bool = { _ in false }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -122,11 +252,11 @@ struct SegmentedGroup<Option: Hashable>: View {
                 let active = option == selection
                 if index > 0 { Theme.border.frame(width: 1) }
                 Button { choose(option) } label: {
-                    Image(systemName: symbol(option))
-                        .font(.system(size: size * 0.45))
-                        .foregroundStyle(active ? Theme.onCorporate : Theme.copyLight)
+                    Glyph(name: symbol(option), size: size)
+                        .opacity(locked(option) && !active ? 0.4 : 1)
+                        .foregroundStyle(Theme.copyLight)
                         .frame(width: size, height: size)
-                        .background(active ? Theme.corporate : .clear)
+                        .modifier(ActiveLook(active: active, shape: RoundedRectangle(cornerRadius: 0)))
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -140,6 +270,15 @@ struct SegmentedGroup<Option: Hashable>: View {
         .clipShape(RoundedRectangle(cornerRadius: Theme.radiusSmall))
         .overlay(RoundedRectangle(cornerRadius: Theme.radiusSmall).strokeBorder(Theme.border))
         .flatShadow()
+        // The labels for Help outside the clipped frame, each under its option.
+        .overlay {
+            HStack(spacing: 0) {
+                ForEach(Array(options.enumerated()), id: \.element) { index, option in
+                    if index > 0 { Color.clear.frame(width: 1) }
+                    Color.clear.frame(width: size, height: size).hint(hint?(option) ?? title(option), size: size, row: index % 2)
+                }
+            }
+        }
     }
 }
 
@@ -147,6 +286,8 @@ struct SegmentedGroup<Option: Hashable>: View {
 /// that closes it at its top right, the content below.
 struct PanelCard<Content: View>: View {
     let close: () -> Void
+    /// Dragging the card brings it in front of the other cards.
+    var touched: () -> Void = {}
     @ViewBuilder let content: Content
     @State private var offset = CGSize.zero
     @GestureState private var drag = CGSize.zero
@@ -160,6 +301,7 @@ struct PanelCard<Content: View>: View {
                 .contentShape(Rectangle())
                 .gesture(DragGesture()
                     .updating($drag) { value, state, _ in state = value.translation }
+                    .onChanged { _ in touched() }
                     .onEnded { value in
                         offset.width += value.translation.width
                         offset.height += value.translation.height

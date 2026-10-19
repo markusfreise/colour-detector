@@ -44,7 +44,7 @@ Open **Settings**. Three sliders decide most of it:
 2. The areas: organic or geometric.
 3. **Simplify areas**.
 4. **Colours**, the number of mixes.
-5. **Details**: whether small areas of another hue keep a mix of their own.
+5. **Details**: whether the mixes go to fine steps across the picture or to small areas of another hue.
 6. **Max. paints** per mix.
 
 Every slider is explained in [Colour areas](colour-areas.html).
@@ -79,7 +79,7 @@ Press **Save** to keep the picture with its settings, its palette and your chang
 
 ### 7. Print the plan
 
-**Print / PDF** gives the picture followed by every mix with its paints. Print it for the desk, or choose "Save as PDF" in the print dialog and keep it on a tablet. **Template to print** draws only the outlines and numbers in light blue: print it on watercolour paper and paint directly on the sheet. Details in [Printing](printing.html).
+**Print / PDF** gives the picture followed by every mix with its paints. Print it for the desk, or choose "Save as PDF" in the print dialog and keep it on a tablet. **Grid** lays square cells over the picture, to copy the drawing onto your paper cell by cell. Details in [Printing](printing.html).
 
 ## Part 2: Paint it
 

@@ -7,6 +7,16 @@ import { useAnalysisStore } from './analysis.js'
 // Pictures a free account keeps: one in the app from the App Store, none in the browser.
 export const FREE_IMAGES = freeSavedPictures(isNative)
 
+// "Get pro" closed with its cross stays closed until the tab is closed.
+const PROMO_KEY = 'colour-detector:promo-hidden'
+function promoHiddenStored() {
+  try {
+    return sessionStorage.getItem(PROMO_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
 export const useProStore = defineStore('pro', {
   state: () => ({
     unlocked: false,
@@ -16,18 +26,23 @@ export const useProStore = defineStore('pro', {
     reason: '', // what the user tried to do when the dialog opened
     feature: null, // the feature asked for, see plans.json
     error: null,
+    promoHidden: promoHiddenStored(), // "Get pro" closed for this session
+    debugPro: null, // the debug menu: true unlocked, false locked, null as bought
   }),
   getters: {
     /** What the entitlement rules are asked about: the account, the purchase in the app, the picture on screen. */
     entitlement(state) {
       const account = useAccountStore()
+      const picture = useAnalysisStore().picture
+      // The debug menu: everything unlocked, or locked as for an account without a plan.
+      if (state.debugPro !== null) return { open: false, native: false, plan: state.debugPro ? 'lifetime' : null, unlocked: new Set(), picture }
       return {
         open: !isNative && !account.enabled,
         native: isNative,
         nativeUnlocked: state.unlocked,
         plan: account.user?.plan ?? null,
         unlocked: account.unlockedHashes,
-        picture: useAnalysisStore().picture,
+        picture,
       }
     },
     // Everything unlocked: a plan, the purchase in the app, or a build without accounts.
@@ -54,10 +69,11 @@ export const useProStore = defineStore('pro', {
     },
     /**
      * True when the feature may be used (or `allowed` says so anyway); otherwise opens the dialog
-     * that offers what unlocks it. `feature` null asks for everything (the "Get Pro" buttons).
+     * that offers what unlocks it. `feature` null asks for everything (the "Get Pro" buttons);
+     * `always` opens the dialog regardless (the debug menu).
      */
-    require(feature, reason, allowed = false) {
-      if (allowed || (feature ? this.can(feature) : this.active)) return true
+    require(feature, reason, allowed = false, always = false) {
+      if (!always && (allowed || (feature ? this.can(feature) : this.active))) return true
       this.feature = feature
       this.reason = reason
       this.error = null
@@ -80,6 +96,14 @@ export const useProStore = defineStore('pro', {
     },
     dismiss() {
       this.offered = false
+    },
+    hidePromo() {
+      this.promoHidden = true
+      try {
+        sessionStorage.setItem(PROMO_KEY, '1')
+      } catch {
+        // Private mode: closed until the page is reloaded.
+      }
     },
   },
 })

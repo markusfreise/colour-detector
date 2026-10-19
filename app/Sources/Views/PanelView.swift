@@ -22,6 +22,19 @@ struct PanelView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 Text(L(session.layerMode ? "Layers" : "Colours")).font(Theme.title)
+                // The spot tapped in the picture, at the top of the layers card.
+                if session.layerMode, let spot = session.layerSpot {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("This Spot").font(Theme.strong)
+                            Spacer()
+                            CloseButton { session.selectPoint(nil) }
+                        }
+                        LayerSpotView(spot: spot)
+                    }
+                    .padding(12)
+                    .background(Theme.corporateSoft, in: RoundedRectangle(cornerRadius: Theme.radiusMedium))
+                }
                 if session.layerMode {
                     HStack {
                         Text("Tap a layer to see it alone.").font(Theme.small).foregroundStyle(Theme.copyLight)

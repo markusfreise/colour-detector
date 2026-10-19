@@ -92,17 +92,21 @@ test('app: a signed-in account gets the files of the app and recipes', function 
     same('c', $data['results'][0][0]['paints'][0]['paintId']);
 });
 
-test('app: monochrome and the colour charts come with a plan', function () {
+test('app: monochrome and the makers\' colour charts come with a plan, the common colours do not', function () {
     $free = agreed('free@example.org');
     play('POST', $free, ['jobs' => [['hex' => '#808080', 'maxPaints' => 2, 'limit' => 1, 'values' => true]]] + MIX_REQUEST);
     same(403, answerOf(fn () => handleMix('recipes'))[0]);
     play('GET', $free);
-    same(403, answerOf(fn () => handleCharts())[0]);
+    [$status, $data] = answerOf(fn () => handleCharts());
+    same(200, $status);
+    same(['common'], array_keys($data['charts']));
+    check(count($data['charts']['common']) > 30, 'the common colours');
     run('UPDATE users SET lifetime = 1 WHERE id = ?', [$free['id']]);
     play('GET', $free);
     [$status, $data] = answerOf(fn () => handleCharts());
     same(200, $status);
     check(count($data['charts']['horadam']) > 100, 'the Horadam chart');
+    check(count($data['charts']['sennelier']) > 50, 'the Sennelier chart');
 });
 
 test('app: an open instance lets anyone in, and a request of absurd size is refused', function () {

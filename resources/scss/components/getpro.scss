@@ -1,0 +1,48 @@
+@use "../functions" as *;
+
+// "Get pro" with its cross: one card as tall as the icon buttons beside it (--tool, app.scss),
+// white with a thin border like them; the cross is divided off as in a segmented group.
+.getpro {
+    display: inline-flex;
+    align-items: stretch;
+    height: var(--tool);
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-small);
+    background: var(--c-background-raised);
+    box-shadow: var(--shadow-flat);
+
+    &__open,
+    &__close {
+        display: inline-flex;
+        align-items: center;
+        border: 0;
+        background: transparent;
+        color: var(--c-copy);
+        cursor: pointer;
+
+        &:hover {
+            background: var(--c-border-light);
+        }
+    }
+
+    &__open {
+        gap: #{pxtorem(6)};
+        padding-inline: #{pxtorem(14)} #{pxtorem(12)};
+        font: inherit;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    &__close {
+        justify-content: center;
+        width: calc(var(--tool) * 0.75);
+        border-left: 1px solid var(--c-border);
+        color: var(--c-copy-light);
+
+        svg {
+            width: #{pxtorem(12)};
+            height: #{pxtorem(12)};
+        }
+    }
+}

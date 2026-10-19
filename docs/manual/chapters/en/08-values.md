@@ -87,4 +87,4 @@ Then try it with two paints, a warm and a cool one, for example Sepia brown and 
 
 ## Values and the rest of the app
 
-Monochrome works with everything else in mix mode: the colour list, the card of a tapped area, the full breakdown, printing and the template. It does not exist in layer mode, where the layers are fitted to colour. Chapter [Values and simplifying](values-and-simplifying.html) shows how to read the values of a photo before you even open the app.
+Monochrome works with everything else in mix mode: the colour list, the card of a tapped area, the full breakdown and printing. It does not exist in layer mode, where the layers are fitted to colour. Chapter [Values and simplifying](values-and-simplifying.html) shows how to read the values of a photo before you even open the app.

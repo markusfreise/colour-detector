@@ -2,8 +2,12 @@ import { defineStore } from 'pinia'
 import { stockPaints } from '../data/paints.js'
 import { starterPaints } from '../data/starter.js'
 import { useProStore } from './pro.js'
-import { groupPaints, sortPaints, AUTO_OFF_DEFAULT, HOUSE_VENDOR } from '../lib/paintbox.js'
+import { groupPaints, sortPaints, AUTO_OFF_DEFAULT, HOUSE_VENDOR, ownForm } from '../lib/paintbox.js'
 import { t } from '../i18n/index.js'
+import { libraryByName } from '../data/libraries.js'
+
+// A series as it is stored: a library under its own name, whatever language it was typed in.
+const seriesName = (vendor) => libraryByName(vendor)?.name ?? String(vendor).trim()
 
 const LEGACY_KEY = 'colour-detector:enabled-paints'
 // Before paint boxes held paints, "boxes" were named selections; the active one became the palette.
@@ -209,16 +213,19 @@ export const usePaintsStore = defineStore('paints', {
      * A colour of a series, as a library or a box file has it: the paint already known with that
      * series and number, or a new paint of one's own. Returns its id.
      */
-    paintFor({ vendor, number, name, hex, form = 'pan' }) {
+    paintFor({ vendor, number, name, nameDe = '', hex, form = 'pan' }) {
+      vendor = seriesName(vendor)
       const known = this.all.find((p) => sameVendor(p.vendor, vendor) && sameNumber(p.number, number))
       if (known) return known.id
       const id = newId('custom')
-      this.custom.push({ id, vendor: vendor.trim(), line: '', number: String(number).trim(), name: name.trim(), nameDe: '', hex, forms: [form], source: 'custom', enabled: false, custom: true })
+      this.custom.push({ id, vendor, line: '', number: String(number).trim(), name: name.trim(), nameDe, hex, forms: [form], source: 'custom', enabled: false, custom: true })
       return id
     },
-    /** A colour from a library into a box. */
+    /** A colour from a library into a box, in the form it names or the one of the box. Returns its id. */
     addColourToBox(boxId, colour) {
-      this.addToBox(boxId, this.paintFor({ ...colour, form: boxId === 'tube' ? 'tube' : 'pan' }))
+      const id = this.paintFor({ ...colour, form: colour.form ? ownForm(colour.form) : boxId === 'tube' ? 'tube' : 'pan' })
+      this.addToBox(boxId, id)
+      return id
     },
 
     /** A box as a file to keep: its name and its colours, each with series, number, name and colour. */
@@ -238,7 +245,7 @@ export const usePaintsStore = defineStore('paints', {
       const box = this.addBox(String(data.name ?? ''))
       for (const p of data.paints) {
         if (!p?.vendor || p.number == null || !p.name || !/^#[0-9a-f]{6}$/i.test(p.hex ?? '')) continue
-        const id = this.paintFor({ vendor: String(p.vendor), number: String(p.number), name: String(p.name), hex: p.hex, form: p.form === 'tube' ? 'tube' : 'pan' })
+        const id = this.paintFor({ vendor: String(p.vendor), number: String(p.number), name: String(p.name), hex: p.hex, form: ownForm(p.form) })
         if (!box.paintIds.includes(id)) box.paintIds.push(id)
       }
       this.persist()
@@ -248,7 +255,7 @@ export const usePaintsStore = defineStore('paints', {
     /** Add a paint to the library, or update it when `paint.id` exists. New paints go into the box `boxId`. */
     savePaint(paint, boxId = null) {
       const data = {
-        vendor: paint.vendor.trim(),
+        vendor: seriesName(paint.vendor),
         line: '',
         number: String(paint.number).trim(),
         name: paint.name.trim(),

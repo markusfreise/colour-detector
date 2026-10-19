@@ -198,14 +198,15 @@ final class LayerTests: XCTestCase {
         XCTAssertEqual(Layers.maxCoats, 3)
         XCTAssertEqual(Layers.maxLayers, 7)
         XCTAssertEqual(Layers.accents, 2)
-        XCTAssertEqual(Layers.referenceWater, 4)
+        XCTAssertEqual(Layers.referenceWater, 1)
     }
 
     func testCoatsAddUpToTheLimitOfThePaint() {
         assertClose([Layers.coatAmount(0, 0.3), Layers.coatAmount(1, 0.3), Layers.coatAmount(3, 0.3), Layers.coatAmount(3, 0.3, ratio: 1.7), Layers.coatAmount(2, 0.5, ratio: 3), Layers.coatAmount(4, 0.1, ratio: 1.0000001)],
                     [0, 0.3, 0.8999999999999999, 1.6769999999999996, 2, 0.4], accuracy: 1e-12, "amount")
         assertClose([Layers.coatDepth(1, 0.3, limit: 1.6), Layers.coatDepth(3, 0.3, limit: 1.6), Layers.coatDepth(3, 0.3, limit: 4), Layers.coatDepth(3, 0.4, limit: 1.9, ratio: 1.7), Layers.coatDepth(0, 1, limit: 1.6)],
-                    [0.40785422772604324, 0.9381674485467582, 0.9124419731057181, 1.5426063759817028, 0], accuracy: 1e-12, "depth")
+                    // The fourth is more paint than its swatch: it stops at the swatch, depth 1.
+                    [0.40785422772604324, 0.9381674485467582, 0.9124419731057181, 0.9999999999999999, 0], accuracy: 1e-12, "depth")
     }
 
     func testSaysHowToPrepareAWash() {
@@ -214,12 +215,13 @@ final class LayerTests: XCTestCase {
         XCTAssertEqual(clear.consistency, "water")
         XCTAssertEqual(clear.guide, "clear water")
         let expected: [(strength: Double, water: Double, consistency: String, parts: String)] = [
-            (0.02, 200, "tea", "200 parts water"), (0.05, 80, "tea", "80 parts water"), (0.07, 60, "tea", "60 parts water"), (0.13, 30, "tea", "30 parts water"),
-            (0.19, 20, "tea", "20 parts water"), (0.2, 20, "tea", "20 parts water"), (0.21, 20, "tea", "20 parts water"), (0.3, 15, "coffee", "15 parts water"),
-            (0.41, 10, "coffee", "10 parts water"), (0.5, 8, "coffee", "8 parts water"), (0.55, 7, "milk", "7 parts water"), (0.8, 5, "milk", "5 parts water"),
-            (1, 4, "milk", "4 parts water"), (1.2, 3, "milk", "3 parts water"), (1.5, 2.5, "cream", "2.5 parts water"), (1.7, 2.5, "cream", "2.5 parts water"),
-            (2, 2, "cream", "2 parts water"), (2.9, 1.5, "cream", "1.5 parts water"), (3.2, 1.5, "cream", "1.5 parts water"), (4, 1, "butter", "1 part water"),
-            (6, 0.5, "butter", "hardly any water"), (10, 0.5, "butter", "hardly any water"), (20, 0, "butter", "hardly any water"),
+            // Strength 1 is the paint as its swatch shows it: hardly thinned.
+            (0.02, 50, "tea", "50 parts water"), (0.05, 20, "tea", "20 parts water"), (0.07, 15, "coffee", "15 parts water"), (0.13, 8, "coffee", "8 parts water"),
+            (0.19, 5, "milk", "5 parts water"), (0.2, 5, "milk", "5 parts water"), (0.21, 5, "milk", "5 parts water"), (0.3, 3, "milk", "3 parts water"),
+            (0.41, 2.5, "cream", "2.5 parts water"), (0.5, 2, "cream", "2 parts water"), (0.55, 2, "cream", "2 parts water"), (0.8, 1.5, "cream", "1.5 parts water"),
+            (1, 1, "butter", "1 part water"), (1.2, 1, "butter", "1 part water"), (1.5, 0.5, "butter", "hardly any water"), (1.7, 0.5, "butter", "hardly any water"),
+            (2, 0.5, "butter", "hardly any water"), (2.9, 0.5, "butter", "hardly any water"), (3.2, 0.5, "butter", "hardly any water"), (4, 0.5, "butter", "hardly any water"),
+            (6, 0, "butter", "hardly any water"), (10, 0, "butter", "hardly any water"), (20, 0, "butter", "hardly any water"),
         ]
         for row in expected {
             let guide = Layers.washGuide(row.strength)
@@ -245,18 +247,18 @@ final class LayerTests: XCTestCase {
         XCTAssertEqual(layer.paintID, "b")
         XCTAssertEqual(layer.kind, .wash)
         XCTAssertNil(layer.role)
-        XCTAssertEqual(layer.top, 2)
-        XCTAssertEqual(layer.strength, 0.30055745188604743, accuracy: 1e-9)
+        XCTAssertEqual(layer.top, 3)
+        XCTAssertEqual(layer.strength, 0.2547317212630066, accuracy: 1e-9)
         XCTAssertEqual(layer.ratio, 1)
-        XCTAssertEqual(layer.dilution, "very watery wash")
-        XCTAssertEqual(layer.guide, "1 part paint to 15 parts water, like coffee")
-        XCTAssertEqual(layer.hexes, ["#ffffff", "#87b2db", "#4f84c2", "#4f84c2"])
-        assertClose(layer.depths, [0, 0.38238881561051496, 0.6876922829160714, 0.6876922829160714], "depths")
+        XCTAssertEqual(layer.dilution, "medium")
+        XCTAssertEqual(layer.guide, "1 part paint to 4 parts water, like milk")
+        XCTAssertEqual(layer.hexes, ["#ffffff", "#c9d7ea", "#93afd4", "#5d86bf"])
+        assertClose(layer.depths, [0, 0.3295006361588009, 0.6017646507305562, 0.8267344550225383], "depths")
         XCTAssertEqual(layer.washes.map(\.strength), [layer.strength, layer.strength, layer.strength])
-        XCTAssertEqual(fit.coats, [[1], [2], [2]])
-        XCTAssertEqual(fit.hexes, ["#87b2db", "#4f84c2", "#4f84c2"])
-        assertClose(fit.deltaE, [0.08902608597420054, 5.164091098959807, 0.9204527178679777], "deltaE")
-        XCTAssertEqual(fit.error, 2.057856634267328, accuracy: 1e-9)
+        XCTAssertEqual(fit.coats, [[2], [3], [3]])
+        XCTAssertEqual(fit.hexes, ["#93afd4", "#5d86bf", "#5d86bf"])
+        assertClose(fit.deltaE, [1.66315443420509, 4.16579109780773, 2.4671640271902295], "deltaE")
+        XCTAssertEqual(fit.error, 2.7653698530676833, accuracy: 1e-9)
     }
 
     private let mixed: [(hex: String, weight: Double)] = [("#fae409", 3), ("#2b61ab", 2), ("#5a9a50", 4), ("#e6331d", 1), ("#f08a20", 2), ("#7a3a80", 1), ("#ffffff", 5), ("#303030", 1)]
@@ -264,32 +266,44 @@ final class LayerTests: XCTestCase {
     func testFitsWashesAnAccentAndAnUnusedPaint() {
         let fit = Layers.fit(colours: Layers.colourSet(mixed), paints: [yellow, blue, red, black])
         XCTAssertEqual(fit.layers.map { "\($0.kind.rawValue) \($0.role?.rawValue ?? "-") \($0.paintID) \($0.top)" }, ["wash - y 2", "wash - r 1", "wash - b 2", "accent colour r 1", "wash - k 0"])
-        assertClose(fit.layers.map(\.strength), [0.29789693851087523, 0.27440581804701325, 0.4476289027651123, 0.7231703163201547, 0], "strength")
-        XCTAssertEqual(fit.layers.map(\.guide), ["1 part paint to 15 parts water, like coffee", "1 part paint to 15 parts water, like coffee", "1 part paint to 9 parts water, like coffee", "1 part paint to 6 parts water, like milk", "clear water"])
+        assertClose(fit.layers.map(\.strength), [0.6714433541476684, 0.5164247858550346, 0.6347172697261365, 0.6, 0], "strength")
+        XCTAssertEqual(fit.layers.map(\.guide), ["1 part paint to 1.5 parts water, like cream", "1 part paint to 2 parts water, like cream", "1 part paint to 1.5 parts water, like cream", "1 part paint to 1.5 parts water, like cream", "clear water"])
         XCTAssertEqual(fit.layers.map(\.hexes), [
-            ["#ffffff", "#fdf455", "#fbec21", "#fbec21"], ["#ffffff", "#f58f79", "#f58f79", "#f58f79"], ["#ffffff", "#6699ce", "#3268b0", "#3268b0"],
-            ["#ffffff", "#ea472f", "#ea472f", "#ea472f"], ["#ffffff", "#ffffff", "#ffffff", "#ffffff"],
+            ["#ffffff", "#fced5a", "#fae409", "#fae409"], ["#ffffff", "#f2968a", "#f2968a", "#f2968a"], ["#ffffff", "#789bca", "#2b61ab", "#2b61ab"],
+            ["#ffffff", "#f08577", "#f08577", "#f08577"], ["#ffffff", "#ffffff", "#ffffff", "#ffffff"],
         ])
+        // Two coats of the blue reach its swatch: depth 1, never more.
+        assertClose(fit.layers[2].depths, [0, 0.7177472680344829, 1, 1], "depths")
         // The accent is of the red that is a wash too: it only adds what is left up to the limit of the paint.
-        assertClose(fit.layers[3].depths, [0, 0.6210234947749971, 0.6210234947749971, 0.6210234947749971], "depths")
+        assertClose(fit.layers[3].depths, [0, 0.36413793577771914, 0.36413793577771914, 0.36413793577771914], "depths")
         XCTAssertEqual(fit.coats, [[2, 0, 0, 0, 0], [0, 0, 2, 0, 0], [1, 0, 1, 0, 0], [0, 1, 0, 1, 0], [1, 1, 0, 0, 0], [0, 1, 1, 0, 0], [0, 0, 0, 0, 0], [1, 1, 2, 0, 0]])
-        XCTAssertEqual(fit.hexes, ["#fbec21", "#3268b0", "#659243", "#e6331d", "#f38924", "#625460", "#ffffff", "#2f3415"])
-        assertClose(fit.deltaE, [1.8594428272649473, 2.322950487130788, 2.4192643149444497, 0.018057362473525226, 0.6816151811449211, 10.295661453659164, 0, 5.029027415914721], "deltaE")
-        XCTAssertEqual(fit.error, 1.926698068956393, accuracy: 1e-9)
+        XCTAssertEqual(fit.hexes, ["#fae409", "#2b61ab", "#778f45", "#e6331d", "#ef8b2d", "#72596c", "#ffffff", "#28311a"])
+        assertClose(fit.deltaE, [0, 0, 3.9995128866364507, 0, 0.6043696896388387, 9.381511373110058, 0, 4.2136695170723355], accuracy: 1e-7, "deltaE")
+        XCTAssertEqual(fit.error, 1.6211564113687302, accuracy: 1e-9)
     }
 
     func testGradesTheCoatsOnlyWhenAskedTo() {
-        let fit = Layers.fit(colours: Layers.colourSet(mixed), paints: [yellow, blue, red, black], graded: true, accents: 3)
-        XCTAssertEqual(fit.layers.map { "\($0.kind.rawValue) \($0.role?.rawValue ?? "-") \($0.paintID) \($0.top)" }, ["wash - y 2", "wash - r 1", "wash - b 2", "accent colour r 1", "wash - k 0"])
-        assertClose(fit.layers.map(\.strength), [0.26619991396506676, 0.27440581804701325, 0.423144846484091, 0.7014710677017026, 0], "strength")
-        assertClose(fit.layers.map(\.ratio), [2.752473604712105, 1, 1.3754074300634596, 1, 1], "ratio")
-        // The second coat of a graded layer is a stronger wash.
-        XCTAssertEqual(fit.layers[0].washes[1].strength, 0.26619991396506676 * 2.752473604712105, accuracy: 1e-9)
-        XCTAssertEqual(fit.hexes, ["#fae409", "#2b61ab", "#6a964c", "#e6341e", "#f38928", "#675661", "#ffffff", "#283017"])
-        // The first colour is nearly hit; what is left of its distance is rounding of the search.
-        assertClose(Array(fit.deltaE.dropFirst()), [0.10559169849222881, 1.8679392078481696, 0.18426124242015005, 0.810487291815244, 10.372344534892216, 0, 4.517031380460484], "deltaE")
-        XCTAssertEqual(fit.deltaE[0], 0.0040880583740055465, accuracy: 1e-9)
-        XCTAssertEqual(fit.error, 1.2836745339422364, accuracy: 1e-9)
+        // As in the web test: a very light and a deep blue (glazes of 0.08, 0.4 and 2 of the blue),
+        // which one wash painted up to three times cannot do both well. Since water thins a paint
+        // like opacity, the mixed colours above come out the same graded or not.
+        let colours = Layers.colourSet(["#eef2f8", "#aac0dd", "#2b61ab"])
+        let even = Layers.fit(colours: colours, paints: [blue], accents: 0)
+        XCTAssertEqual(even.layers[0].ratio, 1)
+        XCTAssertEqual(even.layers[0].washes.map(\.strength), [0.4, 0.4, 0.4])
+        XCTAssertEqual(even.error, 1.404340782666911, accuracy: 1e-9)
+        let fit = Layers.fit(colours: colours, paints: [blue], graded: true, accents: 0)
+        XCTAssertEqual(fit.layers.map { "\($0.kind.rawValue) \($0.role?.rawValue ?? "-") \($0.paintID) \($0.top)" }, ["wash - b 3"])
+        XCTAssertEqual(fit.layers[0].strength, 0.0921143464644889, accuracy: 1e-9)
+        XCTAssertEqual(fit.layers[0].ratio, 3.294855420923478, accuracy: 1e-9)
+        // Every coat of a graded layer is a stronger wash than the one before, the third as strong as the paint goes.
+        assertClose(fit.layers[0].washes.map(\.strength), [0.0921143464644889, 0.3035034537933447, 1], "washes")
+        XCTAssertEqual(fit.layers[0].hexes, ["#ffffff", "#ebf0f7", "#abc0de", "#2b61ab"])
+        XCTAssertEqual(fit.coats, [[1], [2], [3]])
+        XCTAssertEqual(fit.hexes, ["#ebf0f7", "#abc0de", "#2b61ab"])
+        assertClose(Array(fit.deltaE.prefix(2)), [0.5385330386411741, 0.222197882349868], "deltaE")
+        XCTAssertEqual(fit.deltaE[2], 0, accuracy: 1e-7)
+        XCTAssertEqual(fit.error, 0.2535769736636807, accuracy: 1e-9)
+        XCTAssertLessThan(fit.error, even.error - 1)
         XCTAssertTrue(Layers.fit(colours: Layers.colourSet(mixed), paints: [yellow, blue, red, black]).layers.allSatisfy { $0.ratio == 1 })
     }
 
@@ -297,8 +311,8 @@ final class LayerTests: XCTestCase {
         let hexes = ["#a88b4c", "#715611", "#634908", "#392620", "#bb3405", "#7a7d08", "#3e3d34", "#3f3815", "#c14b03", "#772411", "#465d1e", "#464d0d"]
         let colours = Layers.colourSet(hexes.enumerated().map { (hex: $1, weight: Double(100 + $0 * 50)) })
         let paints = try stock()
-        XCTAssertEqual(Layers.proposePaints(colours: colours, paints: paints), ["schmincke-horadam-496", "schmincke-horadam-526", "schmincke-horadam-659", "schmincke-horadam-344"])
-        XCTAssertEqual(Layers.proposePaints(colours: colours, paints: paints, count: 3, accents: 0), ["schmincke-horadam-509", "schmincke-horadam-659", "schmincke-horadam-369"])
+        XCTAssertEqual(Layers.proposePaints(colours: colours, paints: paints), ["schmincke-horadam-526", "schmincke-horadam-498", "schmincke-horadam-659", "schmincke-horadam-346"])
+        XCTAssertEqual(Layers.proposePaints(colours: colours, paints: paints, count: 3, accents: 0), ["schmincke-horadam-526", "schmincke-horadam-655", "schmincke-horadam-218"])
     }
 
     func testEmptyResultsForNoColoursOrNoPaints() {
@@ -320,8 +334,8 @@ final class LayerTests: XCTestCase {
         let combos = [LayerPlan.Combo(coats: [3], hex: "", pixelCount: 0)]
         let all = Layers.compositeColours(layers: fit.layers, combos: combos)
         let one = Layers.compositeColours(layers: fit.layers, combos: combos, coats: [1])
-        XCTAssertEqual(all, [87, 140, 199])
-        XCTAssertEqual(one, [172, 204, 232])
+        XCTAssertEqual(all, [87, 130, 188])
+        XCTAssertEqual(one, [199, 213, 233])
         XCTAssertEqual(Layers.compositeColours(layers: fit.layers, combos: combos, coats: [0]), [255, 255, 255])
         // A layer `coats` does not mention is off.
         XCTAssertEqual(Layers.compositeColours(layers: fit.layers, combos: combos, coats: []), [255, 255, 255])
@@ -333,179 +347,180 @@ final class LayerTests: XCTestCase {
 
     private static let sceneGiven = Reference(
         paintIDs: ["y", "r", "b", "k"],
-        layers: ["wash - y 1 #ffffff #fdf671 #fdf671 #fdf671", "wash - r 2 #ffffff #f8a591 #f27259 #f27259", "wash - b 3 #ffffff #bdd7ed #8fb8de #6e9fd1", "accent colour r 1 #ffffff #d91004 #d91004 #d91004", "accent dark b 1 #ffffff #1e52a0 #1e52a0 #1e52a0", "wash - k 0 #ffffff #ffffff #ffffff #ffffff"],
-        strengths: [0.21517699410626448, 0.20273281368119608, 0.13515520912079737, 3.4, 1.2747145059320477, 0],
+        layers: ["wash - y 1 #ffffff #fbec52 #fbec52 #fbec52", "wash - r 2 #ffffff #f5afa6 #eb5f4e #eb5f4e", "wash - b 3 #ffffff #c9d7ea #93afd4 #5d86bf", "accent any b 1 #ffffff #d2dded #d2dded #d2dded", "accent colour r 1 #ffffff #f9ccc7 #f9ccc7 #f9ccc7", "wash - k 0 #ffffff #ffffff #ffffff #ffffff"],
+        strengths: [0.7015987978865738, 0.3925698750991109, 0.2547317212630066, 0.21383633182685566, 0.25, 0],
         ratios: [1, 1, 1, 1, 1, 1],
-        guides: ["1 part paint to 20 parts water, like tea", "1 part paint to 20 parts water, like tea", "1 part paint to 30 parts water, like tea", "1 part paint to 1 part water, like butter", "1 part paint to 3 parts water, like milk", "clear water"],
-        coatMaps: ["1464470981", "915263189", "2770657239", "2812767124", "3837734117", "1213797829"],
-        regions: ["3 3128365380", "38 1114917765", "47 2583460814", "12 2468791726", "11 2097133671", "1 2176614741"],
-        buys: [4.57902398606653, 7.006438829230815, 4.7824957374677, 10.441355012449993, 4.57902398606653, 12.443029844532791, 4.41787283733872, 21.23178291334675, 4.57902398606653, 19.411647044270367, 4.500792472575261, 21.74907317740935, 4.57902398606653, 7.454051748182061, 4.677611155225224, 38.89988829882001, 4.57902398606653, 6.346034800597673, 5.9566807644420185, 42.83342819813541, 4.57902398606653, 4.57902398606653, 0, 0],
-        steps: ["0 wash y 1 #fdf671 1", "1 wash r 1 #f8a591 23", "1 wash r 2 #f27259 24", "2 wash b 1 #bdd7ed 1", "2 wash b 2 #8fb8de 5", "2 wash b 3 #6e9fd1 12", "3 accent r 1 #d91004 11", "4 accent b 1 #1e52a0 10"],
-        shares: [0.42895833333333333, 0.46770833333333334, 0.18739583333333334, 0.8599479166666667, 0.5738020833333334, 0.1684375, 0.08401041666666667, 0.04791666666666667],
-        comboCount: 20,
-        combos: "1469117921",
-        comboMap: "553415415",
-        render: "2464788775",
-        renderPart: "3554681549",
-        area: 2.8181770833333335,
-        deltaE: [4.57902398606653, 10.21469783782959, 0.053072916666666664]
+        guides: ["1 part paint to 1.5 parts water, like cream", "1 part paint to 2.5 parts water, like cream", "1 part paint to 4 parts water, like milk", "1 part paint to 5 parts water, like milk", "1 part paint to 4 parts water, like milk", "clear water"],
+        coatMaps: ["4071626068", "2056567757", "696145574", "255141909", "1213797829", "1213797829"],
+        regions: ["4 3215604929", "10 558654709", "30 1390978789", "19 1334404890", "1 2176614741", "1 2176614741"],
+        buys: [4.9199569706760355, 8.786640235055108, 5.112921386795978, 14.826426381703516, 4.9199569706760355, 12.745908186794656, 4.9147916145410875, 23.040034479375425, 4.9199569706760355, 21.850047827518413, 4.879312181005764, 22.827395911963485, 4.9199569706760355, 5.439867930060609, 4.478452306579418, 14.24585976272797, 4.9199569706760355, 4.9199569706760355, 0, 0, 4.9199569706760355, 4.9199569706760355, 0, 0],
+        steps: ["0 wash y 1 #fbec52 2", "1 wash r 1 #f5afa6 5", "1 wash r 2 #eb5f4e 2", "2 wash b 1 #c9d7ea 1", "2 wash b 2 #93afd4 2", "2 wash b 3 #5d86bf 12", "3 accent b 1 #d2dded 17"],
+        shares: [0.39807291666666667, 0.4317708333333333, 0.2165625, 0.94328125, 0.6375520833333334, 0.24546875, 0.05322916666666667],
+        comboCount: 23,
+        combos: "69893973",
+        comboMap: "4031614372",
+        render: "3781598500",
+        renderPart: "2990986851",
+        area: 2.9259375000000003,
+        deltaE: [4.9199569706760355, 9.268444061279297, 0.047135416666666666]
     )
 
     private static let sceneProposal = Reference(
-        paintIDs: ["schmincke-horadam-226", "schmincke-horadam-509", "schmincke-horadam-473", "schmincke-horadam-344", "schmincke-horadam-787"],
-        layers: ["wash - schmincke-horadam-226 1 #ffffff #faea64 #faea64 #faea64", "wash - schmincke-horadam-509 2 #ffffff #b4f4f7 #7feaef #7feaef", "wash - schmincke-horadam-473 2 #ffffff #e4dbee #cebedf #cebedf", "wash - schmincke-horadam-344 2 #ffffff #f292a1 #e85d70 #e85d70", "accent any schmincke-horadam-787 1 #ffffff #c7d1d8 #c7d1d8 #c7d1d8", "accent dark schmincke-horadam-473 1 #ffffff #5f418c #5f418c #5f418c"],
-        strengths: [0.27457128507695644, 0.07948708552373193, 0.13515520912079734, 0.2644655290525568, 0.25, 1.767749662115934],
+        paintIDs: ["schmincke-horadam-208", "schmincke-horadam-496", "schmincke-horadam-509", "schmincke-horadam-353", "schmincke-horadam-365", "schmincke-horadam-472"],
+        layers: ["wash - schmincke-horadam-208 1 #ffffff #fcee63 #fcee63 #fcee63", "wash - schmincke-horadam-496 2 #ffffff #dce5f1 #b9cbe3 #b9cbe3", "wash - schmincke-horadam-509 2 #ffffff #b1e4e9 #63cad3 #63cad3", "wash - schmincke-horadam-353 2 #ffffff #f09bb2 #e54e77 #e54e77", "accent colour schmincke-horadam-365 1 #ffffff #e83f2b #e83f2b #e83f2b", "accent dark schmincke-horadam-472 1 #ffffff #852677 #852677 #852677"],
+        strengths: [0.6347172697261364, 0.16611391953309204, 0.30726510767451215, 0.5671816683912356, 0.9394130628134758, 1],
         ratios: [1, 1, 1, 1, 1, 1],
-        guides: ["1 part paint to 15 parts water, like coffee", "1 part paint to 50 parts water, like tea", "1 part paint to 30 parts water, like tea", "1 part paint to 15 parts water, like coffee", "1 part paint to 15 parts water, like coffee", "1 part paint to 2.5 parts water, like cream"],
-        coatMaps: ["549294540", "571852046", "2056696493", "4043717301", "1329492581", "3837734117"],
-        regions: ["22 3533599161", "36 954139749", "76 4049692307", "9 1082488450", "25 1706771812", "11 2097133671"],
-        buys: [4.327038191881696, 8.647541871309478, 3.692462746645244, 11.73450546550257, 4.327038191881696, 11.614107394138717, 3.6044664879415196, 13.596733927117072, 4.327038191881696, 9.337546541762674, 4.53590223337509, 10.77709597398205, 4.327038191881696, 16.427597365959365, 3.647305210839078, 25.183339336005016, 4.327038191881696, 4.541097943527083, 6.3052350852937895, 9.842194837093661, 4.327038191881696, 5.070722420985323, 6.640011568878194, 22.16037808930172],
-        steps: ["0 wash schmincke-horadam-226 1 #faea64 2", "1 wash schmincke-horadam-509 1 #b4f4f7 2", "1 wash schmincke-horadam-509 2 #7feaef 25", "2 wash schmincke-horadam-473 1 #e4dbee 2", "2 wash schmincke-horadam-473 2 #cebedf 41", "3 wash schmincke-horadam-344 1 #f292a1 2", "3 wash schmincke-horadam-344 2 #e85d70 3", "4 accent schmincke-horadam-787 1 #c7d1d8 24", "5 accent schmincke-horadam-473 1 #5f418c 10"],
-        shares: [0.5372395833333333, 0.7292708333333333, 0.25078125, 0.8028125, 0.26416666666666666, 0.561875, 0.20583333333333334, 0.060520833333333336, 0.04791666666666667],
-        comboCount: 37,
-        combos: "1698751268",
-        comboMap: "2707117360",
-        render: "134606337",
-        renderPart: "1946426972",
-        area: 3.460416666666667,
-        deltaE: [4.327038191881696, 9.117109298706055, 0.03505208333333333]
+        guides: ["1 part paint to 1.5 parts water, like cream", "1 part paint to 6 parts water, like milk", "1 part paint to 3 parts water, like milk", "1 part paint to 2 parts water, like cream", "1 part paint to 1 part water, like butter", "1 part paint to 1 part water, like butter"],
+        coatMaps: ["2905973397", "3191118012", "209787518", "3118357972", "2841730909", "871958837"],
+        regions: ["20 3307329680", "51 1580140236", "23 2403753193", "49 3669216333", "22 2023602389", "19 2751151562"],
+        buys: [4.740740780438651, 9.18291257522555, 4.532609040582674, 13.18267987830158, 4.740740780438651, 9.538752360828681, 5.027037828223515, 11.990664885710045, 4.740740780438651, 11.678594185827588, 4.696883116987997, 14.670436979182258, 4.740740780438651, 14.310246923927368, 4.337835019008853, 21.858052236037956, 4.740740780438651, 5.5138192170246265, 2.702621495670656, 21.25650397373403, 4.740740780438651, 5.132873072335478, 8.006456866953533, 17.512694246270513],
+        steps: ["0 wash schmincke-horadam-208 1 #fcee63 2", "1 wash schmincke-horadam-496 1 #dce5f1 10", "1 wash schmincke-horadam-496 2 #b9cbe3 14", "2 wash schmincke-horadam-509 1 #b1e4e9 5", "2 wash schmincke-horadam-509 2 #63cad3 11", "3 wash schmincke-horadam-353 1 #f09bb2 2", "3 wash schmincke-horadam-353 2 #e54e77 30", "4 accent schmincke-horadam-365 1 #e83f2b 20", "5 accent schmincke-horadam-472 1 #852677 17"],
+        shares: [0.5135416666666667, 0.6890104166666666, 0.41020833333333334, 0.695625, 0.20744791666666668, 0.5461979166666666, 0.15979166666666667, 0.041666666666666664, 0.04125],
+        comboCount: 39,
+        combos: "3930929483",
+        comboMap: "1606591205",
+        render: "2090837348",
+        renderPart: "2384709981",
+        area: 3.3047395833333333,
+        deltaE: [4.740740780438651, 11.186729431152344, 0.0615625]
     )
 
     private static let sceneCoarse = Reference(
-        paintIDs: ["schmincke-horadam-496", "schmincke-horadam-526", "schmincke-horadam-365", "schmincke-horadam-225", "schmincke-horadam-669"],
-        layers: ["wash - schmincke-horadam-496 2 #ffffff #c6ddf0 #9dc2e3", "wash - schmincke-horadam-526 2 #ffffff #b2df92 #86c95e", "wash - schmincke-horadam-365 2 #ffffff #f79b86 #f0674e", "accent colour schmincke-horadam-225 1 #ffffff #f4d406 #f4d406", "accent dark schmincke-horadam-669 1 #ffffff #694f2d #694f2d"],
-        strengths: [0.11190722569127808, 0.2745712850769565, 0.2319358715821383, 0.9, 1.315178287938866],
+        paintIDs: ["schmincke-horadam-480", "schmincke-horadam-360", "schmincke-horadam-525", "schmincke-horadam-365", "schmincke-horadam-645"],
+        layers: ["wash - schmincke-horadam-480 2 #ffffff #c8ddef #91bbde", "wash - schmincke-horadam-360 1 #ffffff #f29576 #f29576", "wash - schmincke-horadam-525 2 #ffffff #afb384 #757b2a", "accent colour schmincke-horadam-365 1 #ffffff #e73924 #e73924", "accent dark schmincke-horadam-645 1 #ffffff #7a3e3b #7a3e3b"],
+        strengths: [0.2694710377211579, 0.7562422245216477, 0.5779166506324931, 0.9692332344763441, 1],
         ratios: [1, 1, 1, 1, 1],
-        guides: ["1 part paint to 40 parts water, like tea", "1 part paint to 15 parts water, like coffee", "1 part paint to 15 parts water, like coffee", "1 part paint to 4 parts water, like milk", "1 part paint to 3 parts water, like milk"],
-        coatMaps: ["1082794269", "3121968309", "3975826901", "3237457724", "1159309733"],
-        regions: ["32 1107515819", "12 1346421789", "13 3793780999", "7 3295514556", "11 1084351786"],
-        buys: [4.977839699810558, 11.942851472800294, 5.235073662930078, 14.739729466682592, 4.977839699810558, 10.933472506373112, 5.0052934927781045, 16.79706911295207, 4.977839699810558, 15.848536048577625, 4.8433147403029775, 24.77491787335582, 4.977839699810558, 5.236027457040922, 10.543315172319957, 20.775326687393868, 4.977839699810558, 6.229760195539681, 6.987281607852548, 32.8890849677654],
-        steps: ["0 wash schmincke-horadam-496 1 #c6ddf0 6", "0 wash schmincke-horadam-496 2 #9dc2e3 14", "1 wash schmincke-horadam-526 1 #b2df92 1", "1 wash schmincke-horadam-526 2 #86c95e 3", "2 wash schmincke-horadam-365 1 #f79b86 2", "2 wash schmincke-horadam-365 2 #f0674e 2", "3 accent schmincke-horadam-225 1 #f4d406 5", "4 accent schmincke-horadam-669 1 #694f2d 10"],
-        shares: [0.7328, 0.32893333333333336, 0.5050666666666667, 0.2288, 0.5454, 0.2541333333333333, 0.025233333333333333, 0.04833333333333333],
-        comboCount: 29,
-        combos: "714324355",
-        comboMap: "2988124990",
-        render: "1489958360",
-        renderPart: "2548977164",
-        area: 2.6687000000000003,
-        deltaE: [4.977839699810558, 12.360596656799316, 0.08326666666666667]
+        guides: ["1 part paint to 4 parts water, like milk", "1 part paint to 1.5 parts water, like cream", "1 part paint to 1.5 parts water, like cream", "1 part paint to 1 part water, like butter", "1 part paint to 1 part water, like butter"],
+        coatMaps: ["3574251046", "1701723389", "62457885", "2288269037", "1159309733"],
+        regions: ["26 3242072994", "10 2628014984", "5 2620726792", "12 220823321", "11 1084351786"],
+        buys: [4.739721224485589, 10.855477786600073, 4.566376553249659, 14.010101942555654, 4.739721224485589, 8.990058320256125, 4.4225286808728095, 17.372976870301585, 4.739721224485589, 16.77425545967975, 5.173929557358627, 26.381402951145187, 4.739721224485589, 5.307812478252945, 6.440203865530851, 13.373783040885073, 4.739721224485589, 5.364793405763894, 9.315372892283317, 22.247900780800013],
+        steps: ["0 wash schmincke-horadam-480 1 #c8ddef 5", "0 wash schmincke-horadam-480 2 #91bbde 8", "1 wash schmincke-horadam-360 1 #f29576 2", "2 wash schmincke-horadam-525 1 #afb384 1", "2 wash schmincke-horadam-525 2 #757b2a 1", "3 accent schmincke-horadam-365 1 #e73924 11", "4 accent schmincke-horadam-645 1 #7a3e3b 10"],
+        shares: [0.6476, 0.20083333333333334, 0.3282, 0.5674666666666667, 0.19726666666666667, 0.08193333333333333, 0.04833333333333333],
+        comboCount: 20,
+        combos: "417814752",
+        comboMap: "1975765714",
+        render: "911188338",
+        renderPart: "1704147571",
+        area: 2.071633333333333,
+        deltaE: [4.739721224485589, 11.895895004272461, 0.07256666666666667]
     )
 
     private static let sceneGraded = Reference(
-        paintIDs: ["y", "r", "b"],
-        layers: ["wash - y 1 #ffffff #fdf773 #fdf773 #fdf773 #fdf773", "wash - r 2 #ffffff #f79f8a #f0684f #f0684f #f0684f", "wash - b 4 #ffffff #c6ddf0 #99bfe2 #76a5d4 #5a8fc8"],
-        strengths: [0.21118001425124588, 0.21924962433955425, 0.11204760383490227],
-        ratios: [1, 1.0982851403078262, 1.098285140307826],
-        guides: ["1 part paint to 20 parts water, like tea", "1 part paint to 20 parts water, like tea", "1 part paint to 40 parts water, like tea"],
-        coatMaps: ["3907480349", "525241636", "48024422"],
-        regions: ["3 1695201763", "7 189803020", "27 4060329741"],
-        buys: [5.091133781480078, 7.849906201656575, 5.018937346837272, 11.681633003112594, 5.091133781480078, 15.345705726705864, 5.387780901628015, 25.946179288214125, 5.091133781480078, 22.27254542796679, 5.059352409737456, 23.22072124989087],
-        steps: ["0 wash y 1 #fdf773 1", "1 wash r 1 #f79f8a 4", "1 wash r 2 #f0684f 2", "2 wash b 1 #c6ddf0 1", "2 wash b 2 #99bfe2 2", "2 wash b 3 #76a5d4 12", "2 wash b 4 #5a8fc8 11"],
-        shares: [0.4140625, 0.4988020833333333, 0.24416666666666667, 0.9460416666666667, 0.67359375, 0.3384375, 0.13104166666666667],
-        comboCount: 17,
-        combos: "3306099471",
-        comboMap: "2208705611",
-        render: "114062053",
-        renderPart: "2097911891",
-        area: 3.246145833333333,
-        deltaE: [5.091133781480078, 14.374917984008789, 0.09921875]
+        paintIDs: ["y", "r", "b", "k"],
+        layers: ["wash - y 1 #ffffff #fcee63 #fcee63 #fcee63 #fcee63", "wash - r 2 #ffffff #f5aaa1 #ea5643 #ea5643 #ea5643", "wash - b 2 #ffffff #b9cbe3 #4776b6 #4776b6 #4776b6", "wash - k 2 #ffffff #e0dfdd #c1c0bc #c1c0bc #c1c0bc", "accent any b 1 #ffffff #cad8ea #cad8ea #cad8ea #cad8ea"],
+        strengths: [0.6347172697261365, 0.41528479883273006, 0.3300977832152303, 0.21517699410626445, 0.25],
+        ratios: [1, 1, 1.6282405261455102, 1, 1],
+        guides: ["1 part paint to 1.5 parts water, like cream", "1 part paint to 2.5 parts water, like cream", "1 part paint to 3 parts water, like milk", "1 part paint to 5 parts water, like milk", "1 part paint to 4 parts water, like milk"],
+        coatMaps: ["202091541", "1001934271", "4250503791", "2826011149", "1464574780"],
+        regions: ["4 2162465384", "4 1190749788", "18 633447116", "23 379068060", "27 880114503"],
+        buys: [4.596273549405782, 8.221294849729441, 4.283205357667, 12.598666405004408, 4.596273549405782, 12.285334924296116, 4.001653575426087, 22.935856268499585, 4.596273549405782, 15.996053172899565, 4.273475020558081, 18.544569026627094, 4.596273549405782, 8.12045772298351, 4.982094385035449, 10.496710206770706, 4.596273549405782, 5.391310593743912, 3.6977879484232936, 12.22079813898279],
+        steps: ["0 wash y 1 #fcee63 2", "1 wash r 1 #f5aaa1 2", "1 wash r 2 #ea5643 2", "2 wash b 1 #b9cbe3 2", "2 wash b 2 #4776b6 11", "3 wash k 1 #e0dfdd 2", "3 wash k 2 #c1c0bc 7", "4 accent b 1 #cad8ea 24"],
+        shares: [0.4359375, 0.40609375, 0.18078125, 0.7988020833333334, 0.11119791666666666, 0.6390625, 0.22604166666666667, 0.09328125],
+        comboCount: 35,
+        combos: "1473530292",
+        comboMap: "442567225",
+        render: "1928854838",
+        renderPart: "515117332",
+        area: 2.8911979166666666,
+        deltaE: [4.596273549405782, 8.73929214477539, 0.03473958333333333]
     )
 
     private static let sceneUnused = Reference(
         paintIDs: ["schmincke-horadam-347", "schmincke-horadam-208"],
-        layers: ["wash - schmincke-horadam-347 3 #ffffff #f19993 #e76962 #e15049", "accent colour schmincke-horadam-208 1 #ffffff #f7d700 #f7d700 #f7d700", "accent any schmincke-horadam-347 1 #ffffff #d32923 #d32923 #d32923"],
-        strengths: [0.35743893884340633, 3.0004894687876247, 4],
+        layers: ["wash - schmincke-horadam-347 3 #ffffff #f5c5c3 #eb8b87 #e2544d", "accent any schmincke-horadam-347 1 #ffffff #f8d4d3 #f8d4d3 #f8d4d3", "accent colour schmincke-horadam-208 1 #ffffff #fae409 #fae409 #fae409"],
+        strengths: [0.3378880228019934, 0.25, 1],
         ratios: [1, 1, 1],
-        guides: ["1 part paint to 10 parts water, like coffee", "1 part paint to 1.5 parts water, like cream", "1 part paint to 1 part water, like butter"],
-        coatMaps: ["1012759550", "2936161116", "4165066981"],
-        regions: ["9 2744007414", "5 3583978412", "16 2284099866"],
-        buys: [16.81549992827896, 32.63615703252806, 18.2599259991232, 37.5643093146684, 16.81549992827896, 16.979227111761688, 10.14644499043456, 12.813494133139585, 16.81549992827896, 17.364444284623673, 19.892267092183985, 24.567818392280905],
-        steps: ["0 wash schmincke-horadam-347 1 #f19993 1", "0 wash schmincke-horadam-347 2 #e76962 2", "0 wash schmincke-horadam-347 3 #e15049 1", "1 accent schmincke-horadam-208 1 #f7d700 3", "2 accent schmincke-horadam-347 1 #d32923 13"],
-        shares: [0.8195370370370371, 0.5475, 0.4671296296296296, 0.06138888888888889, 0.1174074074074074],
-        comboCount: 12,
-        combos: "3641807541",
-        comboMap: "1737593242",
-        render: "3480303334",
-        renderPart: "1968941294",
-        area: 2.012962962962963,
-        deltaE: [16.81549992827896, 37.36347198486328, 0.8516666666666667]
+        guides: ["1 part paint to 3 parts water, like milk", "1 part paint to 4 parts water, like milk", "1 part paint to 1 part water, like butter"],
+        coatMaps: ["1084253614", "3309584709", "696405316"],
+        regions: ["8 1499550706", "1 2228538357", "9 2292651897"],
+        buys: [16.09045873003955, 35.65776290159438, 16.760999409444352, 37.49354969422728, 16.09045873003955, 16.09045873003955, 0, 0, 16.09045873003955, 16.38157937843702, 18.953912843298717, 24.255941515630344],
+        steps: ["0 wash schmincke-horadam-347 1 #f5c5c3 2", "0 wash schmincke-horadam-347 2 #eb8b87 1", "0 wash schmincke-horadam-347 3 #e2544d 2", "2 accent schmincke-horadam-208 1 #fae409 7"],
+        shares: [0.9437962962962962, 0.5886111111111111, 0.5178703703703704, 0.054907407407407405],
+        comboCount: 6,
+        combos: "3677656951",
+        comboMap: "2767669776",
+        render: "2075360143",
+        renderPart: "976872585",
+        area: 2.105185185185185,
+        deltaE: [16.09045873003955, 41.91835021972656, 0.7187962962962963]
     )
 
     private static let cwm = Reference(
-        paintIDs: ["schmincke-horadam-218", "schmincke-horadam-787", "schmincke-horadam-485", "schmincke-horadam-786", "schmincke-horadam-663"],
-        layers: ["wash - schmincke-horadam-218 1 #ffffff #fcdfb1 #fcdfb1 #fcdfb1", "wash - schmincke-horadam-787 2 #ffffff #f2f4f6 #e6eaee #e6eaee", "wash - schmincke-horadam-485 1 #ffffff #cdd5e0 #cdd5e0 #cdd5e0", "wash - schmincke-horadam-786 3 #ffffff #8d8a85 #5d5953 #45413b", "accent any schmincke-horadam-663 1 #ffffff #dad3ca #dad3ca #dad3ca", "accent dark schmincke-horadam-786 1 #ffffff #46423c #46423c #46423c"],
-        strengths: [0.10382119970818253, 0.051910599854091265, 0.2119655613966185, 1.274714505932048, 0.2579358518747757, 3.734169477046608],
-        ratios: [1, 1, 1, 1, 1, 1],
-        guides: ["1 part paint to 40 parts water, like tea", "1 part paint to 80 parts water, like tea", "1 part paint to 20 parts water, like tea", "1 part paint to 3 parts water, like milk", "1 part paint to 15 parts water, like coffee", "1 part paint to 1 part water, like butter"],
-        coatMaps: ["1620958100", "4229927831", "1059820885", "2222570255", "2868393020", "3783924285"],
-        regions: ["13 3464819591", "70 2887472491", "23 1249573158", "32 1182400700", "38 3899874614", "26 1521720603"],
-        buys: [3.443579374767303, 4.6108338063151715, 4.693846166379575, 7.348415670127291, 3.443579374767303, 4.4626752598226, 2.1935173291914887, 4.783042562641846, 3.443579374767303, 5.2423596514079085, 4.300715759629484, 8.497886696724008, 3.443579374767303, 24.97544255702345, 4.5869275483945176, 40.31565453203484, 3.443579374767303, 3.834887602740078, 5.367300177367001, 10.840374485708725, 3.443579374767303, 3.5910428281515845, 3.484549282940073, 10.800084402725528],
-        steps: ["0 wash schmincke-horadam-218 1 #fcdfb1 5", "1 wash schmincke-horadam-787 1 #f2f4f6 21", "1 wash schmincke-horadam-787 2 #e6eaee 38", "2 wash schmincke-horadam-485 1 #cdd5e0 7", "3 wash schmincke-horadam-786 1 #8d8a85 1", "3 wash schmincke-horadam-786 2 #5d5953 6", "3 wash schmincke-horadam-786 3 #45413b 7", "4 accent schmincke-horadam-663 1 #dad3ca 24", "5 accent schmincke-horadam-786 1 #46423c 24"],
-        shares: [0.4397151515151515, 0.39354545454545453, 0.17564242424242424, 0.428569696969697, 0.6026484848484849, 0.3188060606060606, 0.15606060606060607, 0.0714969696969697, 0.020157575757575756],
-        comboCount: 89,
-        combos: "786348300",
-        comboMap: "674599489",
-        render: "3485518388",
-        renderPart: "2087267204",
-        area: 2.606642424242424,
-        deltaE: [3.443579374767303, 10.73163890838623, 0.058606060606060606]
+        paintIDs: ["schmincke-horadam-494", "schmincke-horadam-663", "schmincke-horadam-662", "schmincke-horadam-515"],
+        layers: ["wash - schmincke-horadam-494 2 #ffffff #f3f4f9 #e7eaf3 #e7eaf3", "wash - schmincke-horadam-663 1 #ffffff #c0b6ab #c0b6ab #c0b6ab", "wash - schmincke-horadam-662 2 #ffffff #968c87 #53433a #53433a", "accent any schmincke-horadam-515 1 #ffffff #afc7b5 #afc7b5 #afc7b5"],
+        strengths: [0.05566460917971317, 0.5888548126486663, 0.6113561310312158, 0.4257977835671438],
+        ratios: [1, 1, 1, 1],
+        guides: ["1 part paint to 20 parts water, like tea", "1 part paint to 1.5 parts water, like cream", "1 part paint to 1.5 parts water, like cream", "1 part paint to 2.5 parts water, like cream"],
+        coatMaps: ["2661927221", "3428216820", "4267260893", "1761479404"],
+        regions: ["53 1649416766", "17 1956038070", "14 584913793", "32 1656297515"],
+        buys: [4.043439801177975, 5.153000619908911, 2.495329152912395, 4.8691367237149885, 4.043439801177975, 7.959795714353714, 5.668876585021102, 13.049028547400894, 4.043439801177975, 22.90616094736056, 5.570235625758194, 36.74048088484667, 4.043439801177975, 4.313724859120932, 4.153121631832106, 10.000379342673659],
+        steps: ["0 wash schmincke-horadam-494 1 #f3f4f9 15", "0 wash schmincke-horadam-494 2 #e7eaf3 26", "1 wash schmincke-horadam-663 1 #c0b6ab 2", "2 wash schmincke-horadam-662 1 #968c87 1", "2 wash schmincke-horadam-662 2 #53433a 6", "3 accent schmincke-horadam-515 1 #afc7b5 24"],
+        shares: [0.46741818181818184, 0.22774545454545456, 0.530660606060606, 0.6051515151515151, 0.26063030303030305, 0.046224242424242425],
+        comboCount: 32,
+        combos: "2800486873",
+        comboMap: "3164836519",
+        render: "1960079707",
+        renderPart: "1142862093",
+        area: 2.137830303030303,
+        deltaE: [4.043439801177975, 11.664291381835938, 0.0728]
     )
 
     private static let dusk = Reference(
-        paintIDs: ["schmincke-horadam-480", "schmincke-horadam-369", "schmincke-horadam-496", "schmincke-horadam-780", "schmincke-horadam-225", "schmincke-horadam-498"],
-        layers: ["wash - schmincke-horadam-480 1 #ffffff #cee8f6 #cee8f6 #cee8f6", "wash - schmincke-horadam-369 1 #ffffff #f3b2d9 #f3b2d9 #f3b2d9", "wash - schmincke-horadam-496 2 #ffffff #b2d0ea #80add9 #80add9", "wash - schmincke-horadam-780 2 #ffffff #5e5a50 #2c2820 #2c2820", "accent colour schmincke-horadam-225 1 #ffffff #f9e736 #f9e736 #f9e736", "accent dark schmincke-horadam-780 1 #ffffff #36322a #36322a #36322a", "accent any schmincke-horadam-498 1 #ffffff #5c78a6 #5c78a6 #5c78a6"],
-        strengths: [0.10382119970818252, 0.1630283016083242, 0.1630283016083242, 1.2510362859519217, 0.3757652251253904, 2.1323131158479574, 1.0522066015525542],
-        ratios: [1, 1, 1, 1, 1, 1, 1],
-        guides: ["1 part paint to 40 parts water, like tea", "1 part paint to 25 parts water, like tea", "1 part paint to 25 parts water, like tea", "1 part paint to 3 parts water, like milk", "1 part paint to 10 parts water, like coffee", "1 part paint to 2 parts water, like cream", "1 part paint to 4 parts water, like milk"],
-        coatMaps: ["488881212", "1278686348", "819743636", "4203813615", "2110824037", "3143882373", "1614373252"],
-        regions: ["28 2478577170", "15 2446251032", "28 251220223", "12 323058197", "13 1594197862", "28 1936178061", "26 1447510165"],
-        buys: [4.844725108397774, 5.663816363091383, 3.6883990317782707, 5.515325262694535, 4.844725108397774, 6.561126718548556, 4.195579181039159, 7.560605384307011, 4.844725108397774, 12.74958644982752, 4.6511684048679705, 13.714588233975016, 4.844725108397774, 21.835211016474933, 4.636270562450148, 36.497564040524736, 4.844725108397774, 4.889933917957244, 10.468525473696914, 13.86623710590955, 4.844725108397774, 5.668460869252971, 5.200690182082664, 16.68346389664716, 4.844725108397774, 5.591224570040841, 8.562617993120373, 29.63782852653796],
-        steps: ["0 wash schmincke-horadam-480 1 #cee8f6 23", "1 wash schmincke-horadam-369 1 #f3b2d9 9", "2 wash schmincke-horadam-496 1 #b2d0ea 3", "2 wash schmincke-horadam-496 2 #80add9 9", "3 wash schmincke-horadam-780 1 #5e5a50 3", "3 wash schmincke-horadam-780 2 #2c2820 2", "4 accent schmincke-horadam-225 1 #f9e736 12", "5 accent schmincke-horadam-780 1 #36322a 24", "6 accent schmincke-horadam-498 1 #5c78a6 24"],
-        shares: [0.4483439127604167, 0.51007080078125, 0.8721720377604166, 0.5550537109375, 0.53326416015625, 0.22934977213541666, 0.0133056640625, 0.07173665364583333, 0.035420735677083336],
-        comboCount: 102,
-        combos: "442665253",
-        comboMap: "2904066697",
-        render: "3582809505",
-        renderPart: "1131431052",
-        area: 3.268717447916667,
-        deltaE: [4.844725108397774, 13.007940292358398, 0.08677164713541667]
+        paintIDs: ["schmincke-horadam-480", "schmincke-horadam-672", "schmincke-horadam-494", "schmincke-horadam-208", "schmincke-horadam-485", "schmincke-horadam-645"],
+        layers: ["wash - schmincke-horadam-480 2 #ffffff #c5dbee #8ab7dc #8ab7dc", "wash - schmincke-horadam-672 3 #ffffff #d5bab2 #ac7664 #95503a", "wash - schmincke-horadam-494 2 #ffffff #6377af #243f8f #243f8f", "accent colour schmincke-horadam-208 1 #ffffff #fbe727 #fbe727 #fbe727", "accent any schmincke-horadam-485 1 #ffffff #b0bac8 #b0bac8 #b0bac8", "accent dark schmincke-horadam-645 1 #ffffff #7a3e3b #7a3e3b #7a3e3b"],
+        strengths: [0.2850632022210701, 0.3925698750991109, 0.7102944875339455, 0.8786281122462608, 0.5132071963844536, 1],
+        ratios: [1, 1, 1, 1, 1, 1],
+        guides: ["1 part paint to 4 parts water, like milk", "1 part paint to 2.5 parts water, like cream", "1 part paint to 1.5 parts water, like cream", "1 part paint to 1 part water, like butter", "1 part paint to 2 parts water, like cream", "1 part paint to 1 part water, like butter"],
+        coatMaps: ["3188553205", "3843947111", "3913614117", "346995772", "1929237821", "4045137613"],
+        regions: ["32 2549524833", "35 2745078869", "8 2196086929", "12 1902664748", "27 725232736", "27 98424633"],
+        buys: [4.956090110412711, 12.019945218479446, 4.574321071730187, 14.521109769137324, 4.956090110412711, 14.71268465484324, 4.866910890977796, 21.231780364355185, 4.956090110412711, 17.327247849199008, 4.6705627441851965, 25.781073269695813, 4.956090110412711, 5.013853805612845, 6.542973943453506, 10.026656331768868, 4.956090110412711, 5.403367027239483, 6.970264706539456, 13.060169143068437, 4.956090110412711, 5.642595256554462, 4.259943680396777, 20.54522405836964],
+        steps: ["0 wash schmincke-horadam-480 1 #c5dbee 9", "0 wash schmincke-horadam-480 2 #8ab7dc 12", "1 wash schmincke-horadam-672 1 #d5bab2 1", "1 wash schmincke-horadam-672 2 #ac7664 5", "1 wash schmincke-horadam-672 3 #95503a 14", "2 wash schmincke-horadam-494 1 #6377af 1", "2 wash schmincke-horadam-494 2 #243f8f 3", "3 accent schmincke-horadam-208 1 #fbe727 11", "4 accent schmincke-horadam-485 1 #b0bac8 24", "5 accent schmincke-horadam-645 1 #7a3e3b 24"],
+        shares: [0.7101643880208334, 0.4598795572916667, 0.59619140625, 0.4800008138020833, 0.21966552734375, 0.5860188802083334, 0.1636962890625, 0.016581217447916668, 0.07344563802083333, 0.042154947916666664],
+        comboCount: 105,
+        combos: "4123587329",
+        comboMap: "373692414",
+        render: "2892878291",
+        renderPart: "4082943845",
+        area: 3.3477986653645835,
+        deltaE: [4.956090110412711, 11.941279411315918, 0.06886800130208333]
     )
 
     private static let sceneLarge = Reference(
-        paintIDs: ["schmincke-horadam-208", "schmincke-horadam-494", "schmincke-horadam-480", "schmincke-horadam-363", "schmincke-horadam-787", "schmincke-horadam-672"],
-        layers: ["wash - schmincke-horadam-208 1 #ffffff #fdf564 #fdf564 #fdf564", "wash - schmincke-horadam-494 2 #ffffff #d9e2f2 #bacae7 #bacae7", "wash - schmincke-horadam-480 2 #ffffff #b1d9ef #7fbce2 #7fbce2", "wash - schmincke-horadam-363 2 #ffffff #f6999f #ef666e #ef666e", "accent any schmincke-horadam-787 1 #ffffff #c9d2d9 #c9d2d9 #c9d2d9", "accent dark schmincke-horadam-672 1 #ffffff #843d28 #843d28 #843d28"],
-        strengths: [0.25, 0.06347172697261363, 0.1824404494214849, 0.27457128507695644, 0.24230830861908603, 1.315178287938866],
-        ratios: [1, 1, 1, 1, 1, 1],
-        guides: ["1 part paint to 15 parts water, like coffee", "1 part paint to 60 parts water, like tea", "1 part paint to 20 parts water, like tea", "1 part paint to 15 parts water, like coffee", "1 part paint to 15 parts water, like coffee", "1 part paint to 3 parts water, like milk"],
-        coatMaps: ["3737345125", "4236871157", "2021575565", "3018012461", "3425734173", "3271656805"],
-        regions: ["13 4247651209", "58 2993944256", "30 2526708309", "24 2091220403", "14 1424998243", "11 3619376383"],
-        buys: [3.8877364149537534, 8.404932617373891, 3.709276368119564, 12.106202156833493, 3.8877364149537534, 8.082501229546855, 4.056591263167089, 10.147104433414048, 3.8877364149537534, 13.523401551620081, 3.3210648660100484, 17.034467379129623, 3.8877364149537534, 13.584083759442336, 3.4970314319729052, 24.197292619282717, 3.8877364149537534, 4.195224151466356, 4.2502709764163775, 8.89217918896035, 3.8877364149537534, 5.8414510056247835, 4.69600803916445, 44.09865524597556],
-        steps: ["0 wash schmincke-horadam-208 1 #fdf564 2", "1 wash schmincke-horadam-494 1 #d9e2f2 18", "1 wash schmincke-horadam-494 2 #bacae7 40", "2 wash schmincke-horadam-480 1 #b1d9ef 4", "2 wash schmincke-horadam-480 2 #7fbce2 12", "3 wash schmincke-horadam-363 1 #f6999f 2", "3 wash schmincke-horadam-363 2 #ef666e 10", "4 accent schmincke-horadam-787 1 #c9d2d9 12", "5 accent schmincke-horadam-672 1 #843d28 10"],
-        shares: [0.5379583333333333, 0.6887375, 0.25976666666666665, 0.7026458333333333, 0.3123666666666667, 0.46841666666666665, 0.18107916666666668, 0.06624166666666667, 0.04958333333333333],
-        comboCount: 39,
-        combos: "414247731",
-        comboMap: "3012539970",
-        render: "1208355541",
-        renderPart: "1768383935",
-        area: 3.2667958333333336,
-        deltaE: [3.8877364149537534, 7.686824798583984, 0.015204166666666666]
+        paintIDs: ["schmincke-horadam-225", "schmincke-horadam-476", "schmincke-horadam-509", "schmincke-horadam-920", "schmincke-horadam-480"],
+        layers: ["wash - schmincke-horadam-225 1 #ffffff #f7e15a #f7e15a #f7e15a", "wash - schmincke-horadam-476 2 #ffffff #e9e4f0 #d4c9e0 #d4c9e0", "wash - schmincke-horadam-509 3 #ffffff #bce8ec #79d1d9 #36bac7", "wash - schmincke-horadam-920 3 #ffffff #f8c3d8 #f187b2 #eb4b8b", "accent any schmincke-horadam-480 1 #ffffff #b7d2e9 #b7d2e9 #b7d2e9"],
+        strengths: [0.6589710841846954, 0.17246146414154104, 0.2644655290525569, 0.2717138360138737, 0.3529987610338382],
+        ratios: [1, 1, 1, 1, 1],
+        guides: ["1 part paint to 1.5 parts water, like cream", "1 part paint to 6 parts water, like milk", "1 part paint to 4 parts water, like milk", "1 part paint to 4 parts water, like milk", "1 part paint to 3 parts water, like milk"],
+        coatMaps: ["3901381676", "1576975765", "2601193590", "3321846916", "958524197"],
+        regions: ["4 777934530", "17 3656739599", "23 4192505301", "10 3724676959", "12 1756890073"],
+        buys: [3.651274309387879, 10.526840399992961, 2.962911826250961, 14.729131734803726, 3.651274309387879, 7.587065101958746, 3.777337666825148, 8.986309758967707, 3.651274309387879, 13.938837018674356, 3.3746326546735648, 15.182085078336852, 3.651274309387879, 14.237141148422154, 2.9916485489212112, 21.156494694950105, 3.651274309387879, 3.7266974666232984, 5.847858679885967, 15.585114051860508],
+        steps: ["0 wash schmincke-horadam-225 1 #f7e15a 2", "1 wash schmincke-horadam-476 1 #e9e4f0 2", "1 wash schmincke-horadam-476 2 #d4c9e0 5", "2 wash schmincke-horadam-509 1 #bce8ec 1", "2 wash schmincke-horadam-509 2 #79d1d9 11", "2 wash schmincke-horadam-509 3 #36bac7 11", "3 wash schmincke-horadam-920 1 #f8c3d8 2", "3 wash schmincke-horadam-920 2 #f187b2 2", "3 wash schmincke-horadam-920 3 #eb4b8b 6", "4 accent schmincke-horadam-480 1 #b7d2e9 9"],
+        shares: [0.5843479166666666, 0.7555791666666667, 0.38790833333333335, 0.8712770833333333, 0.28990625, 0.05348958333333333, 0.5827666666666667, 0.3704625, 0.11638125, 0.007745833333333334],
+        comboCount: 49,
+        combos: "3084788149",
+        comboMap: "884840629",
+        render: "2733132980",
+        renderPart: "3372759386",
+        area: 4.019864583333333,
+        deltaE: [3.651274309387879, 6.929898262023926, 0.016404166666666668]
     )
 
     func testPlansGivenPaintsOnAPicture() {
         let plan = Layers.layerImage(rgba: scene(160, 120), width: 160, height: 120, paints: [yellow, blue, red, black], paintIDs: ["y", "b", "r", "k"])
         check(plan, Self.sceneGiven)
         XCTAssertEqual(plan.combos.map { "\($0.coats.map(String.init).joined()) \($0.hex) \($0.pixelCount)" }, [
-            "000000 #ffffff 1046", "002000 #8fb8de 2889", "003000 #6e9fd1 89", "001000 #bdd7ed 3693", "021000 #b35f52 687", "000100 #e5301a 691", "101000 #bbd069 188",
-            "103000 #6e9a5c 650", "102000 #8eb162 22", "113000 #6a6130 2368", "112000 #8a7134 2982", "111000 #b68538 32", "100000 #fdf671 32", "122000 #864d1d 1035",
-            "121000 #b15b1f 894", "123000 #68421a 33", "000110 #320f0f 920", "022000 #87504c 855", "023000 #684447 92", "023100 #5d0602 2",
+            "000000 #ffffff 1040", "000100 #8dc2e7 13", "002000 #93afd4 3085", "001000 #c9d7ea 3665", "021000 #b94f46 1767", "101000 #c6c74b 143", "003000 #5d86bf 17",
+            "103000 #5c7c3b 2822", "101100 #6c9643 15", "113000 #585323 963", "102100 #4e793c 74", "112000 #8b6d28 3167", "100000 #fbec52 36", "022000 #873e3f 1051",
+            "122000 #85390e 139", "023000 #552e38 3", "023100 #2b2032 906", "022100 #482d38 10", "123100 #2a1d09 1", "113100 #2d3d1f 1", "112100 #4a5124 1",
+            "122100 #47290b 1", "121000 #b74810 280",
         ])
         // The red wash: two coats, the second inside the first.
         let wash = plan.layers[1]
-        XCTAssertEqual(wash.coats.map(\.hex), ["#f8a591", "#f27259", "#f27259"])
-        assertClose(wash.coats.map(\.share), [0.46770833333333334, 0.18739583333333334, 0], accuracy: 1e-12, "share")
-        assertClose(wash.coats.map(\.only), [0.2803125, 0.18739583333333334, 0], accuracy: 1e-12, "only")
-        XCTAssertEqual(wash.coats.map(\.shapes), [23, 24, 0])
-        assertClose(wash.depths, [0, 0.2885185776370083, 0.525010299247965, 0.525010299247965], "depths")
+        XCTAssertEqual(wash.coats.map(\.hex), ["#f5afa6", "#eb5f4e", "#eb5f4e"])
+        assertClose(wash.coats.map(\.share), [0.4317708333333333, 0.2165625, 0], accuracy: 1e-12, "share")
+        assertClose(wash.coats.map(\.only), [0.21520833333333333, 0.2165625, 0], accuracy: 1e-12, "only")
+        XCTAssertEqual(wash.coats.map(\.shapes), [5, 2, 0])
+        assertClose(wash.depths, [0, 0.5113269036302833, 0.8592443057754835, 0.8592443057754835], "depths")
         // The black is not needed: it keeps a layer without coats at the end.
         XCTAssertEqual(plan.layers[5].top, 0)
         XCTAssertEqual(plan.layers[5].water, .infinity)
@@ -521,7 +536,7 @@ final class LayerTests: XCTestCase {
         XCTAssertEqual(hash(colours.counts.map { Int($0) }), "2821364139")
         XCTAssertEqual(colours.points[0], 0.898113793763683, accuracy: 1e-12)
         XCTAssertEqual(colours.points[colours.points.count - 1], 0.08629648884137471, accuracy: 1e-12)
-        XCTAssertEqual(Layers.proposePaints(colours: colours, paints: paints), ["schmincke-horadam-226", "schmincke-horadam-509", "schmincke-horadam-473", "schmincke-horadam-344"])
+        XCTAssertEqual(Layers.proposePaints(colours: colours, paints: paints), ["schmincke-horadam-208", "schmincke-horadam-496", "schmincke-horadam-509", "schmincke-horadam-353"])
     }
 
     func testPlansCoarseAreasWithTwoCoats() throws {
@@ -619,8 +634,8 @@ final class LayerTests: XCTestCase {
 
     func testGeometricMixesMatchTheWebLogic() {
         let expected: [(simplify: Int, map: String, regions: Int, pixels: String)] = [
-            (0, "2536265450", 112, "168 165 0 0 984 189 0 0 3434 3939 980 0 0 0 1492 1864 67 766 2318 103 1487 0 0 0 0 2670 94 0 0 0 98 193 0 0 0 295 1629 3086 2199 0 0 0 0 1780"),
-            (4, "1052538219", 60, "0 982 2080 4915 2527 0 1854 823 795 2832 0 850 3194 78 2749 0 495 0 0 0 1031 2461 759 0 214 203 1158"),
+            (0, "1114228175", 31, "4227 0 1980 4363 985 3057 5935 0 99 325 1995 0 1845 0 0 0 1450 3739"),
+            (4, "419052205", 29, "6197 0 0 4397 957 3060 5923 0 92 344 1990 0 1849 0 0 0 1452 3739"),
         ]
         for e in expected {
             let result = Segmenter.segment(rgba: scene(200, 150), width: 200, height: 150, colours: 12, simplify: e.simplify, geometric: true)
@@ -632,10 +647,10 @@ final class LayerTests: XCTestCase {
 
     func testGeometricLayersMatchTheWebLogic() {
         let plan = Layers.layerImage(rgba: scene(160, 120), width: 160, height: 120, paints: [yellow, blue, red, black], paintIDs: ["y", "b", "r", "k"], geometric: true)
-        XCTAssertEqual(hash(plan.comboMap), "2720942601")
+        XCTAssertEqual(hash(plan.comboMap), "745994912")
         XCTAssertEqual(plan.steps.count, 8)
-        XCTAssertEqual(plan.layers.map { hash($0.coatMap) }.joined(separator: " "), "2481784556 3519746823 209799118 3992623957 3837734117 1213797829")
-        XCTAssertEqual(plan.deltaE.mean, 4.609486767598869, accuracy: 1e-9)
+        XCTAssertEqual(plan.layers.map { hash($0.coatMap) }.joined(separator: " "), "404282004 559090231 1769919780 21410365 2340494645 1213797829")
+        XCTAssertEqual(plan.deltaE.mean, 5.067861876030574, accuracy: 1e-9)
         consistent(plan)
     }
 }

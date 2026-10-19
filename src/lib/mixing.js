@@ -1,11 +1,14 @@
 // Subtractive watercolour mixing.
 //
-// Model: transparent watercolour behaves roughly like a filter over white paper
-// (Beer–Lambert). Each paint's swatch colour gives a per-channel absorbance
-// A = -ln(reflectance). A mix of paints with amounts a_i reflects
-// exp(-d(S)/S · Σ a_i·A_i) with S = Σ a_i. An amount of 1 means "as strong as the
-// reference swatch"; smaller amounts mean more water. No paint counts for more than 1 (MAX_AMOUNT):
-// a paint is never darker than its swatch.
+// Model: paints mix like filters over white paper (Beer–Lambert), water thins the mix like
+// opacity. Each paint's swatch colour gives a per-channel absorbance A = -ln(reflectance).
+// A mix with amounts a_i is first taken at full strength, its largest amount (its fullness f)
+// raised to 1: that mix reflects exp(-d(S)/S · Σ a_i·A_i) with S = Σ a_i. The wash is that
+// colour laid over the paper at opacity f, in sRGB: an M wash at fullness 0.5 is the full mix
+// at 50 % (decided 2026-10-18; until then water only scaled the absorbance, which kept a paint
+// with an empty channel, like cobalt turquoise without red, vivid at every dilution).
+// An amount of 1 means "as strong as the reference swatch"; smaller amounts mean more water.
+// No paint counts for more than 1 (MAX_AMOUNT): a paint is never darker than its swatch.
 //
 // d(S) is the depth a wash reaches with the total amount S of paint in it. It is 1 at
 // amount 1 and levels off at MAX_DEPTH, which matters for a mix of several paints (S above 1):
@@ -17,13 +20,13 @@
 // darker than their wash, bright paints do not. The limit of a mix is the limit of its paints,
 // weighted by their amounts.
 //
-// Finding a recipe is therefore a non-negative least-squares problem in
-// absorbance space, followed by a small perceptual (OKLab) refinement.
+// Finding a recipe starts from a non-negative least-squares fit in absorbance space, which gives
+// the proportions; the water is then fitted and the amounts refined perceptually (OKLab).
 
-import { hexToRgb, rgbToLinear, linearToRgb, rgbToHex, linearToOklab, deltaE } from './color.js'
-import { WASH_LETTERS } from './recipeText.js'
+import { hexToRgb, rgbToLinear, linearToRgb, rgbToHex, linearToOklab, deltaE, srgbToLinear, linearToSrgb } from './color.js'
+import { WASH_LIMITS } from './recipeText.js'
 
-export { WASH_LETTERS, matchQuality } from './recipeText.js'
+export { WASH_LETTERS, matchQuality, washLetter } from './recipeText.js'
 
 const MIN_REFLECTANCE = 0.0005
 // The most of one paint in a mix or on the paper: the paint as its swatch shows it. Water only
@@ -31,8 +34,6 @@ const MIN_REFLECTANCE = 0.0005
 // paint is mixed in or laid over it (decided 2026-10-12; until then four times as much was
 // allowed, on the way to an estimated masstone).
 export const MAX_AMOUNT = 1
-// Where the water levels of a wash begin, as fullness: paper, W, L, M, R, C, and the swatch itself.
-const WASH_LIMITS = [0.02, 0.1, 0.25, 0.5, 0.8, 1]
 // Depth of the masstone relative to the reference swatch, for a bright paint and for a neutral
 // one. Estimates: the stock data holds one colour per paint, not its masstone.
 export const MAX_DEPTH = 1.6
@@ -75,7 +76,11 @@ export function mixAbsorbances(absorbances, amounts) {
   let sum = 0
   let limit = 0
   // No paint counts for more than its swatch (MAX_AMOUNT), whatever amount is asked for.
-  const used = amounts.map((v) => Math.min(MAX_AMOUNT, v))
+  const capped = amounts.map((v) => Math.max(0, Math.min(MAX_AMOUNT, v)))
+  const fullness = Math.max(0, ...capped)
+  if (!(fullness > 0)) return [1, 1, 1]
+  // The mix at full strength; the water comes in below, as opacity.
+  const used = capped.map((v) => v / fullness)
   absorbances.forEach((A, i) => {
     sum += used[i]
     limit += used[i] * depthLimit(A)
@@ -88,7 +93,16 @@ export function mixAbsorbances(absorbances, amounts) {
     total[1] += A[1] * d
     total[2] += A[2] * d
   })
-  return total.map((v) => Math.exp(-v))
+  return total.map((v) => thinned(Math.exp(-v), fullness))
+}
+
+// A reflectance (linear) laid over white paper at that opacity, blended in sRGB.
+const thinned = (reflectance, opacity) => srgbToLinear(255 - opacity * (255 - linearToSrgb(reflectance)))
+
+/** One paint alone on white paper at that amount (capped at MAX_AMOUNT): its swatch at that opacity, linear RGB. */
+export function paintFilter(A, amount) {
+  const a = Math.max(0, Math.min(MAX_AMOUNT, amount))
+  return A.map((v) => thinned(Math.exp(-v), a))
 }
 
 /** Predicted colour (hex) of mixing the given paints with the given amounts on white paper. */
@@ -279,7 +293,9 @@ export function findRecipes(targetHex, paints, { maxPaints = 3, limit = 5, value
       // With the proportions kept, no paint above its swatch.
       const most = Math.max(...amounts)
       if (most > MAX_AMOUNT) amounts = amounts.map((v) => (v * MAX_AMOUNT) / most)
-      results.push({ candidate, amounts, deltaE: evaluate(candidate, amounts, targetLab) })
+      // The fit is in absorbance, where water is not: it gives the proportions, the water is fitted here.
+      const fitted = fitWater(candidate, amounts, targetLab, { steps: 12, fine: false })
+      results.push({ candidate, amounts: fitted.amounts, deltaE: fitted.deltaE })
     }
 
     for (const c of pool) consider([c])
@@ -362,29 +378,38 @@ export function washRecipe(recipe, targetHex, paintsById, { values = false } = {
   const targetLab = linearToOklab(rgbToLinear(hexToRgb(targetHex)))
   const candidate = recipe.paints.map((p) => ({ paint: paintsById[p.paintId], A: absorbanceFromHex(paintsById[p.paintId].hex) }))
   const base = recipe.paints.map((p) => p.amount)
+  const { amounts, deltaE: err } = fitWater(candidate, base, targetLab, { values })
+  return toRecipe({ items: candidate.map((c, i) => ({ paint: c.paint, amount: amounts[i] })), deltaE: err })
+}
+
+/**
+ * The amounts scaled by the one factor that brings the mix closest to the target: a coarse scan
+ * over the water level, then (with `fine`) a golden-section search around the best step.
+ */
+function fitWater(candidate, base, targetLab, { values = false, steps = 48, fine = true } = {}) {
   const error = (logT) => evaluate(candidate, base.map((v) => v * Math.exp(logT)), targetLab, values)
-  // Coarse scan over the water level, then golden-section search around the best step.
   const lo = Math.log(0.02 / Math.max(...base))
   const hi = Math.log(MAX_AMOUNT / Math.max(...base))
-  const steps = 48
   let best = lo, bestErr = Infinity
   for (let i = 0; i <= steps; i++) {
     const t = lo + ((hi - lo) * i) / steps
     const err = error(t)
     if (err < bestErr) { bestErr = err; best = t }
   }
-  let a = Math.max(lo, best - (hi - lo) / steps)
-  let b = Math.min(hi, best + (hi - lo) / steps)
-  const phi = (Math.sqrt(5) - 1) / 2
-  for (let i = 0; i < 24; i++) {
-    const c = b - (b - a) * phi
-    const d = a + (b - a) * phi
-    if (error(c) < error(d)) b = d
-    else a = c
+  let logT = best
+  if (fine) {
+    let a = Math.max(lo, best - (hi - lo) / steps)
+    let b = Math.min(hi, best + (hi - lo) / steps)
+    const phi = (Math.sqrt(5) - 1) / 2
+    for (let i = 0; i < 24; i++) {
+      const c = b - (b - a) * phi
+      const d = a + (b - a) * phi
+      if (error(c) < error(d)) b = d
+      else a = c
+    }
+    logT = (a + b) / 2
   }
-  const logT = (a + b) / 2
-  const factor = Math.exp(logT)
-  return toRecipe({ items: candidate.map((c, i) => ({ paint: c.paint, amount: base[i] * factor })), deltaE: error(logT) })
+  return { amounts: base.map((v) => v * Math.exp(logT)), deltaE: error(logT) }
 }
 
 function toRecipe({ items, deltaE: err }) {
@@ -401,6 +426,8 @@ function toRecipe({ items, deltaE: err }) {
     fullness,
     dilution: describeDilution(fullness),
     hex: rgbToHex(linearToRgb(linear)),
+    // The mix without water: the same ratio, its largest part at full strength (the darkest it is used).
+    baseHex: fullness > 0 ? rgbToHex(linearToRgb(mixAbsorbances(items.map((it) => absorbanceFromHex(it.paint.hex)), items.map((it) => it.amount / fullness)))) : '#ffffff',
     deltaE: err,
   }
 }
@@ -424,22 +451,3 @@ export function describeDilution(fullness) {
   return 'concentrated (hardly any water)'
 }
 
-// A value study needs more steps of water than five: with `fine` every level is split in this many.
-const WASH_FINE = 5
-
-/**
- * @param {number} strength  the fullness of a recipe (its paint with least water, at most 1)
- * @param {boolean} [fine]  the level and its step within it, W1 to C5 (value mode)
- */
-export function washLetter(strength, fine = false) {
-  if (strength <= WASH_LIMITS[0]) return ''
-  let level = 0
-  while (level < WASH_LETTERS.length - 1 && strength >= WASH_LIMITS[level + 1]) level++
-  const { letter } = WASH_LETTERS[level]
-  // Only on request: the function is also handed to `map`, whose index is no request.
-  if (fine !== true) return letter
-  // Steps of water are even on a log scale.
-  const lo = Math.log(WASH_LIMITS[level]), hi = Math.log(WASH_LIMITS[level + 1])
-  const step = Math.min(WASH_FINE - 1, Math.max(0, Math.floor(((Math.log(strength) - lo) / (hi - lo)) * WASH_FINE)))
-  return `${letter}${step + 1}`
-}

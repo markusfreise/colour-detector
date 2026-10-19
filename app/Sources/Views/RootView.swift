@@ -29,13 +29,23 @@ struct RootView: View {
     @SceneStorage("showingColours") private var showingColours = false
     @State private var photo: PhotosPickerItem?
     @State private var boxRevision = 0
+    /// Help: every button shows its label (the web's .app--hints).
+    @State private var hints = false
+    /// A phone: the picture buttons are folded behind the menu button.
+    @State private var menuOpen = false
+    /// The cards floating over the picture, the front one last: a card touched comes to the front.
+    @State private var cardOrder: [FloatCard] = [.settings, .colours, .colour]
+    /// Width of the window, for the size of the buttons on a phone.
+    @State private var windowWidth: CGFloat = 0
+    /// "Get pro" closed with its cross: hidden until the app is started again.
+    @State private var promoHidden = false
 
     var body: some View {
         stage
             .overlay(alignment: .topLeading) { pictureButtons.padding(Theme.gap) }
             .overlay(alignment: compact ? .bottom : .top) { tools.padding(Theme.gap) }
-            // Above the rest that lies over the picture: the cards float over the whole window.
-            .overlay(alignment: .topTrailing) { panels }
+            // Above the rest that lies over the picture, the tools too: the cards float over the whole window.
+            .overlay { cards }
             .overlay(alignment: .top) {
                 // A phone: one card across the window, as the web's flyout in a narrow window.
                 if compact, let tab = openTab {
@@ -46,6 +56,10 @@ struct RootView: View {
                 }
             }
             .background(Theme.page.ignoresSafeArea())
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { windowWidth = $0 }
+            .environment(\.iconButtonSize, buttonSize)
+            .environment(\.showHints, hints)
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: hints)
             .tint(Theme.corporate)
             .navigationTitle(session.imageName.isEmpty ? L("No Picture") : session.imageName)
         .sheet(isPresented: $showingPaintBox, onDismiss: paintBoxClosed) { PaintBoxView() }
@@ -64,9 +78,20 @@ struct RootView: View {
         }
         #endif
         .onChange(of: photo) { loadPhoto() }
+        // A saved picture shown in Blocking opens in the paint without the full version.
+        .onChange(of: session.settings.view, initial: true) { leaveLockedView() }
+        .onChange(of: store.checked) { leaveLockedView() }
+        .onChange(of: store.unlocked) { leaveLockedView() }
         // A phone: the colour card comes up where the panel card was; one thing over the picture at a time.
         .onChange(of: session.selectedRegion) { _, region in
-            if compact, region != nil { showingSettings = false; showingColours = false }
+            if compact, region != nil { showingSettings = false; showingColours = false; menuOpen = false }
+        }
+        .onChange(of: session.inspectedEntry) { _, entry in
+            if entry != nil { raise(.colour) }
+        }
+        // Layer mode: the spot tapped in the picture is shown at the top of the layers card, which opens for it.
+        .onChange(of: session.layerSpot != nil) { _, spot in
+            if spot, !showingColours { open(.colours) }
         }
         .alert("Something went wrong", isPresented: Binding(get: { session.error != nil }, set: { if !$0 { session.error = nil } })) {
             Button("OK", role: .cancel) {}
@@ -78,6 +103,8 @@ struct RootView: View {
             // "-auto" at launch: the paint box picks its paints, as on a fresh install.
             if ProcessInfo.processInfo.arguments.contains("-auto") { library.switchToAuto() }
             #endif
+            // A phone starts with the panels folded, the picture in full view.
+            if compact { showingSettings = false; showingColours = false }
             if session.image == nil { session.loadSample(restart: true) }
             #if DEBUG
             await openScreenForScreenshot()
@@ -99,6 +126,8 @@ struct RootView: View {
         if arguments.contains("-sample") { session.loadSample() }
         // "-geometric" switches to areas with straight edges.
         if arguments.contains("-geometric") { session.settings.geometric = true }
+        // "-monochrome" paints the picture in grey, each value with one paint.
+        if arguments.contains("-monochrome") { session.settings.values = true }
         // "-layer" switches to layer mode; "-step n" opens that step of the walk, "-stepview paint|wash|result" its picture.
         if arguments.contains("-layer") { session.setMode(.layer) }
         while session.busy || (session.layerMode ? session.layers == nil : session.entries.isEmpty) { try? await Task.sleep(for: .milliseconds(100)) }
@@ -115,12 +144,20 @@ struct RootView: View {
             while session.busy || session.entries.isEmpty { try? await Task.sleep(for: .milliseconds(100)) }
         }
         if arguments.contains("-framing") { session.framing = true }
+        // "-hints" turns Help on: every button shows its label.
+        if arguments.contains("-hints") { toggleHints() }
         if let mode = arguments.firstIndex(of: "-view").flatMap({ arguments.dropFirst($0 + 1).first }).flatMap(ViewMode.init(rawValue:)) {
             session.settings.view = mode
         }
+        // "-grid white|grey|black" draws the grid; "-backdrop" puts the numbers on squares, "-large" makes them large.
+        if let grid = arguments.firstIndex(of: "-grid").flatMap({ arguments.dropFirst($0 + 1).first }).flatMap(GridColour.init(rawValue:)) {
+            session.settings.grid = grid
+        }
+        if arguments.contains("-backdrop") { session.settings.numbers = .backdrop }
+        if arguments.contains("-large") { session.settings.numberSize = .large }
         let screen = arguments.firstIndex(of: "-screen").flatMap { arguments.dropFirst($0 + 1).first } ?? ""
         switch screen {
-        case "paintbox": showingPaintBox = true
+        case "paintbox", "addcolour": showingPaintBox = true
         case "collection": showingCollection = true
         case "editor": if !session.layerMode { session.inspect(entry: 2) }
         case "breakdown":
@@ -133,13 +170,13 @@ struct RootView: View {
         case "preferences": openPreferences()
         default: break
         }
-        #if os(macOS)
         // "-pdf" writes the printed sheet into the temporary folder.
         if arguments.contains("-pdf") {
             let url = FileManager.default.temporaryDirectory.appendingPathComponent("sheet.pdf")
             try? PrintSheet.pdf(session: session, library: library).write(to: url)
             print("pdf", url.path)
         }
+        #if os(macOS)
         let snapshot = arguments.contains("-snapshot")
         if snapshot {
             try? await Task.sleep(for: .seconds(2))
@@ -193,21 +230,44 @@ struct RootView: View {
                 .padding(.horizontal, Theme.iconButton + Theme.gap * 2)
                 .padding(.top, compact ? Theme.gap : Theme.gap * 2 + Theme.iconButton)
             }
-            .overlay(alignment: .bottom) {
-                Group {
-                    if session.layerMode {
-                        SpotCard()
-                    } else {
-                        ColourCard { openBreakdown() }
-                    }
-                }
-                .padding(.horizontal, Theme.gap)
-                // A phone: above the tools at the bottom.
-                .padding(.bottom, compact ? Theme.gap * 2 + toolSize : Theme.gap)
-                .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
+    }
+
+    /// The colour card over the lower edge of the picture. Layer mode shows the tapped spot in the
+    /// layers card instead.
+    private var colourCard: some View {
+        Group {
+            if !session.layerMode {
+                ColourCard { openBreakdown() }
             }
-            .animation(reduceMotion ? nil : .snappy, value: session.inspectedEntry)
-            .animation(reduceMotion ? nil : .snappy, value: session.layerSpot != nil)
+        }
+        .padding(.horizontal, Theme.gap)
+        // A phone: above the tools at the bottom.
+        .padding(.bottom, compact ? Theme.gap * 2 + toolSize : Theme.gap)
+        .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
+        .animation(reduceMotion ? nil : .snappy, value: session.inspectedEntry)
+    }
+
+    // MARK: Cards
+
+    /// The colour card and the panels with their buttons, in the order they were last touched.
+    private var cards: some View {
+        ZStack {
+            colourCard
+                .frontOnTap { raise(.colour) }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .zIndex(depth(.colour))
+            panels
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                .zIndex(max(depth(.settings), depth(.colours)))
+        }
+    }
+
+    private func depth(_ card: FloatCard) -> Double { Double(cardOrder.firstIndex(of: card) ?? 0) }
+
+    private func raise(_ card: FloatCard) {
+        guard cardOrder.last != card else { return }
+        cardOrder.removeAll { $0 == card }
+        cardOrder.append(card)
     }
 
     private var compact: Bool {
@@ -221,15 +281,41 @@ struct RootView: View {
     // MARK: Picture (top left)
 
     /// What is done with the picture as a whole: a new one, samples, saving, the collection,
-    /// printing and sharing.
+    /// printing and sharing. On a phone they are folded behind a menu button, with "Get pro" beside it.
     private var pictureButtons: some View {
+        VStack(alignment: .leading, spacing: Theme.gap) {
+            if compact {
+                HStack(spacing: Theme.gap) {
+                    IconButton(title: "Menu", symbol: menuOpen ? "xmark" : "line.3.horizontal", active: menuOpen) { menuOpen.toggle() }
+                        .environment(\.showHints, false)
+                    if !store.unlocked, !promoHidden {
+                        GetProButton(size: buttonSize) {
+                            menuOpen = false
+                            paywallReason = "use everything"
+                            showingPaywall = true
+                        } hide: {
+                            promoHidden = true
+                        }
+                    }
+                }
+            }
+            if !compact || menuOpen {
+                pictureColumn
+                    .transition(.opacity)
+            }
+        }
+        .environment(\.hintSide, .trailing)
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: menuOpen)
+    }
+
+    private var pictureColumn: some View {
         VStack(spacing: Theme.gap) {
             Menu {
-                Button("From Photos", systemImage: "photo.on.rectangle") { showingPhotos = true }
-                Button("From Files", systemImage: "folder") { showingFiles = true }
+                Button("From Photos", systemImage: "photo.on.rectangle") { closeMenu(); showingPhotos = true }
+                Button("From Files", systemImage: "folder") { closeMenu(); showingFiles = true }
                 #if os(iOS)
                 if CameraPicker.isAvailable {
-                    Button("Take Photo", systemImage: "camera") { showingCamera = true }
+                    Button("Take Photo", systemImage: "camera") { closeMenu(); showingCamera = true }
                 }
                 #endif
             } label: {
@@ -237,17 +323,23 @@ struct RootView: View {
             }
             .webMenu(active: true)
             .help("New: choose a photo")
-            IconButton(title: "Samples: choose a sample picture", symbol: "square.inset.filled") { showingSamples = true }
-            IconButton(title: "Save", symbol: "square.and.arrow.down", action: save)
+            .hint("New picture")
+            IconButton(title: "Samples: choose a sample picture", symbol: "square.inset.filled", hint: "Samples") { closeMenu(); showingSamples = true }
+            IconButton(title: "Save", symbol: "square.and.arrow.down") { closeMenu(); save() }
                 .disabled(session.image == nil)
-            IconButton(title: "Collection", symbol: "photo.on.rectangle.angled") { showingCollection = true }
-            IconButton(title: "Print", symbol: "printer") { PrintSheet.print(session: session, library: library) }
+            IconButton(title: "Collection", symbol: "photo.on.rectangle.angled") { closeMenu(); showingCollection = true }
+            IconButton(title: "Print", symbol: "printer", hint: "Print / PDF") { closeMenu(); PrintSheet.print(session: session, library: library) }
                 .disabled(!printable)
             shareMenu
             // Language and light or dark, as the web's person button below the picture buttons.
-            IconButton(title: "Preferences", symbol: "person.crop.circle", action: openPreferences)
+            IconButton(title: "Preferences", symbol: "person.crop.circle") { closeMenu(); openPreferences() }
                 .padding(.top, Theme.gap)
         }
+    }
+
+    /// A phone: the menu folds away once one of its buttons is used (Help keeps it open).
+    private func closeMenu() {
+        if !hints { menuOpen = false }
     }
 
     private var printable: Bool { session.layerMode ? session.layers != nil : !session.entries.isEmpty }
@@ -272,6 +364,7 @@ struct RootView: View {
         }
         .webMenu()
         .help("Share: PDF or JPG")
+        .hint("Share")
         .disabled(!printable)
     }
 
@@ -282,27 +375,65 @@ struct RootView: View {
         HStack(alignment: .top, spacing: Theme.gap) {
             if !compact {
                 VStack(alignment: .trailing, spacing: Theme.gap) {
-                    if showingSettings { card(.settings).frame(width: 460) }
-                    if showingColours { card(.colours).frame(width: 480) }
+                    if showingSettings { card(.settings).frame(width: 460).zIndex(depth(.settings)) }
+                    if showingColours { card(.colours).frame(width: 480).zIndex(depth(.colours)) }
                 }
             }
             VStack(spacing: Theme.gap) {
-                IconButton(title: "Settings", symbol: "slider.horizontal.3", active: showingSettings) { toggle(.settings) }
                 IconButton(
                     title: session.layerMode ? "Layers" : "Colours",
                     symbol: session.layerMode ? "square.3.layers.3d" : "swatchpalette",
                     active: showingColours
                 ) { toggle(.colours) }
                 IconButton(title: "Paint box", symbol: "circle.grid.2x2", action: openPaintBox)
+                // Help: the labels of all buttons at once, for screens without a pointer to hover with.
+                IconButton(title: "Help", symbol: "questionmark", active: hints, action: toggleHints)
+                    .padding(.top, Theme.gap)
+                if store.testing { debugMenu }
             }
+            .environment(\.hintSide, .leading)
         }
         .padding(Theme.gap)
     }
 
+    /// Test builds only (Xcode, TestFlight): the full version on or off without buying, and the
+    /// purchase screen. The app has no sign-in of its own; the App Store account is the account.
+    private var debugMenu: some View {
+        @Bindable var store = store
+        return Menu {
+            Picker("Full version", selection: $store.debugPro) {
+                Text("As bought").tag(Bool?.none)
+                Text("Unlocked").tag(Bool?.some(true))
+                Text("Locked").tag(Bool?.some(false))
+            }
+            .pickerStyle(.inline)
+            Button("Show purchase screen", systemImage: "cart") {
+                paywallReason = "use everything"
+                showingPaywall = true
+            }
+            Button("Show “Get pro” again", systemImage: "arrow.uturn.backward") { promoHidden = false }
+                .disabled(!promoHidden)
+        } label: {
+            Label("Debug", systemImage: "ladybug")
+        }
+        .webMenu(active: store.debugPro != nil)
+        .help("Debug")
+        .hint("Debug")
+        .padding(.top, Theme.gap)
+    }
+
+    /// Help on a phone opens the menu too, so that its labels are seen.
+    private func toggleHints() {
+        hints.toggle()
+        if hints, compact { menuOpen = true }
+    }
+
     private func card(_ tab: PanelTab) -> some View {
-        PanelCard(close: { close(tab) }) {
+        let id: FloatCard = tab == .settings ? .settings : .colours
+        return PanelCard(close: { close(tab) }, touched: { raise(id) }) {
             PanelView(tab: tab, showPaintBox: openPaintBox)
         }
+        .frontOnTap { raise(id) }
     }
 
     /// The open card on a phone, where only one fits.
@@ -314,8 +445,9 @@ struct RootView: View {
 
     private func open(_ tab: PanelTab) {
         // A phone has room for one card.
-        if compact { showingSettings = false; showingColours = false }
+        if compact { showingSettings = false; showingColours = false; menuOpen = false }
         if tab == .settings { showingSettings = true } else { showingColours = true }
+        raise(tab == .settings ? .settings : .colours)
     }
 
     private func close(_ tab: PanelTab) {
@@ -324,39 +456,93 @@ struct RootView: View {
 
     // MARK: Tools (top centre)
 
-    /// What the picture shows, as the web's painting tools: a close-up, the views, outlines and
-    /// numbers. Smaller on a phone, so that they fit in one row.
+    /// What the picture shows, as the web's painting tools: a close-up, the settings, the views,
+    /// outlines and numbers. As far apart as the buttons of the columns; closer on a phone.
     private var tools: some View {
         @Bindable var session = session
-        return HStack(spacing: 6) {
+        return HStack(spacing: toolGap) {
             frameButton
+            // The settings beside the views they belong to; their card floats at the top right.
+            IconButton(title: "Settings", symbol: "slider.horizontal.3", active: showingSettings) { toggle(.settings) }
             SegmentedGroup(
                 options: viewModes, selection: session.settings.view,
-                title: { $0.title }, symbol: { $0.symbol },
-                choose: { session.settings.view = $0 },
-                size: toolSize
+                title: { layered($0) ?? $0.title }, symbol: { $0.symbol },
+                choose: choose,
+                size: buttonSize,
+                hint: { layered($0) ?? $0.hint },
+                locked: { $0 == .blocking && !store.unlocked }
             )
-            IconButton(title: "Outlines", symbol: "squareshape.split.3x3", active: session.settings.outlines, size: toolSize) {
+            // Their labels for Help alternate in height with those of the views beside them.
+            // The grid cycles through none, white, grey, black; its label is the state now.
+            IconButton(title: GridColour.title(session.settings.grid), symbol: "icon.grid", active: session.settings.grid != nil, hintRow: viewModes.count % 2) {
+                session.settings.grid = GridColour.next(after: session.settings.grid)
+            }
+            // The hash, as the web's outlines icon: the square cells are the grid's.
+            IconButton(title: "Outlines", symbol: "number", active: session.settings.outlines, hintRow: (viewModes.count + 1) % 2) {
                 session.settings.outlines.toggle()
             }
             .disabled(session.settings.view == .template)
-            IconButton(title: "Numbers", symbol: "textformat.123", active: session.settings.numbers, size: toolSize) {
-                session.settings.numbers.toggle()
+            // Cycles through no numbers, numbers, numbers on a backdrop.
+            IconButton(
+                title: session.settings.numbers.title,
+                symbol: session.settings.numbers == .backdrop ? "123.rectangle.fill" : "textformat.123",
+                active: session.settings.numbers != .none,
+                hintRow: viewModes.count % 2
+            ) {
+                session.settings.numbers = session.settings.numbers.next
             }
         }
+        .environment(\.hintSide, compact ? .above : .below)
     }
 
-    private var toolSize: CGFloat { compact ? 36 : Theme.iconButton }
+    private var toolGap: CGFloat { compact ? 6 : Theme.gap }
 
-    private var viewModes: [ViewMode] { session.layerMode ? ViewMode.layerCases : ViewMode.allCases }
+    /// The side of every icon button: Theme.iconButton where the row of tools fits with it (from
+    /// the largest phones up), smaller only as far as a narrower phone needs.
+    private var buttonSize: CGFloat {
+        guard compact, windowWidth > 0 else { return Theme.iconButton }
+        // Detail, Settings, the views, Grid, Outlines, Numbers; five gaps, the borders of the group.
+        let buttons = CGFloat(viewModes.count + 5)
+        let room = windowWidth - Theme.gap * 2 - toolGap * 5 - CGFloat(viewModes.count + 1)
+        return min(Theme.iconButton, (room / buttons).rounded(.down))
+    }
+
+    /// Blocking is part of the full version.
+    private func choose(_ view: ViewMode) {
+        if view == .blocking, !store.unlocked {
+            paywallReason = "block in light and shadow"
+            showingPaywall = true
+            return
+        }
+        session.settings.view = view
+    }
+
+    /// Once the purchase state is known: Blocking without the full version falls back to the paint.
+    private func leaveLockedView() {
+        if session.settings.view == .blocking, store.checked, !store.unlocked { session.settings.view = .mixed }
+    }
+
+    /// In layer mode the paint is layered, not mixed.
+    private func layered(_ mode: ViewMode) -> String? {
+        session.layerMode && mode == .mixed ? "Layered paint" : nil
+    }
+
+    private var toolSize: CGFloat { buttonSize }
+
+    /// The Template view has no button, as on the web: the grid takes its place; its drawing stays.
+    private var viewModes: [ViewMode] {
+        session.layerMode ? ViewMode.layerCases : ViewMode.allCases.filter { $0 != .template }
+    }
 
     /// A frame drawn on the base picture becomes a close-up: that part, analysed on its own.
     private var frameButton: some View {
         IconButton(
             title: session.framing ? "Cancel choosing a part of the picture" : "Close-up: zoom in on a part of the picture",
-            symbol: "plus.magnifyingglass",
+            symbol: "icon.frame",
             active: session.framing,
-            size: toolSize
+            locked: !store.unlocked,
+            hint: "Detail",
+            hintRow: 1
         ) {
             guard session.framing || store.unlocked else {
                 paywallReason = "zoom in on a part of the picture"
@@ -491,5 +677,54 @@ private extension View {
             .buttonStyle(IconButtonStyle(active: active))
             .menuIndicator(.hidden)
             .fixedSize()
+    }
+}
+
+/// The cards that float over the picture and can lie over each other.
+enum FloatCard {
+    case settings, colours, colour
+}
+
+private extension View {
+    /// A tap anywhere on the card, its buttons too, brings it to the front.
+    func frontOnTap(_ action: @escaping () -> Void) -> some View {
+        simultaneousGesture(TapGesture().onEnded(action))
+    }
+}
+
+/// "Get pro" with its cross, as the other buttons around the picture: white with a thin border,
+/// as tall as they are; the cross divided off as in a segmented group.
+private struct GetProButton: View {
+    let size: CGFloat
+    let open: () -> Void
+    let hide: () -> Void
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Button(action: open) {
+                Text("Get pro")
+                    .font(Theme.strong)
+                    .padding(.horizontal, 14)
+                    .frame(maxHeight: .infinity)
+                    .contentShape(Rectangle())
+            }
+            Theme.border.frame(width: 1)
+            Button(action: hide) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.copyLight)
+                    .frame(width: size * 0.75)
+                    .frame(maxHeight: .infinity)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Hide “Get pro” until the next start")
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Theme.copy)
+        .frame(height: size)
+        .fixedSize(horizontal: true, vertical: false)
+        .background(Theme.raised, in: RoundedRectangle(cornerRadius: Theme.radiusSmall))
+        .overlay(RoundedRectangle(cornerRadius: Theme.radiusSmall).strokeBorder(Theme.border))
+        .flatShadow()
     }
 }

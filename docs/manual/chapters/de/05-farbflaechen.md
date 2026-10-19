@@ -15,7 +15,7 @@ part: Die App
 2. Die Flächen: **Organisch** oder **Geometrisch**.
 3. **Flächen vereinfachen**: wie groß und ruhig die Formen sind.
 4. **Farben**: die Zahl der Mischungen.
-5. **Details**: ob kleine Flächen eines anderen Farbtons eine eigene Mischung behalten.
+5. **Details**: ob die Mischungen feine Abstufungen im ganzen Bild geben oder kleinen Flächen eines anderen Farbtons.
 6. **Max. Farben**: wie viele Farben eine Mischung enthalten darf.
 
 Der Knopf mit dem halb gefüllten Kreis neben den Flächen schaltet auf [Monochrom](tonwerte.html#monochrom-eine-temperatur-jeder-tonwert) um, eine Studie in Hell und Dunkel, gemalt mit deinen Farben (Pro). Für Licht und Schatten allein gibt es die Ansicht **Blocking**.
@@ -48,10 +48,10 @@ Mit Pro geht der Regler unter 0, bis **-2**. Dort nimmt die App Schritt für Sch
 
 Hat das Foto mehr Farben, als du verlangst, müssen sich einige eine Mischung teilen. **Details** entscheidet, welche.
 
-- **Niedrig (Richtung 0)** hält das Bild als Ganzes so nah am Foto wie möglich. Große Flächen bekommen die genauesten Farben, und eine kleine Fläche eines anderen Farbtons wird unter Umständen mit der nächsten großen Mischung gemalt.
-- **Hoch (Richtung 10)** behält kleinen Flächen mit eigenem Farbton eine eigene Mischung: das rote Dach im grünen Tal, die Lippen im Porträt, ein einzelnes gelbes Boot. Dafür teilen sich ähnliche große Farben öfter eine Mischung.
+- **Hoch (Richtung 10)** hält das Bild als Ganzes so nah am Foto wie möglich. Die großen Flächen, ein Himmel, eine Wand, eine Straße, bekommen die feinsten Abstufungen, und eine kleine Fläche eines anderen Farbtons wird unter Umständen mit der nächsten großen Mischung gemalt.
+- **Niedrig (Richtung 0)** behält kleinen Flächen mit eigenem Farbton eine eigene Mischung: das rote Dach im grünen Tal, die Lippen im Porträt, ein einzelnes gelbes Boot. Dafür teilen sich ähnliche große Farben öfter eine Mischung, und ein Himmel wird unter Umständen eine einzige flache Farbe.
 
-Der Ausgangswert 5 ist ein Mittelweg. Erhöh ihn für Bilder, die von einem kleinen Akzent leben; senk ihn für ruhige Landschaften, in denen die großen Farbfelder am meisten zählen.
+Der Ausgangswert 5 ist ein Mittelweg. Senk ihn für Bilder, die von einem kleinen Akzent leben; erhöh ihn für ruhige Landschaften, in denen die großen Farbfelder am meisten zählen.
 
 ## Max. Farben
 
@@ -79,23 +79,23 @@ Ein Doppelklick auf einen Regler setzt ihn auf 100 % zurück.
 
 ## Die Ansichten
 
-Die Werkzeuge des Bildes sitzen über ihm.
+Die Werkzeuge des Bildes sitzen über ihm, links daneben **Einstellungen**. Auf dem Telefon liegen die Werkzeuge unten und **Einstellungen** oben.
 
 ![Die Werkzeuge des Bildes](shot:picture-tools)
 
-1. **Anpassen** passt das Bild ins Fenster.
+1. **Einstellungen** öffnet und schließt die Karte mit den Einstellungen.
 2. **Ausschnitt** zeigt einen Teil des Bildes für sich (siehe [Bilder](bilder.html#genauer-hinsehen-ausschnitte-des-bildes)).
 3. **Gemischte Farbe**: jede Fläche in dem Ton, den deine Farben tatsächlich erreichen. Nach dieser Ansicht malst du.
 4. **Fotofarbe**: jede Fläche in der Farbe des Fotos. Vergleich sie mit **Gemischte Farbe**, um zu sehen, wo deine Farben nicht hinkommen.
-5. **Überlagerung**: das Foto zur Hälfte über der Farbe, um zu sehen, welche Fläche welcher Teil des Fotos ist.
-6. **Foto**: das Original, mit Sättigung und Kontrast.
-7. **Vorlage zum Drucken**: keine Füllung, nur Umrisse und Nummern in hellem Blau. Siehe [Drucken](drucken.html).
+5. **Foto**: das Original, mit Sättigung und Kontrast.
+6. **Blocking**: Licht und Schatten in großen Massen. Siehe [Tonwerte](tonwerte.html#blocking-licht-und-schatten-zuerst).
+7. **Raster**: quadratische Felder über dem Bild, in Weiß, Grau oder Schwarz. Siehe [Drucken](drucken.html#das-raster).
 8. **Umrisse** ein oder aus.
-9. **Nummern** ein oder aus.
+9. **Nummern**: jeder Klick schaltet weiter, von Nummern zu Nummern auf Hintergrund zu keinen Nummern. Auf Hintergrund steht jede Nummer auf einem kleinen Quadrat, weiß mit dunkler Nummer auf dunklen Flächen und dunkel mit weißer Nummer auf hellen, so bleibt sie auf jeder Farbe lesbar.
+
+Sobald du in das Bild hineinzoomst, erscheint vorn bei den Werkzeugen **Anpassen**; es passt das Bild wieder ins Fenster.
 
 ![Fotofarbe: was das Foto verlangt](shot:view-target)
-
-![Überlagerung: das Foto über der Farbe](shot:view-overlay)
 
 ![Foto: das Original](shot:view-photo)
 
@@ -103,16 +103,20 @@ Ohne Umrisse und Nummern zeigt **Gemischte Farbe** das Bild so, wie es gemalt au
 
 ![Gemischte Farbe ohne Umrisse und Nummern](shot:view-plain)
 
+**Nummerngröße** am Ende der Einstellungen macht die Nummern **Groß**, 1,4-mal so groß wie **Normal**, für ein Bild, das man von weiter weg ansieht oder klein druckt.
+
+![Große Nummern auf Hintergrund](shot:view-backdrop)
+
 ## Einstellungen für typische Motive
 
 Das sind Ausgangspunkte, keine Regeln.
 
 | Motiv | Farben | Flächen vereinfachen | Details | Max. Farben |
 |---|---|---|---|---|
-| Landschaft, große Formen | 12 bis 20 | 4 bis 8 | 3 bis 5 | 2 oder 3 |
-| Porträt | 16 bis 24 | 2 bis 5 | 6 bis 8 | 2 oder 3 |
+| Landschaft, große Formen | 12 bis 20 | 4 bis 8 | 5 bis 7 | 2 oder 3 |
+| Porträt | 16 bis 24 | 2 bis 5 | 2 bis 4 | 2 oder 3 |
 | Architektur, Straßen | 14 bis 20 | 3 bis 6 oder **Geometrisch** | 5 | 2 |
-| Blumen, Stillleben | 10 bis 16 | 3 bis 6 | 6 bis 8 | 2 |
-| Schnelle Skizze, draußen | 6 bis 10 | 7 bis 10 | 3 | 2 |
+| Blumen, Stillleben | 10 bis 16 | 3 bis 6 | 2 bis 4 | 2 |
+| Schnelle Skizze, draußen | 6 bis 10 | 7 bis 10 | 7 | 2 |
 
-Bei Porträts tragen die kleinen Züge (Augen, Mund, der Schatten unter der Nase) die Ähnlichkeit, also halt **Details** hoch und **Flächen vereinfachen** niedrig, oder leg einen [Ausschnitt](bilder.html#genauer-hinsehen-ausschnitte-des-bildes) vom Gesicht an. Bei Landschaften klappt meist das Gegenteil: wenige, große, ruhige Flächen, und die kleinen Akzente am Ende frei gemalt.
+Bei Porträts tragen die kleinen Züge (Augen, Mund, der Schatten unter der Nase) die Ähnlichkeit, also halt **Details** und **Flächen vereinfachen** niedrig, oder leg einen [Ausschnitt](bilder.html#genauer-hinsehen-ausschnitte-des-bildes) vom Gesicht an. Bei Landschaften klappt meist das Gegenteil: wenige, große, ruhige Flächen, und die kleinen Akzente am Ende frei gemalt.

@@ -15,7 +15,7 @@ Open **Settings** in the right-hand column. Everything in this chapter is set th
 2. The areas: **Organic** or **Geometric**.
 3. **Simplify areas**: how large and calm the shapes are.
 4. **Colours**: the number of mixes.
-5. **Details**: whether small areas of another hue keep a mix of their own.
+5. **Details**: whether the mixes go to fine steps across the picture or to small areas of another hue.
 6. **Max. paints**: how many paints one mix may contain.
 
 The button with the half-filled circle beside the areas switches to [Monochrome](values.html#monochrome-one-temperature-every-value), a study in light and dark painted with your paints (Pro). For light and shadow alone, use the **Blocking** view.
@@ -48,10 +48,10 @@ With Pro the slider goes below 0, down to **-2**. There the app takes back step 
 
 When the photo has more colours than you asked for, some of them have to share a mix. **Details** decides which.
 
-- **Low (towards 0)** keeps the picture as a whole as close to the photo as possible. Large areas get the most accurate colours, and a small area of another hue may be painted with the nearest large mix.
-- **High (towards 10)** keeps small areas of a distinct hue in a mix of their own: the red roof in a green valley, the lips in a portrait, a single yellow boat. In exchange, similar large colours share mixes more often.
+- **High (towards 10)** keeps the picture as a whole as close to the photo as possible. The large areas, a sky, a wall, a street, get the finest steps, and a small area of another hue may be painted with the nearest large mix.
+- **Low (towards 0)** keeps small areas of a distinct hue in a mix of their own: the red roof in a green valley, the lips in a portrait, a single yellow boat. In exchange, similar large colours share mixes more often, and a sky may become one flat colour.
 
-The default of 5 is a balance. Raise it for pictures that live from a small accent; lower it for quiet landscapes where the large colour fields matter most.
+The default of 5 is a balance. Lower it for pictures that live from a small accent; raise it for quiet landscapes where the large colour fields matter most.
 
 ## Max. paints
 
@@ -79,23 +79,23 @@ Double-click a slider to set it back to 100%.
 
 ## The views
 
-The tools of the picture sit above it.
+The tools of the picture sit above it, with **Settings** on their left. On a phone the tools are at the bottom and **Settings** at the top.
 
 ![The tools of the picture](shot:picture-tools)
 
-1. **Fit** fits the picture to the window.
+1. **Settings** opens and closes the card with the settings.
 2. **Detail** lets you look at a part of the picture on its own (see [Pictures](pictures.html#looking-closer-details-of-the-picture)).
 3. **Mixed paint**: every area in the colour your paints actually reach. This is the view to paint from.
 4. **Photo colour**: every area in the colour of the photo. Compare it with **Mixed paint** to see where your paints fall short.
-5. **Overlay**: the photo at half strength over the paint, to see which area is which part of the photo.
-6. **Photo**: the original, with saturation and contrast applied.
-7. **Template to print**: no fill, only outlines and numbers in light blue. See [Printing](printing.html).
+5. **Photo**: the original, with saturation and contrast applied.
+6. **Blocking**: light and shadow in large masses. See [Values](values.html#blocking-light-and-shadow-first).
+7. **Grid**: square cells over the picture, in white, grey or black. See [Printing](printing.html#the-grid).
 8. **Outlines** on or off.
-9. **Numbers** on or off.
+9. **Numbers**: each click steps on from numbers to numbers on a backdrop to no numbers. On a backdrop every number sits on a small square, white with a dark number on dark areas and dark with a white number on light ones, so it stays readable on any colour.
+
+Once you zoom into the picture, **Fit** appears at the start of the tools; it fits the picture to the window again.
 
 ![Photo colour: what the photo asks for](shot:view-target)
-
-![Overlay: the photo over the paint](shot:view-overlay)
 
 ![Photo: the original](shot:view-photo)
 
@@ -103,16 +103,20 @@ With outlines and numbers off, **Mixed paint** shows the picture as it might loo
 
 ![Mixed paint without outlines and numbers](shot:view-plain)
 
+**Number size** at the end of the settings makes the numbers **Large**, 1.4 times the **Normal** size, for a picture seen from further away or printed small.
+
+![Large numbers on a backdrop](shot:view-backdrop)
+
 ## Settings for typical subjects
 
 These are starting points, not rules.
 
 | Subject | Colours | Simplify areas | Details | Max. paints |
 |---|---|---|---|---|
-| Landscape, large shapes | 12 to 20 | 4 to 8 | 3 to 5 | 2 or 3 |
-| Portrait | 16 to 24 | 2 to 5 | 6 to 8 | 2 or 3 |
+| Landscape, large shapes | 12 to 20 | 4 to 8 | 5 to 7 | 2 or 3 |
+| Portrait | 16 to 24 | 2 to 5 | 2 to 4 | 2 or 3 |
 | Architecture, streets | 14 to 20 | 3 to 6, or **Geometric** | 5 | 2 |
-| Flowers, still life | 10 to 16 | 3 to 6 | 6 to 8 | 2 |
-| Quick sketch, plein air | 6 to 10 | 7 to 10 | 3 | 2 |
+| Flowers, still life | 10 to 16 | 3 to 6 | 2 to 4 | 2 |
+| Quick sketch, plein air | 6 to 10 | 7 to 10 | 7 | 2 |
 
-For portraits, the small features (eyes, mouth, the shadow under the nose) carry the likeness, so keep **Details** high and **Simplify areas** low, or make a [detail](pictures.html#looking-closer-details-of-the-picture) of the face. For landscapes, the opposite usually works: few, large, calm areas, and the small accents painted freely at the end.
+For portraits, the small features (eyes, mouth, the shadow under the nose) carry the likeness, so keep **Details** and **Simplify areas** low, or make a [detail](pictures.html#looking-closer-details-of-the-picture) of the face. For landscapes, the opposite usually works: few, large, calm areas, and the small accents painted freely at the end.

@@ -7,7 +7,8 @@
 #   BRANCH=feature/TASK-24-native-app      what to deploy
 #   TARGET=user@host:/path/to/web-root/    rsync target, with a slash at the end
 #   SSH_KEY=/root/.ssh/id_ed25519_...      key for that host
-#   BUILD_ENV=/etc/watercolourlove/build.env   optional, becomes .env.production.local (e.g. VITE_ACCOUNT_API=api)
+#   BUILD_ENV=/etc/watercolourlove/build.env   becomes .env.production.local; must hold VITE_ACCOUNT_API=api,
+#                                              else the deploy stops (optional: VITE_GA_ID=G-...)
 set -euo pipefail
 
 CHECKOUT="${1:?checkout missing}"
@@ -31,6 +32,8 @@ mkdir -p "$BUILD"
 git -C "$CHECKOUT" archive "origin/$BRANCH" | tar -x -C "$BUILD"
 cd "$BUILD"
 [ -z "${BUILD_ENV:-}" ] || cp "$BUILD_ENV" .env.production.local
+# The public host has accounts: a build without them opens the app to anybody with nothing locked.
+grep -qE '^VITE_ACCOUNT_API=.+' .env.production.local 2>/dev/null || { echo "FAILED: no VITE_ACCOUNT_API in BUILD_ENV - the app would open without signing in, nothing locked"; exit 1; }
 npm ci --no-audit --no-fund --silent
 npm test --silent 2>&1 | grep -E "Tests|FAIL" || true
 npm run build --silent

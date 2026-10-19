@@ -11,70 +11,59 @@
         <PaintingCanvas ref="painting" @show-samples="sampleDialog.open()" />
       </div>
       <!-- On a phone the column is folded away behind a menu button; "Get pro" comes with it. -->
-      <div class="app__left" :class="{ 'app__left--open': menuOpen }">
+      <div class="app__left toolbar" :class="{ 'app__left--open': menuOpen }">
         <div class="app__menu">
           <button class="button button--ghost app__burger" type="button" :aria-expanded="menuOpen" :data-hint="t('Menu')" @click="menuOpen = !menuOpen">
             <AppIcon name="menu" :label="t('Menu')" />
           </button>
-          <button v-if="!pro.active" class="button button--secondary app__menu-pro" type="button" @click="getPro">{{ t('Get pro') }} <CreditCount /></button>
+          <GetPro class="app__menu-pro" @open="getPro" />
         </div>
         <div class="app__left-buttons" @click="menuOpen = false">
           <ImageOps @show-collection="collectionDialog.open()" @show-samples="sampleDialog.open()" @export-picture="painting.exportJpg()" />
-          <!-- Phone: the template to print is here instead of in the tools at the bottom. -->
           <button
-            v-if="!analysis.layerMode"
-            class="button button--ghost app__template"
-            :class="{ 'button--active': analysis.settings.view === 'template' }"
+            class="button button--ghost app__help"
+            :class="{ 'button--active': hints }"
             type="button"
-            :aria-pressed="analysis.settings.view === 'template'"
-            :data-hint="t('Template to print')"
-            @click="analysis.settings.view = analysis.settings.view === 'template' ? 'mixed' : 'template'"
+            :aria-pressed="hints"
+            :data-hint="t('Help')"
+            @click="toggleHints"
           >
-            <AppIcon name="template" :label="t('Template to print')" />
+            <AppIcon name="help" :label="t('Help')" />
           </button>
           <!-- The account, and the preferences (language, light or dark) with or without one. -->
           <button class="button button--ghost" type="button" :data-hint="account.enabled ? t('Account') : t('Preferences')" @click="account.open = true">
             <AppIcon name="user" :label="account.enabled ? t('Account') : t('Preferences')" />
           </button>
-          <!-- Phone: the manual is here instead of in the footer, which then fits in one line. -->
           <a v-if="!isNative" class="button button--ghost app__manual" :href="legalPage('manual')" :data-hint="t('Manual')">
             <AppIcon name="manual" :label="t('Manual')" />
           </a>
+          <DebugMenu />
         </div>
       </div>
       <div class="app__top">
         <LayerSteps />
         <CloseupBar />
       </div>
-      <div class="app__bottom">
+      <div class="app__bottom toolbar">
         <CloseupStrip />
         <LayerStrip />
       </div>
       <!-- Over the picture, moved up and down by hand: the colour that was tapped. -->
       <ColourInspector v-if="!analysis.layerMode" @breakdown="breakdown.open()" />
       <aside class="app__sidebar">
-        <ControlsPanel />
-        <LayerList v-if="analysis.layerMode" @show-paintbox="paintBox.open()" />
-        <template v-else>
-          <PaletteList @show-paintbox="paintBox.open()" />
-        </template>
-        <!-- Help: the labels of all buttons at once, for screens without a pointer to hover with. -->
-        <button
-          class="button button--ghost app__help"
-          :class="{ 'button--active': hints }"
-          type="button"
-          :aria-pressed="hints"
-          :data-hint="t('Help')"
-          @click="toggleHints"
-        >
-          <AppIcon name="help" :label="t('Help')" />
-        </button>
+        <div class="toolbar">
+
+          <ControlsPanel />
+          <LayerList v-if="analysis.layerMode" @show-paintbox="paintBox.open()" />
+          <template v-else>
+            <PaletteList @show-paintbox="paintBox.open()" />
+          </template>
+        </div>
       </aside>
     </main>
     <LayerSheets v-if="analysis.layerMode" />
     <PrintLegend v-else />
     <footer v-if="!isNative" class="app__footer">
-      <a class="app__footer-link app__footer-manual" :href="legalPage('manual')">{{ t('Manual') }}</a>
       <a class="app__footer-link" :href="legalPage('privacy')">{{ t('Privacy') }}</a>
       <a class="app__footer-link" :href="legalPage('terms')">{{ t('Terms') }}</a>
       <a class="app__footer-link" :href="legalPage('imprint')">{{ t('Imprint') }}</a>
@@ -110,7 +99,8 @@ import CollectionDialog from './components/CollectionDialog.vue'
 import SampleDialog from './components/SampleDialog.vue'
 import ProDialog from './components/ProDialog.vue'
 import AppIcon from './components/AppIcon.vue'
-import CreditCount from './components/CreditCount.vue'
+import GetPro from './components/GetPro.vue'
+import DebugMenu from './components/DebugMenu.vue'
 import AccountDialog from './components/AccountDialog.vue'
 import { useConsentStore } from './stores/consent.js'
 import { useAccountStore } from './stores/account.js'
@@ -118,6 +108,7 @@ import { isNative } from './lib/native.js'
 import { useProStore } from './stores/pro.js'
 import { useCollectionStore } from './stores/collection.js'
 import { usePaintsStore } from './stores/paints.js'
+import { useLayoutStore } from './stores/layout.js'
 import { useText } from './i18n/index.js'
 
 const { t, legalPage } = useText()
@@ -167,6 +158,16 @@ watch(
     if (analysis.busy || !analysis.pixels) return
     analysis.refreshMixes()
   },
+)
+// The first picture ever, once it is analysed: the settings open by themselves, once, so that
+// they are found. Not for the showcase behind signing in.
+const layout = useLayoutStore()
+watch(
+  () => !!analysis.image && !analysis.busy && !paints.showcase,
+  (ready) => {
+    if (ready) layout.showSettingsOnce()
+  },
+  { immediate: true },
 )
 onMounted(() => {
   useProStore().init()

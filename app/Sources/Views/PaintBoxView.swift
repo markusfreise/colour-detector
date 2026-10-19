@@ -15,9 +15,9 @@ struct PaintBoxView: View {
     @State private var boxToDelete: PaintBox?
     @State private var paintToDelete: Paint?
     @State private var showingPaywall = false
-    /// The box a colour is being added to, and what is typed into its search.
-    @State private var addingTo: String?
-    @State private var query = ""
+    @State private var paywallReason = "add paint boxes of your own"
+    /// The box Add colour is open for.
+    @State private var addingTo: AddingTo?
     /// The box whose colours are being taken out.
     @State private var removing: String?
     @State private var exporting: BoxDocument?
@@ -29,6 +29,10 @@ struct PaintBoxView: View {
         case rename(String)
 
         var id: Self { self }
+    }
+
+    struct AddingTo: Identifiable {
+        let id: String
     }
 
     /// A paint in the editor, and the box a new one goes into.
@@ -52,14 +56,12 @@ struct PaintBoxView: View {
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
-                    group(title: L(layerMode ? "Base paints" : "Palette"), highlighted: true) {
+                    // The note in the heading row, as on the web.
+                    group(title: L(layerMode ? "Base paints" : "Palette"), note: layerMode ? nil : L("The palette is saved with the picture."), highlighted: true) {
                         if selected.isEmpty {
                             Text(L(layerMode ? "No base paints chosen. Tap a paint below to add it, or press Auto." : "No paints selected. Tap a paint below to add it.")).foregroundStyle(.secondary)
                         } else {
                             grid(selected, selected: true)
-                        }
-                        if !layerMode {
-                            Text("The palette is saved with the picture.").font(Theme.small).foregroundStyle(.secondary)
                         }
                     }
                     HStack(spacing: 6) {
@@ -88,7 +90,27 @@ struct PaintBoxView: View {
                 }
             }
             .sheet(item: $editedPaint) { PaintEditorView(paint: $0.paint, box: $0.box) }
-            .sheet(isPresented: $showingPaywall) { PaywallView(reason: "add paint boxes of your own") }
+            .sheet(isPresented: $showingPaywall) { PaywallView(reason: paywallReason) }
+            #if DEBUG
+            // "-screen addcolour": the paint box with Add colour open for its first box, for screenshots.
+            .task {
+                let arguments = ProcessInfo.processInfo.arguments
+                if let i = arguments.firstIndex(of: "-screen"), arguments.dropFirst(i + 1).first == "addcolour", let box = library.boxes.first {
+                    addingTo = AddingTo(id: box.id)
+                }
+            }
+            #endif
+            .sheet(item: $addingTo) { target in
+                AddColourView(boxID: target.id) {
+                    // The purchase screen is a sheet of its own; Add colour would cover it.
+                    addingTo = nil
+                    paywallReason = "add colours from the catalogues of known manufacturers"
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .milliseconds(400))
+                        showingPaywall = true
+                    }
+                }
+            }
             .alert(L(naming == .new ? "New Paint Box" : "Rename Paint Box"), isPresented: Binding(get: { naming != nil }, set: { if !$0 { naming = nil } })) {
                 TextField("Name", text: $boxName)
                 Button("Cancel", role: .cancel) {}
@@ -163,6 +185,7 @@ struct PaintBoxView: View {
     /// Boxes of one's own are part of the full version.
     private func mayAddBox() -> Bool {
         if store.unlocked { return true }
+        paywallReason = "add paint boxes of your own"
         showingPaywall = true
         return false
     }
@@ -216,99 +239,27 @@ struct PaintBoxView: View {
                 }
                 // An empty place at the end: a colour more for this box.
                 if removing != box.id {
+                    // Opens Add colour, as the + of a box on the web.
                     Button {
-                        addingTo = addingTo == box.id ? nil : box.id
-                        query = ""
+                        addingTo = AddingTo(id: box.id)
                     } label: {
                         Image(systemName: "plus")
                             .font(.title3)
                             .frame(maxWidth: .infinity, minHeight: 44)
-                            .foregroundStyle(addingTo == box.id ? Color.accentColor : .secondary)
-                            .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(addingTo == box.id ? Color.accentColor : Color.secondary.opacity(0.5), style: StrokeStyle(lineWidth: 1.5, dash: [5, 4])))
+                            .foregroundStyle(.secondary)
+                            .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(Color.secondary.opacity(0.5), style: StrokeStyle(lineWidth: 1.5, dash: [5, 4])))
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .help(L("Add a colour to %@", box.displayName))
                     .accessibilityLabel(L("Add a colour to %@", box.displayName))
                 }
             }
             if !all.isEmpty && listed.isEmpty {
                 Text("All of these are selected.").foregroundStyle(.secondary)
             }
-            if addingTo == box.id { colourSearch(box) }
             boxActions(box)
         }
-    }
-
-    /// Type a part of the series, number or name; the matching colours are listed below.
-    private func colourSearch(_ box: PaintBox) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            TextField("Series, number or name", text: $query)
-                .textFieldStyle(.roundedBorder)
-                #if os(iOS)
-                .textInputAutocapitalization(.never)
-                #endif
-                .autocorrectionDisabled()
-            ForEach(matches(for: box)) { option in
-                Button {
-                    switch option.kind {
-                    case .paint(let id): library.addToBox(box.id, paint: id)
-                    case .chart(let colour): library.addChartColour(colour, to: box.id)
-                    }
-                    query = ""
-                } label: {
-                    HStack(spacing: 10) {
-                        RoundedRectangle(cornerRadius: 4).fill(Color(hex: option.hex)).frame(width: 28, height: 28)
-                        Text(option.label).frame(maxWidth: .infinity, alignment: .leading)
-                        if option.isChart { Text("Colour chart").font(Theme.small).foregroundStyle(.secondary) }
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-            }
-            if !query.trimmingCharacters(in: .whitespaces).isEmpty && matches(for: box).isEmpty {
-                Text("No colour found").foregroundStyle(.secondary)
-            }
-            Button("Or enter a colour of your own") {
-                editedPaint = EditedPaint(paint: Paint(id: "custom-\(UUID().uuidString.prefix(8))", vendor: Paint.houseVendor, number: "", name: "", hex: "#c88c5f", forms: [box.id == "tube" ? "tube" : "pan"], source: "custom", custom: true), box: box.id)
-            }
-            .buttonStyle(.borderless)
-        }
-        .padding(.top, 4)
-    }
-
-    private struct ColourOption: Identifiable {
-        enum Kind {
-            case paint(String)
-            case chart(ChartColour)
-        }
-
-        let id: String
-        let kind: Kind
-        let label: String
-        let hex: String
-        let search: String
-        var isChart: Bool {
-            guard case .chart = kind else { return false }
-            return true
-        }
-    }
-
-    /// What the search offers: every paint the app knows that is not in the box yet, and the
-    /// colours of the Horadam chart that are not among the paints.
-    private func matches(for box: PaintBox) -> [ColourOption] {
-        let words = query.lowercased().split(separator: " ").map(String.init)
-        guard !words.isEmpty else { return [] }
-        let inBox = Set(box.paintIDs)
-        var options: [ColourOption] = library.all.filter { !inBox.contains($0.id) }.map { paint -> ColourOption in
-            let label = "\(paint.vendor) \(paint.displayNumber) \(paint.displayName)"
-            return ColourOption(id: paint.id, kind: .paint(paint.id), label: label, hex: paint.hex, search: "\(label) \(paint.name) \(paint.nameDe)".lowercased())
-        }
-        let known = Set(library.all.filter { $0.vendor == Paint.houseVendor }.map(\.number))
-        options += library.chart.filter { !known.contains($0.number) }.map { colour -> ColourOption in
-            let label = "\(Paint.houseVendor) \(colour.number) \(colour.name)"
-            return ColourOption(id: "chart-\(colour.number)", kind: .chart(colour), label: label, hex: colour.hex, search: label.lowercased())
-        }
-        return Array(options.filter { option in words.allSatisfy { option.search.contains($0) } }.prefix(30))
     }
 
     /// Under a box: what is done with the box itself.
@@ -321,7 +272,6 @@ struct PaintBoxView: View {
             if !box.paintIDs.isEmpty {
                 Button(L(removing == box.id ? "Done" : "Remove Colours")) {
                     removing = removing == box.id ? nil : box.id
-                    if removing != nil { addingTo = nil }
                 }
                 Button("Export") {
                     if let data = library.exportBox(box.id) { exporting = BoxDocument(data: data, name: box.displayName) }
@@ -339,11 +289,14 @@ struct PaintBoxView: View {
     // MARK: Paints
 
     /// `autoKey`: the box can be ticked as a source for Auto.
-    private func group(title: String?, highlighted: Bool = false, autoKey: String? = nil, @ViewBuilder content: () -> some View) -> some View {
+    private func group(title: String?, note: String? = nil, highlighted: Bool = false, autoKey: String? = nil, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             if let title {
                 HStack(alignment: .firstTextBaseline) {
                     Text(title).font(Theme.title)
+                    if let note {
+                        Text(note).font(Theme.small).foregroundStyle(.secondary).lineLimit(2)
+                    }
                     Spacer(minLength: 8)
                     if let autoKey {
                         Toggle("Use for Auto", isOn: Binding(get: { !library.palette.autoOff.contains(autoKey) }, set: { setAutoBox(autoKey, on: $0) }))
@@ -386,7 +339,7 @@ struct PaintBoxView: View {
             ForEach(library.custom) { paint in
                 HStack(spacing: 10) {
                     PaintChip(paint: paint, showForm: true).frame(width: 150)
-                    Text(paint.vendor).foregroundStyle(.secondary).lineLimit(1)
+                    Text("\(L(paint.vendor)) · \(paint.ownForm.singular)").foregroundStyle(.secondary).lineLimit(1)
                     Spacer()
                     Button("Edit") { editedPaint = EditedPaint(paint: paint, box: nil) }
                     Button("Delete") { paintToDelete = paint }
@@ -419,64 +372,3 @@ struct BoxDocument: FileDocument {
     }
 }
 
-/// Add or change one of the user's own paints.
-struct PaintEditorView: View {
-    @Environment(Library.self) private var library
-    @Environment(\.dismiss) private var dismiss
-    @State var paint: Paint
-    /// The box a new paint goes into.
-    var box: String? = nil
-
-    private var isNew: Bool { !library.custom.contains { $0.id == paint.id } }
-    private var complete: Bool {
-        ![paint.vendor, paint.number, paint.name].contains { $0.trimmingCharacters(in: .whitespaces).isEmpty }
-    }
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    TextField("Brand", text: $paint.vendor)
-                    TextField("Number", text: $paint.number)
-                        .onChange(of: paint.number) { lookUp() }
-                    TextField("Name", text: $paint.name)
-                    Picker("Form", selection: Binding(get: { paint.comes(as: .tube) ? PaintForm.tube : .pan }, set: { paint.forms = [$0.rawValue] })) {
-                        ForEach(PaintForm.own) { Text($0.singular).tag($0) }
-                    }
-                    ColorPicker("Colour", selection: Binding(get: { .from(hex: paint.hex) }, set: { paint.hex = $0.hex }), supportsOpacity: false)
-                } footer: {
-                    Text("Pick the colour of the paint at its strongest wash: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube. Schmincke Horadam numbers fill in name and colour.")
-                }
-            }
-            .formStyle(.grouped)
-            .navigationTitle(L(isNew ? "Add Paint" : "Edit Paint"))
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-            #endif
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        paint.vendor = paint.vendor.trimmingCharacters(in: .whitespaces)
-                        paint.number = paint.number.trimmingCharacters(in: .whitespaces)
-                        paint.name = paint.name.trimmingCharacters(in: .whitespaces)
-                        library.savePaint(paint, into: box)
-                        dismiss()
-                    }
-                    .disabled(!complete)
-                }
-            }
-        }
-        #if os(macOS)
-        .frame(minWidth: 420, minHeight: 360)
-        #endif
-    }
-
-    /// A Horadam number that is on the colour chart fills in the rest.
-    private func lookUp() {
-        guard isNew, paint.name.isEmpty, paint.vendor.localizedCaseInsensitiveContains("schmincke"),
-              let known = library.chartColour(number: paint.number) else { return }
-        paint.name = known.name
-        paint.hex = known.hex
-    }
-}

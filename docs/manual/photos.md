@@ -14,7 +14,7 @@ The same photo serves the English and the German page.
 | `02-result` | 02 From photo to painting | The finished watercolour beside the photo it came from |
 | `07-layer-sheet` | 07 Layer mode | A layer sheet beside the drying painting |
 | `08-value-study` | 08 Values | The one-paint study next to the screen |
-| `09-tracing` | 09 Printing and exporting | Tracing the template at the window |
+| `09-tracing` | 09 Printing and exporting | Tracing the drawing at the window |
 | `11-taped-paper` | 11 Materials | A cotton sheet taped to a board on all four sides, the tape pressed down firmly along every edge |
 | `11-three-brushes` | 11 Materials | The three starting brushes side by side on a white sheet: large round or mop, medium round, small round, each with its point visible |
 | `11-palette-and-jars` | 11 Materials | The palette with separate wells, each holding one mix, and two jars of water behind it, one clean, one tinted |

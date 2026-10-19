@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Schließen" data-lightbox-prev="Bild davor" data-lightbox-next="Nächstes Bild">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -34,12 +34,12 @@
 <h1 class="chapter__title">Willkommen bei Watercolourlove</h1>
 <h2 id="index--die-idee"><a class="anchor" href="#index--die-idee" aria-hidden="true" tabindex="-1">#</a>Die Idee</h2>
 <p>Wer nach Foto malt, steht immer vor denselben zwei Fragen. Welche Farben stecken wirklich in diesem Bild, wenn man über die tausend kleinen Abstufungen hinwegsieht, die eine Kamera aufzeichnet? Und wie mische ich jede davon aus den Farben in meinem Kasten, mit wie viel Wasser?</p>
-<p>Watercolourlove beantwortet beide. Die App bringt das Foto auf eine überschaubare Zahl von Mischungen, berechnet für jede ein Rezept aus deinen Farben und zeigt dir, wohin sie gehört. Heraus kommt ein Malen nach Zahlen, aber eines, das für Aquarell gemacht ist: Es weiß, dass Farbe lasierend ist, dass Wasser eine Farbe heller macht und dass das Weiß des Papiers das Hellste ist, was du hast.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/overview.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/overview.webp" width="1440" height="900" alt="Die App auf einen Blick, mit dem Beispielfoto Llyn Idwal" loading="lazy"></a><span class="shot__marker" style="left:5.97%;top:4.44%" aria-hidden="true">1</span><span class="shot__marker" style="left:35.76%;top:9.11%" aria-hidden="true">2</span><span class="shot__marker" style="left:43.33%;top:9%" aria-hidden="true">3</span><span class="shot__marker" style="left:94.03%;top:11.56%" aria-hidden="true">4</span><span class="shot__marker" style="left:94.03%;top:4.44%" aria-hidden="true">5</span><span class="shot__marker" style="left:94.03%;top:18.67%" aria-hidden="true">6</span><span class="shot__marker" style="left:94.03%;top:25.78%" aria-hidden="true">7</span></div><figcaption>Die App auf einen Blick, mit dem Beispielfoto Llyn Idwal</figcaption></figure>
+<p>Watercolourlove beantwortet beide. Die App erkennt die Farben, die das Bild tragen, fasst sie zu einer überschaubaren Zahl von Mischungen zusammen und berechnet für jede ein Rezept aus deinen Farben: welche Farben, in welchem Verhältnis, in welcher Stärke. Dazu kommen die Werkzeuge, mit denen du eine Vorlage liest wie eine Malerin oder ein Maler: die Farbflächen des Bildes, Blocking von Licht und Schatten, Tonwerte, Ausschnitte. Die App weiß, dass Farbe lasierend ist, dass Wasser eine Farbe heller macht und dass das Weiß des Papiers das Hellste ist, was du hast. Ausdrucke mit Raster und nummerierten Flächen gibt es auch, als Hilfe, wenn du sie brauchst, nicht als Hauptsache.</p>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/overview.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/overview.webp" width="1440" height="900" alt="Die App auf einen Blick, mit dem Beispielfoto Llyn Idwal" loading="lazy"></a><span class="shot__marker" style="left:6.53%;top:5.33%" aria-hidden="true">1</span><span class="shot__marker" style="left:43.03%;top:10.11%" aria-hidden="true">2</span><span class="shot__marker" style="left:47.54%;top:10.11%" aria-hidden="true">3</span><span class="shot__marker" style="left:92.92%;top:6.67%" aria-hidden="true">4</span><span class="shot__marker" style="left:25.86%;top:5.44%" aria-hidden="true">5</span><span class="shot__marker" style="left:92.92%;top:13.78%" aria-hidden="true">6</span><span class="shot__marker" style="left:3%;top:42.44%" aria-hidden="true">7</span></div><figcaption>Die App auf einen Blick, mit dem Beispielfoto Llyn Idwal</figcaption></figure>
 <ol class="legend">
 <li><strong>Neues Bild</strong> und die anderen Knöpfe rund ums Bild: Beispiele, Sichern, Sammlung, Drucken, Exportieren.</li>
-<li>Die Werkzeuge des Bildes: ans Fenster anpassen, einen Ausschnitt ansehen.</li>
-<li>Die Ansichten: gemischte Farbe, die Farben des Fotos, Überlagerung, das Foto selbst, die Vorlage zum Drucken.</li>
+<li>Die Werkzeuge des Bildes: einen Ausschnitt ansehen und, wenn du hineingezoomt hast, wieder ans Fenster anpassen.</li>
+<li>Die Ansichten: gemischte Farbe, die Farben des Fotos, das Foto selbst.</li>
 <li><strong>Farben</strong>: jede Mischung mit ihren Farben und Lasuren.</li>
 <li><strong>Einstellungen</strong>: wie viele Mischungen, wie einfach die Flächen, welche Methode.</li>
 <li><strong>Farbkasten</strong>: die Farben, die du besitzt, und die Palette dieses Bildes.</li>
@@ -83,7 +83,7 @@
 <h2 id="schnellstart--teil-1-das-bild-in-der-app-planen"><a class="anchor" href="#schnellstart--teil-1-das-bild-in-der-app-planen" aria-hidden="true" tabindex="-1">#</a>Teil 1: Das Bild in der App planen</h2>
 <h3 id="schnellstart--1-ein-foto-waehlen"><a class="anchor" href="#schnellstart--1-ein-foto-waehlen" aria-hidden="true" tabindex="-1">#</a>1. Ein Foto wählen</h3>
 <p>Drück auf <strong>Neues Bild</strong> und wähl ein Foto. Auf Telefon und Tablet bietet derselbe Knopf auch die Kamera an. <strong>Beispiele</strong> öffnet fünf Beispielfotos, falls du die App erst ausprobieren möchtest.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/welcome.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/welcome.webp" width="1440" height="900" alt="Die leere App wartet auf das erste Foto" loading="lazy"></a><span class="shot__marker" style="left:5.97%;top:4.44%" aria-hidden="true">1</span><span class="shot__marker" style="left:5.97%;top:10.44%" aria-hidden="true">2</span><span class="shot__marker" style="left:50%;top:3%" aria-hidden="true">3</span></div><figcaption>Die leere App wartet auf das erste Foto</figcaption></figure>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/welcome.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/welcome.webp" width="1440" height="900" alt="Die leere App wartet auf das erste Foto" loading="lazy"></a><span class="shot__marker" style="left:6.53%;top:5.33%" aria-hidden="true">1</span><span class="shot__marker" style="left:6.53%;top:11.33%" aria-hidden="true">2</span><span class="shot__marker" style="left:50%;top:3%" aria-hidden="true">3</span></div><figcaption>Die leere App wartet auf das erste Foto</figcaption></figure>
 <ol class="legend">
 <li><strong>Neues Bild</strong> öffnet ein Foto von deinem Gerät.</li>
 <li><strong>Beispiele</strong> öffnet die Beispielfotos.</li>
@@ -100,19 +100,19 @@
 <li><strong>Flächen vereinfachen</strong> fasst kleine Formen zu größeren, ruhigeren zusammen. Je höher, desto weniger und größere Flächen.</li>
 <li><strong>Max. Farben</strong> begrenzt eine Mischung auf eine, zwei oder drei Farben. Weniger Farben geben sauberere Mischungen.</li>
 </ul>
-<figure class="shot shot--markers" style="--shot-width:531px"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/settings.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/settings.webp" width="531" height="361" alt="Die Einstellungen" loading="lazy"></a><span class="shot__marker" style="left:6.59%;top:24.77%" aria-hidden="true">1</span><span class="shot__marker" style="left:27.48%;top:24.77%" aria-hidden="true">2</span><span class="shot__marker" style="left:6.97%;top:42.1%" aria-hidden="true">3</span><span class="shot__marker" style="left:8.09%;top:52.06%" aria-hidden="true">4</span><span class="shot__marker" style="left:36.03%;top:52.06%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.97%;top:52.06%" aria-hidden="true">6</span></div><figcaption>Die Einstellungen</figcaption></figure>
+<figure class="shot shot--markers" style="--shot-width:521px"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/settings.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/settings.webp" width="521" height="448" alt="Die Einstellungen" loading="lazy"></a><span class="shot__marker" style="left:6.72%;top:19.96%" aria-hidden="true">1</span><span class="shot__marker" style="left:28.02%;top:19.96%" aria-hidden="true">2</span><span class="shot__marker" style="left:7.1%;top:33.91%" aria-hidden="true">3</span><span class="shot__marker" style="left:8.25%;top:41.94%" aria-hidden="true">4</span><span class="shot__marker" style="left:36.08%;top:41.94%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.92%;top:41.94%" aria-hidden="true">6</span></div><figcaption>Die Einstellungen</figcaption></figure>
 <ol class="legend">
 <li>Die Methode: <strong>Mischen</strong> oder <strong>Schichten</strong>.</li>
 <li>Die Flächen: organisch oder geometrisch.</li>
 <li><strong>Flächen vereinfachen</strong>.</li>
 <li><strong>Farben</strong>, die Zahl der Mischungen.</li>
-<li><strong>Details</strong>: ob kleine Flächen eines anderen Farbtons eine eigene Mischung behalten.</li>
+<li><strong>Details</strong>: ob die Mischungen feine Abstufungen im ganzen Bild geben oder kleinen Flächen eines anderen Farbtons.</li>
 <li><strong>Max. Farben</strong> pro Mischung.</li>
 </ol>
 <p>Jeden Regler erklärt das Kapitel <a href="#farbflaechen">Farbflächen</a>.</p>
 <h3 id="schnellstart--4-die-karte-lesen"><a class="anchor" href="#schnellstart--4-die-karte-lesen" aria-hidden="true" tabindex="-1">#</a>4. Die Karte lesen</h3>
 <p>Jede Fläche trägt eine Bezeichnung wie <strong>3M</strong>. Die Zahl ist die Mischung, der Buchstabe sagt, wie viel Wasser hineinkommt: <strong>W</strong> sehr wässrig, <strong>L</strong> leicht, <strong>M</strong> mittel, <strong>R</strong> kräftig, <strong>C</strong> konzentriert. 3L und 3C kommen also aus derselben Pfütze Farbe, einmal verdünnt und einmal kräftig. Deshalb ergeben 20 Mischungen viel mehr Farben auf dem Papier: 52 in diesem Beispiel.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/colours.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/colours.webp" width="764" height="900" alt="Die Liste der Farben" loading="lazy"></a><span class="shot__marker" style="left:4.06%;top:12.05%" aria-hidden="true">1</span><span class="shot__marker" style="left:4.06%;top:15.74%" aria-hidden="true">2</span><span class="shot__marker" style="left:5.89%;top:23.25%" aria-hidden="true">3</span></div><figcaption>Die Liste der Farben</figcaption></figure>
+<figure class="shot shot--markers" style="--shot-width:719px"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/colours.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/colours.webp" width="719" height="900" alt="Die Liste der Farben" loading="lazy"></a><span class="shot__marker" style="left:4.31%;top:12.05%" aria-hidden="true">1</span><span class="shot__marker" style="left:4.31%;top:15.74%" aria-hidden="true">2</span><span class="shot__marker" style="left:6.26%;top:23.25%" aria-hidden="true">3</span></div><figcaption>Die Liste der Farben</figcaption></figure>
 <ol class="legend">
 <li>Wie viele Farben das Bild hat, in wie vielen Mischungen.</li>
 <li>Der Schlüssel zu den Wasserstufen.</li>
@@ -121,7 +121,7 @@
 <p>Was die Balken genau bedeuten und wie die Wasserstufen funktionieren, steht unter <a href="#mischungen">Mischungen, Lasuren und Rezepte</a>.</p>
 <h3 id="schnellstart--5-eine-mischung-nachschlagen"><a class="anchor" href="#schnellstart--5-eine-mischung-nachschlagen" aria-hidden="true" tabindex="-1">#</a>5. Eine Mischung nachschlagen</h3>
 <p>Klick auf eine Fläche im Bild. Eine Karte öffnet sich mit der Nummer der Farbe, ihrem Anteil am Bild und dem Rezept, sie zu mischen.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/inspector.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/inspector.webp" width="1440" height="900" alt="Eine angetippte Fläche und ihre Karte" loading="lazy"></a><span class="shot__marker" style="left:37.08%;top:70.9%" aria-hidden="true">1</span></div><figcaption>Eine angetippte Fläche und ihre Karte</figcaption></figure>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/inspector.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/inspector.webp" width="1440" height="900" alt="Eine angetippte Fläche und ihre Karte" loading="lazy"></a><span class="shot__marker" style="left:37.08%;top:70.99%" aria-hidden="true">1</span></div><figcaption>Eine angetippte Fläche und ihre Karte</figcaption></figure>
 <ol class="legend">
 <li>Die Karte: Farbe, Anteil, Rezept und <strong>Alle Details</strong> für den Rest.</li>
 </ol>
@@ -130,7 +130,7 @@
 <p>Du bist die Malerin oder der Maler, das Foto ist nur ein Vorschlag. In <strong>Alle Details</strong> gibt <strong>Farbe ändern</strong> einer Mischung ein neues Ziel, wärmer, kühler oder ganz anders, und die Rezepte ziehen nach. <strong>Nur die angeklickte Fläche bearbeiten</strong> löst eine Fläche von den anderen mit derselben Farbe. <strong>Zurück zum Foto</strong> holt die Farbe des Fotos zurück.</p>
 <p>Drück auf <strong>Sichern</strong>, um das Bild mit seinen Einstellungen, seiner Palette und deinen Änderungen in der <strong>Sammlung</strong> zu behalten.</p>
 <h3 id="schnellstart--7-den-plan-drucken"><a class="anchor" href="#schnellstart--7-den-plan-drucken" aria-hidden="true" tabindex="-1">#</a>7. Den Plan drucken</h3>
-<p><strong>Drucken / PDF</strong> gibt das Bild aus, gefolgt von jeder Mischung mit ihren Farben. Druck es für den Maltisch aus, oder wähl im Druckdialog „Als PDF speichern“ und leg es auf ein Tablet. Die <strong>Vorlage zum Drucken</strong> zeichnet nur Umrisse und Nummern in hellem Blau: Druck sie auf Aquarellpapier und mal direkt auf dem Blatt. Mehr unter <a href="#drucken">Drucken</a>.</p>
+<p><strong>Drucken / PDF</strong> gibt das Bild aus, gefolgt von jeder Mischung mit ihren Farben. Druck es für den Maltisch aus, oder wähl im Druckdialog „Als PDF speichern“ und leg es auf ein Tablet. <strong>Raster</strong> legt quadratische Felder über das Bild, damit du die Zeichnung Feld für Feld auf dein Papier überträgst. Mehr unter <a href="#drucken">Drucken</a>.</p>
 <h2 id="schnellstart--teil-2-malen"><a class="anchor" href="#schnellstart--teil-2-malen" aria-hidden="true" tabindex="-1">#</a>Teil 2: Malen</h2>
 <h3 id="schnellstart--8-den-tisch-vorbereiten"><a class="anchor" href="#schnellstart--8-den-tisch-vorbereiten" aria-hidden="true" tabindex="-1">#</a>8. Den Tisch vorbereiten</h3>
 <p>Kleb das Papier an allen vier Seiten auf ein Brett. Leg den ausgedruckten Plan so hin, dass du ihn siehst, ohne über nasse Farbe zu greifen, Farbkasten und Palette auf die Seite deiner Malhand und zwei Wassergläser dahinter: eines zum Auswaschen, eines, das sauber bleibt, zum Anmischen.</p>
@@ -172,9 +172,9 @@
 </aside>
 <p>Fotos vom Telefon sind völlig in Ordnung. Die Auflösung ist weniger wichtig, als man denkt, weil die App ohnehin mit einer verkleinerten Kopie arbeitet; Bildaufbau und Licht zählen viel mehr.</p>
 <h2 id="bilder--ein-bild-oeffnen"><a class="anchor" href="#bilder--ein-bild-oeffnen" aria-hidden="true" tabindex="-1">#</a>Ein Bild öffnen</h2>
-<p>Drück in der linken Spalte auf <strong>Neues Bild</strong> und wähl ein Foto. Auf Telefon und Tablet bietet derselbe Knopf auch die Kamera an, sodass du ein Motiv fotografieren und gleich vor Ort planen kannst. Jedes Bildformat, das dein Browser anzeigen kann, ist recht: JPG, PNG, WebP, auf Apple-Geräten auch HEIC.</p>
+<p>Drück in der linken Spalte auf <strong>Neues Bild</strong> und wähl ein Foto. Auf Telefon und Tablet bietet derselbe Knopf auch die Kamera an, sodass du ein Motiv fotografieren und gleich vor Ort planen kannst. Jedes Bildformat, das dein Browser anzeigen kann, ist recht: JPG, PNG, WebP, auf Apple-Geräten auch HEIC. Derselbe Knopf öffnet auch eine gesicherte Bilddatei (<code>.wcl</code>).</p>
 <p><strong>Beispiele</strong> öffnet fünf Beispielfotos des Autors: eine Stadt, einen See in den Bergen, Dächer in der Dämmerung, Winterfelder und eine Altstadt im Schnee. Mit ihnen lernst du die App gut kennen, bevor du eigene Fotos mitbringst, und es sind die Bilder, die dieses Handbuch verwendet.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/samples.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/samples.webp" width="952" height="567" alt="Die Beispielfotos" loading="lazy"></a></div><figcaption>Die Beispielfotos</figcaption></figure>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/samples.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/samples.webp" width="952" height="900" alt="Die Beispielfotos" loading="lazy"></a></div><figcaption>Die Beispielfotos</figcaption></figure>
 <p>Sobald ein Bild offen ist, analysiert die App es mit den aktuellen Einstellungen und deiner Palette. Bei einem großen Foto dauert das einen Moment; der Stand wird über dem Bild angezeigt.</p>
 <h2 id="bilder--die-sammlung"><a class="anchor" href="#bilder--die-sammlung" aria-hidden="true" tabindex="-1">#</a>Die Sammlung</h2>
 <p>Dein Bild wird nicht von selbst gesichert. Drück auf <strong>Sichern</strong>, und die <strong>Sammlung</strong> öffnet sich mit <strong>Dieses Bild sichern</strong>. Gib ihm einen Namen, an dem du es später wiedererkennst.</p>
@@ -187,6 +187,8 @@
 <li>jede Änderung an einer Farbe: neue Ziele, gewählte Rezepte, abgetrennte Flächen.</li>
 </ul>
 <p>Öffnest du ein gesichertes Bild später wieder, kommt es genau so zurück, wie du es verlassen hast, auch wenn du deine Farbkästen inzwischen geändert hast. Nachdem du ein gesichertes Bild geändert hast, heißt der Knopf <strong>Änderungen sichern</strong>. In der Sammlung kannst du ein Bild außerdem <strong>Umbenennen</strong> und <strong>Löschen</strong>.</p>
+<h3 id="bilder--die-bilddatei-wcl"><a class="anchor" href="#bilder--die-bilddatei-wcl" aria-hidden="true" tabindex="-1">#</a>Die Bilddatei (.wcl)</h3>
+<p>Jedes Sichern lädt das Bild zusätzlich als Datei herunter, zum Beispiel <code>Llyn-Idwal.wcl</code>. Sie enthält das Foto und alles, was oben aufgezählt ist, und ist so groß wie das Foto. Heb sie auf, wo du willst: im Ordner zu deinem Bild, in der Cloud, auf einem Stick. Öffnest du sie mit <strong>Neues Bild</strong>, kommt das Bild genau so zurück, auf diesem oder einem anderen Gerät, in jedem Browser. Ein freigeschaltetes Bild bleibt in deinem Konto freigeschaltet; für jemand anderen schaltet die Datei nichts frei.</p>
 <aside class="note note--info"><p><strong>Gut zu wissen:</strong> Die Sammlung liegt in diesem Browser auf diesem Gerät. Sie gehört nicht zu deinem Konto und kommt nicht mit auf einen anderen Rechner. Löschst du die Browserdaten dieser Seite, ist die Sammlung weg. Bilder sichern geht mit Pro.</p>
 </aside>
 <h2 id="bilder--genauer-hinsehen-ausschnitte-des-bildes"><a class="anchor" href="#bilder--genauer-hinsehen-ausschnitte-des-bildes" aria-hidden="true" tabindex="-1">#</a>Genauer hinsehen: Ausschnitte des Bildes</h2>
@@ -242,23 +244,33 @@
 <aside class="note note--info"><p><strong>Gut zu wissen:</strong> Ein kostenloses Konto mischt aus dem <strong>Einsteigerkasten</strong>: zwölf Farben, wie ein günstiger Schulmalkasten sie hat (zwei Gelb, zwei Rot, zwei Blau, ein Violett, ein Grün, drei Erdfarben und Schwarz). Du kannst unter ihnen wählen, aber keine eigenen Farben hinzufügen. Deine eigenen Farben und Farbkästen gibt es mit einem freigeschalteten Bild oder mit Pro; siehe <a href="#konto">Konto, Pro und deine Daten</a>.</p>
 </aside>
 <h2 id="farbkasten--farben-hinzufuegen"><a class="anchor" href="#farbkasten--farben-hinzufuegen" aria-hidden="true" tabindex="-1">#</a>Farben hinzufügen</h2>
-<p>Am Ende jedes Farbkastens ist ein leerer Platz mit einem <strong>+</strong>. Ein Klick darauf fügt diesem Kasten eine Farbe hinzu.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/paintbox-add.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/paintbox-add.webp" width="912" height="130" alt="Eine Farbe zum Hinzufügen suchen" loading="lazy"></a></div><figcaption>Eine Farbe zum Hinzufügen suchen</figcaption></figure>
-<p>Tipp einen Teil der Serie, die Nummer oder den Namen ein: „Ultramarin“, „494“ oder „Horadam 494“ funktionieren alle. Gesucht wird in den Farben des Bestands und, mit Pro, in den Farbkarten dreier Hersteller:</p>
+<p>Am Ende jedes Farbkastens ist ein leerer Platz mit einem <strong>+</strong>. Ein Klick darauf öffnet <strong>Farbe hinzufügen</strong> für diesen Kasten.</p>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/paintbox-add.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/paintbox-add.webp" width="952" height="1100" alt="Farben zu einem Kasten hinzufügen" loading="lazy"></a></div><figcaption>Farben zu einem Kasten hinzufügen</figcaption></figure>
+<p>Die untere Hälfte, <strong>Bibliothek</strong>, zeigt die Farben, die du hinzufügen kannst, je Serie ein Abschnitt. Für alle die Farben des Bestands und <strong>Gängige Farben</strong>: 40 Farben, die fast jeder Hersteller führt, unter ihrem üblichen Namen und Pigment (C01 Zitronengelb bis C40 Neutraltinte), jede so, wie die Farbkarte eines Herstellers sie zeigt. Mit Pro außerdem die Farbkarten von vier Herstellern:</p>
 <ul>
 <li><strong>Schmincke Horadam</strong>,</li>
 <li><strong>Winsor &amp; Newton Professional</strong> (116 Farben),</li>
-<li><strong>Michael Harding</strong> (136 Farben).</li>
+<li><strong>Michael Harding</strong> (136 Farben),</li>
+<li><strong>Sennelier L&#39;Aquarelle</strong> (98 Farben).</li>
 </ul>
-<p>Wähl eine Farbe aus der Liste, und sie kommt mit Namen und Referenzton in den Kasten.</p>
-<h3 id="farbkasten--eine-eigene-farbe"><a class="anchor" href="#farbkasten--eine-eigene-farbe" aria-hidden="true" tabindex="-1">#</a>Eine eigene Farbe</h3>
-<p>Für jede andere Farbe wählst du unter der Suche <strong>Oder eine eigene Farbe eingeben</strong>. Du gibst an:</p>
+<p>So findest du eine Farbe:</p>
 <ul>
-<li><strong>Hersteller und Serie</strong>, so wie es auf der Tube steht, zum Beispiel „Daniel Smith Extra Fine“. Ist es eine Serie mit Farbkarte in der App, füllt die Nummer Name und Farbe für dich aus.</li>
-<li><strong>Nummer</strong> und <strong>Name</strong>.</li>
-<li><strong>Form</strong>: <strong>Näpfchen</strong> oder <strong>Tube</strong>.</li>
-<li><strong>Farbe</strong>, den Referenzton der Farbe.</li>
+<li>Die Knöpfe mit den Seriennamen blenden ihre Abschnitte ein und aus. Ein dunkler Knopf ist eingeblendet.</li>
+<li>Tipp einen Teil des Namens oder die Nummer in das Suchfeld: „Ultramarin“, „494“ oder „Horadam 494“ funktionieren alle, ebenso Pigmentnamen wie „PB29“.</li>
+<li>Die Farbquadrate daneben zeigen nur Rot, Orange, Gelb, Grün, Türkis, Blau, Violett, Braun oder Grau und Schwarz. Ein zweiter Klick auf das Quadrat zeigt wieder alle Farbtöne.</li>
+<li>Der Knopf mit dem Radiergummi oben leert Suche und Filter.</li>
 </ul>
+<p>Ein Klick auf eine Farbe legt sie mit Namen und Referenzton in den Kasten. Eine Farbe, die schon im Kasten ist, ist blass dargestellt; ein Klick nimmt sie wieder heraus. Füg so viele hinzu, wie du magst, und schließ dann den Dialog. Eine Farbe mit gestricheltem Rand hat auf der Farbkarte ihres Herstellers keinen verlässlichen Referenzton: Ein Klick darauf füllt das Formular darüber aus, und du stellst den Ton selbst ein.</p>
+<h3 id="farbkasten--eine-eigene-farbe"><a class="anchor" href="#farbkasten--eine-eigene-farbe" aria-hidden="true" tabindex="-1">#</a>Eine eigene Farbe</h3>
+<p>Für jede andere Farbe nimmst du oben <strong>Eigene Farbe</strong>. Du gibst an:</p>
+<ul>
+<li>die <strong>Farbe</strong>, im Quadrat links: den Referenzton der Farbe,</li>
+<li>die <strong>Nummer</strong>,</li>
+<li>die <strong>Serie</strong>, so wie sie auf der Tube steht, zum Beispiel „Daniel Smith Extra Fine“. Ist es eine Serie mit Farbkarte in der App, füllt die Nummer Name und Farbe für dich aus,</li>
+<li>den <strong>Namen</strong>,</li>
+<li>die <strong>Form</strong>: <strong>Näpfchen</strong>, <strong>Tube</strong>, <strong>Flüssig</strong> oder <strong>Anders</strong>.</li>
+</ul>
+<p>Dann drückst du <strong>Okay</strong>: Die Farbe kommt in den Kasten, und der Dialog schließt sich.</p>
 <p>Der Referenzton ist das Wichtigste in diesem Formular. Wähl den Farbton deiner Farbe in ihrer <strong>kräftigsten Lasur</strong>: etwa gleich viel Farbe und Wasser, trocken auf weißem Papier. Nicht die Farbe direkt aus Näpfchen oder Tube: Farbe im Näpfchen ist dunkler und satter als jede Lasur, die du damit malst. Die App behandelt diesen Ton als das Dunkelste, was die Farbe je wird, und macht alles Hellere daraus mit Wasser. Ist er zu hell, werden alle Rezepte mit dieser Farbe zu vorsichtig, ist er zu dunkel, zu kräftig. Die beste Quelle ist dein eigener Farbaufstrich, auf deinem Papier gemalt und bei Tageslicht fotografiert oder eingescannt. Wie du ihn anlegst, zeigt das Kapitel <a href="#kalibrieren">Farben kalibrieren</a>.</p>
 <p>Jede Farbe, die du selbst eingibst, steht außerdem unter <strong>Deine eigenen Farben</strong> unten im Farbkasten. Dort kannst du sie bearbeiten oder löschen: Den Knopf zum Löschen drückst du zweimal, damit nichts aus Versehen verschwindet.</p>
 <h2 id="farbkasten--farbkaesten-verwalten"><a class="anchor" href="#farbkasten--farbkaesten-verwalten" aria-hidden="true" tabindex="-1">#</a>Farbkästen verwalten</h2>
@@ -276,13 +288,13 @@
 <section class="chapter" id="farbflaechen"><p class="chapter__kicker"><span>Die App</span><span>Kapitel 5</span></p>
 <h1 class="chapter__title">Farbflächen</h1>
 <p>Öffne die <strong>Einstellungen</strong> in der rechten Spalte. Alles in diesem Kapitel stellst du dort ein, bis auf die Ansichten am Ende, die bei den Werkzeugen des Bildes sitzen. Sobald du einen Regler loslässt, analysiert die App das Bild neu.</p>
-<figure class="shot shot--markers" style="--shot-width:531px"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/settings.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/settings.webp" width="531" height="361" alt="Die Einstellungen" loading="lazy"></a><span class="shot__marker" style="left:6.59%;top:24.77%" aria-hidden="true">1</span><span class="shot__marker" style="left:27.48%;top:24.77%" aria-hidden="true">2</span><span class="shot__marker" style="left:6.97%;top:42.1%" aria-hidden="true">3</span><span class="shot__marker" style="left:8.09%;top:52.06%" aria-hidden="true">4</span><span class="shot__marker" style="left:36.03%;top:52.06%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.97%;top:52.06%" aria-hidden="true">6</span></div><figcaption>Die Einstellungen</figcaption></figure>
+<figure class="shot shot--markers" style="--shot-width:521px"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/settings.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/settings.webp" width="521" height="448" alt="Die Einstellungen" loading="lazy"></a><span class="shot__marker" style="left:6.72%;top:19.96%" aria-hidden="true">1</span><span class="shot__marker" style="left:28.02%;top:19.96%" aria-hidden="true">2</span><span class="shot__marker" style="left:7.1%;top:33.91%" aria-hidden="true">3</span><span class="shot__marker" style="left:8.25%;top:41.94%" aria-hidden="true">4</span><span class="shot__marker" style="left:36.08%;top:41.94%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.92%;top:41.94%" aria-hidden="true">6</span></div><figcaption>Die Einstellungen</figcaption></figure>
 <ol class="legend">
 <li>Die Methode: <strong>Mischen</strong> (dieses Kapitel) oder <strong>Schichten</strong> (siehe <a href="#schichten">Schichten</a>).</li>
 <li>Die Flächen: <strong>Organisch</strong> oder <strong>Geometrisch</strong>.</li>
 <li><strong>Flächen vereinfachen</strong>: wie groß und ruhig die Formen sind.</li>
 <li><strong>Farben</strong>: die Zahl der Mischungen.</li>
-<li><strong>Details</strong>: ob kleine Flächen eines anderen Farbtons eine eigene Mischung behalten.</li>
+<li><strong>Details</strong>: ob die Mischungen feine Abstufungen im ganzen Bild geben oder kleinen Flächen eines anderen Farbtons.</li>
 <li><strong>Max. Farben</strong>: wie viele Farben eine Mischung enthalten darf.</li>
 </ol>
 <p>Der Knopf mit dem halb gefüllten Kreis neben den Flächen schaltet auf <a href="#tonwerte--monochrom-eine-temperatur-jeder-tonwert">Monochrom</a> um, eine Studie in Hell und Dunkel, gemalt mit deinen Farben (Pro). Für Licht und Schatten allein gibt es die Ansicht <strong>Blocking</strong>.</p>
@@ -302,10 +314,10 @@
 <h2 id="farbflaechen--details-welche-farben-eine-eigene-mischung-bekommen"><a class="anchor" href="#farbflaechen--details-welche-farben-eine-eigene-mischung-bekommen" aria-hidden="true" tabindex="-1">#</a>Details: welche Farben eine eigene Mischung bekommen</h2>
 <p>Hat das Foto mehr Farben, als du verlangst, müssen sich einige eine Mischung teilen. <strong>Details</strong> entscheidet, welche.</p>
 <ul>
-<li><strong>Niedrig (Richtung 0)</strong> hält das Bild als Ganzes so nah am Foto wie möglich. Große Flächen bekommen die genauesten Farben, und eine kleine Fläche eines anderen Farbtons wird unter Umständen mit der nächsten großen Mischung gemalt.</li>
-<li><strong>Hoch (Richtung 10)</strong> behält kleinen Flächen mit eigenem Farbton eine eigene Mischung: das rote Dach im grünen Tal, die Lippen im Porträt, ein einzelnes gelbes Boot. Dafür teilen sich ähnliche große Farben öfter eine Mischung.</li>
+<li><strong>Hoch (Richtung 10)</strong> hält das Bild als Ganzes so nah am Foto wie möglich. Die großen Flächen, ein Himmel, eine Wand, eine Straße, bekommen die feinsten Abstufungen, und eine kleine Fläche eines anderen Farbtons wird unter Umständen mit der nächsten großen Mischung gemalt.</li>
+<li><strong>Niedrig (Richtung 0)</strong> behält kleinen Flächen mit eigenem Farbton eine eigene Mischung: das rote Dach im grünen Tal, die Lippen im Porträt, ein einzelnes gelbes Boot. Dafür teilen sich ähnliche große Farben öfter eine Mischung, und ein Himmel wird unter Umständen eine einzige flache Farbe.</li>
 </ul>
-<p>Der Ausgangswert 5 ist ein Mittelweg. Erhöh ihn für Bilder, die von einem kleinen Akzent leben; senk ihn für ruhige Landschaften, in denen die großen Farbfelder am meisten zählen.</p>
+<p>Der Ausgangswert 5 ist ein Mittelweg. Senk ihn für Bilder, die von einem kleinen Akzent leben; erhöh ihn für ruhige Landschaften, in denen die großen Farbfelder am meisten zählen.</p>
 <h2 id="farbflaechen--max-farben"><a class="anchor" href="#farbflaechen--max-farben" aria-hidden="true" tabindex="-1">#</a>Max. Farben</h2>
 <p><strong>Max. Farben</strong> begrenzt jede Mischung auf eine, zwei oder drei Farben. Drei geben die genauesten Treffer. Zwei geben sauberere, leuchtendere Mischungen, die sich leichter wiederholen lassen. Eine heißt: Jede Farbe ist eine einzelne Farbe in irgendeiner Wasserstufe, eine strenge und schöne Übung.</p>
 <p>Drei Farben in einer Mischung sind im Aquarell völlig normal, aber jede weitere Farbe trübt eine Mischung ein wenig. Wenn deine Farben auf dem Papier schmutziger aussehen als am Bildschirm, versuch es mit zwei.</p>
@@ -319,24 +331,26 @@
 <p><strong>Geometrisch</strong> macht aus jeder Fläche ein Vieleck mit wenigen geraden Kanten, von groß nach klein übereinandergelegt. Das funktioniert in beiden Methoden und gibt ein Bild mit starkem grafischem Charakter, nah an einem kantigen oder kubistischen Stil. Mit dem Lineal ist es außerdem schnell gezeichnet. <strong>Flächen vereinfachen</strong> macht die Kanten länger und die Formen weniger.</p>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/geometric.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/geometric.webp" width="1440" height="900" alt="Das Beispielfoto mit geometrischen Flächen" loading="lazy"></a></div><figcaption>Das Beispielfoto mit geometrischen Flächen</figcaption></figure>
 <h2 id="farbflaechen--die-ansichten"><a class="anchor" href="#farbflaechen--die-ansichten" aria-hidden="true" tabindex="-1">#</a>Die Ansichten</h2>
-<p>Die Werkzeuge des Bildes sitzen über ihm.</p>
-<figure class="shot shot--markers" style="--shot-width:482px"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/picture-tools.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/picture-tools.webp" width="482" height="72" alt="Die Werkzeuge des Bildes" loading="lazy"></a><span class="shot__marker" style="left:7.47%;top:3%" aria-hidden="true">1</span><span class="shot__marker" style="left:18.67%;top:3%" aria-hidden="true">2</span><span class="shot__marker" style="left:30.08%;top:3%" aria-hidden="true">3</span><span class="shot__marker" style="left:40.04%;top:3%" aria-hidden="true">4</span><span class="shot__marker" style="left:50%;top:3%" aria-hidden="true">5</span><span class="shot__marker" style="left:59.96%;top:3%" aria-hidden="true">6</span><span class="shot__marker" style="left:69.92%;top:3%" aria-hidden="true">7</span><span class="shot__marker" style="left:81.33%;top:3%" aria-hidden="true">8</span><span class="shot__marker" style="left:92.53%;top:3%" aria-hidden="true">9</span></div><figcaption>Die Werkzeuge des Bildes</figcaption></figure>
+<p>Die Werkzeuge des Bildes sitzen über ihm, links daneben <strong>Einstellungen</strong>. Auf dem Telefon liegen die Werkzeuge unten und <strong>Einstellungen</strong> oben.</p>
+<figure class="shot shot--markers" style="--shot-width:691px"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/picture-tools.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/picture-tools.webp" width="691" height="90" alt="Die Werkzeuge des Bildes" loading="lazy"></a><span class="shot__marker" style="left:15.71%;top:3.33%" aria-hidden="true">1</span><span class="shot__marker" style="left:35.47%;top:3.33%" aria-hidden="true">2</span><span class="shot__marker" style="left:44.87%;top:3.33%" aria-hidden="true">3</span><span class="shot__marker" style="left:51.82%;top:3.33%" aria-hidden="true">4</span><span class="shot__marker" style="left:58.76%;top:3.33%" aria-hidden="true">5</span><span class="shot__marker" style="left:65.71%;top:3.33%" aria-hidden="true">6</span><span class="shot__marker" style="left:75.11%;top:3.33%" aria-hidden="true">7</span><span class="shot__marker" style="left:84.37%;top:3.33%" aria-hidden="true">8</span><span class="shot__marker" style="left:93.63%;top:3.33%" aria-hidden="true">9</span></div><figcaption>Die Werkzeuge des Bildes</figcaption></figure>
 <ol class="legend">
-<li><strong>Anpassen</strong> passt das Bild ins Fenster.</li>
+<li><strong>Einstellungen</strong> öffnet und schließt die Karte mit den Einstellungen.</li>
 <li><strong>Ausschnitt</strong> zeigt einen Teil des Bildes für sich (siehe <a href="#bilder--genauer-hinsehen-ausschnitte-des-bildes">Bilder</a>).</li>
 <li><strong>Gemischte Farbe</strong>: jede Fläche in dem Ton, den deine Farben tatsächlich erreichen. Nach dieser Ansicht malst du.</li>
 <li><strong>Fotofarbe</strong>: jede Fläche in der Farbe des Fotos. Vergleich sie mit <strong>Gemischte Farbe</strong>, um zu sehen, wo deine Farben nicht hinkommen.</li>
-<li><strong>Überlagerung</strong>: das Foto zur Hälfte über der Farbe, um zu sehen, welche Fläche welcher Teil des Fotos ist.</li>
 <li><strong>Foto</strong>: das Original, mit Sättigung und Kontrast.</li>
-<li><strong>Vorlage zum Drucken</strong>: keine Füllung, nur Umrisse und Nummern in hellem Blau. Siehe <a href="#drucken">Drucken</a>.</li>
+<li><strong>Blocking</strong>: Licht und Schatten in großen Massen. Siehe <a href="#tonwerte--blocking-licht-und-schatten-zuerst">Tonwerte</a>.</li>
+<li><strong>Raster</strong>: quadratische Felder über dem Bild, in Weiß, Grau oder Schwarz. Siehe <a href="#drucken--das-raster">Drucken</a>.</li>
 <li><strong>Umrisse</strong> ein oder aus.</li>
-<li><strong>Nummern</strong> ein oder aus.</li>
+<li><strong>Nummern</strong>: jeder Klick schaltet weiter, von Nummern zu Nummern auf Hintergrund zu keinen Nummern. Auf Hintergrund steht jede Nummer auf einem kleinen Quadrat, weiß mit dunkler Nummer auf dunklen Flächen und dunkel mit weißer Nummer auf hellen, so bleibt sie auf jeder Farbe lesbar.</li>
 </ol>
+<p>Sobald du in das Bild hineinzoomst, erscheint vorn bei den Werkzeugen <strong>Anpassen</strong>; es passt das Bild wieder ins Fenster.</p>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/view-target.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/view-target.webp" width="1440" height="900" alt="Fotofarbe: was das Foto verlangt" loading="lazy"></a></div><figcaption>Fotofarbe: was das Foto verlangt</figcaption></figure>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/view-overlay.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/view-overlay.webp" width="1440" height="900" alt="Überlagerung: das Foto über der Farbe" loading="lazy"></a></div><figcaption>Überlagerung: das Foto über der Farbe</figcaption></figure>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/view-photo.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/view-photo.webp" width="1440" height="900" alt="Foto: das Original" loading="lazy"></a></div><figcaption>Foto: das Original</figcaption></figure>
 <p>Ohne Umrisse und Nummern zeigt <strong>Gemischte Farbe</strong> das Bild so, wie es gemalt aussehen könnte, ein guter Test, ob der Plan als Bild funktioniert.</p>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/view-plain.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/view-plain.webp" width="1440" height="900" alt="Gemischte Farbe ohne Umrisse und Nummern" loading="lazy"></a></div><figcaption>Gemischte Farbe ohne Umrisse und Nummern</figcaption></figure>
+<p><strong>Nummerngröße</strong> am Ende der Einstellungen macht die Nummern <strong>Groß</strong>, 1,4-mal so groß wie <strong>Normal</strong>, für ein Bild, das man von weiter weg ansieht oder klein druckt.</p>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/view-backdrop.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/view-backdrop.webp" width="1440" height="900" alt="Große Nummern auf Hintergrund" loading="lazy"></a></div><figcaption>Große Nummern auf Hintergrund</figcaption></figure>
 <h2 id="farbflaechen--einstellungen-fuer-typische-motive"><a class="anchor" href="#farbflaechen--einstellungen-fuer-typische-motive" aria-hidden="true" tabindex="-1">#</a>Einstellungen für typische Motive</h2>
 <p>Das sind Ausgangspunkte, keine Regeln.</p>
 <div class="table-wrap"><table class="table">
@@ -353,14 +367,14 @@
 <td>Landschaft, große Formen</td>
 <td>12 bis 20</td>
 <td>4 bis 8</td>
-<td>3 bis 5</td>
+<td>5 bis 7</td>
 <td>2 oder 3</td>
 </tr>
 <tr>
 <td>Porträt</td>
 <td>16 bis 24</td>
 <td>2 bis 5</td>
-<td>6 bis 8</td>
+<td>2 bis 4</td>
 <td>2 oder 3</td>
 </tr>
 <tr>
@@ -374,18 +388,18 @@
 <td>Blumen, Stillleben</td>
 <td>10 bis 16</td>
 <td>3 bis 6</td>
-<td>6 bis 8</td>
+<td>2 bis 4</td>
 <td>2</td>
 </tr>
 <tr>
 <td>Schnelle Skizze, draußen</td>
 <td>6 bis 10</td>
 <td>7 bis 10</td>
-<td>3</td>
+<td>7</td>
 <td>2</td>
 </tr>
 </tbody></table></div>
-<p>Bei Porträts tragen die kleinen Züge (Augen, Mund, der Schatten unter der Nase) die Ähnlichkeit, also halt <strong>Details</strong> hoch und <strong>Flächen vereinfachen</strong> niedrig, oder leg einen <a href="#bilder--genauer-hinsehen-ausschnitte-des-bildes">Ausschnitt</a> vom Gesicht an. Bei Landschaften klappt meist das Gegenteil: wenige, große, ruhige Flächen, und die kleinen Akzente am Ende frei gemalt.</p>
+<p>Bei Porträts tragen die kleinen Züge (Augen, Mund, der Schatten unter der Nase) die Ähnlichkeit, also halt <strong>Details</strong> und <strong>Flächen vereinfachen</strong> niedrig, oder leg einen <a href="#bilder--genauer-hinsehen-ausschnitte-des-bildes">Ausschnitt</a> vom Gesicht an. Bei Landschaften klappt meist das Gegenteil: wenige, große, ruhige Flächen, und die kleinen Akzente am Ende frei gemalt.</p>
 </section>
 <section class="chapter" id="mischungen"><p class="chapter__kicker"><span>Die App</span><span>Kapitel 6</span></p>
 <h1 class="chapter__title">Mischungen, Lasuren und Rezepte</h1>
@@ -432,7 +446,7 @@
 </aside>
 <h2 id="mischungen--die-farbliste"><a class="anchor" href="#mischungen--die-farbliste" aria-hidden="true" tabindex="-1">#</a>Die Farbliste</h2>
 <p>Tippe rechts auf <strong>Farben</strong>, um die Liste zu öffnen. Sie zeigt einen Block pro Mischung, vom größten Anteil am Bild bis zum kleinsten.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/colours.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/colours.webp" width="764" height="900" alt="Die Farbliste von Llyn Idwal" loading="lazy"></a><span class="shot__marker" style="left:4.06%;top:12.05%" aria-hidden="true">1</span><span class="shot__marker" style="left:4.06%;top:15.74%" aria-hidden="true">2</span><span class="shot__marker" style="left:5.89%;top:23.25%" aria-hidden="true">3</span></div><figcaption>Die Farbliste von Llyn Idwal</figcaption></figure>
+<figure class="shot shot--markers" style="--shot-width:719px"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/colours.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/colours.webp" width="719" height="900" alt="Die Farbliste von Llyn Idwal" loading="lazy"></a><span class="shot__marker" style="left:4.31%;top:12.05%" aria-hidden="true">1</span><span class="shot__marker" style="left:4.31%;top:15.74%" aria-hidden="true">2</span><span class="shot__marker" style="left:6.26%;top:23.25%" aria-hidden="true">3</span></div><figcaption>Die Farbliste von Llyn Idwal</figcaption></figure>
 <ol class="legend">
 <li><strong>52 in 20 Mischungen:</strong> wie viele Farben das Bild hat und aus wie vielen Pfützen sie kommen.</li>
 <li><strong>Der Schlüssel</strong> zu den Wasserstufen W bis C, wie sie im Bild und in den Balken stehen.</li>
@@ -445,14 +459,14 @@
 <p>Aus dieser Ansicht malst du. Wähle eine Mischung, male jede Fläche mit ihrer Nummer, vom hellsten Buchstaben zum dunkelsten, und geh zur nächsten Mischung. Ein Klick auf den leeren Teil des Bildes holt das ganze Bild zurück.</p>
 <h2 id="mischungen--eine-farbe-im-bild-nachschlagen"><a class="anchor" href="#mischungen--eine-farbe-im-bild-nachschlagen" aria-hidden="true" tabindex="-1">#</a>Eine Farbe im Bild nachschlagen</h2>
 <p>Tippe oder klicke eine Fläche im Bild an. Über dem Bild öffnet sich eine Karte mit dem, was du am Maltisch brauchst.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/inspector.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/inspector.webp" width="1440" height="900" alt="Die Karte einer angetippten Fläche" loading="lazy"></a><span class="shot__marker" style="left:37.08%;top:70.9%" aria-hidden="true">1</span></div><figcaption>Die Karte einer angetippten Fläche</figcaption></figure>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/inspector.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/inspector.webp" width="1440" height="900" alt="Die Karte einer angetippten Fläche" loading="lazy"></a><span class="shot__marker" style="left:37.08%;top:70.99%" aria-hidden="true">1</span></div><figcaption>Die Karte einer angetippten Fläche</figcaption></figure>
 <ol class="legend">
 <li><strong>Die Karte</strong> nennt die Farbe (zum Beispiel <strong>Farbe 1L</strong>), zeigt ihren Anteil am Bild, die Wasserstufe und das empfohlene Rezept mit seinen Farben und dem Verhältnis als Balken. Die angetippte Stelle blinkt im Bild, damit du weißt, welche Fläche gemeint ist. Tippe dieselbe Fläche noch einmal an oder schließe die Karte, um sie wegzulegen.</li>
 </ol>
 <p>Die Karte lässt das Bild, wie es ist. Das ist Absicht: Eine Farbe lässt sich zwischen ihren Nachbarn besser beurteilen als allein. Am Computer erscheint dasselbe Rezept auch neben dem Mauszeiger, während du ihn über das Bild bewegst.</p>
 <h2 id="mischungen--alle-details"><a class="anchor" href="#mischungen--alle-details" aria-hidden="true" tabindex="-1">#</a>Alle Details</h2>
 <p><strong>Alle Details</strong> auf der Karte öffnet alles, was die App über diese Farbe weiß.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/breakdown.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/breakdown.webp" width="768" height="786" alt="Alle Details einer Farbe" loading="lazy"></a></div><figcaption>Alle Details einer Farbe</figcaption></figure>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/breakdown.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/breakdown.webp" width="798" height="810" alt="Alle Details einer Farbe" loading="lazy"></a></div><figcaption>Alle Details einer Farbe</figcaption></figure>
 <h3 id="mischungen--ziel-und-deine-mischung"><a class="anchor" href="#mischungen--ziel-und-deine-mischung" aria-hidden="true" tabindex="-1">#</a>Ziel und deine Mischung</h3>
 <p>Links steht das <strong>Ziel</strong>, die Farbe, die das Foto verlangt. Rechts steht <strong>Deine Mischung</strong>, die Farbe, die das gewählte Rezept auf weißem Papier ergibt. Sehen die beiden gleich aus, ist das Rezept gut. Weichen sie ab, ist der Unterschied echt: Deine Farben erreichen das Ziel nicht, und die nächsten Abschnitte zeigen, was du dann tun kannst.</p>
 <h3 id="mischungen--das-ziel-aendern"><a class="anchor" href="#mischungen--das-ziel-aendern" aria-hidden="true" tabindex="-1">#</a>Das Ziel ändern</h3>
@@ -684,45 +698,39 @@
 <aside class="note note--tip"><p><strong>Tipp:</strong> Kneif abwechselnd vor deiner Studie und vor dem Bildschirm die Augen zusammen. Verschwimmen beide zu denselben großen Formen, hat die Studie ihren Zweck erfüllt.</p>
 </aside>
 <h2 id="tonwerte--die-tonwerte-und-der-rest-der-app"><a class="anchor" href="#tonwerte--die-tonwerte-und-der-rest-der-app" aria-hidden="true" tabindex="-1">#</a>Die Tonwerte und der Rest der App</h2>
-<p>Monochrom arbeitet mit allem anderen beim Mischen zusammen: der Farbliste, der Karte einer angetippten Fläche, Alle Details, dem Drucken und der Vorlage. Bei den Schichten gibt es Monochrom nicht, dort sind die Schichten auf Farbe abgestimmt. Das Kapitel <a href="#tonwerte-und-vereinfachen">Tonwerte und Vereinfachen</a> zeigt, wie du die Tonwerte eines Fotos liest, bevor du die App überhaupt öffnest.</p>
+<p>Monochrom arbeitet mit allem anderen beim Mischen zusammen: der Farbliste, der Karte einer angetippten Fläche, Alle Details und dem Drucken. Bei den Schichten gibt es Monochrom nicht, dort sind die Schichten auf Farbe abgestimmt. Das Kapitel <a href="#tonwerte-und-vereinfachen">Tonwerte und Vereinfachen</a> zeigt, wie du die Tonwerte eines Fotos liest, bevor du die App überhaupt öffnest.</p>
 </section>
 <section class="chapter" id="drucken"><p class="chapter__kicker"><span>Die App</span><span>Kapitel 9</span></p>
 <h1 class="chapter__title">Drucken und exportieren</h1>
 <h2 id="drucken--der-ausdruck"><a class="anchor" href="#drucken--der-ausdruck" aria-hidden="true" tabindex="-1">#</a>Der Ausdruck</h2>
-<p><strong>Drucken / PDF</strong> in der Spalte links druckt das Bild und danach seine Legende: jede Mischung mit ihren Farben, damit du ohne Bildschirm malen kannst.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/print.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/print.webp" width="1000" height="1400" alt="Der Ausdruck: das Bild, dann jede Mischung mit ihren Lasuren und Farben" loading="lazy"></a></div><figcaption>Der Ausdruck: das Bild, dann jede Mischung mit ihren Lasuren und Farben</figcaption></figure>
+<p><strong>Drucken / PDF</strong> in der Spalte links druckt das Bild auf einer eigenen Seite und danach seine Legende: jede Mischung mit ihren Farben, damit du ohne Bildschirm malen kannst.</p>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/print.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/print.webp" width="1000" height="740" alt="Die Legende: jede Mischung als Karte mit ihren Lasuren und Farben, vier in einer Reihe" loading="lazy"></a></div><figcaption>Die Legende: jede Mischung als Karte mit ihren Lasuren und Farben, vier in einer Reihe</figcaption></figure>
 <p>Der Ausdruck hat zwei Teile:</p>
 <ul>
-<li><strong>Das Bild</strong>, genau so, wie es beim Drucken gezeigt wird: in der Ansicht, die du gewählt hast, mit oder ohne Umrisse und Nummern. Für den Maltisch druckst du es in <strong>Gemischte Farbe</strong> mit Umrissen und Nummern oder als <strong>Vorlage zum Drucken</strong> (siehe unten).</li>
-<li><strong>Die Legende</strong>, überschrieben mit dem Namen des Bildes. Eine Zeile pro Mischung: ihre Nummer, ihre Lasuren nebeneinander mit Buchstaben und Anteil am Bild, die Farben mit ihren Teilen, Näpfchen oder Tube und Nummer, und das Rezept als Balken. Mischungen, bei denen das Papier weiß bleibt, sagen das.</li>
+<li><strong>Das Bild</strong>, auf der ersten Seite, genau so, wie es beim Drucken gezeigt wird: in der Ansicht, die du gewählt hast, mit oder ohne Umrisse und Nummern. Für den Maltisch druckst du es in <strong>Gemischte Farbe</strong> mit Umrissen und Nummern, und mit Raster, wenn du die Zeichnung Feld für Feld überträgst (siehe unten).</li>
+<li><strong>Die Legende</strong>, ab der zweiten Seite, überschrieben mit dem Namen des Bildes. Eine Karte pro Mischung, vier in einer Reihe, so passen etwa zwanzig Mischungen auf eine Seite. Oben auf jeder Karte steht immer links die Mischung in voller Stärke, ihre C-Lasur, mit ihrer Nummer und ihrem Anteil am Bild; daneben ihre übrigen Lasuren, die dunkelste zuerst, mit Buchstaben und Anteil. Darunter steht das Rezept als Balken, dann die Farben untereinander mit ihren Teilen, Näpfchen oder Tube und Nummer. Mischungen, bei denen das Papier weiß bleibt, sagen das.</li>
 </ul>
 <p>Wähle im Druckdialog deines Browsers <strong>Als PDF speichern</strong> als Drucker, um den Ausdruck als Datei zu behalten, zum Beispiel auf einem Tablet neben dem Bild.</p>
 <aside class="note note--tip"><p><strong>Tipp:</strong> Hake jede Mischung auf der gedruckten Legende ab, sobald ihre Flächen gemalt sind. So verlierst du in einem Bild mit zwanzig Mischungen am einfachsten nicht den Überblick.</p>
 </aside>
 <h3 id="drucken--bei-den-schichten"><a class="anchor" href="#drucken--bei-den-schichten" aria-hidden="true" tabindex="-1">#</a>Bei den Schichten</h3>
 <p>Bei den Schichten ist der Ausdruck das fertige Bild und danach eine Seite pro Schicht: die Farbe und wie du ihre Lasur ansetzt, die Flächen mit ihren Lasurnummern und was zu tun ist („Lasur 1 auf jede nummerierte Fläche“, dann welche Nummern eine zweite Lasur bekommen). Die Akzente kommen zuletzt. Das Kapitel <a href="#schichten">Schichten</a> erklärt die Lasuren.</p>
-<h2 id="drucken--die-vorlage-zum-drucken"><a class="anchor" href="#drucken--die-vorlage-zum-drucken" aria-hidden="true" tabindex="-1">#</a>Die Vorlage zum Drucken</h2>
-<p><strong>Vorlage zum Drucken</strong> ist eine Ansicht des Bildes, in der die Flächen leer bleiben: nur ihre Umrisse und Nummern, in Hellblau gezeichnet. Du findest sie bei den Ansichten in den Werkzeugen über dem Bild, auf dem Handy im Menü.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/view-template.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/view-template.webp" width="1440" height="900" alt="Die Vorlage: Umrisse und Nummern in Hellblau, nichts ausgefüllt" loading="lazy"></a></div><figcaption>Die Vorlage: Umrisse und Nummern in Hellblau, nichts ausgefüllt</figcaption></figure>
-<p>Das Hellblau hat einen Grund. Ein Drucker macht es ohne schwarze Tinte, die Linien bleiben zart und die Farbe deckt sie. Du kannst die Vorlage auf zwei Arten nutzen:</p>
-<ol>
-<li><strong>Auf Aquarellpapier drucken und darauf malen.</strong> Viele Tintenstrahldrucker nehmen dünnes Aquarellpapier (manche Fotodrucker bis etwa 300 g/m²; sieh in der Anleitung deines Druckers nach). Drucke die Vorlage, lass die Tinte ganz trocknen, klebe das Blatt fest und male die nummerierten Flächen direkt.</li>
-<li><strong>Auf normales Papier drucken und die Zeichnung übertragen.</strong> Siehe nächster Abschnitt.</li>
-</ol>
-<p><strong>Drucken / PDF</strong> in dieser Ansicht druckt die Vorlage und die Legende: das Blatt, auf dem du malst, und das Blatt, nach dem du mischst.</p>
-<aside class="note note--warn"><p><strong>Achtung:</strong> Tintenstrahltinte kann verlaufen, wenn sie nass wird. Probiere an einer Ecke der gedruckten Vorlage mit einem nassen Pinsel, bevor du ein gutes Blatt Papier daran gibst.</p>
-</aside>
+<h2 id="drucken--das-raster"><a class="anchor" href="#drucken--das-raster" aria-hidden="true" tabindex="-1">#</a>Das Raster</h2>
+<p><strong>Raster</strong> in den Werkzeugen über dem Bild, links neben <strong>Umrisse</strong>, legt ein Raster aus quadratischen Feldern über das Bild. Jeder Klick schaltet weiter, von keinem Raster zu weißen, grauen und schwarzen Linien, damit das Raster auf hellen wie auf dunklen Bildern sichtbar bleibt.</p>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/view-grid.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/view-grid.webp" width="1440" height="900" alt="Das Raster: acht Spalten quadratischer Felder über dem Bild" loading="lazy"></a></div><figcaption>Das Raster: acht Spalten quadratischer Felder über dem Bild</figcaption></figure>
+<p><strong>Rasterspalten</strong> in den Einstellungen bestimmt, wie viele Felder quer über das Bild passen, von 2 bis 30. Die Zeilen sind so hoch, wie die Spalten breit sind, so ist jedes Feld quadratisch; die letzte Zeile endet, wo das Bild endet.</p>
+<p>Das Raster wird in jeder Ansicht gezeichnet und kommt mit auf den Ausdruck und ins JPG. Zeichne auf dein Papier gleich viele Spalten, mit Feldern so quadratisch wie am Bildschirm, dann kannst du das Bild Feld für Feld abzeichnen (siehe nächster Abschnitt).</p>
 <h2 id="drucken--die-zeichnung-uebertragen"><a class="anchor" href="#drucken--die-zeichnung-uebertragen" aria-hidden="true" tabindex="-1">#</a>Die Zeichnung übertragen</h2>
 <p>Wenn du lieber auf dein eigenes Papier zeichnest, hast du mehrere Möglichkeiten, von der schnellsten bis zur persönlichsten:</p>
 <ul>
-<li><strong>Leuchtplatte oder Fenster.</strong> Klebe die gedruckte Vorlage hinter das Aquarellpapier, halte beides gegen eine Leuchtplatte oder ein helles Fenster und zieh die Umrisse mit einem harten, hellen Bleistift nach (2H oder H).</li>
+<li><strong>Leuchtplatte oder Fenster.</strong> Klebe das gedruckte Bild, mit Umrissen, hinter das Aquarellpapier, halte beides gegen eine Leuchtplatte oder ein helles Fenster und zieh die Umrisse mit einem harten, hellen Bleistift nach (2H oder H).</li>
 <li><strong>Graphitpause.</strong> Schraffiere die Rückseite des Ausdrucks mit einem weichen Bleistift (4B), leg ihn auf das Papier und zieh die Linien mit einem Kugelschreiber nach. Drück so wenig wie möglich; Rillen im Papier fangen Farbe.</li>
-<li><strong>Raster nach Augenmaß.</strong> Drucke das Bild in <strong>Gemischte Farbe</strong> und zeichne ein Raster aus hellen Linien auf Ausdruck und Papier. Übertrage ein Feld nach dem anderen. Das dauert länger und schult dein Auge.</li>
+<li><strong>Raster nach Augenmaß.</strong> Schalte das Raster ein, drucke das Bild in <strong>Gemischte Farbe</strong> und zeichne dasselbe Raster aus hellen Linien auf das Papier. Übertrage ein Feld nach dem anderen. Das dauert länger und schult dein Auge.</li>
 </ul>
 <p>Schreib die Beschriftungen (6L, 3R) klein und blass in die Flächen. Eine helle Lasur lässt sie noch lesen, eine dunkle deckt sie. Du brauchst nicht jeden Umriss. Lass weg, was du lieber frei malst, dann wird das Bild deins und keine Kopie.</p>
-<figure class="photo photo--missing"><div class="photo__frame"><span class="photo__note">Foto folgt</span></div><figcaption>Die Vorlage am Fenster durchpausen</figcaption></figure>
+<figure class="photo photo--missing"><div class="photo__frame"><span class="photo__note">Foto folgt</span></div><figcaption>Die Zeichnung am Fenster durchpausen</figcaption></figure>
 <h2 id="drucken--papiergroesse-und-massstab"><a class="anchor" href="#drucken--papiergroesse-und-massstab" aria-hidden="true" tabindex="-1">#</a>Papiergröße und Maßstab</h2>
-<p>Das Papier bestimmt der Druckdialog des Browsers. Das Bild wird auf die Breite der Seite gesetzt und ist höchstens 15 cm hoch, damit die Legende auf demselben Blatt beginnt. Auf einer A4-Seite wird ein Foto im Querformat etwa 19 mal 13 cm groß; ein größeres Blatt bringt wenig mehr. Für ein größeres Bild:</p>
+<p>Das Papier bestimmt der Druckdialog des Browsers. Das Bild hat die erste Seite für sich und wird auf sie eingepasst. Auf einer A4-Seite wird ein Foto im Querformat etwa 19 mal 13 cm groß, eines im Hochformat bis etwa 26 cm hoch. Für ein größeres Bild:</p>
 <ul>
 <li>wähle im Druckdialog ein größeres Papierformat, wenn dein Drucker es kann,</li>
 <li>oder speichere als PDF und lass das Bild im Copyshop drucken,</li>
@@ -777,7 +785,7 @@
 <td>ja</td>
 </tr>
 <tr>
-<td>Sichern, Drucken / PDF, die Vorlage, Als JPG exportieren</td>
+<td>Sichern, Drucken / PDF, Als JPG exportieren</td>
 <td></td>
 <td>ja</td>
 <td>ja</td>
@@ -827,7 +835,7 @@
 <td>eine Zahlung, keine Verlängerung</td>
 </tr>
 </tbody></table></div>
-<p>Der Dialog zeigt die aktuellen Preise. Sie enthalten die Mehrwertsteuer. Die Zahlung wickelt Stripe ab; die App sieht deine Karte nie. „Lebenszeit“ meint die Lebenszeit des Produkts: so lange, wie Watercolourlove angeboten wird, kein Versprechen, dass es ewig läuft. Die AGB erklären das genau.</p>
+<p>Der Dialog zeigt die aktuellen Preise. Sie enthalten die Mehrwertsteuer. Die Zahlung wickelt Stripe ab; die App sieht deine Karte nie. „Lebenszeit“ meint die Lebenszeit des Produkts Watercolourlove. Die AGB erklären das genau.</p>
 <p>Was du in den letzten 30 Tagen für Bilder bezahlt hast, ziehen wir von deinem ersten Tarif ab: Der Dialog sagt dir, wie viel.</p>
 <p>Mit einem Abo kannst du jederzeit <strong>Zur Lebenszeit-Lizenz wechseln</strong>. Einen <strong>Gutschein für eine Lebenszeit-Lizenz</strong> löst du im Tarif-Dialog mit <strong>Einlösen</strong> ein; ein Gutschein gilt nur für die E-Mail-Adresse, auf die er ausgestellt ist.</p>
 <h3 id="konto--das-konto"><a class="anchor" href="#konto--das-konto" aria-hidden="true" tabindex="-1">#</a>Das Konto</h3>
@@ -854,12 +862,19 @@
 <li>deine Farbkästen und deine eigenen Farben,</li>
 <li>deine Einstellungen und die Anordnung der Fenster.</li>
 </ul>
-<p>Nichts davon gehört zu deinem Konto. Das hat drei Folgen, die du kennen solltest:</p>
+<p>Nichts davon gehört zu deinem Konto. Das hat vier Folgen, die du kennen solltest:</p>
 <ol>
 <li><strong>Ein anderes Gerät ist ein Neuanfang.</strong> Meldest du dich auf dem Tablet an, hast du dort deinen Tarif, aber nicht deine Sammlung und nicht deine Farbkästen.</li>
 <li><strong>Wer die Browserdaten löscht, löscht seine Arbeit.</strong> „Browserdaten löschen“, „Cookies und Websitedaten löschen“ oder ein privates Fenster, das du schließt, entfernen sie alle, und niemand kann sie zurückholen.</li>
+<li><strong>Der Browser kann von sich aus aufräumen.</strong> Safari löscht die Daten einer Website, die du sieben Tage lang nicht geöffnet hast, außer du hast sie zum Home-Bildschirm hinzugefügt. Jeder Browser kann gespeicherte Daten entfernen, wenn der Speicher des Geräts fast voll ist. Öffne die App also regelmäßig, oder sichere, was du behalten willst.</li>
 <li><strong>Deine Arbeit ist von Grund auf privat.</strong> Niemand, auch wir nicht, kann deine Fotos oder deine Farben sehen.</li>
 </ol>
+<p>Was du sichern kannst:</p>
+<ul>
+<li><strong>Farbkästen</strong> als Datei: <strong>Exportieren</strong> unter jedem Kasten im Farbkasten, zurück mit <strong>Farbkasten importieren</strong>, auf diesem oder einem anderen Gerät.</li>
+<li><strong>Das Ergebnis eines Bildes</strong> als Ausdruck oder PDF mit allen Mischungen (<a href="#drucken">Drucken</a>) oder als JPG (<a href="#bilder--ein-bild-exportieren">Ein Bild exportieren</a>).</li>
+<li><strong>Ein Bild mit allen Einstellungen und Farbänderungen</strong> als Bilddatei (<code>.wcl</code>): Jedes <strong>Sichern</strong> lädt sie herunter, <strong>Neues Bild</strong> öffnet sie wieder, auf diesem oder einem anderen Gerät. Siehe <a href="#bilder--die-bilddatei-wcl">Die Bilddatei</a>.</li>
+</ul>
 <aside class="note note--tip"><p><strong>Tipp:</strong> Sichere deine Farbkästen. Im Farbkasten speichert <strong>Exportieren</strong> unter jedem Kasten ihn als Datei; <strong>Farbkasten importieren</strong> holt ihn zurück, auf diesem oder einem anderen Gerät. Ein Farbkasten mit deinen eigenen, kalibrierten Farben ist es wert, aufgehoben zu werden. Siehe <a href="#farbkasten">Farbkasten und Palette</a>.</p>
 </aside>
 <h3 id="konto--das-konto-loeschen"><a class="anchor" href="#konto--das-konto-loeschen" aria-hidden="true" tabindex="-1">#</a>Das Konto löschen</h3>
@@ -1029,6 +1044,7 @@
 <h2 id="wie-aquarell-funktioniert--wie-die-app-farbe-beschreibt"><a class="anchor" href="#wie-aquarell-funktioniert--wie-die-app-farbe-beschreibt" aria-hidden="true" tabindex="-1">#</a>Wie die App Farbe beschreibt</h2>
 <p>Die App behandelt jede Farbe so, wie das Licht sie behandelt: als <strong>lasierenden Filter</strong> auf weißem Papier.</p>
 <p>Von jeder Farbe kennt sie eine Farbe, die ihres Aufstrichs. Daraus berechnet sie, getrennt für rotes, grünes und blaues Licht, wie viel die Farbe schluckt. Mischst du Farben, addiert sich ihr Schlucken, jedes gewichtet nach dem Anteil dieser Farbe in der Mischung. Das ist subtraktives Mischen, dasselbe Gesetz, das farbiges Glas oder Tinte im Wasser beschreibt (Physiker nennen es Lambert-Beer). Blau und Gelb ergeben Grün, weil das Blau das Rot wegnimmt und das Gelb das Blau, und nur grünes Licht kommt durch beide.</p>
+<p>Wasser wirkt anders. Die App berechnet zuerst die Mischung in voller Stärke und legt sie dann über das Papier, so wie ein Bildschirm eine Farbe mit geringerer Deckkraft zeigt: Eine M-Lasur in halber Stärke ist die volle Mischung zu 50 %, eine L-Lasur zu einem Viertel ist die Mischung zu 25 %. So wird eine Lasur zum Papier hin blasser und behält nicht das Leuchten der vollen Farbe. Auch ein Türkis ganz ohne Rot wird mit Wasser zu einem blassen, weichen Türkis, wie auf dem Papier.</p>
 <h3 id="wie-aquarell-funktioniert--warum-drei-leuchtende-farben-kein-schwarz-ergeben"><a class="anchor" href="#wie-aquarell-funktioniert--warum-drei-leuchtende-farben-kein-schwarz-ergeben" aria-hidden="true" tabindex="-1">#</a>Warum drei leuchtende Farben kein Schwarz ergeben</h3>
 <p>Auf dem Papier macht mehr Farbe eine Lasur nicht endlos dunkler. Ein Pinsel trägt nur so viel Pigment, und eine dicke Lasur nähert sich dem <strong>Masston</strong> der Farbe, ihrer Farbe in voller Stärke, und hört dort auf. Die App bildet das als Tiefengrenze für die Mischung als Ganzes ab: Eine leuchtende Farbe kann nur wenig dunkler werden als ihr Aufstrich (etwa das 1,6-Fache ihres Schluckens), während Grau, Schwarz und Erden, deren Masston viel dunkler ist als ihre Lasur, viel tiefer gehen können (bis zum 4-Fachen). In der App wie auf dem Papier ergeben drei leuchtende Farben, dick gemischt, also eine tiefe, stumpfe Farbe, kein Schwarz.</p>
 <h3 id="wie-aquarell-funktioniert--staerke-1-das-dunkelste-was-die-app-von-einer-farbe-nimmt"><a class="anchor" href="#wie-aquarell-funktioniert--staerke-1-das-dunkelste-was-die-app-von-einer-farbe-nimmt" aria-hidden="true" tabindex="-1">#</a>Stärke 1: das Dunkelste, was die App von einer Farbe nimmt</h3>
@@ -1060,7 +1076,7 @@
 <h1 class="chapter__title">Mischen in der Praxis</h1>
 <h2 id="mischen--vom-rezept-zur-pfuetze"><a class="anchor" href="#mischen--vom-rezept-zur-pfuetze" aria-hidden="true" tabindex="-1">#</a>Vom Rezept zur Pfütze</h2>
 <p>Jede Mischung in der App kommt mit einem Rezept: die Farben, ihre Teile und das Wasser. In <strong>Alle Details</strong> einer Farbe siehst du es neben der Zielfarbe, mit bis zu fünf Rezepten zur Auswahl.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/breakdown.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/breakdown.webp" width="768" height="786" alt="Alle Details einer Farbe: Ziel und Mischung nebeneinander, darunter die Rezepte" loading="lazy"></a></div><figcaption>Alle Details einer Farbe: Ziel und Mischung nebeneinander, darunter die Rezepte</figcaption></figure>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/breakdown.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/breakdown.webp" width="798" height="810" alt="Alle Details einer Farbe: Ziel und Mischung nebeneinander, darunter die Rezepte" loading="lazy"></a></div><figcaption>Alle Details einer Farbe: Ziel und Mischung nebeneinander, darunter die Rezepte</figcaption></figure>
 <p>Ein Rezept wie <strong>3 x P 672</strong> plus <strong>1 x T 525</strong> heißt: drei Teile Farbe 672 aus dem Näpfchen auf einen Teil Farbe 525 aus der Tube. Die Wasserstufe (<strong>sehr wässrig</strong>, <strong>leicht</strong>, <strong>mittel</strong>, <strong>kräftig</strong> oder <strong>konzentriert</strong>) sagt, wie viel Wasser die ganze Pfütze bekommt. <a href="#mischungen">Mischungen, Lasuren und Rezepte</a> erklärt jeden Teil der Anzeige; hier geht es darum, wie du es am Tisch machst.</p>
 <h3 id="mischen--in-pinselladungen-zaehlen"><a class="anchor" href="#mischen--in-pinselladungen-zaehlen" aria-hidden="true" tabindex="-1">#</a>In Pinselladungen zählen</h3>
 <p>Ein <strong>Teil</strong> ist eine Pinselladung: derselbe Pinsel, jedes Mal gleich geladen. Pinsel anfeuchten, durch die Farbe ziehen, bis der Bauch voll ist, und die Ladung in die Mulde geben. Für drei Teile drei Ladungen. Bei Näpfchen löst du die Farbe vorher mit ein paar Tropfen Wasser an, bis sie sahnig ist, damit jede Ladung gleich viel trägt. Bei Tuben drückst du einen kleinen Klecks in eine eigene Mulde und nimmst die Ladungen von dort.</p>
@@ -1423,7 +1439,7 @@
 <li>Öffne <strong>Llyn Idwal</strong>, drück in den Einstellungen auf <strong>Monochrom</strong> und stell <strong>Farben</strong> auf den kleinsten Wert, 2.</li>
 <li>Öffne den <strong>Farbkasten</strong> und leg eine einzige dunkle, transparente Farbe in die Palette, zum Beispiel eine Neutraltinte, eine Sepia oder ein Indigo.</li>
 <li>Stell <strong>Flächen vereinfachen</strong> so hoch, dass du nicht mehr als etwa dreißig Flächen zählst.</li>
-<li>Druck das Blatt oder die <strong>Vorlage zum Drucken</strong>, übertrag die Umrisse und male die Studie mit den Lasuren, die die App dir gibt, von der hellsten zur dunkelsten.</li>
+<li>Druck das Blatt, übertrag die Umrisse und male die Studie mit den Lasuren, die die App dir gibt, von der hellsten zur dunkelsten.</li>
 <li>Leg sie, wenn sie trocken ist, neben einen grauen Ausdruck des Fotos und blinzle auf beide.</li>
 </ol>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/values.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/values.webp" width="1440" height="900" alt="Llyn Idwal in Monochrom mit einer Farbe: das Bild in Grau, jeder Tonwert mit einer einzigen Farbe der Palette gemalt" loading="lazy"></a></div><figcaption>Llyn Idwal in Monochrom mit einer Farbe: das Bild in Grau, jeder Tonwert mit einer einzigen Farbe der Palette gemalt</figcaption></figure>
@@ -1606,7 +1622,7 @@
 <tr>
 <td>Details</td>
 <td>Details</td>
-<td>Die Einstellung, ob kleine Flächen eines anderen Farbtons eine eigene Mischung behalten.</td>
+<td>Die Einstellung, ob die Mischungen feine Abstufungen im ganzen Bild geben (hoch) oder kleinen Flächen eines anderen Farbtons (niedrig).</td>
 </tr>
 <tr>
 <td>Farben</td>
@@ -1689,6 +1705,11 @@
 <td>Die Farben, aus denen ein Bild gemischt wird. Sie wird mit dem Bild gesichert.</td>
 </tr>
 <tr>
+<td>Raster</td>
+<td>Grid</td>
+<td>Quadratische Felder über dem Bild, um es Feld für Feld auf Papier zu übertragen.</td>
+</tr>
+<tr>
 <td>Rezept</td>
 <td>Recipe</td>
 <td>Welche Farben, in wie vielen Teilen, mit wie viel Wasser, für eine Farbe.</td>
@@ -1712,16 +1733,6 @@
 <td>Treffer</td>
 <td>Match quality</td>
 <td>Wie nah ein Rezept seinem Ziel kommt: sehr gut (unter 2), gut (unter 5), mäßig (unter 10), grob (ab 10). Englisch: excellent, good, fair, rough.</td>
-</tr>
-<tr>
-<td>Überlagerung</td>
-<td>Overlay</td>
-<td>Die Ansicht des Fotos in halber Stärke über der Farbe.</td>
-</tr>
-<tr>
-<td>Vorlage zum Drucken</td>
-<td>Template to print</td>
-<td>Nur Umrisse und Nummern, in Hellblau, zum Ausdrucken und Darauf-Malen.</td>
 </tr>
 <tr>
 <td>Ziel</td>
@@ -1841,7 +1852,7 @@
 <h3 id="probleme--die-karte-hat-viel-zu-viele-winzige-flaechen"><a class="anchor" href="#probleme--die-karte-hat-viel-zu-viele-winzige-flaechen" aria-hidden="true" tabindex="-1">#</a>Die Karte hat viel zu viele winzige Flächen</h3>
 <p>Stell <strong>Flächen vereinfachen</strong> höher. Jede Stufe fasst kleine Formen mit ihren Nachbarn zusammen; etwa in der Mitte des Bereichs werden die meisten Fotos malbar. Weniger <strong>Farben</strong> helfen auch, weil weniger Mischungen weniger Grenzen zwischen ihnen bedeuten. Siehe <a href="#farbflaechen">Farbflächen</a>.</p>
 <h3 id="probleme--eine-wichtige-einzelheit-ist-verschwunden"><a class="anchor" href="#probleme--eine-wichtige-einzelheit-ist-verschwunden" aria-hidden="true" tabindex="-1">#</a>Eine wichtige Einzelheit ist verschwunden</h3>
-<p>Kleine Flächen, die sich im Farbton von ihrer Umgebung abheben, ein rotes Dach, die Lippen in einem Porträt, behalten eine eigene Mischung, wenn <strong>Details</strong> hoch steht. Ist die Einzelheit auch klein, verschwindet sie beim Vereinfachen; sieh dir diesen Teil des Bildes mit <strong>Ausschnitt</strong> für sich an, dort bekommt er feinere Flächen und eigene Mischungen (Pro). Siehe <a href="#bilder">Bilder</a>.</p>
+<p>Kleine Flächen, die sich im Farbton von ihrer Umgebung abheben, ein rotes Dach, die Lippen in einem Porträt, behalten eine eigene Mischung, wenn <strong>Details</strong> niedrig steht. Ist die Einzelheit auch klein, verschwindet sie beim Vereinfachen; sieh dir diesen Teil des Bildes mit <strong>Ausschnitt</strong> für sich an, dort bekommt er feinere Flächen und eigene Mischungen (Pro). Siehe <a href="#bilder">Bilder</a>.</p>
 <h3 id="probleme--die-farben-wirken-stumpf-oder-viel-zu-laut"><a class="anchor" href="#probleme--die-farben-wirken-stumpf-oder-viel-zu-laut" aria-hidden="true" tabindex="-1">#</a>Die Farben wirken stumpf oder viel zu laut</h3>
 <p>Die App stellt die <strong>Sättigung</strong> vor der Analyse auf 200 %, weil Fotos meist flacher wirken als der Ort. Bei einem Foto, das schon kräftig ist, nimm sie Richtung 100 % zurück. <strong>Kontrast</strong> wirkt genauso auf den Unterschied zwischen Hell und Dunkel. Beide ändern nur die Analyse, nie das Foto selbst.</p>
 <h2 id="probleme--die-rezepte"><a class="anchor" href="#probleme--die-rezepte" aria-hidden="true" tabindex="-1">#</a>Die Rezepte</h2>
@@ -1886,5 +1897,6 @@
     <span>Watercolourlove von Markus Freise. Fragen an <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="../../manual/manual.js"></script>
 </body>
 </html>

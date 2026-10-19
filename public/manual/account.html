@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Close" data-lightbox-prev="Previous picture" data-lightbox-next="Next picture">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,7 +74,7 @@
 <td>yes</td>
 </tr>
 <tr>
-<td>Save, Print / PDF, the template, Export as JPG</td>
+<td>Save, Print / PDF, Export as JPG</td>
 <td></td>
 <td>yes</td>
 <td>yes</td>
@@ -124,7 +124,7 @@
 <td>one payment, no renewal</td>
 </tr>
 </tbody></table></div>
-<p>The dialog shows the current prices. They include VAT. Payment is handled by Stripe; the app never sees your card. &quot;Lifetime&quot; means the life of the product: for as long as Watercolourlove is offered, not a promise that it runs forever. The terms explain this in full.</p>
+<p>The dialog shows the current prices. They include VAT. Payment is handled by Stripe; the app never sees your card. &quot;Lifetime&quot; means the lifetime of the product, Watercolourlove. The terms explain this in full.</p>
 <p>What you paid for pictures in the last 30 days comes off your first plan: the dialog says how much.</p>
 <p>With a subscription you can <strong>Switch to a lifetime licence</strong> at any time. A <strong>Voucher for a lifetime licence</strong> is redeemed in the plan dialog with <strong>Redeem</strong>; a voucher only works with the e-mail address it was made out to.</p>
 <h3 id="the-account-dialog"><a class="anchor" href="#the-account-dialog" aria-hidden="true" tabindex="-1">#</a>The account dialog</h3>
@@ -151,12 +151,19 @@
 <li>your paint boxes and the colours of your own,</li>
 <li>your preferences and the arrangement of the panels.</li>
 </ul>
-<p>None of this is part of your account. That has three consequences you should know:</p>
+<p>None of this is part of your account. That has four consequences you should know:</p>
 <ol>
 <li><strong>Another device is a fresh start.</strong> Sign in on your tablet and you have your plan there, but not your collection or your paint boxes.</li>
 <li><strong>Clearing the browser&#39;s data deletes your work.</strong> &quot;Clear browsing data&quot;, &quot;Delete cookies and site data&quot; or a private window that you close all remove it, and nobody can bring it back.</li>
+<li><strong>The browser can clear up on its own.</strong> Safari deletes the data of a website you have not opened for seven days, unless you added it to your home screen. Any browser may remove stored data when the device is nearly full. So open the app regularly, or back up what you want to keep.</li>
 <li><strong>Your work is private by design.</strong> Nobody, including us, can see your photos or your paints.</li>
 </ol>
+<p>What you can back up:</p>
+<ul>
+<li><strong>Paint boxes</strong> as a file: <strong>Export</strong> under each box in the paint box, back with <strong>Import paint box</strong>, on this device or another.</li>
+<li><strong>The result of a picture</strong> as a printed sheet or PDF with every mix (<a href="printing.html">Printing</a>) or as a JPG (<a href="pictures.html#exporting-a-picture">Exporting a picture</a>).</li>
+<li><strong>A picture with all its settings and colour changes</strong> as a picture file (<code>.wcl</code>): every <strong>Save</strong> downloads it, <strong>New picture</strong> opens it again, on this device or another. See <a href="pictures.html#the-picture-file-wcl">The picture file</a>.</li>
+</ul>
 <aside class="note note--tip"><p><strong>Tip:</strong> Back up your paint boxes. In the paint box, <strong>Export</strong> under each box saves it as a file; <strong>Import paint box</strong> brings it back, on this device or another. A paint box with your own calibrated colours is worth keeping. See <a href="paint-box.html">Paint box and palette</a>.</p>
 </aside>
 <h3 id="deleting-your-account"><a class="anchor" href="#deleting-your-account" aria-hidden="true" tabindex="-1">#</a>Deleting your account</h3>
@@ -179,5 +186,6 @@
     <span>Watercolourlove by Markus Freise. Questions: <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="manual.js"></script>
 </body>
 </html>

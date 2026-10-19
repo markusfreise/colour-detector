@@ -2,11 +2,11 @@
   <div v-if="entry" ref="tip" class="tip" :style="style" role="tooltip">
     <div class="tip__header">
       <span class="swatch swatch--small" :style="{ background: recipe?.hex ?? entry.targetHex }"></span>
-      <strong>{{ t('Colour {label}', { label: entry.label }) }}</strong>
+      <strong>{{ entry.label }}</strong>
       <span class="tip__share">{{ t('{percent}% of image', { percent: Math.round(entry.share * 100) || '<1' }) }}</span>
     </div>
-    <!-- The recommended recipe as in the recipe panel: wash and match, the paints with their parts, the ratio as a bar. -->
-    <RecipeLine v-if="recipe" :recipe="recipe" full />
+    <!-- The recommended recipe: the mixed colour with its wash, the ratio as a bar, the paints with their parts. -->
+    <RecipeLine v-if="recipe" :recipe="recipe" full :forms="false" :letter="entry.letter" />
     <p v-else class="tip__paper">{{ t('No paints selected in the paint box') }}</p>
   </div>
 </template>

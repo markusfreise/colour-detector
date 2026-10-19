@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Schließen" data-lightbox-prev="Bild davor" data-lightbox-next="Nächstes Bild">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +35,7 @@
 <p class="chapter__lead">Ein Rezept sagt dir, welche Farben, in welchem Verhältnis und mit wie viel Wasser. Daraus eine Pfütze zu machen, die zur Farbe auf dem Blatt passt, ist ein Handwerk für sich, und eines, das man schnell lernt.</p>
 <h2 id="vom-rezept-zur-pfuetze"><a class="anchor" href="#vom-rezept-zur-pfuetze" aria-hidden="true" tabindex="-1">#</a>Vom Rezept zur Pfütze</h2>
 <p>Jede Mischung in der App kommt mit einem Rezept: die Farben, ihre Teile und das Wasser. In <strong>Alle Details</strong> einer Farbe siehst du es neben der Zielfarbe, mit bis zu fünf Rezepten zur Auswahl.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/breakdown.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/breakdown.webp" width="768" height="786" alt="Alle Details einer Farbe: Ziel und Mischung nebeneinander, darunter die Rezepte" loading="lazy"></a></div><figcaption>Alle Details einer Farbe: Ziel und Mischung nebeneinander, darunter die Rezepte</figcaption></figure>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/breakdown.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/breakdown.webp" width="798" height="810" alt="Alle Details einer Farbe: Ziel und Mischung nebeneinander, darunter die Rezepte" loading="lazy"></a></div><figcaption>Alle Details einer Farbe: Ziel und Mischung nebeneinander, darunter die Rezepte</figcaption></figure>
 <p>Ein Rezept wie <strong>3 x P 672</strong> plus <strong>1 x T 525</strong> heißt: drei Teile Farbe 672 aus dem Näpfchen auf einen Teil Farbe 525 aus der Tube. Die Wasserstufe (<strong>sehr wässrig</strong>, <strong>leicht</strong>, <strong>mittel</strong>, <strong>kräftig</strong> oder <strong>konzentriert</strong>) sagt, wie viel Wasser die ganze Pfütze bekommt. <a href="mischungen.html">Mischungen, Lasuren und Rezepte</a> erklärt jeden Teil der Anzeige; hier geht es darum, wie du es am Tisch machst.</p>
 <h3 id="in-pinselladungen-zaehlen"><a class="anchor" href="#in-pinselladungen-zaehlen" aria-hidden="true" tabindex="-1">#</a>In Pinselladungen zählen</h3>
 <p>Ein <strong>Teil</strong> ist eine Pinselladung: derselbe Pinsel, jedes Mal gleich geladen. Pinsel anfeuchten, durch die Farbe ziehen, bis der Bauch voll ist, und die Ladung in die Mulde geben. Für drei Teile drei Ladungen. Bei Näpfchen löst du die Farbe vorher mit ein paar Tropfen Wasser an, bis sie sahnig ist, damit jede Ladung gleich viel trägt. Bei Tuben drückst du einen kleinen Klecks in eine eigene Mulde und nimmst die Ladungen von dort.</p>
@@ -151,5 +151,6 @@
     <span>Watercolourlove von Markus Freise. Fragen an <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="../../manual/manual.js"></script>
 </body>
 </html>

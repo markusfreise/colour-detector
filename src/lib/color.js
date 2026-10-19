@@ -111,6 +111,37 @@ export function colourFamily(hex) {
   return 'red'
 }
 
+// The colour filters of the dialog that adds colours to a box, finer than the families: turquoise
+// apart from blue, and the earths apart from their hues. `hex` is the swatch of the filter button.
+export const HUE_GROUPS = [
+  { key: 'red', name: 'Red', hex: '#b22727' },
+  { key: 'orange', name: 'Orange', hex: '#ec7b25' },
+  { key: 'yellow', name: 'Yellow', hex: '#f3d104' },
+  { key: 'green', name: 'Green', hex: '#79c167' },
+  { key: 'turquoise', name: 'Turquoise', hex: '#00c9c9' },
+  { key: 'blue', name: 'Blue', hex: '#3354c1' },
+  { key: 'violet', name: 'Violet', hex: '#d968d7' },
+  { key: 'brown', name: 'Brown', hex: '#955e37' },
+  { key: 'grey', name: 'Grey and black', hex: '#52463d' },
+]
+
+// Hue group of a colour, from its OKLCh lightness, chroma and hue angle: browns are the dark,
+// muted reds, oranges and yellows (Mahagony, Vandyke brown, Caput mortuum).
+export function hueGroup(hex) {
+  const [l, a, b] = hexToOklab(hex)
+  const chroma = Math.hypot(a, b)
+  if (chroma < 0.035) return 'grey'
+  const hue = ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360
+  if (hue >= 20 && hue < 100 && l < 0.6 && chroma < 0.13) return 'brown'
+  if (hue < 36 || hue >= 355) return 'red'
+  if (hue < 78) return 'orange'
+  if (hue < 115) return 'yellow'
+  if (hue < 175) return 'green'
+  if (hue < 225) return 'turquoise'
+  if (hue < 290) return 'blue'
+  return 'violet'
+}
+
 // CSS custom properties for a chip filled with the given colour (see _chip.css).
 export function chipStyle(hex) {
   return hex ? { '--chip-colour': hex, '--chip-ink': contrastText(hex) } : {}

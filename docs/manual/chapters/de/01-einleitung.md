@@ -2,7 +2,7 @@
 title: Willkommen bei Watercolourlove
 nav: Einleitung
 slug: index
-lead: Watercolourlove macht aus einem Foto den Plan für ein echtes Aquarell. Die App findet die Farben, auf die es ankommt, sagt dir, wie du jede aus deinen eigenen Farben mischst, und zeigt das Foto als flache, nummerierte Flächen, die du aufs Papier übertragen kannst.
+lead: Watercolourlove ist ein Werkzeug für alle, die nach Foto malen. Die App erkennt die Farben, auf die es in deiner Vorlage ankommt, und berechnet, wie du jede aus deinen eigenen Farben mischst, mit wie viel Wasser. Farbflächen, Blocking und Tonwerte helfen dir, das Bild zu lesen, bevor du es malst.
 part: Erste Schritte
 ---
 
@@ -12,13 +12,13 @@ part: Erste Schritte
 
 Wer nach Foto malt, steht immer vor denselben zwei Fragen. Welche Farben stecken wirklich in diesem Bild, wenn man über die tausend kleinen Abstufungen hinwegsieht, die eine Kamera aufzeichnet? Und wie mische ich jede davon aus den Farben in meinem Kasten, mit wie viel Wasser?
 
-Watercolourlove beantwortet beide. Die App bringt das Foto auf eine überschaubare Zahl von Mischungen, berechnet für jede ein Rezept aus deinen Farben und zeigt dir, wohin sie gehört. Heraus kommt ein Malen nach Zahlen, aber eines, das für Aquarell gemacht ist: Es weiß, dass Farbe lasierend ist, dass Wasser eine Farbe heller macht und dass das Weiß des Papiers das Hellste ist, was du hast.
+Watercolourlove beantwortet beide. Die App erkennt die Farben, die das Bild tragen, fasst sie zu einer überschaubaren Zahl von Mischungen zusammen und berechnet für jede ein Rezept aus deinen Farben: welche Farben, in welchem Verhältnis, in welcher Stärke. Dazu kommen die Werkzeuge, mit denen du eine Vorlage liest wie eine Malerin oder ein Maler: die Farbflächen des Bildes, Blocking von Licht und Schatten, Tonwerte, Ausschnitte. Die App weiß, dass Farbe lasierend ist, dass Wasser eine Farbe heller macht und dass das Weiß des Papiers das Hellste ist, was du hast. Ausdrucke mit Raster und nummerierten Flächen gibt es auch, als Hilfe, wenn du sie brauchst, nicht als Hauptsache.
 
 ![Die App auf einen Blick, mit dem Beispielfoto Llyn Idwal](shot:overview)
 
 1. **Neues Bild** und die anderen Knöpfe rund ums Bild: Beispiele, Sichern, Sammlung, Drucken, Exportieren.
-2. Die Werkzeuge des Bildes: ans Fenster anpassen, einen Ausschnitt ansehen.
-3. Die Ansichten: gemischte Farbe, die Farben des Fotos, Überlagerung, das Foto selbst, die Vorlage zum Drucken.
+2. Die Werkzeuge des Bildes: einen Ausschnitt ansehen und, wenn du hineingezoomt hast, wieder ans Fenster anpassen.
+3. Die Ansichten: gemischte Farbe, die Farben des Fotos, das Foto selbst.
 4. **Farben**: jede Mischung mit ihren Farben und Lasuren.
 5. **Einstellungen**: wie viele Mischungen, wie einfach die Flächen, welche Methode.
 6. **Farbkasten**: die Farben, die du besitzt, und die Palette dieses Bildes.

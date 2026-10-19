@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Schließen" data-lightbox-prev="Bild davor" data-lightbox-next="Nächstes Bild">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,6 +58,7 @@
 <h2 id="wie-die-app-farbe-beschreibt"><a class="anchor" href="#wie-die-app-farbe-beschreibt" aria-hidden="true" tabindex="-1">#</a>Wie die App Farbe beschreibt</h2>
 <p>Die App behandelt jede Farbe so, wie das Licht sie behandelt: als <strong>lasierenden Filter</strong> auf weißem Papier.</p>
 <p>Von jeder Farbe kennt sie eine Farbe, die ihres Aufstrichs. Daraus berechnet sie, getrennt für rotes, grünes und blaues Licht, wie viel die Farbe schluckt. Mischst du Farben, addiert sich ihr Schlucken, jedes gewichtet nach dem Anteil dieser Farbe in der Mischung. Das ist subtraktives Mischen, dasselbe Gesetz, das farbiges Glas oder Tinte im Wasser beschreibt (Physiker nennen es Lambert-Beer). Blau und Gelb ergeben Grün, weil das Blau das Rot wegnimmt und das Gelb das Blau, und nur grünes Licht kommt durch beide.</p>
+<p>Wasser wirkt anders. Die App berechnet zuerst die Mischung in voller Stärke und legt sie dann über das Papier, so wie ein Bildschirm eine Farbe mit geringerer Deckkraft zeigt: Eine M-Lasur in halber Stärke ist die volle Mischung zu 50 %, eine L-Lasur zu einem Viertel ist die Mischung zu 25 %. So wird eine Lasur zum Papier hin blasser und behält nicht das Leuchten der vollen Farbe. Auch ein Türkis ganz ohne Rot wird mit Wasser zu einem blassen, weichen Türkis, wie auf dem Papier.</p>
 <h3 id="warum-drei-leuchtende-farben-kein-schwarz-ergeben"><a class="anchor" href="#warum-drei-leuchtende-farben-kein-schwarz-ergeben" aria-hidden="true" tabindex="-1">#</a>Warum drei leuchtende Farben kein Schwarz ergeben</h3>
 <p>Auf dem Papier macht mehr Farbe eine Lasur nicht endlos dunkler. Ein Pinsel trägt nur so viel Pigment, und eine dicke Lasur nähert sich dem <strong>Masston</strong> der Farbe, ihrer Farbe in voller Stärke, und hört dort auf. Die App bildet das als Tiefengrenze für die Mischung als Ganzes ab: Eine leuchtende Farbe kann nur wenig dunkler werden als ihr Aufstrich (etwa das 1,6-Fache ihres Schluckens), während Grau, Schwarz und Erden, deren Masston viel dunkler ist als ihre Lasur, viel tiefer gehen können (bis zum 4-Fachen). In der App wie auf dem Papier ergeben drei leuchtende Farben, dick gemischt, also eine tiefe, stumpfe Farbe, kein Schwarz.</p>
 <h3 id="staerke-1-das-dunkelste-was-die-app-von-einer-farbe-nimmt"><a class="anchor" href="#staerke-1-das-dunkelste-was-die-app-von-einer-farbe-nimmt" aria-hidden="true" tabindex="-1">#</a>Stärke 1: das Dunkelste, was die App von einer Farbe nimmt</h3>
@@ -92,5 +93,6 @@
     <span>Watercolourlove von Markus Freise. Fragen an <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="../../manual/manual.js"></script>
 </body>
 </html>

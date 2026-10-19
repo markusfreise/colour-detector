@@ -10,9 +10,18 @@
     box-shadow: var(--shadow);
 }
 
+.toolbar {
+    padding: calc(0.5 * var(--tool-gap));
+    background: var(--c-background-raised);
+    box-shadow: var(--shadow);
+    border-radius: var(--radius-medium);
+}
+
 .flyout {
+    // The padding, also known to the handle, which reaches across it.
+    --flyout-pad: #{pxtorem(32)};
     left: 0;
-    padding: #{pxtorem(32)};
+    padding: var(--flyout-pad);
     // Never wider than a narrow window.
     min-width: min(#{pxtorem(480)}, 95vw);
     max-width: 95vw;
@@ -46,12 +55,19 @@
     }
 
     // The handle: a strip across the top of the panel with a short bar in its middle, and room
-    // above and below the bar.
+    // above and below the bar. It stays at the top while the panel scrolls, over what passes under it.
+    // It reaches up to the panel's edge: a sticky offset counts from inside the panel's padding,
+    // so with `top: 0` it would slide down over the first row.
     &__handle {
+        position: sticky;
+        top: calc(var(--flyout-pad, 0px) * -1);
+        z-index: 1;
         display: grid;
         place-items: center;
-        height: #{pxtorem(24)};
-        margin: #{pxtorem(-20)} 0 #{pxtorem(12)};
+        height: calc(var(--flyout-pad, #{pxtorem(20)}) + #{pxtorem(4)});
+        margin: calc(var(--flyout-pad, 0px) * -1) calc(var(--flyout-pad, 0px) * -1) #{pxtorem(12)};
+        padding-top: max(0px, calc(var(--flyout-pad, 0px) - #{pxtorem(20)}));
+        background: inherit;
         cursor: grab;
         user-select: none;
         touch-action: none;
@@ -197,11 +213,13 @@
         color: var(--c-on-corporate);
     }
     &--active {
-        background: var(--c-corporate);
-        color: var(--c-on-corporate) !important;
+        background: var(--c-active);
+        border-color: var(--c-active-outline);
+        color: var(--c-on-active) !important;
         svg {
+            filter: var(--active-glow);
             path {
-                fill: var(--c-on-corporate) !important;
+                fill: var(--c-on-active) !important;
             }
         }
     }
@@ -220,11 +238,19 @@
     &:not(:has(svg)):not(.button--secondary):not(.button--active) {
         border: 2px solid var(--c-button-border);
     }
+    // Part of the full version, not bought: ghosted. A click still offers it.
+    &--locked svg {
+        opacity: 0.4;
+    }
     &--ghost {
         background: transparent;
         color: var(--c-copy-light);
         &:hover {
             color: var(--c-copy);
+        }
+        // Switched on (help, hints): black like every active button, so its white icon shows.
+        &.button--active {
+            background: var(--c-active);
         }
     }
     &:has(svg) {
@@ -283,11 +309,15 @@
     transform: translate(#{pxtorem(-8)}, -50%);
 }
 
-.app__sidebar .toolbar [data-hint]::after,
-.app__help::after {
+.app__sidebar .toolbar [data-hint]::after {
     right: calc(100% + var(--gap-05x));
     top: 50%;
     transform: translate(#{pxtorem(8)}, -50%);
+}
+
+// The settings button says its name itself.
+.painting__settings[data-hint]::after {
+    display: none;
 }
 
 // The buttons of the tools are not positioned, so the label sits under the whole row.
@@ -303,8 +333,7 @@
     }
 
     .app__left [data-hint]:hover::after,
-    .app__sidebar .toolbar [data-hint]:hover::after,
-    .app__help:hover::after {
+    .app__sidebar .toolbar [data-hint]:hover::after {
         transform: translate(0, -50%);
     }
 }
@@ -317,8 +346,7 @@
     }
 
     .app__left [data-hint]::after,
-    .app__sidebar .toolbar [data-hint]::after,
-    .app__help::after {
+    .app__sidebar .toolbar [data-hint]::after {
         transform: translate(0, -50%);
     }
 

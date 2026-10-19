@@ -26,8 +26,8 @@
       @pointercancel="frame = null"
     ></canvas>
     <!-- No picture yet: the whole canvas is the way to the first one. -->
-    <label v-if="!analysis.image && !analysis.busy" class="painting__welcome">
-      <input class="painting__file" type="file" accept="image/*" @change="onWelcomeFile" />
+    <label v-if="!analysis.image && !analysis.busy && !backdrop" class="painting__welcome">
+      <input class="painting__file" type="file" accept="image/*,.wcl" @change="onWelcomeFile" />
       <span class="painting__welcome-text">
         {{ t('Welcome to {app}', { app: APP_NAME }) }}<br />
         <strong>{{ t('Load your first photo.') }}</strong><br />
@@ -37,15 +37,28 @@
       </span>
     </label>
     <div v-if="frame" class="painting__frame" :style="frameStyle"></div>
+    <div v-if="spinning && !backdrop" class="painting__spinner"><BusySpinner /></div>
     <!-- The spot whose colour is being looked at, blinking under the card. -->
-    <span v-if="spot" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
-    <div class="painting__tools">
-      <!-- Until everything is unlocked: the plans, one click away. -->
-      <button v-if="!pro.active" class="button button--secondary painting__pro" type="button" @click="pro.require(null, 'use everything')">
-        {{ t('Get pro') }}
-        <CreditCount />
-      </button>
-      <button class="button button--ghost painting__tool" type="button" :data-hint="t('Fit')" @click="fit">
+    <span v-if="spot && !backdrop" class="painting__spot" :style="spotStyle" aria-hidden="true"></span>
+    <!-- The settings, on their own and named, beside the tools; on a phone at the top. -->
+    <div v-if="!backdrop" class="painting__bar">
+    <div class="painting__settings-bar toolbar">
+    <button
+      class="button painting__settings"
+      :class="{ 'button--active': !layout.collapsed.controls }"
+      type="button"
+      :aria-expanded="!layout.collapsed.controls"
+      :data-hint="t('Settings')"
+      @click="layout.toggle('controls')"
+    >
+      <AppIcon name="settings" />
+      <span>{{ t('Settings') }}</span>
+    </button>
+    </div>
+    <div class="painting__tools toolbar">
+      <GetPro class="painting__pro" @open="pro.require(null, 'use everything')" />
+      <!-- Only while the picture is zoomed in: it fits it to the window again. -->
+      <button v-if="zoomed" class="button button--ghost painting__tool" type="button" :data-hint="t('Fit')" @click="fit">
         <AppIcon name="zoom" :label="t('Fit the picture to the window')" />
       </button>
       <!-- A frame drawn on the base picture becomes a close-up: that part, analysed on its own. -->
@@ -61,7 +74,16 @@
         <AppIcon name="frame" :label="framing ? t('Cancel choosing a part of the picture') : t('Zoom in on a part of the picture')" />
       </button>
       <ViewSwitch />
-      <!-- What is drawn over the picture. -->
+      <!-- What is drawn over the picture. The grid cycles through none, white, grey, black. -->
+      <button
+        class="button painting__tool"
+        :class="{ 'button--active': analysis.settings.grid }"
+        type="button"
+        :data-hint="t(gridStep.label)"
+        @click="analysis.settings.grid = gridStep.next"
+      >
+        <AppIcon name="grid" :label="t(gridStep.label)" />
+      </button>
       <button
         class="button painting__tool"
         :class="{ 'button--active': analysis.settings.outlines }"
@@ -72,18 +94,19 @@
       >
         <AppIcon name="outlines" :label="t('Show outlines')" />
       </button>
+      <!-- Cycles through no numbers, numbers, numbers on a backdrop. -->
       <button
         class="button painting__tool"
         :class="{ 'button--active': analysis.settings.numbers }"
         type="button"
-        :aria-pressed="analysis.settings.numbers"
-        :data-hint="t('Numbers')"
-        @click="analysis.settings.numbers = !analysis.settings.numbers"
+        :data-hint="t(numbersStep.hint)"
+        @click="analysis.settings.numbers = numbersStep.next"
       >
-        <AppIcon name="numbers" :label="t('Show numbers')" />
+        <AppIcon :name="numbersStep.icon" :label="t(numbersStep.label)" />
       </button>
       <p v-if="analysis.busy" class="painting__status">{{ analysis.layerMode ? t('Planning layers…') : t('Analysing…') }}</p>
       <p v-else-if="framing && !frame" class="painting__status">{{ t('Drag a frame over the part to zoom in on') }}</p>
+    </div>
     </div>
     <!-- Without a paint the picture would be blank paper. One is enough: it is painted in washes. -->
     <p v-if="noPaints" class="painting__notice">{{ t('Put at least one colour in paintbox') }}</p>
@@ -96,15 +119,17 @@ import { computed, reactive, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
 import { useProStore } from '../stores/pro.js'
+import { useLayoutStore } from '../stores/layout.js'
 import { hexToRgb, contrastText } from '../lib/color.js'
-import { drawLayerView, labelFont, paintPixels } from './layerView.js'
+import { drawLayerView, labeller, paintPixels } from './layerView.js'
 import { smoothCurve } from '../lib/sketch.js'
 import { upscaleAreas } from '../lib/smooth.js'
 import { toneGrey } from '../lib/blocking.js'
 import RecipeTip from './RecipeTip.vue'
 import AppIcon from './AppIcon.vue'
-import CreditCount from './CreditCount.vue'
+import GetPro from './GetPro.vue'
 import ViewSwitch from './ViewSwitch.vue'
+import BusySpinner from './BusySpinner.vue'
 import { closeupRect } from '../lib/closeup.js'
 import { APP_NAME } from '../config.js'
 import { useText } from '../i18n/index.js'
@@ -129,6 +154,47 @@ function onWelcomeFile(event) {
 const analysis = useAnalysisStore()
 const paints = usePaintsStore()
 const pro = useProStore()
+const layout = useLayoutStore()
+
+// The numbers button steps through no numbers, numbers, numbers on a backdrop. Its icon and
+// label show the state now; a click goes on to `next`.
+const numbersStep = computed(() => {
+  const numbers = analysis.settings.numbers
+  if (numbers === 'backdrop') return { icon: 'numbers-backdrop', label: 'Numbers on a backdrop', hint: 'Numbers on a backdrop', next: false }
+  if (numbers) return { icon: 'numbers', label: 'Numbers', hint: 'Numbers', next: 'backdrop' }
+  return { icon: 'numbers', label: 'No numbers', hint: 'No numbers', next: true }
+})
+// The grid button steps through no grid, white, grey, black lines; its label shows the state now.
+const GRID_STEPS = [
+  { value: false, label: 'No grid' },
+  { value: 'white', label: 'White grid', color: '#ffffff' },
+  { value: 'grey', label: 'Grey grid', color: '#808080' },
+  { value: 'black', label: 'Black grid', color: '#000000' },
+]
+const gridStep = computed(() => {
+  const i = Math.max(0, GRID_STEPS.findIndex((s) => s.value === analysis.settings.grid))
+  return { ...GRID_STEPS[i], next: GRID_STEPS[(i + 1) % GRID_STEPS.length].value }
+})
+// The spinner shows while the picture is worked out, and at least SPIN_MIN ms: a quick analysis
+// would only flash it.
+const SPIN_MIN = 2400
+const spinning = ref(false)
+let spinStart = 0
+let spinTimer = null
+watch(
+  () => analysis.busy,
+  (busy) => {
+    clearTimeout(spinTimer)
+    if (busy) {
+      if (!spinning.value) spinStart = Date.now()
+      spinning.value = true
+    } else if (spinning.value) {
+      spinTimer = setTimeout(() => (spinning.value = false), Math.max(0, SPIN_MIN - (Date.now() - spinStart)))
+    }
+  },
+  { immediate: true },
+)
+onBeforeUnmount(() => clearTimeout(spinTimer))
 // The paint box in use holds no paint: none to paint with, or in layer mode none to glaze with.
 const noPaints = computed(() => !!analysis.image && (analysis.layerMode ? !analysis.busy && !analysis.layers : paints.enabled.length === 0))
 const canvas = ref(null)
@@ -152,7 +218,7 @@ function drawPhoto(ctx, el) {
   else ctx.drawImage(analysis.image, 0, 0, el.width, el.height)
 }
 
-// Saves the picture as it is drawn now (view, outlines, numbers) as a JPG, at the size of the canvas.
+// Saves the picture as it is drawn now (view, outlines, numbers, grid) as a JPG, at the size of the canvas.
 function exportJpg() {
   const el = canvas.value
   if (!el?.width) return
@@ -193,11 +259,40 @@ function overlayPhoto(ctx, el) {
 function draw() {
   const el = canvas.value
   if (!el) return
+  drawView(el)
+  drawGrid(el)
+}
+
+function drawView(el) {
   if (analysis.settings.view === 'sketch') return drawSketch(el)
   if (analysis.settings.view === 'blocking') return drawBlocking(el)
   if (analysis.layerMode) drawLayers(el)
   else drawMixes(el)
   drawDetails(el)
+}
+
+// A grid of square cells over the picture, to transfer it to paper: the width in `gridColumns`
+// columns from the left, the rows from the top as far as the height goes. In every view.
+function drawGrid(el) {
+  const color = gridStep.value.color
+  if (!color || !el.width || !el.height) return
+  // A page open since before the setting existed has none: hot reloading keeps the store's state.
+  const cell = el.width / Math.max(1, analysis.settings.gridColumns || 8)
+  const ctx = el.getContext('2d')
+  ctx.save()
+  ctx.strokeStyle = color
+  ctx.lineWidth = Math.max(2, Math.round(el.width / 600))
+  ctx.beginPath()
+  for (let x = cell; x < el.width - 0.5; x += cell) {
+    ctx.moveTo(Math.round(x), 0)
+    ctx.lineTo(Math.round(x), el.height)
+  }
+  for (let y = cell; y < el.height - 0.5; y += cell) {
+    ctx.moveTo(0, Math.round(y))
+    ctx.lineTo(el.width, Math.round(y))
+  }
+  ctx.stroke()
+  ctx.restore()
 }
 
 // The final wash of fine dark details from the AI's plan, over the mixes or the layers.
@@ -278,7 +373,7 @@ function drawBlocking(el) {
   const ctx = el.getContext('2d')
   if (blockingAtCanvas?.result !== result) blockingAtCanvas = { result, toneAt: upscaleAreas(result.toneMap, width, height, SCALE) }
   const { toneAt } = blockingAtCanvas
-  const { outlines, numbers, blockingOpacity } = analysis.settings
+  const { outlines, numbers, numberSize, blockingOpacity } = analysis.settings
   const solo = analysis.blockingSolo
   const greys = Array.from({ length: tones }, (_, tone) => (solo == null || tone === solo ? toneGrey(tone, tones) : BLOCKING_PALE))
   const alpha = Math.round((blockingOpacity / 100) * 255)
@@ -297,12 +392,11 @@ function drawBlocking(el) {
   if (alpha < 255) drawPhoto(ctx, el)
   paintPixels(ctx, el, img, w, h)
   if (numbers) {
-    // The masses are few and large: their numbers are twice the size of those of the mixes.
-    labelFont(ctx, SCALE * 2)
+    // At the size of the numbers of the mixes.
+    const label = labeller(ctx, SCALE, { numbers, size: numberSize })
     for (const region of regions) {
-      if (region.anchorDist < MIN_LABEL_DIST * 2 || (solo != null && region.tone !== solo)) continue
-      ctx.fillStyle = toneGrey(region.tone, tones)[0] > 140 ? '#1d1b18' : '#ffffff'
-      ctx.fillText(String(region.tone + 1), (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE)
+      if (region.anchorDist < MIN_LABEL_DIST || (solo != null && region.tone !== solo)) continue
+      label(String(region.tone + 1), (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE, toneGrey(region.tone, tones)[0] > 140 ? '#1d1b18' : '#ffffff')
     }
   }
 }
@@ -376,7 +470,7 @@ function drawMixes(el) {
   el.width = w
   el.height = h
   const ctx = el.getContext('2d')
-  const { view, outlines, numbers } = analysis.settings
+  const { view, outlines, numbers, numberSize } = analysis.settings
   const original = view === 'original'
   // Nothing filled in: the paper with the areas and their numbers in light blue, to print and paint on.
   const template = view === 'template'
@@ -434,14 +528,16 @@ function drawMixes(el) {
   }
 
   if (numbers) {
-    labelFont(ctx, SCALE)
+    const label = labeller(ctx, SCALE, { numbers, size: numberSize })
     for (const region of regions) {
       if (region.anchorDist < MIN_LABEL_DIST) continue
       const entryIndex = analysis.regionEntry[region.id]
       if (!original && !template && !shown(entryIndex)) continue
       const entry = analysis.entries[entryIndex]
-      ctx.fillStyle = original ? '#ffffff' : template ? TEMPLATE_NUMBER : contrastText(analysis.displayHex(entry))
-      ctx.fillText(entry.label, (region.anchorX + 0.5) * SCALE, (region.anchorY + 0.5) * SCALE)
+      const x = (region.anchorX + 0.5) * SCALE, y = (region.anchorY + 0.5) * SCALE
+      // In the template the backdrop is light blue too, with the number left white.
+      if (template) label(entry.label, x, y, TEMPLATE_NUMBER, '#ffffff')
+      else label(entry.label, x, y, original ? '#ffffff' : contrastText(analysis.displayHex(entry)))
     }
   }
 }
@@ -461,13 +557,14 @@ function drawLayers(el) {
     }
     return
   }
-  const { view, outlines, numbers } = analysis.settings
+  const { view, outlines, numbers, numberSize } = analysis.settings
   const ctx = drawLayerView(el, result, {
     show: analysis.layerView,
     step: analysis.layerStep == null ? null : result.steps[analysis.layerStep],
     stepView: analysis.layerStepView,
     outlines,
     numbers,
+    numberSize,
     scale: SCALE,
     backdrop: view === 'original' ? drawPhoto : null,
   })
@@ -548,6 +645,9 @@ const moving = ref(false)
 let fitted = true
 const MOST = 8 // screen pixels per canvas pixel at most
 const DRAG = 4 // a pointer that moved less than this was a click
+
+// Zoomed in beyond fitting the window: only then is the button to fit it again shown.
+const zoomed = computed(() => !!size.width && view.k > fitScale() * 1.001)
 
 const canvasStyle = computed(() => ({ transform: `translate(${view.x}px, ${view.y}px) scale(${view.k})` }))
 
@@ -719,6 +819,9 @@ watch(
     analysis.sketchKey,
     analysis.settings.outlines,
     analysis.settings.numbers,
+    analysis.settings.numberSize,
+    analysis.settings.grid,
+    analysis.settings.gridColumns,
     analysis.blockingKey,
     analysis.blockingSolo,
     analysis.settings.blockingOpacity,

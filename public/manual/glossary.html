@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Close" data-lightbox-prev="Previous picture" data-lightbox-next="Next picture">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -161,7 +161,7 @@
 <tr>
 <td>Details</td>
 <td>Details</td>
-<td>The setting that decides whether small areas of another hue keep a mix of their own.</td>
+<td>The setting that decides whether the mixes go to fine steps across the picture (high) or to small areas of another hue (low).</td>
 </tr>
 <tr>
 <td>Full breakdown</td>
@@ -172,6 +172,11 @@
 <td>Geometric</td>
 <td>Geometrisch</td>
 <td>Areas as polygons with straight edges instead of their organic outline.</td>
+</tr>
+<tr>
+<td>Grid</td>
+<td>Raster</td>
+<td>Square cells over the picture, to copy it onto paper cell by cell.</td>
 </tr>
 <tr>
 <td>Layer</td>
@@ -219,11 +224,6 @@
 <td>Areas that follow the outlines of the photo.</td>
 </tr>
 <tr>
-<td>Overlay</td>
-<td>Überlagerung</td>
-<td>The view of the photo at half strength over the paint.</td>
-</tr>
-<tr>
 <td>Paint box</td>
 <td>Farbkasten</td>
 <td>A named set of paints you own, for example your pans or a travel set.</td>
@@ -252,11 +252,6 @@
 <td>Target</td>
 <td>Ziel</td>
 <td>The colour the photo asks for in an area.</td>
-</tr>
-<tr>
-<td>Template to print</td>
-<td>Vorlage zum Drucken</td>
-<td>Only outlines and numbers, in light blue, to print and paint on.</td>
 </tr>
 <tr>
 <td>Values</td>
@@ -387,5 +382,6 @@
     <span>Watercolourlove by Markus Freise. Questions: <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="manual.js"></script>
 </body>
 </html>

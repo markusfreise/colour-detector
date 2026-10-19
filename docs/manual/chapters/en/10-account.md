@@ -10,7 +10,7 @@ part: The app
 
 ## Signing in
 
-The web app asks you to sign in before it opens. There is no password: you enter your e-mail address and press **Send me a sign-in link**. A mail arrives with a link; open it on the same device and in the same browser, within 15 minutes, and you are signed in. If the mail does not come, look in your spam folder or press **Use different address** to start again.
+The web app asks you to sign in before it opens. There is no password: you enter your e-mail address and press **Get a sign-in link**. A mail arrives with a link; open it on the same device and in the same browser, within 15 minutes, and you are signed in. If the mail does not come, look in your spam folder or press **Use different address** to start again.
 
 New here? Choose **Sign up** under the form. Signing up works the same way, with one extra field: **Invitation code (optional)**. Without a code you get a free account; with a valid code your account starts with a lifetime licence. Each code works once.
 
@@ -34,7 +34,7 @@ The free version analyses your photos and gives you every recipe, mixed from the
 | Analyse photos, mix and layer mode, colour list, recipes | yes | yes | yes |
 | Paints to mix from | the Starter box | your own paints, in the boxes you have | your own paints, in as many boxes as you like |
 | Blocking, close-ups, Simplify below 0 | | yes | yes |
-| Save, Print / PDF, the template, Export as JPG | | yes | yes |
+| Save, Print / PDF, Export as JPG | | yes | yes |
 | More paint boxes, brand colour charts, importing a paint box | | | yes |
 | Monochrome | | | yes |
 
@@ -60,7 +60,7 @@ A credit unlocks **one picture for good**. Every account starts with one; more c
 | **Yearly** | renews every year, cancel at any time |
 | **Lifetime licence** | one payment, no renewal |
 
-The dialog shows the current prices. They include VAT. Payment is handled by Stripe; the app never sees your card. "Lifetime" means the life of the product: for as long as Watercolourlove is offered, not a promise that it runs forever. The terms explain this in full.
+The dialog shows the current prices. They include VAT. Payment is handled by Stripe; the app never sees your card. "Lifetime" means the lifetime of the product, Watercolourlove. The terms explain this in full.
 
 What you paid for pictures in the last 30 days comes off your first plan: the dialog says how much.
 
@@ -95,11 +95,18 @@ Watercolourlove does its work entirely on your device. Your photo is never uploa
 - your paint boxes and the colours of your own,
 - your preferences and the arrangement of the panels.
 
-None of this is part of your account. That has three consequences you should know:
+None of this is part of your account. That has four consequences you should know:
 
 1. **Another device is a fresh start.** Sign in on your tablet and you have your plan there, but not your collection or your paint boxes.
 2. **Clearing the browser's data deletes your work.** "Clear browsing data", "Delete cookies and site data" or a private window that you close all remove it, and nobody can bring it back.
-3. **Your work is private by design.** Nobody, including us, can see your photos or your paints.
+3. **The browser can clear up on its own.** Safari deletes the data of a website you have not opened for seven days, unless you added it to your home screen. Any browser may remove stored data when the device is nearly full. So open the app regularly, or back up what you want to keep.
+4. **Your work is private by design.** Nobody, including us, can see your photos or your paints.
+
+What you can back up:
+
+- **Paint boxes** as a file: **Export** under each box in the paint box, back with **Import paint box**, on this device or another.
+- **The result of a picture** as a printed sheet or PDF with every mix ([Printing](printing.html)) or as a JPG ([Exporting a picture](pictures.html#exporting-a-picture)).
+- **A picture with all its settings and colour changes** as a picture file (`.wcl`): every **Save** downloads it, **New picture** opens it again, on this device or another. See [The picture file](pictures.html#the-picture-file-wcl).
 
 > **Tip:** Back up your paint boxes. In the paint box, **Export** under each box saves it as a file; **Import paint box** brings it back, on this device or another. A paint box with your own calibrated colours is worth keeping. See [Paint box and palette](paint-box.html).
 

@@ -43,7 +43,7 @@ export const shots = [
     id: 'overview',
     markers: [
       { locate: (p, t) => hint(p, t, 'New picture'), at: 'r' },
-      { locate: (p, t) => hint(p, t, 'Fit'), at: 'b' },
+      { locate: (p, t) => hint(p, t, 'Detail'), at: 'b' },
       { locate: (p, t) => hint(p, t, 'Mixed paint'), at: 'b' },
       { locate: (p, t) => hint(p, t, 'Colours'), at: 'l' },
       { locate: (p, t) => hint(p, t, 'Settings'), at: 'l' },
@@ -123,22 +123,22 @@ export const shots = [
 
   // ------------------------------------------------------------------ Views
   { id: 'view-target', settings: { view: 'target' } },
-  { id: 'view-overlay', settings: { view: 'overlay' } },
   { id: 'view-photo', settings: { view: 'original' } },
-  { id: 'view-template', settings: { view: 'template' } },
+  { id: 'view-grid', settings: { grid: 'white', gridColumns: 8 } },
   { id: 'view-plain', settings: { outlines: false, numbers: false } },
+  { id: 'view-backdrop', settings: { numbers: 'backdrop', numberSize: 'large' } },
   {
     id: 'picture-tools',
-    target: (page) => page.locator('.painting__tools').first(),
+    target: (page) => page.locator('.painting__bar').first(),
     padding: 12,
     markers: [
-      { locate: (p, t) => hint(p, t, 'Fit'), at: 't' },
+      { locate: (p, t) => hint(p, t, 'Settings'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Detail'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Mixed paint'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Photo colour'), at: 't' },
-      { locate: (p, t) => hint(p, t, 'Overlay'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Photo'), at: 't' },
-      { locate: (p, t) => hint(p, t, 'Template to print'), at: 't' },
+      { locate: (p, t) => hint(p, t, 'Blocking'), at: 't' },
+      { locate: (p, t) => hint(p, t, 'No grid'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Outlines'), at: 't' },
       { locate: (p, t) => hint(p, t, 'Numbers'), at: 't' },
     ],
@@ -196,10 +196,9 @@ export const shots = [
     prepare: async (page, { t }) => {
       await hint(page, t, 'Paint box').click()
       await page.locator('.paintbox__add').first().click()
-      await page.locator('.colour-search__input').first().fill('ultramarine')
+      await page.locator('.addcolour__search').first().fill('ultramarin')
     },
-    target: (page) => page.locator('.paintbox__adding').first(),
-    padding: 24,
+    target: (page) => page.locator('.addcolour[open]').first(),
   },
 
   // ------------------------------------------------------------------ Layer mode
@@ -254,6 +253,7 @@ export const shots = [
     prepare: async (page) => {
       await page.emulateMedia({ media: 'print' })
     },
+    target: (page) => page.locator('.legend'),
   },
   {
     id: 'preferences',

@@ -1,9 +1,9 @@
 <template>
   <section class="panel sidebar" :class="{ 'panel--collapsed': collapsed }">
-    <div class="toolbar">
-      <PanelToggle name="controls" label="the settings" />
-    <p v-if="analysis.error" class="controls__error">{{ analysis.error }}</p>
-  </div>
+    <!-- The button that opens the settings is among the tools over the picture (PaintingCanvas.vue). -->
+    <div v-if="analysis.error" class="toolbar">
+      <p class="controls__error">{{ analysis.error }}</p>
+    </div>
 
         <!-- The settings float over the picture: dragged by the handle, their place is remembered. -->
         <div v-if="!collapsed" ref="panel" class="card flyout flyout--floating" :class="{ 'flyout--dragging': dragging }" :style="style">
@@ -51,7 +51,7 @@
         <button
           type="button"
           class="button"
-          :class="{ 'button--active': analysis.valueMode }"
+          :class="{ 'button--active': analysis.valueMode, 'button--locked': !pro.can('monochrome') }"
           :aria-pressed="analysis.valueMode"
           :disabled="analysis.layerMode"
           :title="t('Monochrome: the picture in grey, each value painted with one colour of the paint box')"
@@ -108,9 +108,9 @@
           </label>
     
           <label v-if="!analysis.layerMode" class="field">
-            <span class="field__label">{{ t('Details') }} <output class="field__value">{{ analysis.settings.variety }}</output></span>
+            <span class="field__label">{{ t('Details') }} <output class="field__value">{{ analysis.settings.details }}</output></span>
             <input
-              v-model.number="analysis.settings.variety"
+              v-model.number="analysis.settings.details"
               class="field__range"
               type="range"
               min="0"
@@ -186,6 +186,29 @@
           </label>
         </div>
           </template>
+          <!-- In every view: the numbers and the grid over the picture, side by side. -->
+          <div class="controls__settings controls__settings_two">
+            <div class="field controls__number-size">
+              <span class="field__label">{{ t('Number size') }}</span>
+              <div class="segmented segmented--text">
+                <button
+                  v-for="s in numberSizes"
+                  :key="s.value"
+                  type="button"
+                  class="segmented__option"
+                  :class="{ 'segmented__option--active': analysis.settings.numberSize === s.value }"
+                  :aria-pressed="analysis.settings.numberSize === s.value"
+                  @click="analysis.settings.numberSize = s.value"
+                >
+                  {{ t(s.label) }}
+                </button>
+              </div>
+            </div>
+            <label class="field controls__grid">
+              <span class="field__label">{{ t('Grid columns') }} <output class="field__value">{{ analysis.settings.gridColumns }}</output></span>
+              <input v-model.number="analysis.settings.gridColumns" class="field__range" type="range" min="2" max="30" step="1" />
+            </label>
+          </div>
     </div>
   </section>
 </template>
@@ -196,7 +219,6 @@ import { useAnalysisStore } from '../stores/analysis.js'
 import { useCollectionStore } from '../stores/collection.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
 import { useLayoutStore } from '../stores/layout.js'
-import PanelToggle from './PanelToggle.vue'
 import { FINEST, SIMPLIFY_ZERO } from '../lib/segment.js'
 import { useProStore } from '../stores/pro.js'
 import AiPanel from './AiPanel.vue'
@@ -217,6 +239,10 @@ const blocking = computed(() => analysis.settings.view === 'blocking')
 const areas = [
   { value: false, label: 'Organic', icon: 'organic', title: 'Organic: areas follow the outlines in the photo' },
   { value: true, label: 'Geometric', icon: 'geometric', title: 'Geometric: areas as polygons with a few straight edges that overlap' }
+]
+const numberSizes = [
+  { value: 'normal', label: 'Normal@@size' },
+  { value: 'large', label: 'Large@@size' },
 ]
 function setValues(on) {
   if (on && !pro.require('monochrome', 'paint the picture in monochrome')) return

@@ -3,6 +3,7 @@
 //   public/de/handbuch/<slug>.html      German
 //   .../all.html, .../alles.html        every chapter on one page, for print
 //   public/manual/manual.css            from scss/site.scss, tokens from resources/scss
+//   public/manual/manual.js             lightbox.js: the pictures at full size over the page
 //
 // Sources are chapters/<lang>/NN-name.md with front matter (title, slug, lead, part; nav optional).
 // The same NN in both languages is the same chapter: the language switch links them.
@@ -11,6 +12,12 @@
 //   ![Caption](photo:<name>) a photo of the painting process, public/manual/photos/<name>.webp;
 //                           until it is there, a frame that says a photo follows
 //   > **Tip:** / **Note:** / **Caution:** (German: Tipp, Gut zu wissen, Achtung) become boxes.
+//
+// For search engines and language models it also writes, from the chapters and the pages in public/:
+//   public/llms.txt                     what the site is, with every page and chapter (llmstxt.org)
+//   public/llms-full.txt, public/de/llms-full.txt   the whole manual as Markdown
+//   public/sitemap.xml                  every page except the noindex ones and public/preview/
+//   public/robots.txt                   pointing to the sitemap
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -22,12 +29,14 @@ const HERE = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 const ROOT = path.resolve(HERE, '../..')
 const PUBLIC = path.join(ROOT, 'public')
 const ASSETS = path.join(PUBLIC, 'manual')
+const SITE = 'https://watercolourlove.de'
 const META = JSON.parse(fs.readFileSync(path.join(HERE, 'shots.json'), 'utf8'))
 
 // Per language: where it goes, how it reaches the shared files, and the words of the frame.
 const LANGS = {
   en: {
     out: path.join(PUBLIC, 'manual'),
+    base: 'manual/',
     assets: '',
     app: '../',
     all: 'all',
@@ -40,6 +49,7 @@ const LANGS = {
       next: 'Next',
       toApp: 'Open the app',
       zoom: 'Open the picture at full size',
+      lightbox: { close: 'Close', prev: 'Previous picture', next: 'Next picture' },
       photoFollows: 'Photo follows',
       other: 'Deutsch',
       footer: 'Watercolourlove by Markus Freise. Questions:',
@@ -50,6 +60,7 @@ const LANGS = {
   },
   de: {
     out: path.join(PUBLIC, 'de/handbuch'),
+    base: 'de/handbuch/',
     assets: '../../manual/',
     app: '../../',
     all: 'alles',
@@ -62,6 +73,7 @@ const LANGS = {
       next: 'Weiter',
       toApp: 'Zur App',
       zoom: 'Bild in voller Größe öffnen',
+      lightbox: { close: 'Schließen', prev: 'Bild davor', next: 'Nächstes Bild' },
       photoFollows: 'Foto folgt',
       other: 'English',
       footer: 'Watercolourlove von Markus Freise. Fragen an',
@@ -220,7 +232,7 @@ function page(lang, { title, description, body, navHtml, other }) {
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="${words.lightbox.close}" data-lightbox-prev="${words.lightbox.prev}" data-lightbox-next="${words.lightbox.next}">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove">${LOGO}</span><span class="header__label">${words.manual}</span></a>
@@ -241,6 +253,7 @@ ${body}
     <span>${words.footer} <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="${assets}manual.js"></script>
 </body>
 </html>
 `
@@ -281,6 +294,90 @@ function photoList() {
     '',
   ]
   fs.writeFileSync(path.join(HERE, 'photos.md'), lines.join('\n'))
+}
+
+// ------------------------------------------------------------ For crawlers
+
+const url = (rel) => `${SITE}/${rel}`
+const chapterUrl = (lang, c) => url(`${LANGS[lang].base}${c.slug === 'index' ? '' : `${c.slug}.html`}`)
+
+/** A chapter as plain Markdown: links made absolute, screenshots and photos as their captions. */
+function markdown(lang, c) {
+  return c.body
+    .replace(/!\[([^\]]*)\]\(shot:[^)]+\)/g, (_, text) => `*Screenshot: ${text}*`)
+    .replace(/!\[([^\]]*)\]\(photo:[^)]+\)/g, (_, text) => `*Photo: ${text}*`)
+    .replace(/\]\(([a-z0-9-]+)\.html(#[^)]*)?\)/g, (_, slug, hash) => `](${url(`${LANGS[lang].base}${slug === 'index' ? '' : `${slug}.html`}`)}${hash ?? ''})`)
+    .trim()
+}
+
+/** Every page of public/ that may be indexed, as its address. */
+function pages() {
+  const found = []
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const file = path.join(dir, entry.name)
+      const rel = path.relative(PUBLIC, file).split(path.sep).join('/')
+      if (entry.isDirectory()) {
+        if (rel !== 'preview') walk(file)
+      } else if (entry.name.endsWith('.html') && !/<meta name="robots" content="[^"]*noindex/.test(fs.readFileSync(file, 'utf8'))) {
+        found.push(rel.replace(/(^|\/)index\.html$/, '$1'))
+      }
+    }
+  }
+  walk(PUBLIC)
+  return ['', ...found.sort()]
+}
+
+function crawlFiles(books) {
+  const list = (lang) => {
+    let part = ''
+    return books[lang].flatMap((c) => {
+      const head = c.part !== part ? ['', `### ${c.part}`, ''] : []
+      part = c.part
+      return [...head, `- [${c.title}](${chapterUrl(lang, c)}): ${c.lead}`]
+    })
+  }
+  const llms = [
+    '# Watercolourlove',
+    '',
+    '> Watercolourlove is a tool for painters who work from photos, made for professionals and ambitious amateurs: it identifies the colours in a reference that matter and works out how to mix each one from the paints you own, which paints, in what ratio, with how much water.',
+    '',
+    `A web app at ${SITE}/ (free account with just an e-mail address; prepaid picture packs or Pro for more), also for iPhone, iPad and Mac. The focus is recognising colours and their mixes: colour areas, recipes from your own paints, blocking of light and shadow, values, layer mode for glazing, close-ups, and calibrating the paints to your own swatches. Printouts with a grid and numbered areas are secondary aids. It knows 40 common colours and, with Pro, the colour charts of Schmincke Horadam, Winsor & Newton Professional, Michael Harding and Sennelier L'Aquarelle. Everything is worked out on the device: photos are never uploaded, and pictures, paint boxes and collection stay in the browser. The manual, in English and German, explains the app and painting with watercolour.`,
+    '',
+    '## About',
+    '',
+    `- [About Watercolourlove](${url('about/')}): recognising colours and mixing them, the tools for reading a reference, what it costs`,
+    `- [Über Watercolourlove](${url('de/ueber/')}): the same in German`,
+    `- [Prices](${url('pricing/')}): free, prepaid picture packs, Pro monthly, yearly or lifetime`,
+    `- [Watercolourlove for iPhone, iPad and Mac](${url('app/')}): the native app, with support and privacy`,
+    '',
+    '## Manual',
+    ...list('en'),
+    '',
+    '## Handbuch (Deutsch)',
+    ...list('de'),
+    '',
+    '## Optional',
+    '',
+    `- [The whole manual as Markdown](${url('llms-full.txt')})`,
+    `- [Das ganze Handbuch als Markdown](${url('de/llms-full.txt')})`,
+    `- [The whole manual on one page](${url('manual/all.html')})`,
+    '',
+  ]
+  fs.writeFileSync(path.join(PUBLIC, 'llms.txt'), llms.join('\n'))
+
+  for (const [lang, file, title] of [['en', 'llms-full.txt', 'Watercolourlove manual'], ['de', 'de/llms-full.txt', 'Watercolourlove Handbuch']]) {
+    const text = books[lang].map((c) => `<!-- ${chapterUrl(lang, c)} -->\n\n${markdown(lang, c)}`).join('\n\n---\n\n')
+    fs.writeFileSync(path.join(PUBLIC, file), `# ${title}\n\n> ${books[lang][0].lead}\n\n${text}\n`)
+  }
+
+  const urls = pages().map((rel) => `  <url><loc>${esc(url(rel))}</loc></url>`)
+  fs.writeFileSync(
+    path.join(PUBLIC, 'sitemap.xml'),
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`,
+  )
+  fs.writeFileSync(path.join(PUBLIC, 'robots.txt'), `User-agent: *\nDisallow: /preview/\nDisallow: /admin/\nDisallow: /api/\n\nSitemap: ${url('sitemap.xml')}\n`)
+  return urls.length
 }
 
 function build() {
@@ -332,7 +429,9 @@ function build() {
     style: 'compressed',
   }).css
   fs.writeFileSync(path.join(ASSETS, 'manual.css'), css)
+  fs.copyFileSync(path.join(HERE, 'lightbox.js'), path.join(ASSETS, 'manual.js'))
   photoList()
+  report.push(`crawlers: llms.txt, llms-full.txt (en, de), sitemap.xml with ${crawlFiles(books)} pages, robots.txt`)
   console.log(report.join('\n'))
 }
 

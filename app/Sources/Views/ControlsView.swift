@@ -6,22 +6,62 @@ import SwiftUI
 struct ControlsView: View {
     @Environment(Session.self) private var session
     @Environment(Library.self) private var library
+    @Environment(Store.self) private var store
+    @State private var showingPaywall = false
+    @State private var paywallReason = "make the areas finer than Simplify 0"
     // The sliders move freely; the analysis only runs when the finger lifts.
     @State private var colours = 20.0
     @State private var simplify = 0.0
     @State private var saturation = 200.0
     @State private var contrast = 100.0
-    @State private var variety = 5.0
+    @State private var details = 5.0
     @State private var maxPaints = 3.0
     @State private var layers = 5.0
     @State private var layerSimplify = 4.0
     @State private var accents = 3.0
     @State private var maxCoats = 2.0
+    @State private var gridColumns = 8.0
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            // In the Blocking view only its own settings; the colour settings come back with the other views.
+            if session.settings.view == .blocking {
+                BlockingControlsView()
+            } else {
+                colourSettings
+            }
+            overSettings
+        }
+    }
+
+    /// In every view: the size of the numbers and the grid over the picture, side by side.
+    private var overSettings: some View {
+        @Bindable var session = session
+        return HStack(alignment: .top, spacing: Theme.gap) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Number size").font(Theme.strong).lineLimit(1)
+                Picker("Number size", selection: $session.settings.numberSize) {
+                    Text("Normal", comment: "Number size").tag(NumberSize.normal)
+                    Text("Large", comment: "Number size").tag(NumberSize.large)
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .fixedSize()
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            slider("Grid columns", value: $gridColumns, range: 2...30) {
+                session.settings.gridColumns = Int(gridColumns.rounded())
+            }
+        }
+        .tint(Theme.corporate)
+        .onAppear { gridColumns = Double(session.settings.gridColumns) }
+        .onChange(of: session.settings.gridColumns) { gridColumns = Double(session.settings.gridColumns) }
+    }
+
+    private var colourSettings: some View {
         @Bindable var session = session
         let layerMode = session.settings.mode == .layer
-        VStack(alignment: .leading, spacing: 14) {
+        return VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: Theme.gap) {
                 SegmentedGroup(
                     options: [AnalysisMode.mix, .layer], selection: session.settings.mode,
@@ -35,6 +75,14 @@ struct ControlsView: View {
                     symbol: { $0 ? "triangle" : "square.grid.3x3" },
                     choose: { session.settings.geometric = $0 }
                 )
+                // Monochrome: the picture in grey, each value painted with one colour of the paint box.
+                IconButton(
+                    title: "Monochrome: the picture in grey, each value painted with one colour of the paint box",
+                    symbol: "circle.lefthalf.filled",
+                    active: session.valueMode,
+                    hint: "Monochrome"
+                ) { session.settings.values.toggle() }
+                .disabled(layerMode)
                 Spacer(minLength: 0)
                 if session.settings.saturation != 100 || session.settings.contrast != 100 {
                     IconButton(title: "Reset photo: saturation and contrast back to 100%", symbol: "arrow.counterclockwise") {
@@ -66,15 +114,23 @@ struct ControlsView: View {
                     }
                 }
             } else {
-                slider("Simplify areas", value: $simplify, range: 0...10, hint: "Higher = bigger, calmer shapes") {
-                    session.settings.simplify = Int(simplify.rounded())
+                // Shown from 0 to 12; the finer steps -1 and -2 come with the full version.
+                slider("Simplify areas", value: $simplify, range: Double(Self.finest)...Double(Self.coarsest), hint: store.unlocked ? "Higher = bigger, calmer shapes" : "Higher = bigger, calmer shapes. Below 0 with Pro") {
+                    let value = Int(simplify.rounded())
+                    if value < 0, !store.unlocked {
+                        session.settings.simplify = 0
+                        paywallReason = "make the areas finer than Simplify 0"
+                        showingPaywall = true
+                    } else {
+                        session.settings.simplify = value
+                    }
                 }
                 HStack(alignment: .top, spacing: Theme.gap) {
                     slider("Colours", value: $colours, range: 2...32, hint: "More colours = more detail") {
                         session.settings.colours = Int(colours.rounded())
                     }
-                    slider("Details", value: $variety, range: 0...10, hint: "Lower = closer overall, higher = small areas keep their own colour") {
-                        session.settings.variety = Int(variety.rounded())
+                    slider("Details", value: $details, range: 0...10, hint: "Higher = finer steps across the picture, lower = small areas keep their own colour") {
+                        session.settings.details = Int(details.rounded())
                     }
                     slider("Max. paints", value: $maxPaints, range: 1...3, hint: "Paints in one mix at most") {
                         session.settings.maxPaints = Int(maxPaints.rounded())
@@ -92,10 +148,15 @@ struct ControlsView: View {
             }
         }
         .tint(Theme.corporate)
+        .sheet(isPresented: $showingPaywall) { PaywallView(reason: paywallReason) }
         .onAppear(perform: sync)
         .onChange(of: session.settings) { sync() }
         .onChange(of: library.revision) { sync() }
     }
+
+    /// Simplify as shown: the analysis counts from Segmenter.finest, the shown 0 at Segmenter.simplifyZero.
+    static let finest = Segmenter.finest - Segmenter.simplifyZero
+    static let coarsest = Segmenter.topSimplify - Segmenter.simplifyZero
 
     private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, unit: String = "", hint: String? = nil, commit: @escaping () -> Void) -> some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -108,7 +169,7 @@ struct ControlsView: View {
             // No step: on the Mac a stepped slider draws a tick for every value.
             Slider(value: value, in: range) { editing in
                 guard !editing else { return }
-                // What the picture is analysed from; Details only replans the mixes, which the session does itself.
+                // What the picture is analysed from; Details and Max. paints the session handles itself.
                 let before = analysed
                 commit()
                 if before != analysed { session.analyse() }
@@ -134,7 +195,7 @@ struct ControlsView: View {
         simplify = Double(session.settings.simplify)
         saturation = Double(session.settings.saturation)
         contrast = Double(session.settings.contrast)
-        variety = Double(session.settings.variety)
+        details = Double(session.settings.details)
         maxPaints = Double(session.settings.maxPaints)
         maxCoats = Double(session.settings.maxCoats)
         // By hand the number of layers is the number of chosen base paints.

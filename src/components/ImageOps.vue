@@ -3,7 +3,7 @@
   <nav class="imageops" :aria-label="t('Picture')">
     <label class="button button--secondary imageops__button" :data-hint="t('New picture')">
       <AppIcon name="new" />
-      <input class="imageops__file" type="file" accept="image/*" :aria-label="t('New: choose a photo')" @change="onFile" />
+      <input class="imageops__file" type="file" accept="image/*,.wcl" :aria-label="t('New: choose a photo')" @change="onFile" />
     </label>
     <button class="button button--ghost imageops__button" type="button" :data-hint="t('Samples')" @click="emit('show-samples')">
       <AppIcon name="sample" :label="t('Samples')" />

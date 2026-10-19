@@ -168,7 +168,7 @@ const planName = (plan) => (plan.type === 'lifetime' ? 'Lifetime licence' : plan
 // What "lifetime" means stands next to its price, not only in the terms.
 const planNote = (plan) =>
   plan.type === 'lifetime'
-    ? 'One payment, no renewal. For as long as the app is offered: the life of the product, not a promise that it runs for ever.'
+    ? 'One payment, no renewal, for the lifetime of the product.'
     : plan.interval === 'year'
       ? 'Renews every year, cancel at any time.'
       : 'Renews every month, cancel at any time.'

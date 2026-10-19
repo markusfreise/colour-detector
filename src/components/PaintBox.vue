@@ -50,7 +50,10 @@
       </p>
       <!-- The palette: the paints of this picture, saved with it. -->
       <div class="paintbox__group paintbox__group--selected" :aria-label="layerMode ? t('Base paints') : t('Palette')">
-        <h3 class="paintbox__group-title">{{ layerMode ? t('Base paints') : t('Palette') }}</h3>
+        <div class="paintbox__group-header">
+          <h3 class="paintbox__group-title">{{ layerMode ? t('Base paints') : t('Palette') }}</h3>
+          <p v-if="!layerMode && !paints.starter" class="paintbox__note">{{ t('The palette is saved with the picture.') }}</p>
+        </div>
         <ul v-if="selected.length" class="paintbox__list">
           <li v-for="p in selected" :key="p.id">
             <PaintChip :paint="p" enabled show-form :used="!layerMode && analysis.usedPaintIds.has(p.id)" @toggle="toggle(p.id, $event)" />
@@ -59,7 +62,6 @@
         <p v-else class="paintbox__empty">
           {{ layerMode ? t('No base paints chosen. Click a paint below to add it, or press Auto.') : t('No paints selected. Click a paint below to add it.') }}
         </p>
-        <p v-if="!layerMode && !paints.starter" class="paintbox__note">{{ t('The palette is saved with the picture.') }}</p>
       </div>
 
       <!-- The free version: the twelve colours of the Starter box, and nothing to change about them. -->
@@ -113,39 +115,16 @@
           <li v-if="removing !== box.id">
             <button
               class="paintbox__add"
-              :class="{ 'paintbox__add--open': addingTo === box.id }"
               type="button"
-              :aria-expanded="addingTo === box.id"
               :title="t('Add a colour to {box}', { box: t(box.name) })"
               :aria-label="t('Add a colour to {box}', { box: t(box.name) })"
-              @click="toggleAdding(box.id)"
+              @click="addColour.open(box)"
             >
               <span aria-hidden="true">+</span>
             </button>
           </li>
         </ul>
         <p v-if="size && !list.length" class="paintbox__empty">{{ t('All of these are selected.') }}</p>
-
-        <div v-if="addingTo === box.id" class="paintbox__adding">
-          <ColourSearch
-            :ref="(el) => (search = el)"
-            :options="optionsFor(box)"
-            :label="t('Search a colour')"
-            :placeholder="t('Series, number or name')"
-            @pick="pickColour(box, $event)"
-          />
-          <p v-if="!pro.can('brand_charts')" class="paintbox__note">
-            <button class="paintbox__get-pro" type="button" @click="openPro('brand_charts', 'add colours from the catalogues of known manufacturers')">
-              {{ t('Get pro') }}
-            </button>
-            {{ t('and easily add pre-defined colours from the catalogues of known manufacturers and brands.') }}
-          </p>
-          <button v-if="formAt !== box.id" class="paintbox__get-pro" type="button" @click="startPaint(null, box.id)">{{ t('Or enter a colour of your own') }}</button>
-          <template v-if="formAt === box.id">
-            <h4 class="paintbox__form-title">{{ t('A colour of your own') }}</h4>
-            <PaintForm v-model="paintForm" :series="series" :library="library" :pro="pro.can('brand_charts')" @submit="savePaint" @cancel="paintForm = null" />
-          </template>
-        </div>
 
         <div class="paintbox__box-actions">
           <form v-if="renaming === box.id" class="paintbox__edit" @submit.prevent="saveName(box.id)">
@@ -169,16 +148,16 @@
       <!-- One's own paints, with what is done with them: edited here, put into boxes with the + of a box. -->
       <div v-if="paints.custom.length && !paints.starter" class="paintbox__group">
         <h3 class="paintbox__group-title">{{ t('Your own paints') }}</h3>
-        <PaintForm v-if="formAt === 'own'" v-model="paintForm" :series="series" :library="library" :pro="pro.can('brand_charts')" @submit="savePaint" @cancel="paintForm = null" />
+        <PaintForm v-if="paintForm" v-model="paintForm" :series="series" :library="library" :pro="libraryOpen(library, pro.can('brand_charts'))" @submit="savePaint" @cancel="paintForm = null" />
         <ul class="paintbox__own">
           <!-- One paint per row: the colour itself carries what is done with it. -->
           <li v-for="p in paints.custom" :key="p.id" class="chip chip--row paintbox__own-chip" :style="chipStyle(p.hex)">
             <span class="paintbox__own-lines">
               <span class="chip__text"><span class="chip__strong">{{ paintNumber(p.number) }}</span> {{ paintName(p) }}</span>
-              <span class="chip__text paintbox__own-vendor">{{ p.vendor }} · {{ paintForms(p) === 'P' ? t('Pan') : t('Tube') }}</span>
+              <span class="chip__text paintbox__own-vendor">{{ t(p.vendor) }} · {{ t(formName(p)) }}</span>
             </span>
             <span class="paintbox__own-actions">
-              <button class="paintbox__own-action" type="button" :title="t('Edit this paint')" @click="startPaint(p, 'own')">
+              <button class="paintbox__own-action" type="button" :title="t('Edit this paint')" @click="startPaint(p)">
                 <AppIcon name="edit" :label="t('Edit this paint')" />
               </button>
               <button
@@ -195,6 +174,7 @@
         </ul>
       </div>
     </div>
+    <AddColour ref="addColour" @changed="boxesChanged" @pro="openPro" />
   </dialog>
 </template>
 
@@ -205,13 +185,13 @@ import { useAnalysisStore } from '../stores/analysis.js'
 import { useProStore } from '../stores/pro.js'
 import { STARTER_BOX_NAME } from '../data/starter.js'
 import { chipStyle } from '../lib/color.js'
-import { paintNumber, paintForms, sortPaints, sortBoxPaints, seriesNames, HOUSE_VENDOR } from '../lib/paintbox.js'
-import { PAINT_LIBRARIES, libraryByName } from '../data/libraries.js'
+import { paintNumber, sortPaints, sortBoxPaints, seriesNames, ownForm, formName } from '../lib/paintbox.js'
+import { PAINT_LIBRARIES, libraryByName, libraryOpen } from '../data/libraries.js'
 import { useChartsStore } from '../stores/charts.js'
 import { isNative } from '../lib/native.js'
 import PaintChip from './PaintChip.vue'
 import PaintForm from './PaintForm.vue'
-import ColourSearch from './ColourSearch.vue'
+import AddColour from './AddColour.vue'
 import AppIcon from './AppIcon.vue'
 import { useText } from '../i18n/index.js'
 
@@ -221,7 +201,8 @@ const analysis = useAnalysisStore()
 const pro = useProStore()
 const charts = useChartsStore()
 // The colour charts come with Pro, from the account API.
-watch(() => pro.can('brand_charts'), (may) => may && charts.load(), { immediate: true })
+// The common colours for everybody; with a plan the makers' charts come too.
+watch(() => pro.can('brand_charts'), (may, before) => charts.load(before !== undefined && may !== before), { immediate: true })
 const dirty = ref(false)
 const dialog = ref(null)
 const newBox = ref(false) // the name field of a new box is open
@@ -229,10 +210,8 @@ const newBoxField = ref(null)
 const boxName = ref('') // the name being entered, for a new box or a renamed one
 const renaming = ref(null) // id of the box being renamed
 const removing = ref(null) // id of the box whose colours are being taken out
-const addingTo = ref(null) // id of the box a colour is being added to
-const search = ref(null)
-const paintForm = ref(null) // the paint being added or edited
-const formAt = ref(null) // where that form is: a box id, or 'own' for editing one's own paint
+const addColour = ref(null) // the dialog that adds colours to a box
+const paintForm = ref(null) // one's own paint being edited
 const confirming = ref(null) // 'box:<id>' or a paint id: the delete button was clicked once
 const importError = ref('')
 
@@ -260,34 +239,6 @@ const boxLists = computed(() => {
     return { box, size: own.length, list: sortBoxPaints(box, list) }
   })
 })
-
-// What the colour search offers: every paint the app knows, and with Pro the colours of the
-// libraries that are not among them yet.
-const searchOptions = computed(() => {
-  const label = (vendor, number, name) => `${vendor} ${paintNumber(number)} ${name}`
-  const known = new Set(paints.all.map((p) => `${p.vendor.toLowerCase()}|${String(p.number).toLowerCase()}`))
-  const options = paints.all.map((p) => {
-    const text = label(p.vendor, p.number, paintName(p))
-    return { key: p.id, kind: 'paint', id: p.id, hex: p.hex, label: text, search: `${text} ${p.name} ${p.nameDe ?? ''}`.toLowerCase() }
-  })
-  if (pro.can('brand_charts')) {
-    for (const library of PAINT_LIBRARIES) {
-      for (const colour of charts.of(library.id)) {
-        if (known.has(`${library.name.toLowerCase()}|${String(colour.number).toLowerCase()}`)) continue
-        options.push({
-          key: `${library.id}:${colour.number}`,
-          kind: 'colour',
-          colour: { vendor: library.name, number: colour.number, name: colour.name, hex: colour.hex },
-          hex: colour.hex,
-          label: label(library.name, colour.number, colour.name),
-          note: t('Catalogue'),
-        })
-      }
-    }
-  }
-  return options
-})
-const optionsFor = (box) => searchOptions.value.filter((o) => o.kind !== 'paint' || !box.paintIds.includes(o.id))
 
 defineExpose({ open: () => dialog.value.showModal() })
 
@@ -363,6 +314,7 @@ function boxesChanged() {
 // The purchase dialog is a modal of its own; this one would cover it.
 function openPro(feature, reason) {
   if (pro.require(feature, reason)) return true
+  addColour.value?.close()
   dialog.value.close()
   return false
 }
@@ -406,23 +358,8 @@ function deleteBox(id) {
   boxesChanged()
 }
 
-async function toggleAdding(id) {
-  addingTo.value = addingTo.value === id ? null : id
-  if (formAt.value !== 'own') paintForm.value = null
-  if (!addingTo.value) return
-  await nextTick()
-  search.value?.focus()
-}
-
 function toggleRemoving(id) {
   removing.value = removing.value === id ? null : id
-  if (removing.value) addingTo.value = null
-}
-
-function pickColour(box, option) {
-  if (option.kind === 'paint') paints.addToBox(box.id, option.id)
-  else paints.addColourToBox(box.id, option.colour)
-  boxesChanged()
 }
 
 function removeFromBox(boxId, paintId) {
@@ -458,11 +395,8 @@ async function importBox(event) {
   }
 }
 
-function startPaint(paint, at) {
-  formAt.value = at
-  paintForm.value = paint
-    ? { id: paint.id, vendor: paint.vendor, number: paint.number, name: paint.name, form: paint.forms[0], hex: paint.hex }
-    : { id: null, vendor: HOUSE_VENDOR, number: '', name: '', form: at === 'tube' ? 'tube' : 'pan', hex: '#c88c5f' }
+function startPaint(paint) {
+  paintForm.value = { id: paint.id, vendor: paint.vendor, number: paint.number, name: paint.name, form: ownForm(paint.forms[0]), hex: paint.hex }
 }
 
 // The series already in use and those that come with the app.
@@ -474,9 +408,8 @@ const library = computed(() => {
 })
 
 function savePaint() {
-  paints.savePaint(paintForm.value, formAt.value === 'own' ? null : formAt.value)
+  paints.savePaint(paintForm.value)
   paintForm.value = null
-  formAt.value = null
   boxesChanged()
 }
 

@@ -17,3 +17,5 @@ server/config.php
 CLAUDE.local.md
 tools/contest/photos/
 local-samples/
+__pycache__/
+.deploy.log

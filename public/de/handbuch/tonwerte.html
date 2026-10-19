@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Schließen" data-lightbox-prev="Bild davor" data-lightbox-next="Nächstes Bild">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -94,7 +94,7 @@
 <aside class="note note--tip"><p><strong>Tipp:</strong> Kneif abwechselnd vor deiner Studie und vor dem Bildschirm die Augen zusammen. Verschwimmen beide zu denselben großen Formen, hat die Studie ihren Zweck erfüllt.</p>
 </aside>
 <h2 id="die-tonwerte-und-der-rest-der-app"><a class="anchor" href="#die-tonwerte-und-der-rest-der-app" aria-hidden="true" tabindex="-1">#</a>Die Tonwerte und der Rest der App</h2>
-<p>Monochrom arbeitet mit allem anderen beim Mischen zusammen: der Farbliste, der Karte einer angetippten Fläche, Alle Details, dem Drucken und der Vorlage. Bei den Schichten gibt es Monochrom nicht, dort sind die Schichten auf Farbe abgestimmt. Das Kapitel <a href="tonwerte-und-vereinfachen.html">Tonwerte und Vereinfachen</a> zeigt, wie du die Tonwerte eines Fotos liest, bevor du die App überhaupt öffnest.</p>
+<p>Monochrom arbeitet mit allem anderen beim Mischen zusammen: der Farbliste, der Karte einer angetippten Fläche, Alle Details und dem Drucken. Bei den Schichten gibt es Monochrom nicht, dort sind die Schichten auf Farbe abgestimmt. Das Kapitel <a href="tonwerte-und-vereinfachen.html">Tonwerte und Vereinfachen</a> zeigt, wie du die Tonwerte eines Fotos liest, bevor du die App überhaupt öffnest.</p>
 <nav class="pager" aria-label="Kapitel"><a class="pager__link pager__link--prev" href="schichten.html" rel="prev"><span class="pager__label">Zurück</span><span class="pager__title">Schichten</span></a><a class="pager__link pager__link--next" href="drucken.html" rel="next"><span class="pager__label">Weiter</span><span class="pager__title">Drucken und exportieren</span></a></nav></article>
   </main>
 </div>
@@ -103,5 +103,6 @@
     <span>Watercolourlove von Markus Freise. Fragen an <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="../../manual/manual.js"></script>
 </body>
 </html>

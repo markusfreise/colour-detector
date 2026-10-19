@@ -69,11 +69,9 @@
       </template>
 
       <template v-else>
-        <p v-if="!account.sentTo" class="gate__text">
-          {{ t('Sign in to use the app. Your account is only your e-mail address; your pictures stay in this browser and are never uploaded.') }}
-        </p>
         <div v-if="buttons.length && !account.sentTo" class="gate__providers">
           <button v-for="p in buttons" :key="p.id" class="button button--secondary gate__provider" type="button" @click="account.signInWith(p.id)">
+            <span v-if="p.id !== 'meta'" :class="['gate__mark', `gate__mark--${p.id}`]" aria-hidden="true"></span>
             {{ t('Continue with {name}', { name: p.name }) }}
           </button>
         </div>
@@ -89,27 +87,36 @@
         </div>
         <!-- Signing in and signing up are the same link by e-mail; the second form is there for
              people who look for one. Only signing up asks for an invitation code. -->
+        <!-- The address, the button, and the way to the other form; the placeholder says what goes
+             in, the label is only for screen readers. -->
         <form v-else-if="!signingUp" class="gate__form" @submit.prevent="account.sendLink(email)">
-          <label class="field gate__field">
-            <span class="field__label">{{ t('Sign in with e-mail') }}</span>
-            <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
-          </label>
-          <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Send me a sign-in link') }}</button>
-          <button class="gate__link gate__switch" type="button" @click="signingUp = true">{{ t('Sign up') }}</button>
+          <input v-model.trim="email" class="input gate__email" type="email" required autocomplete="email" :aria-label="t('Sign in with e-mail')" :placeholder="t('Your e-mail address')" />
+          <button class="button button--secondary gate__submit" type="submit" :disabled="account.busy || !email">{{ t('Get a sign-in link') }}</button>
+          <button class="gate__link gate__switch" type="button" @click="signingUp = true">{{ t('Sign up for free') }}</button>
         </form>
         <form v-else class="gate__form" @submit.prevent="account.sendLink(email, code)">
-          <label class="field gate__field">
-            <span class="field__label">{{ t('Sign up with e-mail') }}</span>
-            <input v-model.trim="email" class="input" type="email" required autocomplete="email" :placeholder="t('you@example.org')" />
-          </label>
+          <input v-model.trim="email" class="input gate__email" type="email" required autocomplete="email" :aria-label="t('Sign up for free')" :placeholder="t('Your e-mail address')" />
           <!-- Optional: a code unlocks everything for good. Without one the account is a free one. -->
           <label v-if="account.invitation" class="field gate__field">
             <span class="field__label">{{ t('Invitation code (optional)') }}</span>
             <input v-model.trim="code" class="input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
           </label>
-          <button class="button" type="submit" :disabled="account.busy || !email">{{ t('Create my account') }}</button>
+          <button class="button button--secondary gate__submit" type="submit" :disabled="account.busy || !email">{{ t('Create my account') }}</button>
           <button class="gate__link gate__switch" type="button" @click="signingUp = false">{{ t('Sign in with account') }}</button>
         </form>
+
+        <!-- Below the form: the early bird of plans.json until its last day, then the Pro version
+             and the manual side by side. At the foot of the column, level with the picture beside it. -->
+        <div v-if="!account.sentTo" class="gate__extras">
+          <p v-if="earlyBird" class="gate__offer">
+            <strong class="gate__offer-percent">{{ early.percent_off }}%</strong>
+            <span class="gate__offer-terms">{{ t('off yearly and lifetime') }}<br />{{ t('early bird until 30 Nov 2026') }}</span>
+          </p>
+          <div class="gate__more">
+            <a class="button gate__more-link" :href="legalPage('pricing')" target="_blank" rel="noopener">{{ t('Pro version') }}</a>
+            <a v-if="!isNative" class="button gate__more-link" :href="legalPage('manual')" target="_blank" rel="noopener">{{ t('Manual') }}</a>
+          </div>
+        </div>
       </template>
 
       <p v-if="account.error" class="gate__error">{{ account.error }}</p>
@@ -118,24 +125,23 @@
       </p>
       </div>
 
-      <!-- What the app does, in three steps. The pictures are hand-drawn sketches for now, to be
-           replaced by screenshots taken after them. -->
+      <!-- What the app does: one sentence, the three steps, and a desk with the printed result. -->
       <aside v-if="!account.sentTo || account.user" class="gate__how" aria-labelledby="how-title">
-        <h2 id="how-title" class="gate__how-title">{{ t('How this works') }}</h2>
+        <h2 id="how-title" class="gate__how-title">{{ t('The app that shows you how to mix the right watercolours for your pictures.') }}</h2>
         <ol class="gate__steps">
-          <li v-for="step in steps" :key="step.title" class="gate__step">
-            <h3 class="gate__step-title">{{ t(step.title) }}</h3>
-            <img class="gate__step-image" :src="step.image" :alt="t(step.alt)" loading="lazy" />
-          </li>
+          <li v-for="step in steps" :key="step" class="gate__step">{{ t(step) }}</li>
         </ol>
+        <img class="gate__image" :src="signinImage" :alt="t('A watercolour palette beside the printed colour cards and the picture as numbered areas')" />
       </aside>
 
       <!-- Below both columns, in one row. -->
       <footer class="gate__footer">
+        <a :href="legalPage('pricing')">{{ t('Prices') }}</a>
         <a :href="legalPage('privacy')">{{ t('Privacy') }}</a>
         <a :href="legalPage('terms')">{{ t('Terms') }}</a>
         <a :href="legalPage('imprint')">{{ t('Imprint') }}</a>
         <button v-if="consent.available" class="gate__settings" type="button" @click="consent.review()">{{ t('Cookies') }}</button>
+        <DebugMenu link />
       </footer>
     </section>
   </main>
@@ -145,30 +151,38 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useAccountStore } from '../stores/account.js'
 import { SAMPLES } from '../data/samples.js'
+import DebugMenu from './DebugMenu.vue'
 import { APP_NAME } from '../config.js'
+import { PLANS } from '../lib/entitlements.js'
 import logoSvg from '../../resources/logo.svg?raw'
 import background from '../../resources/background.webp'
-import stepPhoto from '../../resources/howto/step-1-photo.svg'
-import stepPaints from '../../resources/howto/step-2-paints.svg'
-import stepMixes from '../../resources/howto/step-3-mixes.svg'
+import signinImage from '../../resources/howto/signin.webp'
 import { useConsentStore } from '../stores/consent.js'
 import { usePreferencesStore } from '../stores/preferences.js'
 import { useText } from '../i18n/index.js'
+import { isNative } from '../lib/native.js'
 
 const { t, legalPage } = useText()
 const consent = useConsentStore()
 const preferences = usePreferencesStore()
-const steps = [
-  { title: 'Choose your reference photo you want to paint with watercolours and need mixes for.', image: stepPhoto, alt: 'A photo chosen from the device opens in the app' },
-  { title: 'Add the colours and paints you use for your art. Presets for known vendors are included.', image: stepPaints, alt: 'The paint box with the paints you own ticked' },
-  { title: 'Image is analysed and recipes for colours calculated. Refine with powerful settings.', image: stepMixes, alt: 'The photo as numbered areas, with the recipe of one area' },
-]
+const steps = ['Add a reference photo for your picture', 'Add your watercolours', 'Let the app analyse the mixes']
 
 const account = useAccountStore()
+// The early-bird offer runs until the end of its last day, Berlin time.
+const early = PLANS.early_bird
+const earlyBird = !!early?.active && Date.now() <= Date.parse(`${early.ends}T23:59:59+01:00`)
 const logo = logoSvg.replace(/fill="black"/g, 'fill="currentColor"')
 const email = ref('')
 const code = ref('')
 const signingUp = ref(false)
+// The debug menu chooses between signing in and signing up.
+watch(
+  () => account.preview,
+  (screen) => {
+    if (screen === 'signin' || screen === 'signup') signingUp.value = screen === 'signup'
+  },
+  { immediate: true },
+)
 const privacy = ref(false)
 const local = ref(false)
 

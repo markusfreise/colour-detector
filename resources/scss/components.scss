@@ -3,6 +3,7 @@
 @use "components/chip";
 @use "components/imageops";
 @use "components/painting";
+@use "components/spinner";
 @use "components/controls";
 @use "components/palette";
 @use "components/editor";
@@ -10,10 +11,13 @@
 @use "components/breakdown";
 @use "components/recipe";
 @use "components/paintbox";
-@use "components/coloursearch";
+@use "components/paintform";
+@use "components/addcolour";
 @use "components/collection";
 @use "components/samples";
 @use "components/pro";
+@use "components/getpro";
+@use "components/debug";
 @use "components/consent";
 @use "components/legend";
 @use "components/layers";

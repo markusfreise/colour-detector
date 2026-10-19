@@ -10,8 +10,11 @@
     --app-right: max(var(--gap), env(safe-area-inset-right));
     --app-bottom: max(var(--gap), env(safe-area-inset-bottom));
     --app-left: max(var(--gap), env(safe-area-inset-left));
+    // Side of the icon buttons, and the room between them, in the columns and the tools alike.
+    --tool: #{pxtorem(48)};
+    --tool-gap: var(--gap);
     // Room for the buttons of the picture (painting__tools) above what is centred at the top.
-    --app-tools: #{pxtorem(56)};
+    --app-tools: calc(var(--tool) + #{pxtorem(8)});
 
     &__stage {
         position: fixed;
@@ -77,19 +80,30 @@
 
     @media (max-width: 760px) {
         --app-tools: 0rem;
+        // The tools are one row at the bottom: ten buttons (fit, detail, settings, four views,
+        // grid, outlines, numbers) and six gaps between the seven groups, inside the toolbar's
+        // padding (6 px) and the view group's borders (2 px), with 2 px to spare. Smaller than
+        // 48 px only as far as a narrow screen needs.
+        --tool-gap: #{pxtorem(6)};
+        --tool: min(#{pxtorem(48)}, calc((100vw - var(--gap-2x) - 6 * var(--tool-gap) - #{pxtorem(10)}) / 10));
 
         &__menu {
             display: flex;
         }
 
-        // Folded: the buttons slide out to the left, and come back with the menu button.
+        // Folded: the buttons slide out to the left, and come back with the menu button. Out of
+        // the flow while folded, so that the panel around them is only the menu button.
         &__left-buttons {
+            position: absolute;
+            top: 100%;
+            left: 0;
             transform: translateX(calc(-100% - var(--app-left) - var(--gap)));
             visibility: hidden;
             transition: transform 0.25s ease, visibility 0s linear 0.25s;
         }
 
         &__left--open &__left-buttons {
+            position: static;
             transform: none;
             visibility: visible;
             transition: transform 0.25s ease, visibility 0s;
@@ -97,8 +111,6 @@
 
         &__menu-pro {
             display: none;
-            height: #{pxtorem(48)};
-            font-weight: 600;
         }
 
         &__left--open &__menu-pro {
@@ -106,24 +118,28 @@
         }
 
         &__bottom {
-            bottom: calc(var(--app-bottom) + #{pxtorem(28 + 48)} + var(--gap-05x));
+            bottom: calc(var(--app-bottom) + #{pxtorem(28)} + var(--tool) + var(--gap-05x));
         }
     }
 
     &__sidebar {
         // Above the rest that lies over the picture: its panels float over the whole window.
         z-index: 3;
-        top: var(--app-top);
-        right: var(--app-right);
+        // Room inside the scrolling column for the shadow of its toolbar (--shadow: 8 px down,
+        // 30 px blur), which it would cut off; taken back from its place, so that the toolbar
+        // stays where it was.
+        --shadow-room: #{pxtorem(40)};
+        top: calc(var(--app-top) - var(--shadow-room));
+        right: calc(var(--app-right) - var(--shadow-room));
         display: flex;
         flex-direction: column;
         align-items: flex-end;
         gap: var(--gap);
-        max-height: calc(100vh - var(--app-top) - var(--app-bottom));
+        max-height: calc(100vh - var(--app-top) - var(--app-bottom) + var(--shadow-room) * 2);
         overflow-y: auto;
         // Room on the left inside the scrolling column for the labels of its buttons, which a
         // scrolling box would cut off; clicks pass through that room to the picture.
-        padding-left: #{pxtorem(160)};
+        padding: var(--shadow-room) var(--shadow-room) var(--shadow-room) #{pxtorem(160)};
         pointer-events: none;
 
         > * {
@@ -163,13 +179,15 @@
     }
 }
 
-// The template to print and the manual in the menu: only on a phone, where they leave the tools
-// at the bottom and the footer.
-.app__left .app__template,
-.app__left .app__manual {
-    display: none;
+// Every icon button around the picture has the side of the tools.
+.app__left .button:has(svg),
+.app__sidebar .button:has(svg) {
+    width: var(--tool);
+    height: var(--tool);
 
-    @media (max-width: 760px) {
-        display: flex;
+    svg {
+        width: calc(var(--tool) * 0.79);
+        height: calc(var(--tool) * 0.79);
     }
 }
+

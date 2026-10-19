@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Welcome to Watercolourlove | Watercolourlove Manual</title>
-<meta name="description" content="Watercolourlove turns a photo into a plan for a real watercolour. It finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas you can transfer to paper.">
+<meta name="description" content="Watercolourlove is a tool for painters who work from photos. It finds the colours in your reference that matter and works out how to mix each one from the paints you own, with how much water. Colour areas, blocking and values help you read the picture before you paint it.">
 <link rel="stylesheet" href="manual.css">
 <link rel="alternate" hreflang="de" href="../de/handbuch/index.html">
 <script>
@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Close" data-lightbox-prev="Previous picture" data-lightbox-next="Next picture">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -32,15 +32,15 @@
   <main class="layout__main content">
 <article class="chapter"><p class="chapter__kicker"><span>Getting started</span><span>Chapter 1 of 19</span></p>
 <h1 class="chapter__title">Welcome to Watercolourlove</h1>
-<p class="chapter__lead">Watercolourlove turns a photo into a plan for a real watercolour. It finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas you can transfer to paper.</p>
+<p class="chapter__lead">Watercolourlove is a tool for painters who work from photos. It finds the colours in your reference that matter and works out how to mix each one from the paints you own, with how much water. Colour areas, blocking and values help you read the picture before you paint it.</p>
 <h2 id="the-idea"><a class="anchor" href="#the-idea" aria-hidden="true" tabindex="-1">#</a>The idea</h2>
 <p>Every painter who works from a photo faces the same two questions. Which colours are really in this picture, once you look past the thousand small variations a camera records? And how do I mix each of them from the paints in my box, with how much water?</p>
-<p>Watercolourlove answers both. It reduces the photo to a manageable number of mixes, works out a recipe for every mix from your own paints, and shows you where each one goes. The result is a paint-by-numbers plan, but one that is made for watercolour: it knows that paint is transparent, that water makes a colour lighter, and that the white of the paper is the lightest thing you have.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/overview.webp" title="Open the picture at full size"><img src="img/en/overview.webp" width="1440" height="900" alt="The app at a glance, with the sample photo Llyn Idwal" loading="lazy"></a><span class="shot__marker" style="left:5.97%;top:4.44%" aria-hidden="true">1</span><span class="shot__marker" style="left:35.76%;top:9.11%" aria-hidden="true">2</span><span class="shot__marker" style="left:43.33%;top:9%" aria-hidden="true">3</span><span class="shot__marker" style="left:94.03%;top:11.56%" aria-hidden="true">4</span><span class="shot__marker" style="left:94.03%;top:4.44%" aria-hidden="true">5</span><span class="shot__marker" style="left:94.03%;top:18.67%" aria-hidden="true">6</span><span class="shot__marker" style="left:94.03%;top:25.78%" aria-hidden="true">7</span></div><figcaption>The app at a glance, with the sample photo Llyn Idwal</figcaption></figure>
+<p>Watercolourlove answers both. It identifies the colours that carry the picture, groups them into a manageable number of mixes and works out a recipe for every mix from your own paints: which paints, in what ratio, at which strength. Around that sit the tools for reading a reference the way a painter does: the colour areas of the picture, blocking of light and shadow, values, close-ups. The app knows that paint is transparent, that water makes a colour lighter, and that the white of the paper is the lightest thing you have. Printouts with a grid and numbered areas are there too, as aids when you want them, not as the point.</p>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/overview.webp" title="Open the picture at full size"><img src="img/en/overview.webp" width="1440" height="900" alt="The app at a glance, with the sample photo Llyn Idwal" loading="lazy"></a><span class="shot__marker" style="left:6.53%;top:5.33%" aria-hidden="true">1</span><span class="shot__marker" style="left:41.53%;top:10.11%" aria-hidden="true">2</span><span class="shot__marker" style="left:46.04%;top:10.11%" aria-hidden="true">3</span><span class="shot__marker" style="left:92.92%;top:6.67%" aria-hidden="true">4</span><span class="shot__marker" style="left:27.36%;top:5.44%" aria-hidden="true">5</span><span class="shot__marker" style="left:92.92%;top:13.78%" aria-hidden="true">6</span><span class="shot__marker" style="left:3%;top:42.44%" aria-hidden="true">7</span></div><figcaption>The app at a glance, with the sample photo Llyn Idwal</figcaption></figure>
 <ol class="legend">
 <li><strong>New picture</strong> and the other buttons for the picture: samples, saving, the collection, printing, exporting.</li>
-<li>The tools of the picture: fit it to the window, look at a detail.</li>
-<li>The views: mixed paint, the colours of the photo, an overlay, the photo itself, the template to print.</li>
+<li>The tools of the picture: look at a detail, and fit it to the window again once you have zoomed in.</li>
+<li>The views: mixed paint, the colours of the photo, the photo itself.</li>
 <li><strong>Colours</strong>: every mix with its paints and its washes.</li>
 <li><strong>Settings</strong>: how many mixes, how simple the areas, the method.</li>
 <li><strong>Paint box</strong>: the paints you own and the palette of this picture.</li>
@@ -85,5 +85,6 @@
     <span>Watercolourlove by Markus Freise. Questions: <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="manual.js"></script>
 </body>
 </html>

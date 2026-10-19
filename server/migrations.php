@@ -10,6 +10,7 @@ declare(strict_types=1);
 const MIGRATIONS = [
     1 => 'migrateCredits',
     2 => 'migrateDeduction',
+    3 => 'migrateAppSignIn',
 ];
 
 function migrate(PDO $db): void
@@ -85,4 +86,22 @@ function migrateCredits(PDO $db): void
 function migrateDeduction(PDO $db): void
 {
     $db->exec('ALTER TABLE users ADD COLUMN deduction_used_at INTEGER');
+}
+
+/**
+ * Signing in from the native app. A handoff carries a sign-in from the browser the app opened back
+ * to the app: only its hash is kept, with the hash the app chose for it (the app proves it asked by
+ * showing what it hashed). Apple's refresh token is kept to take the sign-in back at Apple when the
+ * account is deleted, which Apple asks for; the client is the one Apple gave it to.
+ */
+function migrateAppSignIn(PDO $db): void
+{
+    $db->exec('CREATE TABLE app_handoffs (
+        hash TEXT PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        challenge TEXT NOT NULL,
+        expires_at INTEGER NOT NULL
+    )');
+    $db->exec('ALTER TABLE identities ADD COLUMN revoke_token TEXT');
+    $db->exec('ALTER TABLE identities ADD COLUMN revoke_client TEXT');
 }

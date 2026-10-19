@@ -14,8 +14,8 @@ struct ColourCard: View {
                 session.inspect(region: nil)
             } content: {
                 if let recipe = entry.recipe {
-                    // The card is narrow everywhere: one paint per row.
-                    RecipeView(recipe: recipe, paints: library.byID, stacked: true)
+                    // As the web's colour card: the washed colour with its letter, the ratio bar, one paint per row.
+                    FullRecipeView(recipe: recipe, paints: library.byID, letter: entry.letter)
                 } else {
                     Text("No paints selected in the paint box.").foregroundStyle(.secondary)
                 }
@@ -28,21 +28,6 @@ struct ColourCard: View {
     private func percent(_ share: Double) -> String {
         let percent = Int((share * 100).rounded())
         return percent == 0 ? "<1" : "\(percent)"
-    }
-}
-
-/// Layer mode: the layers the tapped spot gets, in the same place as the colour card.
-struct SpotCard: View {
-    @Environment(Session.self) private var session
-
-    var body: some View {
-        if let spot = session.layerSpot {
-            FloatingCard(title: L("This Spot"), subtitle: nil, hex: nil) {
-                session.selectPoint(nil)
-            } content: {
-                LayerSpotView(spot: spot)
-            }
-        }
     }
 }
 
@@ -76,6 +61,8 @@ struct FloatingCard<Content: View>: View {
             content
         }
         .padding(16)
+        // As high as its content, never the height of the window.
+        .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: 400, alignment: .leading)
         .foregroundStyle(Theme.copy)
         .background(Theme.raised, in: RoundedRectangle(cornerRadius: Theme.radius))

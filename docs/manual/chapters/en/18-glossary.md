@@ -39,9 +39,10 @@ What you read on the picture, in the colour list and in the recipes.
 | Colour area | Farbfläche | A shape of the picture that gets one wash of one mix. |
 | Colours | Farben | The setting for the number of mixes, and the list of them. |
 | Detail | Ausschnitt | A part of the picture analysed as a picture of its own. Pro. |
-| Details | Details | The setting that decides whether small areas of another hue keep a mix of their own. |
+| Details | Details | The setting that decides whether the mixes go to fine steps across the picture (high) or to small areas of another hue (low). |
 | Full breakdown | Alle Details | Target and mix side by side, the colour by hand and every recipe of a colour. |
 | Geometric | Geometrisch | Areas as polygons with straight edges instead of their organic outline. |
+| Grid | Raster | Square cells over the picture, to copy it onto paper cell by cell. |
 | Layer | Schicht | Layer mode: the wash of one base paint, painted over the dry layers before it. |
 | Layer mode | Schichten | The method of glazing a few washes over each other instead of mixing every colour. |
 | Layered paint | Geschichtete Farbe | Layer mode: the view of the finished picture, all layers together. |
@@ -51,14 +52,12 @@ What you read on the picture, in the colour list and in the recipes.
 | Mix | Mischung | One puddle of paint on the palette, with a number. It can be painted in several washes. |
 | Mixed paint | Gemischte Farbe | The view of what your paints can reach. |
 | Organic | Organisch | Areas that follow the outlines of the photo. |
-| Overlay | Überlagerung | The view of the photo at half strength over the paint. |
 | Paint box | Farbkasten | A named set of paints you own, for example your pans or a travel set. |
 | Palette | Palette | The paints a picture is mixed from. It is saved with the picture. |
 | Photo colour | Fotofarbe | The view of each area in the average colour of the photo there. |
 | Recipe | Rezept | Which paints, in how many parts, with how much water, for one colour. |
 | Simplify areas | Flächen vereinfachen | Merges small shapes into larger, calmer ones. |
 | Target | Ziel | The colour the photo asks for in an area. |
-| Template to print | Vorlage zum Drucken | Only outlines and numbers, in light blue, to print and paint on. |
 | Values | Tonwerte | The picture analysed in grey; each value is painted with one paint of the palette. |
 | Wash | Lasur | A mix at one water level. |
 | Your mix | Deine Mischung | The colour the recipe gives on white paper. |

@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Schließen" data-lightbox-prev="Bild davor" data-lightbox-next="Nächstes Bild">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -43,9 +43,9 @@
 </aside>
 <p>Fotos vom Telefon sind völlig in Ordnung. Die Auflösung ist weniger wichtig, als man denkt, weil die App ohnehin mit einer verkleinerten Kopie arbeitet; Bildaufbau und Licht zählen viel mehr.</p>
 <h2 id="ein-bild-oeffnen"><a class="anchor" href="#ein-bild-oeffnen" aria-hidden="true" tabindex="-1">#</a>Ein Bild öffnen</h2>
-<p>Drück in der linken Spalte auf <strong>Neues Bild</strong> und wähl ein Foto. Auf Telefon und Tablet bietet derselbe Knopf auch die Kamera an, sodass du ein Motiv fotografieren und gleich vor Ort planen kannst. Jedes Bildformat, das dein Browser anzeigen kann, ist recht: JPG, PNG, WebP, auf Apple-Geräten auch HEIC.</p>
+<p>Drück in der linken Spalte auf <strong>Neues Bild</strong> und wähl ein Foto. Auf Telefon und Tablet bietet derselbe Knopf auch die Kamera an, sodass du ein Motiv fotografieren und gleich vor Ort planen kannst. Jedes Bildformat, das dein Browser anzeigen kann, ist recht: JPG, PNG, WebP, auf Apple-Geräten auch HEIC. Derselbe Knopf öffnet auch eine gesicherte Bilddatei (<code>.wcl</code>).</p>
 <p><strong>Beispiele</strong> öffnet fünf Beispielfotos des Autors: eine Stadt, einen See in den Bergen, Dächer in der Dämmerung, Winterfelder und eine Altstadt im Schnee. Mit ihnen lernst du die App gut kennen, bevor du eigene Fotos mitbringst, und es sind die Bilder, die dieses Handbuch verwendet.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/samples.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/samples.webp" width="952" height="567" alt="Die Beispielfotos" loading="lazy"></a></div><figcaption>Die Beispielfotos</figcaption></figure>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/samples.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/samples.webp" width="952" height="900" alt="Die Beispielfotos" loading="lazy"></a></div><figcaption>Die Beispielfotos</figcaption></figure>
 <p>Sobald ein Bild offen ist, analysiert die App es mit den aktuellen Einstellungen und deiner Palette. Bei einem großen Foto dauert das einen Moment; der Stand wird über dem Bild angezeigt.</p>
 <h2 id="die-sammlung"><a class="anchor" href="#die-sammlung" aria-hidden="true" tabindex="-1">#</a>Die Sammlung</h2>
 <p>Dein Bild wird nicht von selbst gesichert. Drück auf <strong>Sichern</strong>, und die <strong>Sammlung</strong> öffnet sich mit <strong>Dieses Bild sichern</strong>. Gib ihm einen Namen, an dem du es später wiedererkennst.</p>
@@ -58,6 +58,8 @@
 <li>jede Änderung an einer Farbe: neue Ziele, gewählte Rezepte, abgetrennte Flächen.</li>
 </ul>
 <p>Öffnest du ein gesichertes Bild später wieder, kommt es genau so zurück, wie du es verlassen hast, auch wenn du deine Farbkästen inzwischen geändert hast. Nachdem du ein gesichertes Bild geändert hast, heißt der Knopf <strong>Änderungen sichern</strong>. In der Sammlung kannst du ein Bild außerdem <strong>Umbenennen</strong> und <strong>Löschen</strong>.</p>
+<h3 id="die-bilddatei-wcl"><a class="anchor" href="#die-bilddatei-wcl" aria-hidden="true" tabindex="-1">#</a>Die Bilddatei (.wcl)</h3>
+<p>Jedes Sichern lädt das Bild zusätzlich als Datei herunter, zum Beispiel <code>Llyn-Idwal.wcl</code>. Sie enthält das Foto und alles, was oben aufgezählt ist, und ist so groß wie das Foto. Heb sie auf, wo du willst: im Ordner zu deinem Bild, in der Cloud, auf einem Stick. Öffnest du sie mit <strong>Neues Bild</strong>, kommt das Bild genau so zurück, auf diesem oder einem anderen Gerät, in jedem Browser. Ein freigeschaltetes Bild bleibt in deinem Konto freigeschaltet; für jemand anderen schaltet die Datei nichts frei.</p>
 <aside class="note note--info"><p><strong>Gut zu wissen:</strong> Die Sammlung liegt in diesem Browser auf diesem Gerät. Sie gehört nicht zu deinem Konto und kommt nicht mit auf einen anderen Rechner. Löschst du die Browserdaten dieser Seite, ist die Sammlung weg. Bilder sichern geht mit Pro.</p>
 </aside>
 <h2 id="genauer-hinsehen-ausschnitte-des-bildes"><a class="anchor" href="#genauer-hinsehen-ausschnitte-des-bildes" aria-hidden="true" tabindex="-1">#</a>Genauer hinsehen: Ausschnitte des Bildes</h2>
@@ -83,5 +85,6 @@
     <span>Watercolourlove von Markus Freise. Fragen an <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="../../manual/manual.js"></script>
 </body>
 </html>

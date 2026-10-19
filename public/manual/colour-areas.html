@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Close" data-lightbox-prev="Previous picture" data-lightbox-next="Next picture">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -34,13 +34,13 @@
 <h1 class="chapter__title">Colour areas</h1>
 <p class="chapter__lead">How many mixes, how large the shapes, which colours deserve their own puddle of paint. The settings decide how much work a picture is, and how it will look.</p>
 <p>Open <strong>Settings</strong> in the right-hand column. Everything in this chapter is set there, apart from the views at the end, which sit among the tools of the picture. When you let go of a slider, the app analyses the picture again.</p>
-<figure class="shot shot--markers" style="--shot-width:521px"><div class="shot__frame"><a class="shot__zoom" href="img/en/settings.webp" title="Open the picture at full size"><img src="img/en/settings.webp" width="521" height="361" alt="The settings" loading="lazy"></a><span class="shot__marker" style="left:6.72%;top:24.77%" aria-hidden="true">1</span><span class="shot__marker" style="left:28.02%;top:24.77%" aria-hidden="true">2</span><span class="shot__marker" style="left:7.1%;top:42.1%" aria-hidden="true">3</span><span class="shot__marker" style="left:8.25%;top:52.06%" aria-hidden="true">4</span><span class="shot__marker" style="left:36.08%;top:52.06%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.92%;top:52.06%" aria-hidden="true">6</span></div><figcaption>The settings</figcaption></figure>
+<figure class="shot shot--markers" style="--shot-width:521px"><div class="shot__frame"><a class="shot__zoom" href="img/en/settings.webp" title="Open the picture at full size"><img src="img/en/settings.webp" width="521" height="448" alt="The settings" loading="lazy"></a><span class="shot__marker" style="left:6.72%;top:19.96%" aria-hidden="true">1</span><span class="shot__marker" style="left:28.02%;top:19.96%" aria-hidden="true">2</span><span class="shot__marker" style="left:7.1%;top:33.91%" aria-hidden="true">3</span><span class="shot__marker" style="left:8.25%;top:41.94%" aria-hidden="true">4</span><span class="shot__marker" style="left:36.08%;top:41.94%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.92%;top:41.94%" aria-hidden="true">6</span></div><figcaption>The settings</figcaption></figure>
 <ol class="legend">
 <li>The method: <strong>Mix</strong> (this chapter) or <strong>Layer</strong> (see <a href="layer-mode.html">Layer mode</a>).</li>
 <li>The areas: <strong>Organic</strong> or <strong>Geometric</strong>.</li>
 <li><strong>Simplify areas</strong>: how large and calm the shapes are.</li>
 <li><strong>Colours</strong>: the number of mixes.</li>
-<li><strong>Details</strong>: whether small areas of another hue keep a mix of their own.</li>
+<li><strong>Details</strong>: whether the mixes go to fine steps across the picture or to small areas of another hue.</li>
 <li><strong>Max. paints</strong>: how many paints one mix may contain.</li>
 </ol>
 <p>The button with the half-filled circle beside the areas switches to <a href="values.html#monochrome-one-temperature-every-value">Monochrome</a>, a study in light and dark painted with your paints (Pro). For light and shadow alone, use the <strong>Blocking</strong> view.</p>
@@ -60,10 +60,10 @@
 <h2 id="details-which-colours-get-their-own-mix"><a class="anchor" href="#details-which-colours-get-their-own-mix" aria-hidden="true" tabindex="-1">#</a>Details: which colours get their own mix</h2>
 <p>When the photo has more colours than you asked for, some of them have to share a mix. <strong>Details</strong> decides which.</p>
 <ul>
-<li><strong>Low (towards 0)</strong> keeps the picture as a whole as close to the photo as possible. Large areas get the most accurate colours, and a small area of another hue may be painted with the nearest large mix.</li>
-<li><strong>High (towards 10)</strong> keeps small areas of a distinct hue in a mix of their own: the red roof in a green valley, the lips in a portrait, a single yellow boat. In exchange, similar large colours share mixes more often.</li>
+<li><strong>High (towards 10)</strong> keeps the picture as a whole as close to the photo as possible. The large areas, a sky, a wall, a street, get the finest steps, and a small area of another hue may be painted with the nearest large mix.</li>
+<li><strong>Low (towards 0)</strong> keeps small areas of a distinct hue in a mix of their own: the red roof in a green valley, the lips in a portrait, a single yellow boat. In exchange, similar large colours share mixes more often, and a sky may become one flat colour.</li>
 </ul>
-<p>The default of 5 is a balance. Raise it for pictures that live from a small accent; lower it for quiet landscapes where the large colour fields matter most.</p>
+<p>The default of 5 is a balance. Lower it for pictures that live from a small accent; raise it for quiet landscapes where the large colour fields matter most.</p>
 <h2 id="max-paints"><a class="anchor" href="#max-paints" aria-hidden="true" tabindex="-1">#</a>Max. paints</h2>
 <p><strong>Max. paints</strong> limits every mix to one, two or three paints. Three gives the closest matches. Two gives cleaner, brighter mixes that are easier to repeat. One means every colour is a single paint at some strength of water, a strict and beautiful exercise.</p>
 <p>Three paints in one mix are perfectly normal in watercolour, but every extra paint dulls a mix a little. If your colours on paper look muddier than on screen, try two.</p>
@@ -77,24 +77,26 @@
 <p><strong>Geometric</strong> turns every area into a polygon with a few straight edges, laid over each other from large to small. It works in both methods and gives a picture with a strong graphic character, close to a hard-edged or cubist style. It is also quick to draw with a ruler. <strong>Simplify areas</strong> makes the edges longer and the shapes fewer.</p>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/geometric.webp" title="Open the picture at full size"><img src="img/en/geometric.webp" width="1440" height="900" alt="The sample photo with geometric areas" loading="lazy"></a></div><figcaption>The sample photo with geometric areas</figcaption></figure>
 <h2 id="the-views"><a class="anchor" href="#the-views" aria-hidden="true" tabindex="-1">#</a>The views</h2>
-<p>The tools of the picture sit above it.</p>
-<figure class="shot shot--markers" style="--shot-width:482px"><div class="shot__frame"><a class="shot__zoom" href="img/en/picture-tools.webp" title="Open the picture at full size"><img src="img/en/picture-tools.webp" width="482" height="72" alt="The tools of the picture" loading="lazy"></a><span class="shot__marker" style="left:7.47%;top:3%" aria-hidden="true">1</span><span class="shot__marker" style="left:18.67%;top:3%" aria-hidden="true">2</span><span class="shot__marker" style="left:30.08%;top:3%" aria-hidden="true">3</span><span class="shot__marker" style="left:40.04%;top:3%" aria-hidden="true">4</span><span class="shot__marker" style="left:50%;top:3%" aria-hidden="true">5</span><span class="shot__marker" style="left:59.96%;top:3%" aria-hidden="true">6</span><span class="shot__marker" style="left:69.92%;top:3%" aria-hidden="true">7</span><span class="shot__marker" style="left:81.33%;top:3%" aria-hidden="true">8</span><span class="shot__marker" style="left:92.53%;top:3%" aria-hidden="true">9</span></div><figcaption>The tools of the picture</figcaption></figure>
+<p>The tools of the picture sit above it, with <strong>Settings</strong> on their left. On a phone the tools are at the bottom and <strong>Settings</strong> at the top.</p>
+<figure class="shot shot--markers" style="--shot-width:648px"><div class="shot__frame"><a class="shot__zoom" href="img/en/picture-tools.webp" title="Open the picture at full size"><img src="img/en/picture-tools.webp" width="648" height="90" alt="The tools of the picture" loading="lazy"></a><span class="shot__marker" style="left:13.42%;top:3.33%" aria-hidden="true">1</span><span class="shot__marker" style="left:31.17%;top:3.33%" aria-hidden="true">2</span><span class="shot__marker" style="left:41.2%;top:3.33%" aria-hidden="true">3</span><span class="shot__marker" style="left:48.61%;top:3.33%" aria-hidden="true">4</span><span class="shot__marker" style="left:56.01%;top:3.33%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.42%;top:3.33%" aria-hidden="true">6</span><span class="shot__marker" style="left:73.45%;top:3.33%" aria-hidden="true">7</span><span class="shot__marker" style="left:83.33%;top:3.33%" aria-hidden="true">8</span><span class="shot__marker" style="left:93.21%;top:3.33%" aria-hidden="true">9</span></div><figcaption>The tools of the picture</figcaption></figure>
 <ol class="legend">
-<li><strong>Fit</strong> fits the picture to the window.</li>
+<li><strong>Settings</strong> opens and closes the card with the settings.</li>
 <li><strong>Detail</strong> lets you look at a part of the picture on its own (see <a href="pictures.html#looking-closer-details-of-the-picture">Pictures</a>).</li>
 <li><strong>Mixed paint</strong>: every area in the colour your paints actually reach. This is the view to paint from.</li>
 <li><strong>Photo colour</strong>: every area in the colour of the photo. Compare it with <strong>Mixed paint</strong> to see where your paints fall short.</li>
-<li><strong>Overlay</strong>: the photo at half strength over the paint, to see which area is which part of the photo.</li>
 <li><strong>Photo</strong>: the original, with saturation and contrast applied.</li>
-<li><strong>Template to print</strong>: no fill, only outlines and numbers in light blue. See <a href="printing.html">Printing</a>.</li>
+<li><strong>Blocking</strong>: light and shadow in large masses. See <a href="values.html#blocking-light-and-shadow-first">Values</a>.</li>
+<li><strong>Grid</strong>: square cells over the picture, in white, grey or black. See <a href="printing.html#the-grid">Printing</a>.</li>
 <li><strong>Outlines</strong> on or off.</li>
-<li><strong>Numbers</strong> on or off.</li>
+<li><strong>Numbers</strong>: each click steps on from numbers to numbers on a backdrop to no numbers. On a backdrop every number sits on a small square, white with a dark number on dark areas and dark with a white number on light ones, so it stays readable on any colour.</li>
 </ol>
+<p>Once you zoom into the picture, <strong>Fit</strong> appears at the start of the tools; it fits the picture to the window again.</p>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-target.webp" title="Open the picture at full size"><img src="img/en/view-target.webp" width="1440" height="900" alt="Photo colour: what the photo asks for" loading="lazy"></a></div><figcaption>Photo colour: what the photo asks for</figcaption></figure>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-overlay.webp" title="Open the picture at full size"><img src="img/en/view-overlay.webp" width="1440" height="900" alt="Overlay: the photo over the paint" loading="lazy"></a></div><figcaption>Overlay: the photo over the paint</figcaption></figure>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-photo.webp" title="Open the picture at full size"><img src="img/en/view-photo.webp" width="1440" height="900" alt="Photo: the original" loading="lazy"></a></div><figcaption>Photo: the original</figcaption></figure>
 <p>With outlines and numbers off, <strong>Mixed paint</strong> shows the picture as it might look painted, a good test of whether the plan works as a picture.</p>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-plain.webp" title="Open the picture at full size"><img src="img/en/view-plain.webp" width="1440" height="900" alt="Mixed paint without outlines and numbers" loading="lazy"></a></div><figcaption>Mixed paint without outlines and numbers</figcaption></figure>
+<p><strong>Number size</strong> at the end of the settings makes the numbers <strong>Large</strong>, 1.4 times the <strong>Normal</strong> size, for a picture seen from further away or printed small.</p>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-backdrop.webp" title="Open the picture at full size"><img src="img/en/view-backdrop.webp" width="1440" height="900" alt="Large numbers on a backdrop" loading="lazy"></a></div><figcaption>Large numbers on a backdrop</figcaption></figure>
 <h2 id="settings-for-typical-subjects"><a class="anchor" href="#settings-for-typical-subjects" aria-hidden="true" tabindex="-1">#</a>Settings for typical subjects</h2>
 <p>These are starting points, not rules.</p>
 <div class="table-wrap"><table class="table">
@@ -111,14 +113,14 @@
 <td>Landscape, large shapes</td>
 <td>12 to 20</td>
 <td>4 to 8</td>
-<td>3 to 5</td>
+<td>5 to 7</td>
 <td>2 or 3</td>
 </tr>
 <tr>
 <td>Portrait</td>
 <td>16 to 24</td>
 <td>2 to 5</td>
-<td>6 to 8</td>
+<td>2 to 4</td>
 <td>2 or 3</td>
 </tr>
 <tr>
@@ -132,18 +134,18 @@
 <td>Flowers, still life</td>
 <td>10 to 16</td>
 <td>3 to 6</td>
-<td>6 to 8</td>
+<td>2 to 4</td>
 <td>2</td>
 </tr>
 <tr>
 <td>Quick sketch, plein air</td>
 <td>6 to 10</td>
 <td>7 to 10</td>
-<td>3</td>
+<td>7</td>
 <td>2</td>
 </tr>
 </tbody></table></div>
-<p>For portraits, the small features (eyes, mouth, the shadow under the nose) carry the likeness, so keep <strong>Details</strong> high and <strong>Simplify areas</strong> low, or make a <a href="pictures.html#looking-closer-details-of-the-picture">detail</a> of the face. For landscapes, the opposite usually works: few, large, calm areas, and the small accents painted freely at the end.</p>
+<p>For portraits, the small features (eyes, mouth, the shadow under the nose) carry the likeness, so keep <strong>Details</strong> and <strong>Simplify areas</strong> low, or make a <a href="pictures.html#looking-closer-details-of-the-picture">detail</a> of the face. For landscapes, the opposite usually works: few, large, calm areas, and the small accents painted freely at the end.</p>
 <nav class="pager" aria-label="Chapters"><a class="pager__link pager__link--prev" href="paint-box.html" rel="prev"><span class="pager__label">Previous</span><span class="pager__title">Paint box and palette</span></a><a class="pager__link pager__link--next" href="mixes.html" rel="next"><span class="pager__label">Next</span><span class="pager__title">Mixes, washes and recipes</span></a></nav></article>
   </main>
 </div>
@@ -152,5 +154,6 @@
     <span>Watercolourlove by Markus Freise. Questions: <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="manual.js"></script>
 </body>
 </html>

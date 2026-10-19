@@ -2,7 +2,7 @@
 /**
  * GitHub push webhook for Watercolourlove.
  *
- * Lives in the web root (https://markus-freise.de/colour-detective/webhook.php).
+ * Lives in the web root (https://watercolourlove.de/webhook.php).
  * Verifies GitHub's HMAC signature, then starts deploy.sh in the background
  * (git pull + npm ci + npm run build + copy dist/ into the web root) and returns 202.
  *
@@ -11,7 +11,7 @@
  *     'secret'     => 'long-random-string',          // same as in GitHub → Settings → Webhooks
  *     'repo_dir'   => '/home/www/p123456/colour-detector',  // git checkout, outside the web root
  *     'branch'     => 'main',
- *     'log_file'   => __DIR__ . '/../colour-detector-deploy.log', // outside the web root
+ *     'log_file'   => '/home/www/p123456/html/_sites/colour-detector/.deploy.log', // in the checkout
  *   ];
  */
 
@@ -66,8 +66,10 @@ if ($ref !== "refs/heads/$branch") {
     respond(202, "Ignored ref: $ref");
 }
 
+// Mittwald's web PHP has no nohup and a short PATH: the deploy runs in the background with its
+// output in the log and no input, which is enough to outlive the request.
 $command = sprintf(
-    'nohup bash %s %s %s %s >> %s 2>&1 &',
+    'PATH=/usr/local/bin:/usr/bin:/bin /bin/bash %s %s %s %s >> %s 2>&1 < /dev/null &',
     escapeshellarg($repoDir . '/deploy/deploy.sh'),
     escapeshellarg($repoDir),
     escapeshellarg(__DIR__),

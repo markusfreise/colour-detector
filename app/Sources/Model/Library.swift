@@ -101,7 +101,7 @@ final class Library {
     }
 
     let stock: [Paint]
-    let chart: [ChartColour]
+    let libraries: [PaintLibrary]
     private(set) var custom: [Paint] = []
     /// At least one.
     private(set) var boxes: [PaintBox] = []
@@ -113,14 +113,14 @@ final class Library {
 
     init() {
         stock = Storage.bundled("paints", as: [Paint].self) ?? []
-        chart = Storage.bundled("horadam", as: [ChartColour].self) ?? []
+        libraries = Storage.bundled("libraries", as: [PaintLibrary].self) ?? []
         let data = try? Data(contentsOf: file)
         if let data, let saved = try? JSONDecoder().decode(Saved.self, from: data), !saved.paintBoxes.isEmpty {
-            custom = saved.custom
+            custom = Self.renamedHouseVendor(saved.custom)
             boxes = saved.paintBoxes
             palette = saved.palette
         } else if let data, let old = try? JSONDecoder().decode(OldSaved.self, from: data), let active = old.boxes.first(where: { $0.id == old.activeID }) ?? old.boxes.first {
-            custom = old.custom
+            custom = Self.renamedHouseVendor(old.custom)
             palette = active.palette
             // Boxes saved before Auto existed: an untouched default selection counts as Auto.
             if active.autoMissing { palette.auto = Set(palette.paintIDs) == Set(defaultIDs) }
@@ -129,6 +129,15 @@ final class Library {
         } else {
             palette = Palette(paintIDs: defaultIDs, auto: true)
             boxes = seedBoxes()
+        }
+    }
+
+    /// Own paints saved while the house series was called "Schmincke" belong to it under its new name.
+    private static func renamedHouseVendor(_ paints: [Paint]) -> [Paint] {
+        paints.map { paint in
+            var paint = paint
+            if paint.vendor == Paint.oldHouseVendor { paint.vendor = Paint.houseVendor }
+            return paint
         }
     }
 
@@ -273,23 +282,36 @@ final class Library {
 
     /// A colour of a series, as the colour chart or a box file has it: the paint already known with
     /// that series and number, or a new paint of one's own.
-    private func paintID(vendor: String, number: String, name: String, hex: String, form: String) -> String {
+    private func paintID(vendor: String, number: String, name: String, nameDe: String = "", hex: String, form: String) -> String {
+        // A library under its own name, whatever language it was typed in.
+        let vendor = library(named: vendor)?.name ?? vendor
         let same = { (a: String, b: String) in a.trimmingCharacters(in: .whitespaces).caseInsensitiveCompare(b.trimmingCharacters(in: .whitespaces)) == .orderedSame }
         if let known = all.first(where: { same($0.vendor, vendor) && same($0.number, number) }) { return known.id }
-        let paint = Paint(id: "custom-\(UUID().uuidString.prefix(8))", vendor: vendor.trimmingCharacters(in: .whitespaces), number: number.trimmingCharacters(in: .whitespaces), name: name.trimmingCharacters(in: .whitespaces), hex: hex, forms: [form], source: "custom", custom: true)
+        var paint = Paint(id: "custom-\(UUID().uuidString.prefix(8))", vendor: vendor.trimmingCharacters(in: .whitespaces), number: number.trimmingCharacters(in: .whitespaces), name: name.trimmingCharacters(in: .whitespaces), hex: hex, forms: [form], source: "custom", custom: true)
+        paint.nameDe = nameDe
         custom.append(paint)
         return paint.id
     }
 
-    /// A colour of the Horadam chart into a box.
-    func addChartColour(_ colour: ChartColour, to boxID: String) {
-        addToBox(boxID, paint: paintID(vendor: Paint.houseVendor, number: colour.number, name: colour.name, hex: colour.hex, form: boxID == "tube" ? "tube" : "pan"))
+    /// A colour of a series into a box, as the dialog that adds colours lists it: the paint known
+    /// with that series and number, or a new paint of one's own in the form of the box.
+    /// A colour without a value is entered through the form, where its colour is set by hand.
+    func addColour(_ colour: SeriesColour, to boxID: String) {
+        if let id = colour.paintID {
+            addToBox(boxID, paint: id)
+        } else if let hex = colour.hex {
+            addToBox(boxID, paint: paintID(vendor: colour.vendor, number: colour.number, name: colour.chartName, nameDe: colour.nameDe, hex: hex, form: boxID == "tube" ? "tube" : "pan"))
+        }
     }
 
     /// A box as a JSON file to keep, as a backup or to take to the web app.
     func exportBox(_ id: String) -> Data? {
         guard let box = boxes.first(where: { $0.id == id }) else { return nil }
-        let colours = paints(in: box).map { PaintBoxFile.Colour(vendor: $0.vendor, number: $0.number, name: $0.name, hex: $0.hex, form: $0.comes(as: .tube) && !$0.comes(as: .pan) ? "tube" : "pan") }
+        let colours = paints(in: box).map { paint in
+            // One's own paints in the form given (pan, tube, liquid, other); the stock as pan or tube.
+            let form = paint.isCustom ? paint.ownForm.rawValue : paint.comes(as: .tube) && !paint.comes(as: .pan) ? "tube" : "pan"
+            return PaintBoxFile.Colour(vendor: paint.vendor, number: paint.number, name: paint.name, hex: paint.hex, form: form)
+        }
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         return try? encoder.encode(PaintBoxFile(name: box.displayName, paints: colours))
@@ -306,7 +328,7 @@ final class Library {
         guard let file = try? JSONDecoder().decode(PaintBoxFile.self, from: data), file.format == PaintBoxFile.format else { throw ImportError.notABox }
         var box = addBox(named: file.name)
         for colour in file.paints where !colour.vendor.isEmpty && !colour.name.isEmpty && colour.hex.range(of: "^#[0-9a-fA-F]{6}$", options: .regularExpression) != nil {
-            let id = paintID(vendor: colour.vendor, number: colour.number, name: colour.name, hex: colour.hex, form: colour.form == "tube" ? "tube" : "pan")
+            let id = paintID(vendor: colour.vendor, number: colour.number, name: colour.name, hex: colour.hex, form: PaintForm.own(colour.form).rawValue)
             if !box.paintIDs.contains(id) { box.paintIDs.append(id) }
         }
         if let index = boxes.firstIndex(where: { $0.id == box.id }) { boxes[index] = box }
@@ -318,6 +340,8 @@ final class Library {
 
     /// Adds a paint to the library, or updates the one with the same id. New paints go into the box `boxID`.
     func savePaint(_ paint: Paint, into boxID: String? = nil) {
+        var paint = paint
+        if let source = library(named: paint.vendor) { paint.vendor = source.name }
         if let index = custom.firstIndex(where: { $0.id == paint.id }) {
             custom[index] = paint
         } else {
@@ -335,8 +359,16 @@ final class Library {
         changed()
     }
 
-    func chartColour(number: String) -> ChartColour? {
-        chart.first { $0.number == number.trimmingCharacters(in: .whitespaces) }
+    /// The library of a series, however it is capitalised or spaced; nil for a series of one's own.
+    func library(named name: String) -> PaintLibrary? {
+        let wanted = name.trimmingCharacters(in: .whitespaces).lowercased()
+        return libraries.first { ([$0.name] + ($0.aliases ?? [])).contains { $0.lowercased() == wanted } }
+    }
+
+    /// The series on offer for a paint: the house series, the libraries and those in use, by name.
+    var seriesNames: [String] {
+        Set([Paint.houseVendor] + libraries.map(\.name) + all.map(\.vendor).filter { !$0.isEmpty })
+            .sorted { $0.localizedCompare($1) == .orderedAscending }
     }
 
     private func changed() {

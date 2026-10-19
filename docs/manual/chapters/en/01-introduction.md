@@ -2,7 +2,7 @@
 title: Welcome to Watercolourlove
 nav: Introduction
 slug: index
-lead: Watercolourlove turns a photo into a plan for a real watercolour. It finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas you can transfer to paper.
+lead: Watercolourlove is a tool for painters who work from photos. It finds the colours in your reference that matter and works out how to mix each one from the paints you own, with how much water. Colour areas, blocking and values help you read the picture before you paint it.
 part: Getting started
 ---
 
@@ -12,13 +12,13 @@ part: Getting started
 
 Every painter who works from a photo faces the same two questions. Which colours are really in this picture, once you look past the thousand small variations a camera records? And how do I mix each of them from the paints in my box, with how much water?
 
-Watercolourlove answers both. It reduces the photo to a manageable number of mixes, works out a recipe for every mix from your own paints, and shows you where each one goes. The result is a paint-by-numbers plan, but one that is made for watercolour: it knows that paint is transparent, that water makes a colour lighter, and that the white of the paper is the lightest thing you have.
+Watercolourlove answers both. It identifies the colours that carry the picture, groups them into a manageable number of mixes and works out a recipe for every mix from your own paints: which paints, in what ratio, at which strength. Around that sit the tools for reading a reference the way a painter does: the colour areas of the picture, blocking of light and shadow, values, close-ups. The app knows that paint is transparent, that water makes a colour lighter, and that the white of the paper is the lightest thing you have. Printouts with a grid and numbered areas are there too, as aids when you want them, not as the point.
 
 ![The app at a glance, with the sample photo Llyn Idwal](shot:overview)
 
 1. **New picture** and the other buttons for the picture: samples, saving, the collection, printing, exporting.
-2. The tools of the picture: fit it to the window, look at a detail.
-3. The views: mixed paint, the colours of the photo, an overlay, the photo itself, the template to print.
+2. The tools of the picture: look at a detail, and fit it to the window again once you have zoomed in.
+3. The views: mixed paint, the colours of the photo, the photo itself.
 4. **Colours**: every mix with its paints and its washes.
 5. **Settings**: how many mixes, how simple the areas, the method.
 6. **Paint box**: the paints you own and the palette of this picture.

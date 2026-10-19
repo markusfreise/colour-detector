@@ -26,7 +26,7 @@ const localSamples = (command) =>
 // (server/mix/, api/mix/): their JavaScript is the reference for tests and must never be part of
 // the app that goes to the browser. A build that would carry one of them stops.
 const PRIVATE = 'api/app/[name]-[hash].js'
-const SERVER_ONLY = ['src/lib/mixing.js', 'src/lib/mixes.js', 'src/lib/layerPlan.js', 'src/lib/mixService.js', 'src/data/horadam-catalogue.js', 'src/data/winsor-newton-catalogue.js', 'src/data/michael-harding-catalogue.js']
+const SERVER_ONLY = ['src/lib/mixing.js', 'src/lib/mixes.js', 'src/lib/layerPlan.js', 'src/lib/mixService.js', 'src/data/horadam-catalogue.js', 'src/data/winsor-newton-catalogue.js', 'src/data/michael-harding-catalogue.js', 'src/data/sennelier-catalogue.js', 'src/data/common-catalogue.js', 'src/data/charts.js']
 const serverOnly = () => ({
   name: 'server-only',
   generateBundle(_, bundle) {

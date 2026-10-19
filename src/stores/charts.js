@@ -4,15 +4,16 @@ import { MIX_API } from '../config.js'
 import { MIX_KEY_HEADERS } from '../lib/mixClient.js'
 
 // The colour charts of the paint series that come with the app (PAINT_LIBRARIES), asked from the
-// account API once they may be used: they come with Pro.
+// account API: the common colours for everybody, the makers' charts with a plan. Asked again when
+// the plan changes (`load(true)`).
 export const useChartsStore = defineStore('charts', {
   state: () => ({
     charts: null, // { <library id>: [{ number, name, hex }] } (raw)
     loading: false,
   }),
   actions: {
-    async load() {
-      if (this.charts || this.loading) return
+    async load(again = false) {
+      if ((this.charts && !again) || this.loading) return
       this.loading = true
       try {
         const response = await fetch(`${MIX_API}/charts`, { credentials: 'same-origin', headers: MIX_KEY_HEADERS })

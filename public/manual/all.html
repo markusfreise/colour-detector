@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Close" data-lightbox-prev="Previous picture" data-lightbox-next="Next picture">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -34,12 +34,12 @@
 <h1 class="chapter__title">Welcome to Watercolourlove</h1>
 <h2 id="index--the-idea"><a class="anchor" href="#index--the-idea" aria-hidden="true" tabindex="-1">#</a>The idea</h2>
 <p>Every painter who works from a photo faces the same two questions. Which colours are really in this picture, once you look past the thousand small variations a camera records? And how do I mix each of them from the paints in my box, with how much water?</p>
-<p>Watercolourlove answers both. It reduces the photo to a manageable number of mixes, works out a recipe for every mix from your own paints, and shows you where each one goes. The result is a paint-by-numbers plan, but one that is made for watercolour: it knows that paint is transparent, that water makes a colour lighter, and that the white of the paper is the lightest thing you have.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/overview.webp" title="Open the picture at full size"><img src="img/en/overview.webp" width="1440" height="900" alt="The app at a glance, with the sample photo Llyn Idwal" loading="lazy"></a><span class="shot__marker" style="left:5.97%;top:4.44%" aria-hidden="true">1</span><span class="shot__marker" style="left:35.76%;top:9.11%" aria-hidden="true">2</span><span class="shot__marker" style="left:43.33%;top:9%" aria-hidden="true">3</span><span class="shot__marker" style="left:94.03%;top:11.56%" aria-hidden="true">4</span><span class="shot__marker" style="left:94.03%;top:4.44%" aria-hidden="true">5</span><span class="shot__marker" style="left:94.03%;top:18.67%" aria-hidden="true">6</span><span class="shot__marker" style="left:94.03%;top:25.78%" aria-hidden="true">7</span></div><figcaption>The app at a glance, with the sample photo Llyn Idwal</figcaption></figure>
+<p>Watercolourlove answers both. It identifies the colours that carry the picture, groups them into a manageable number of mixes and works out a recipe for every mix from your own paints: which paints, in what ratio, at which strength. Around that sit the tools for reading a reference the way a painter does: the colour areas of the picture, blocking of light and shadow, values, close-ups. The app knows that paint is transparent, that water makes a colour lighter, and that the white of the paper is the lightest thing you have. Printouts with a grid and numbered areas are there too, as aids when you want them, not as the point.</p>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/overview.webp" title="Open the picture at full size"><img src="img/en/overview.webp" width="1440" height="900" alt="The app at a glance, with the sample photo Llyn Idwal" loading="lazy"></a><span class="shot__marker" style="left:6.53%;top:5.33%" aria-hidden="true">1</span><span class="shot__marker" style="left:41.53%;top:10.11%" aria-hidden="true">2</span><span class="shot__marker" style="left:46.04%;top:10.11%" aria-hidden="true">3</span><span class="shot__marker" style="left:92.92%;top:6.67%" aria-hidden="true">4</span><span class="shot__marker" style="left:27.36%;top:5.44%" aria-hidden="true">5</span><span class="shot__marker" style="left:92.92%;top:13.78%" aria-hidden="true">6</span><span class="shot__marker" style="left:3%;top:42.44%" aria-hidden="true">7</span></div><figcaption>The app at a glance, with the sample photo Llyn Idwal</figcaption></figure>
 <ol class="legend">
 <li><strong>New picture</strong> and the other buttons for the picture: samples, saving, the collection, printing, exporting.</li>
-<li>The tools of the picture: fit it to the window, look at a detail.</li>
-<li>The views: mixed paint, the colours of the photo, an overlay, the photo itself, the template to print.</li>
+<li>The tools of the picture: look at a detail, and fit it to the window again once you have zoomed in.</li>
+<li>The views: mixed paint, the colours of the photo, the photo itself.</li>
 <li><strong>Colours</strong>: every mix with its paints and its washes.</li>
 <li><strong>Settings</strong>: how many mixes, how simple the areas, the method.</li>
 <li><strong>Paint box</strong>: the paints you own and the palette of this picture.</li>
@@ -83,7 +83,7 @@
 <h2 id="quick-start--part-1-plan-the-picture-in-the-app"><a class="anchor" href="#quick-start--part-1-plan-the-picture-in-the-app" aria-hidden="true" tabindex="-1">#</a>Part 1: Plan the picture in the app</h2>
 <h3 id="quick-start--1-choose-a-photo"><a class="anchor" href="#quick-start--1-choose-a-photo" aria-hidden="true" tabindex="-1">#</a>1. Choose a photo</h3>
 <p>Press <strong>New picture</strong> and pick a photo. On a phone or tablet the same button also offers the camera. <strong>Samples</strong> opens five example photos if you would like to try the app first.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/welcome.webp" title="Open the picture at full size"><img src="img/en/welcome.webp" width="1440" height="900" alt="The empty app, waiting for the first photo" loading="lazy"></a><span class="shot__marker" style="left:5.97%;top:4.44%" aria-hidden="true">1</span><span class="shot__marker" style="left:5.97%;top:10.44%" aria-hidden="true">2</span><span class="shot__marker" style="left:50%;top:3%" aria-hidden="true">3</span></div><figcaption>The empty app, waiting for the first photo</figcaption></figure>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/welcome.webp" title="Open the picture at full size"><img src="img/en/welcome.webp" width="1440" height="900" alt="The empty app, waiting for the first photo" loading="lazy"></a><span class="shot__marker" style="left:6.53%;top:5.33%" aria-hidden="true">1</span><span class="shot__marker" style="left:6.53%;top:11.33%" aria-hidden="true">2</span><span class="shot__marker" style="left:50%;top:3%" aria-hidden="true">3</span></div><figcaption>The empty app, waiting for the first photo</figcaption></figure>
 <ol class="legend">
 <li><strong>New picture</strong> opens a photo from your device.</li>
 <li><strong>Samples</strong> opens the example photos.</li>
@@ -100,19 +100,19 @@
 <li><strong>Simplify areas</strong> merges small shapes into bigger, calmer ones. The higher, the fewer and larger the areas.</li>
 <li><strong>Max. paints</strong> limits a mix to one, two or three paints. Fewer paints give cleaner mixes.</li>
 </ul>
-<figure class="shot shot--markers" style="--shot-width:521px"><div class="shot__frame"><a class="shot__zoom" href="img/en/settings.webp" title="Open the picture at full size"><img src="img/en/settings.webp" width="521" height="361" alt="The settings" loading="lazy"></a><span class="shot__marker" style="left:6.72%;top:24.77%" aria-hidden="true">1</span><span class="shot__marker" style="left:28.02%;top:24.77%" aria-hidden="true">2</span><span class="shot__marker" style="left:7.1%;top:42.1%" aria-hidden="true">3</span><span class="shot__marker" style="left:8.25%;top:52.06%" aria-hidden="true">4</span><span class="shot__marker" style="left:36.08%;top:52.06%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.92%;top:52.06%" aria-hidden="true">6</span></div><figcaption>The settings</figcaption></figure>
+<figure class="shot shot--markers" style="--shot-width:521px"><div class="shot__frame"><a class="shot__zoom" href="img/en/settings.webp" title="Open the picture at full size"><img src="img/en/settings.webp" width="521" height="448" alt="The settings" loading="lazy"></a><span class="shot__marker" style="left:6.72%;top:19.96%" aria-hidden="true">1</span><span class="shot__marker" style="left:28.02%;top:19.96%" aria-hidden="true">2</span><span class="shot__marker" style="left:7.1%;top:33.91%" aria-hidden="true">3</span><span class="shot__marker" style="left:8.25%;top:41.94%" aria-hidden="true">4</span><span class="shot__marker" style="left:36.08%;top:41.94%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.92%;top:41.94%" aria-hidden="true">6</span></div><figcaption>The settings</figcaption></figure>
 <ol class="legend">
 <li>The method: <strong>Mix</strong> or <strong>Layer</strong>.</li>
 <li>The areas: organic or geometric.</li>
 <li><strong>Simplify areas</strong>.</li>
 <li><strong>Colours</strong>, the number of mixes.</li>
-<li><strong>Details</strong>: whether small areas of another hue keep a mix of their own.</li>
+<li><strong>Details</strong>: whether the mixes go to fine steps across the picture or to small areas of another hue.</li>
 <li><strong>Max. paints</strong> per mix.</li>
 </ol>
 <p>Every slider is explained in <a href="#colour-areas">Colour areas</a>.</p>
 <h3 id="quick-start--4-read-the-map"><a class="anchor" href="#quick-start--4-read-the-map" aria-hidden="true" tabindex="-1">#</a>4. Read the map</h3>
 <p>Every area carries a label such as <strong>3M</strong>. The number is the mix, the letter how much water goes into it: <strong>W</strong> very watery, <strong>L</strong> light, <strong>M</strong> medium, <strong>R</strong> rich, <strong>C</strong> concentrated. So 3L and 3C come from the same puddle of paint, once thinned and once strong. That is why 20 mixes give many more colours on paper: 52 in this sample.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/colours.webp" title="Open the picture at full size"><img src="img/en/colours.webp" width="810" height="900" alt="The colour list" loading="lazy"></a><span class="shot__marker" style="left:3.83%;top:12.05%" aria-hidden="true">1</span><span class="shot__marker" style="left:3.83%;top:15.74%" aria-hidden="true">2</span><span class="shot__marker" style="left:5.56%;top:23.25%" aria-hidden="true">3</span></div><figcaption>The colour list</figcaption></figure>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/colours.webp" title="Open the picture at full size"><img src="img/en/colours.webp" width="776" height="900" alt="The colour list" loading="lazy"></a><span class="shot__marker" style="left:3.99%;top:12.05%" aria-hidden="true">1</span><span class="shot__marker" style="left:3.99%;top:15.74%" aria-hidden="true">2</span><span class="shot__marker" style="left:5.8%;top:23.25%" aria-hidden="true">3</span></div><figcaption>The colour list</figcaption></figure>
 <ol class="legend">
 <li>How many colours the picture has, in how many mixes.</li>
 <li>The key to the water levels.</li>
@@ -121,7 +121,7 @@
 <p>What the bars mean in detail, and how the water levels work, is in <a href="#mixes">Mixes, washes and recipes</a>.</p>
 <h3 id="quick-start--5-look-up-a-mix"><a class="anchor" href="#quick-start--5-look-up-a-mix" aria-hidden="true" tabindex="-1">#</a>5. Look up a mix</h3>
 <p>Click an area in the picture. A card opens with the number of the colour, its share of the picture and the recipe to mix it.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/inspector.webp" title="Open the picture at full size"><img src="img/en/inspector.webp" width="1440" height="900" alt="A tapped area and its card" loading="lazy"></a><span class="shot__marker" style="left:37.08%;top:70.9%" aria-hidden="true">1</span></div><figcaption>A tapped area and its card</figcaption></figure>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/inspector.webp" title="Open the picture at full size"><img src="img/en/inspector.webp" width="1440" height="900" alt="A tapped area and its card" loading="lazy"></a><span class="shot__marker" style="left:37.08%;top:70.99%" aria-hidden="true">1</span></div><figcaption>A tapped area and its card</figcaption></figure>
 <ol class="legend">
 <li>The card: colour, share, recipe, and <strong>Full breakdown</strong> for everything else.</li>
 </ol>
@@ -130,7 +130,7 @@
 <p>You are the painter; the photo is only a suggestion. In the full breakdown, <strong>Change colour</strong> gives a mix a new target, warmer, cooler or entirely different, and the recipes follow. <strong>Edit only the clicked area</strong> separates one area from the others that share its colour. <strong>Reset to photo</strong> brings the colour of the photo back.</p>
 <p>Press <strong>Save</strong> to keep the picture with its settings, its palette and your changes in the <strong>Collection</strong>.</p>
 <h3 id="quick-start--7-print-the-plan"><a class="anchor" href="#quick-start--7-print-the-plan" aria-hidden="true" tabindex="-1">#</a>7. Print the plan</h3>
-<p><strong>Print / PDF</strong> gives the picture followed by every mix with its paints. Print it for the desk, or choose &quot;Save as PDF&quot; in the print dialog and keep it on a tablet. <strong>Template to print</strong> draws only the outlines and numbers in light blue: print it on watercolour paper and paint directly on the sheet. Details in <a href="#printing">Printing</a>.</p>
+<p><strong>Print / PDF</strong> gives the picture followed by every mix with its paints. Print it for the desk, or choose &quot;Save as PDF&quot; in the print dialog and keep it on a tablet. <strong>Grid</strong> lays square cells over the picture, to copy the drawing onto your paper cell by cell. Details in <a href="#printing">Printing</a>.</p>
 <h2 id="quick-start--part-2-paint-it"><a class="anchor" href="#quick-start--part-2-paint-it" aria-hidden="true" tabindex="-1">#</a>Part 2: Paint it</h2>
 <h3 id="quick-start--8-lay-out-the-desk"><a class="anchor" href="#quick-start--8-lay-out-the-desk" aria-hidden="true" tabindex="-1">#</a>8. Lay out the desk</h3>
 <p>Tape the paper to a board on all four sides. Put the printed plan where you can see it without reaching over wet paint, the paint box and palette on the side of your painting hand, and two jars of water behind them: one for rinsing, one that stays clean for mixing.</p>
@@ -172,9 +172,9 @@
 </aside>
 <p>Photos taken with a phone are perfectly good. Resolution matters less than you might think, because the app works on a reduced copy anyway; the composition and the light matter far more.</p>
 <h2 id="pictures--opening-a-picture"><a class="anchor" href="#pictures--opening-a-picture" aria-hidden="true" tabindex="-1">#</a>Opening a picture</h2>
-<p>Press <strong>New picture</strong> in the left-hand column and choose a photo. On a phone or tablet the same button also offers the camera, so you can photograph a subject and plan it on the spot. Any picture format your browser can show will do: JPG, PNG, WebP, HEIC on Apple devices.</p>
+<p>Press <strong>New picture</strong> in the left-hand column and choose a photo. On a phone or tablet the same button also offers the camera, so you can photograph a subject and plan it on the spot. Any picture format your browser can show will do: JPG, PNG, WebP, HEIC on Apple devices. The same button also opens a saved picture file (<code>.wcl</code>).</p>
 <p><strong>Samples</strong> opens five example photos by the author: a town, a lake in the mountains, rooftops at dusk, winter fields and an old town in snow. They are a good way to explore the app before you bring your own photos, and they are the pictures this manual uses.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/samples.webp" title="Open the picture at full size"><img src="img/en/samples.webp" width="952" height="567" alt="The sample photos" loading="lazy"></a></div><figcaption>The sample photos</figcaption></figure>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/samples.webp" title="Open the picture at full size"><img src="img/en/samples.webp" width="952" height="900" alt="The sample photos" loading="lazy"></a></div><figcaption>The sample photos</figcaption></figure>
 <p>As soon as a picture is open, the app analyses it with the current settings and your palette. On a large photo this takes a moment; the status is shown over the picture.</p>
 <h2 id="pictures--the-collection"><a class="anchor" href="#pictures--the-collection" aria-hidden="true" tabindex="-1">#</a>The collection</h2>
 <p>Your picture is not saved automatically. Press <strong>Save</strong> to keep it, and the <strong>Collection</strong> opens with <strong>Save this picture</strong>. Give it a name you will recognise later.</p>
@@ -187,6 +187,8 @@
 <li>every change you made to a colour: new targets, chosen recipes, areas you separated.</li>
 </ul>
 <p>When you open a saved picture later, it comes back exactly as you left it, even if you have changed your paint boxes in the meantime. After you change a saved picture, the button reads <strong>Save changes</strong>. In the collection you can also <strong>Rename</strong> and <strong>Delete</strong> a picture.</p>
+<h3 id="pictures--the-picture-file-wcl"><a class="anchor" href="#pictures--the-picture-file-wcl" aria-hidden="true" tabindex="-1">#</a>The picture file (.wcl)</h3>
+<p>Every save also downloads the picture as a file, for example <code>Llyn-Idwal.wcl</code>. It holds the photo and everything listed above, and is about as large as the photo. Keep it wherever you like: in the folder of your painting, in the cloud, on a stick. Open it with <strong>New picture</strong> and the picture comes back exactly as it was, on this device or another, in any browser. A picture you unlocked stays unlocked in your account; for anybody else the file unlocks nothing.</p>
 <aside class="note note--info"><p><strong>Note:</strong> The collection lives in this browser on this device. It is not part of your account and does not travel to another computer. If you clear your browser&#39;s data for this site, the collection is gone. Saving pictures needs Pro.</p>
 </aside>
 <h2 id="pictures--looking-closer-details-of-the-picture"><a class="anchor" href="#pictures--looking-closer-details-of-the-picture" aria-hidden="true" tabindex="-1">#</a>Looking closer: details of the picture</h2>
@@ -242,23 +244,33 @@
 <aside class="note note--info"><p><strong>Note:</strong> A free account mixes from the <strong>Starter box</strong>: twelve colours as a cheap student set has them (two yellows, two reds, two blues, a violet, a green, three earths and black). You can choose among them, but not add your own paints. Your own paints and paint boxes come with a picture you unlocked, or with Pro; see <a href="#account">Account, Pro and your data</a>.</p>
 </aside>
 <h2 id="paint-box--adding-paints"><a class="anchor" href="#paint-box--adding-paints" aria-hidden="true" tabindex="-1">#</a>Adding paints</h2>
-<p>At the end of every paint box is an empty place with a <strong>+</strong>. Click it to add a colour to that box.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/paintbox-add.webp" title="Open the picture at full size"><img src="img/en/paintbox-add.webp" width="912" height="130" alt="Searching a colour to add" loading="lazy"></a></div><figcaption>Searching a colour to add</figcaption></figure>
-<p>Type part of the series, the number or the name: &quot;ultramarine&quot;, &quot;494&quot; or &quot;Horadam 494&quot; all work. The search covers the paints of the stock and, with Pro, the colour charts of three makers:</p>
+<p>At the end of every paint box is an empty place with a <strong>+</strong>. Click it to open <strong>Add colour</strong> for that box.</p>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/paintbox-add.webp" title="Open the picture at full size"><img src="img/en/paintbox-add.webp" width="952" height="1100" alt="Adding colours to a box" loading="lazy"></a></div><figcaption>Adding colours to a box</figcaption></figure>
+<p>The lower half, <strong>Library</strong>, lists the colours you can add, one section per series. For everybody, the paints of the stock and <strong>Common colours</strong>: 40 colours that most makers have, under their usual name and pigment (C01 Lemon Yellow to C40 Neutral Tint), each as one maker&#39;s chart shows it. With Pro, also the colour charts of four makers:</p>
 <ul>
 <li><strong>Schmincke Horadam</strong>,</li>
 <li><strong>Winsor &amp; Newton Professional</strong> (116 colours),</li>
-<li><strong>Michael Harding</strong> (136 colours).</li>
+<li><strong>Michael Harding</strong> (136 colours),</li>
+<li><strong>Sennelier L&#39;Aquarelle</strong> (98 colours).</li>
 </ul>
-<p>Pick a paint from the list and it joins the box with its name and its reference colour.</p>
-<h3 id="paint-box--a-colour-of-your-own"><a class="anchor" href="#paint-box--a-colour-of-your-own" aria-hidden="true" tabindex="-1">#</a>A colour of your own</h3>
-<p>For any other paint, choose <strong>Or enter a colour of your own</strong> below the search. You enter:</p>
+<p>To find a colour:</p>
 <ul>
-<li><strong>Vendor and Series</strong>, as it is written on the tube, for example &quot;Daniel Smith Extra Fine&quot;. If it is a series with a colour chart in the app, entering a number fills in name and colour for you.</li>
-<li><strong>Number</strong> and <strong>Name</strong>.</li>
-<li><strong>Form</strong>: <strong>Pan</strong> or <strong>Tube</strong>.</li>
-<li><strong>Colour</strong>, the reference colour of the paint.</li>
+<li>The buttons with the series names show or hide their sections. A dark button is shown.</li>
+<li>Type part of the name or the number into the search field: &quot;ultramarin&quot;, &quot;494&quot; or &quot;Horadam 494&quot; all work, and so do pigment names such as &quot;PB29&quot;.</li>
+<li>The colour squares next to it show only reds, oranges, yellows, greens, turquoises, blues, violets, browns, or greys and blacks. Click the square again to see every hue.</li>
+<li>The button with the eraser at the top empties the search and the filters.</li>
 </ul>
+<p>Click a colour and it joins the box with its name and its reference colour. A colour that is in the box already is ghosted; click it again to take it out. Add as many as you like, then close the dialog. A colour with a dashed outline has no reliable reference colour on its maker&#39;s chart: clicking it fills in the form above, where you set the colour yourself.</p>
+<h3 id="paint-box--a-colour-of-your-own"><a class="anchor" href="#paint-box--a-colour-of-your-own" aria-hidden="true" tabindex="-1">#</a>A colour of your own</h3>
+<p>For any other paint, use <strong>Own colour</strong> at the top. You enter:</p>
+<ul>
+<li>the <strong>colour</strong>, in the square on the left: the reference colour of the paint,</li>
+<li>the <strong>number</strong>,</li>
+<li>the <strong>series</strong>, as it is written on the tube, for example &quot;Daniel Smith Extra Fine&quot;. If it is a series with a colour chart in the app, entering a number fills in name and colour for you,</li>
+<li>the <strong>name</strong>,</li>
+<li>the <strong>form</strong>: <strong>Pan</strong>, <strong>Tube</strong>, <strong>Liquid</strong> or <strong>Other</strong>.</li>
+</ul>
+<p>Then press <strong>Okay</strong>: the paint joins the box and the dialog closes.</p>
 <p>The reference colour matters more than anything else on this form. Pick the colour of the paint at its <strong>strongest wash</strong>: about equal parts paint and water, dry on white paper. Not the colour straight from the pan or tube: paint in the pan is darker and more saturated than any wash you will lay with it. The app treats this colour as the darkest the paint ever gets and makes everything lighter from it with water, so a colour that is too light makes every recipe with this paint too cautious, and one that is too dark makes them too strong. The best source is your own swatch, painted on your paper and photographed or scanned in daylight. The chapter <a href="#calibrating">Calibrating your paints</a> shows how to make one.</p>
 <p>Every colour you enter yourself is also listed under <strong>Your own paints</strong> at the bottom of the paint box. There you can edit it, or delete it: press the delete button twice, so that nothing goes by accident.</p>
 <h2 id="paint-box--managing-paint-boxes"><a class="anchor" href="#paint-box--managing-paint-boxes" aria-hidden="true" tabindex="-1">#</a>Managing paint boxes</h2>
@@ -276,13 +288,13 @@
 <section class="chapter" id="colour-areas"><p class="chapter__kicker"><span>The app</span><span>Chapter 5</span></p>
 <h1 class="chapter__title">Colour areas</h1>
 <p>Open <strong>Settings</strong> in the right-hand column. Everything in this chapter is set there, apart from the views at the end, which sit among the tools of the picture. When you let go of a slider, the app analyses the picture again.</p>
-<figure class="shot shot--markers" style="--shot-width:521px"><div class="shot__frame"><a class="shot__zoom" href="img/en/settings.webp" title="Open the picture at full size"><img src="img/en/settings.webp" width="521" height="361" alt="The settings" loading="lazy"></a><span class="shot__marker" style="left:6.72%;top:24.77%" aria-hidden="true">1</span><span class="shot__marker" style="left:28.02%;top:24.77%" aria-hidden="true">2</span><span class="shot__marker" style="left:7.1%;top:42.1%" aria-hidden="true">3</span><span class="shot__marker" style="left:8.25%;top:52.06%" aria-hidden="true">4</span><span class="shot__marker" style="left:36.08%;top:52.06%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.92%;top:52.06%" aria-hidden="true">6</span></div><figcaption>The settings</figcaption></figure>
+<figure class="shot shot--markers" style="--shot-width:521px"><div class="shot__frame"><a class="shot__zoom" href="img/en/settings.webp" title="Open the picture at full size"><img src="img/en/settings.webp" width="521" height="448" alt="The settings" loading="lazy"></a><span class="shot__marker" style="left:6.72%;top:19.96%" aria-hidden="true">1</span><span class="shot__marker" style="left:28.02%;top:19.96%" aria-hidden="true">2</span><span class="shot__marker" style="left:7.1%;top:33.91%" aria-hidden="true">3</span><span class="shot__marker" style="left:8.25%;top:41.94%" aria-hidden="true">4</span><span class="shot__marker" style="left:36.08%;top:41.94%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.92%;top:41.94%" aria-hidden="true">6</span></div><figcaption>The settings</figcaption></figure>
 <ol class="legend">
 <li>The method: <strong>Mix</strong> (this chapter) or <strong>Layer</strong> (see <a href="#layer-mode">Layer mode</a>).</li>
 <li>The areas: <strong>Organic</strong> or <strong>Geometric</strong>.</li>
 <li><strong>Simplify areas</strong>: how large and calm the shapes are.</li>
 <li><strong>Colours</strong>: the number of mixes.</li>
-<li><strong>Details</strong>: whether small areas of another hue keep a mix of their own.</li>
+<li><strong>Details</strong>: whether the mixes go to fine steps across the picture or to small areas of another hue.</li>
 <li><strong>Max. paints</strong>: how many paints one mix may contain.</li>
 </ol>
 <p>The button with the half-filled circle beside the areas switches to <a href="#values--monochrome-one-temperature-every-value">Monochrome</a>, a study in light and dark painted with your paints (Pro). For light and shadow alone, use the <strong>Blocking</strong> view.</p>
@@ -302,10 +314,10 @@
 <h2 id="colour-areas--details-which-colours-get-their-own-mix"><a class="anchor" href="#colour-areas--details-which-colours-get-their-own-mix" aria-hidden="true" tabindex="-1">#</a>Details: which colours get their own mix</h2>
 <p>When the photo has more colours than you asked for, some of them have to share a mix. <strong>Details</strong> decides which.</p>
 <ul>
-<li><strong>Low (towards 0)</strong> keeps the picture as a whole as close to the photo as possible. Large areas get the most accurate colours, and a small area of another hue may be painted with the nearest large mix.</li>
-<li><strong>High (towards 10)</strong> keeps small areas of a distinct hue in a mix of their own: the red roof in a green valley, the lips in a portrait, a single yellow boat. In exchange, similar large colours share mixes more often.</li>
+<li><strong>High (towards 10)</strong> keeps the picture as a whole as close to the photo as possible. The large areas, a sky, a wall, a street, get the finest steps, and a small area of another hue may be painted with the nearest large mix.</li>
+<li><strong>Low (towards 0)</strong> keeps small areas of a distinct hue in a mix of their own: the red roof in a green valley, the lips in a portrait, a single yellow boat. In exchange, similar large colours share mixes more often, and a sky may become one flat colour.</li>
 </ul>
-<p>The default of 5 is a balance. Raise it for pictures that live from a small accent; lower it for quiet landscapes where the large colour fields matter most.</p>
+<p>The default of 5 is a balance. Lower it for pictures that live from a small accent; raise it for quiet landscapes where the large colour fields matter most.</p>
 <h2 id="colour-areas--max-paints"><a class="anchor" href="#colour-areas--max-paints" aria-hidden="true" tabindex="-1">#</a>Max. paints</h2>
 <p><strong>Max. paints</strong> limits every mix to one, two or three paints. Three gives the closest matches. Two gives cleaner, brighter mixes that are easier to repeat. One means every colour is a single paint at some strength of water, a strict and beautiful exercise.</p>
 <p>Three paints in one mix are perfectly normal in watercolour, but every extra paint dulls a mix a little. If your colours on paper look muddier than on screen, try two.</p>
@@ -319,24 +331,26 @@
 <p><strong>Geometric</strong> turns every area into a polygon with a few straight edges, laid over each other from large to small. It works in both methods and gives a picture with a strong graphic character, close to a hard-edged or cubist style. It is also quick to draw with a ruler. <strong>Simplify areas</strong> makes the edges longer and the shapes fewer.</p>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/geometric.webp" title="Open the picture at full size"><img src="img/en/geometric.webp" width="1440" height="900" alt="The sample photo with geometric areas" loading="lazy"></a></div><figcaption>The sample photo with geometric areas</figcaption></figure>
 <h2 id="colour-areas--the-views"><a class="anchor" href="#colour-areas--the-views" aria-hidden="true" tabindex="-1">#</a>The views</h2>
-<p>The tools of the picture sit above it.</p>
-<figure class="shot shot--markers" style="--shot-width:482px"><div class="shot__frame"><a class="shot__zoom" href="img/en/picture-tools.webp" title="Open the picture at full size"><img src="img/en/picture-tools.webp" width="482" height="72" alt="The tools of the picture" loading="lazy"></a><span class="shot__marker" style="left:7.47%;top:3%" aria-hidden="true">1</span><span class="shot__marker" style="left:18.67%;top:3%" aria-hidden="true">2</span><span class="shot__marker" style="left:30.08%;top:3%" aria-hidden="true">3</span><span class="shot__marker" style="left:40.04%;top:3%" aria-hidden="true">4</span><span class="shot__marker" style="left:50%;top:3%" aria-hidden="true">5</span><span class="shot__marker" style="left:59.96%;top:3%" aria-hidden="true">6</span><span class="shot__marker" style="left:69.92%;top:3%" aria-hidden="true">7</span><span class="shot__marker" style="left:81.33%;top:3%" aria-hidden="true">8</span><span class="shot__marker" style="left:92.53%;top:3%" aria-hidden="true">9</span></div><figcaption>The tools of the picture</figcaption></figure>
+<p>The tools of the picture sit above it, with <strong>Settings</strong> on their left. On a phone the tools are at the bottom and <strong>Settings</strong> at the top.</p>
+<figure class="shot shot--markers" style="--shot-width:648px"><div class="shot__frame"><a class="shot__zoom" href="img/en/picture-tools.webp" title="Open the picture at full size"><img src="img/en/picture-tools.webp" width="648" height="90" alt="The tools of the picture" loading="lazy"></a><span class="shot__marker" style="left:13.42%;top:3.33%" aria-hidden="true">1</span><span class="shot__marker" style="left:31.17%;top:3.33%" aria-hidden="true">2</span><span class="shot__marker" style="left:41.2%;top:3.33%" aria-hidden="true">3</span><span class="shot__marker" style="left:48.61%;top:3.33%" aria-hidden="true">4</span><span class="shot__marker" style="left:56.01%;top:3.33%" aria-hidden="true">5</span><span class="shot__marker" style="left:63.42%;top:3.33%" aria-hidden="true">6</span><span class="shot__marker" style="left:73.45%;top:3.33%" aria-hidden="true">7</span><span class="shot__marker" style="left:83.33%;top:3.33%" aria-hidden="true">8</span><span class="shot__marker" style="left:93.21%;top:3.33%" aria-hidden="true">9</span></div><figcaption>The tools of the picture</figcaption></figure>
 <ol class="legend">
-<li><strong>Fit</strong> fits the picture to the window.</li>
+<li><strong>Settings</strong> opens and closes the card with the settings.</li>
 <li><strong>Detail</strong> lets you look at a part of the picture on its own (see <a href="#pictures--looking-closer-details-of-the-picture">Pictures</a>).</li>
 <li><strong>Mixed paint</strong>: every area in the colour your paints actually reach. This is the view to paint from.</li>
 <li><strong>Photo colour</strong>: every area in the colour of the photo. Compare it with <strong>Mixed paint</strong> to see where your paints fall short.</li>
-<li><strong>Overlay</strong>: the photo at half strength over the paint, to see which area is which part of the photo.</li>
 <li><strong>Photo</strong>: the original, with saturation and contrast applied.</li>
-<li><strong>Template to print</strong>: no fill, only outlines and numbers in light blue. See <a href="#printing">Printing</a>.</li>
+<li><strong>Blocking</strong>: light and shadow in large masses. See <a href="#values--blocking-light-and-shadow-first">Values</a>.</li>
+<li><strong>Grid</strong>: square cells over the picture, in white, grey or black. See <a href="#printing--the-grid">Printing</a>.</li>
 <li><strong>Outlines</strong> on or off.</li>
-<li><strong>Numbers</strong> on or off.</li>
+<li><strong>Numbers</strong>: each click steps on from numbers to numbers on a backdrop to no numbers. On a backdrop every number sits on a small square, white with a dark number on dark areas and dark with a white number on light ones, so it stays readable on any colour.</li>
 </ol>
+<p>Once you zoom into the picture, <strong>Fit</strong> appears at the start of the tools; it fits the picture to the window again.</p>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-target.webp" title="Open the picture at full size"><img src="img/en/view-target.webp" width="1440" height="900" alt="Photo colour: what the photo asks for" loading="lazy"></a></div><figcaption>Photo colour: what the photo asks for</figcaption></figure>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-overlay.webp" title="Open the picture at full size"><img src="img/en/view-overlay.webp" width="1440" height="900" alt="Overlay: the photo over the paint" loading="lazy"></a></div><figcaption>Overlay: the photo over the paint</figcaption></figure>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-photo.webp" title="Open the picture at full size"><img src="img/en/view-photo.webp" width="1440" height="900" alt="Photo: the original" loading="lazy"></a></div><figcaption>Photo: the original</figcaption></figure>
 <p>With outlines and numbers off, <strong>Mixed paint</strong> shows the picture as it might look painted, a good test of whether the plan works as a picture.</p>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-plain.webp" title="Open the picture at full size"><img src="img/en/view-plain.webp" width="1440" height="900" alt="Mixed paint without outlines and numbers" loading="lazy"></a></div><figcaption>Mixed paint without outlines and numbers</figcaption></figure>
+<p><strong>Number size</strong> at the end of the settings makes the numbers <strong>Large</strong>, 1.4 times the <strong>Normal</strong> size, for a picture seen from further away or printed small.</p>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-backdrop.webp" title="Open the picture at full size"><img src="img/en/view-backdrop.webp" width="1440" height="900" alt="Large numbers on a backdrop" loading="lazy"></a></div><figcaption>Large numbers on a backdrop</figcaption></figure>
 <h2 id="colour-areas--settings-for-typical-subjects"><a class="anchor" href="#colour-areas--settings-for-typical-subjects" aria-hidden="true" tabindex="-1">#</a>Settings for typical subjects</h2>
 <p>These are starting points, not rules.</p>
 <div class="table-wrap"><table class="table">
@@ -353,14 +367,14 @@
 <td>Landscape, large shapes</td>
 <td>12 to 20</td>
 <td>4 to 8</td>
-<td>3 to 5</td>
+<td>5 to 7</td>
 <td>2 or 3</td>
 </tr>
 <tr>
 <td>Portrait</td>
 <td>16 to 24</td>
 <td>2 to 5</td>
-<td>6 to 8</td>
+<td>2 to 4</td>
 <td>2 or 3</td>
 </tr>
 <tr>
@@ -374,18 +388,18 @@
 <td>Flowers, still life</td>
 <td>10 to 16</td>
 <td>3 to 6</td>
-<td>6 to 8</td>
+<td>2 to 4</td>
 <td>2</td>
 </tr>
 <tr>
 <td>Quick sketch, plein air</td>
 <td>6 to 10</td>
 <td>7 to 10</td>
-<td>3</td>
+<td>7</td>
 <td>2</td>
 </tr>
 </tbody></table></div>
-<p>For portraits, the small features (eyes, mouth, the shadow under the nose) carry the likeness, so keep <strong>Details</strong> high and <strong>Simplify areas</strong> low, or make a <a href="#pictures--looking-closer-details-of-the-picture">detail</a> of the face. For landscapes, the opposite usually works: few, large, calm areas, and the small accents painted freely at the end.</p>
+<p>For portraits, the small features (eyes, mouth, the shadow under the nose) carry the likeness, so keep <strong>Details</strong> and <strong>Simplify areas</strong> low, or make a <a href="#pictures--looking-closer-details-of-the-picture">detail</a> of the face. For landscapes, the opposite usually works: few, large, calm areas, and the small accents painted freely at the end.</p>
 </section>
 <section class="chapter" id="mixes"><p class="chapter__kicker"><span>The app</span><span>Chapter 6</span></p>
 <h1 class="chapter__title">Mixes, washes and recipes</h1>
@@ -432,7 +446,7 @@
 </aside>
 <h2 id="mixes--the-colour-list"><a class="anchor" href="#mixes--the-colour-list" aria-hidden="true" tabindex="-1">#</a>The colour list</h2>
 <p>Press <strong>Colours</strong> on the right to open the list. It shows one block per mix, from the largest share of the picture to the smallest.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/colours.webp" title="Open the picture at full size"><img src="img/en/colours.webp" width="810" height="900" alt="The colour list of Llyn Idwal" loading="lazy"></a><span class="shot__marker" style="left:3.83%;top:12.05%" aria-hidden="true">1</span><span class="shot__marker" style="left:3.83%;top:15.74%" aria-hidden="true">2</span><span class="shot__marker" style="left:5.56%;top:23.25%" aria-hidden="true">3</span></div><figcaption>The colour list of Llyn Idwal</figcaption></figure>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/colours.webp" title="Open the picture at full size"><img src="img/en/colours.webp" width="776" height="900" alt="The colour list of Llyn Idwal" loading="lazy"></a><span class="shot__marker" style="left:3.99%;top:12.05%" aria-hidden="true">1</span><span class="shot__marker" style="left:3.99%;top:15.74%" aria-hidden="true">2</span><span class="shot__marker" style="left:5.8%;top:23.25%" aria-hidden="true">3</span></div><figcaption>The colour list of Llyn Idwal</figcaption></figure>
 <ol class="legend">
 <li><strong>52 in 20 mixes:</strong> how many colours the picture has, and how many puddles they come from.</li>
 <li><strong>The key</strong> to the water levels, W to C, as they appear on the picture and in the bars.</li>
@@ -445,14 +459,14 @@
 <p>This is the view to paint from. Select a mix, paint every area that carries its number, from the lightest letter to the darkest, then move on to the next mix. Click the blank part of the picture to bring the whole picture back.</p>
 <h2 id="mixes--looking-up-a-colour-on-the-picture"><a class="anchor" href="#mixes--looking-up-a-colour-on-the-picture" aria-hidden="true" tabindex="-1">#</a>Looking up a colour on the picture</h2>
 <p>Tap or click an area on the picture. A card opens over it with what you need at the desk.</p>
-<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/inspector.webp" title="Open the picture at full size"><img src="img/en/inspector.webp" width="1440" height="900" alt="The card of a tapped area" loading="lazy"></a><span class="shot__marker" style="left:37.08%;top:70.9%" aria-hidden="true">1</span></div><figcaption>The card of a tapped area</figcaption></figure>
+<figure class="shot shot--markers"><div class="shot__frame"><a class="shot__zoom" href="img/en/inspector.webp" title="Open the picture at full size"><img src="img/en/inspector.webp" width="1440" height="900" alt="The card of a tapped area" loading="lazy"></a><span class="shot__marker" style="left:37.08%;top:70.99%" aria-hidden="true">1</span></div><figcaption>The card of a tapped area</figcaption></figure>
 <ol class="legend">
 <li><strong>The card</strong> names the colour (for example <strong>Colour 1L</strong>), shows how much of the picture it covers, the water level and the recommended recipe with its paints and the ratio as a bar. The tapped spot blinks on the picture so you know which area you are looking at. Tap the same area again or close the card to put it away.</li>
 </ol>
 <p>The card leaves the picture as it is. That is deliberate: a colour is easier to judge among its neighbours than alone. On a computer the same recipe also appears next to the pointer as you move it over the picture.</p>
 <h2 id="mixes--the-full-breakdown"><a class="anchor" href="#mixes--the-full-breakdown" aria-hidden="true" tabindex="-1">#</a>The full breakdown</h2>
 <p><strong>Full breakdown</strong> on the card opens everything the app knows about this colour.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/breakdown.webp" title="Open the picture at full size"><img src="img/en/breakdown.webp" width="768" height="786" alt="The full breakdown of one colour" loading="lazy"></a></div><figcaption>The full breakdown of one colour</figcaption></figure>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/breakdown.webp" title="Open the picture at full size"><img src="img/en/breakdown.webp" width="798" height="810" alt="The full breakdown of one colour" loading="lazy"></a></div><figcaption>The full breakdown of one colour</figcaption></figure>
 <h3 id="mixes--target-and-your-mix"><a class="anchor" href="#mixes--target-and-your-mix" aria-hidden="true" tabindex="-1">#</a>Target and your mix</h3>
 <p>On the left is the <strong>Target</strong>, the colour the photo asks for. On the right is <strong>Your mix</strong>, the colour the chosen recipe gives on white paper. When the two look alike, the recipe is good. When they differ, the difference is real: your paints cannot reach the target, and the next sections show what to do about it.</p>
 <h3 id="mixes--changing-the-target"><a class="anchor" href="#mixes--changing-the-target" aria-hidden="true" tabindex="-1">#</a>Changing the target</h3>
@@ -684,45 +698,39 @@
 <aside class="note note--tip"><p><strong>Tip:</strong> Squint at your study and at the screen in turn. When both blur into the same big shapes, the study has done its job.</p>
 </aside>
 <h2 id="values--values-and-the-rest-of-the-app"><a class="anchor" href="#values--values-and-the-rest-of-the-app" aria-hidden="true" tabindex="-1">#</a>Values and the rest of the app</h2>
-<p>Monochrome works with everything else in mix mode: the colour list, the card of a tapped area, the full breakdown, printing and the template. It does not exist in layer mode, where the layers are fitted to colour. Chapter <a href="#values-and-simplifying">Values and simplifying</a> shows how to read the values of a photo before you even open the app.</p>
+<p>Monochrome works with everything else in mix mode: the colour list, the card of a tapped area, the full breakdown and printing. It does not exist in layer mode, where the layers are fitted to colour. Chapter <a href="#values-and-simplifying">Values and simplifying</a> shows how to read the values of a photo before you even open the app.</p>
 </section>
 <section class="chapter" id="printing"><p class="chapter__kicker"><span>The app</span><span>Chapter 9</span></p>
 <h1 class="chapter__title">Printing and exporting</h1>
 <h2 id="printing--the-printed-sheet"><a class="anchor" href="#printing--the-printed-sheet" aria-hidden="true" tabindex="-1">#</a>The printed sheet</h2>
-<p><strong>Print / PDF</strong> in the column on the left prints the picture followed by its legend: every mix with its paints, so that you can paint without the screen.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/print.webp" title="Open the picture at full size"><img src="img/en/print.webp" width="1000" height="1400" alt="The printed sheet: the picture, then every mix with its washes and paints" loading="lazy"></a></div><figcaption>The printed sheet: the picture, then every mix with its washes and paints</figcaption></figure>
+<p><strong>Print / PDF</strong> in the column on the left prints the picture on a page of its own, followed by its legend: every mix with its paints, so that you can paint without the screen.</p>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/print.webp" title="Open the picture at full size"><img src="img/en/print.webp" width="1000" height="740" alt="The legend: every mix as a card with its washes and paints, four to a row" loading="lazy"></a></div><figcaption>The legend: every mix as a card with its washes and paints, four to a row</figcaption></figure>
 <p>The sheet has two parts:</p>
 <ul>
-<li><strong>The picture</strong>, exactly as it is shown at the moment of printing: the view you chose, with or without outlines and numbers. For the desk, print it in <strong>Mixed paint</strong> with outlines and numbers on, or in <strong>Template to print</strong> (see below).</li>
-<li><strong>The legend</strong>, headed with the name of the picture. One row per mix: its number, its washes side by side with their letters and their share of the picture, the paints with their parts, pan or tube and number, and the recipe as a bar. Mixes that are left as white paper say so.</li>
+<li><strong>The picture</strong>, on the first page, exactly as it is shown at the moment of printing: the view you chose, with or without outlines and numbers. For the desk, print it in <strong>Mixed paint</strong> with outlines and numbers on, and with the grid if you copy the drawing square by square (see below).</li>
+<li><strong>The legend</strong>, from the second page, headed with the name of the picture. One card per mix, four to a row, so that about twenty mixes fit on a page. At the top of each card, always on the left, is the mix at full strength, its C wash, with its number and its share of the picture; next to it its other washes, darkest first, with their letters and shares. Below it is the recipe as a bar, then the paints, one under the other, with their parts, pan or tube and number. Mixes that are left as white paper say so.</li>
 </ul>
 <p>Choose <strong>Save as PDF</strong> as the printer in the print dialog of your browser to keep the sheet as a file, for example on a tablet next to the painting.</p>
 <aside class="note note--tip"><p><strong>Tip:</strong> Tick off each mix on the printed legend once its areas are painted. It is the simplest way not to lose your place in a picture with twenty mixes.</p>
 </aside>
 <h3 id="printing--in-layer-mode"><a class="anchor" href="#printing--in-layer-mode" aria-hidden="true" tabindex="-1">#</a>In layer mode</h3>
 <p>In layer mode the sheet is the finished picture followed by one page per layer: the paint and how to prepare its wash, the areas to paint with their coat numbers, and what to do (&quot;Coat 1 on every numbered area&quot;, then which numbers get a second coat). The accents follow last. Chapter <a href="#layer-mode">Layer mode</a> explains the coats.</p>
-<h2 id="printing--the-template-to-print"><a class="anchor" href="#printing--the-template-to-print" aria-hidden="true" tabindex="-1">#</a>The template to print</h2>
-<p><strong>Template to print</strong> is a view of the picture with the areas left empty: only their outlines and numbers, drawn in light blue. You find it among the views in the tools above the picture, on a phone in the menu.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-template.webp" title="Open the picture at full size"><img src="img/en/view-template.webp" width="1440" height="900" alt="The template: outlines and numbers in light blue, nothing filled in" loading="lazy"></a></div><figcaption>The template: outlines and numbers in light blue, nothing filled in</figcaption></figure>
-<p>Light blue has a purpose. A printer makes it without black ink, so the lines stay faint and the paint covers them. You can use the template in two ways:</p>
-<ol>
-<li><strong>Print it on watercolour paper and paint on it.</strong> Many inkjet printers take thin watercolour paper (up to about 300 g/m² for some photo printers; check your printer&#39;s manual). Print the template, let the ink dry completely, tape the sheet down and paint the numbered areas directly.</li>
-<li><strong>Print it on ordinary paper and transfer the drawing.</strong> See the next section.</li>
-</ol>
-<p><strong>Print / PDF</strong> in this view prints the template and the legend: the sheet you paint from and the sheet you mix from.</p>
-<aside class="note note--warn"><p><strong>Caution:</strong> Inkjet ink can bleed when it gets wet. Test a corner of a printed template with a wet brush before you commit a good sheet of paper to it.</p>
-</aside>
+<h2 id="printing--the-grid"><a class="anchor" href="#printing--the-grid" aria-hidden="true" tabindex="-1">#</a>The grid</h2>
+<p><strong>Grid</strong> in the tools above the picture, left of <strong>Outlines</strong>, lays a grid of square cells over the picture. Each click steps on from no grid to white, grey and black lines, so that the grid stays visible on light and on dark pictures.</p>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/view-grid.webp" title="Open the picture at full size"><img src="img/en/view-grid.webp" width="1440" height="900" alt="The grid: eight columns of square cells over the picture" loading="lazy"></a></div><figcaption>The grid: eight columns of square cells over the picture</figcaption></figure>
+<p><strong>Grid columns</strong> in the settings decides how many cells fit across the picture, from 2 to 30. The rows have the same height as the columns are wide, so every cell is square; the last row is cut off where the picture ends.</p>
+<p>The grid is drawn in every view and goes onto the printed sheet and into the JPG. Draw the same number of columns on your paper, with cells as square as on the screen, and the picture is ready to copy cell by cell (see the next section).</p>
 <h2 id="printing--transferring-the-drawing"><a class="anchor" href="#printing--transferring-the-drawing" aria-hidden="true" tabindex="-1">#</a>Transferring the drawing</h2>
 <p>If you would rather draw on your own paper, you have several options, from fastest to most personal:</p>
 <ul>
-<li><strong>Light box or window.</strong> Tape the printed template behind the watercolour paper against a light box or a sunny window and trace the outlines with a hard, light pencil (2H or H).</li>
+<li><strong>Light box or window.</strong> Tape the printed picture, outlines on, behind the watercolour paper against a light box or a sunny window and trace the outlines with a hard, light pencil (2H or H).</li>
 <li><strong>Graphite transfer.</strong> Shade the back of the printout with a soft pencil (4B), lay it on the paper, and trace the lines with a ballpoint. Use as little pressure as you can; dents in the paper catch paint.</li>
-<li><strong>Grid by eye.</strong> Print the picture with <strong>Mixed paint</strong> and draw a grid of light lines on both the print and the paper. Copy one square at a time. It is slower and trains your eye.</li>
+<li><strong>Grid by eye.</strong> Turn on the grid, print the picture with <strong>Mixed paint</strong> and draw the same grid of light lines on the paper. Copy one square at a time. It is slower and trains your eye.</li>
 </ul>
 <p>Write the labels (6L, 3R) small and faint inside the areas. A light wash will still let you read them; a dark wash covers them. You do not need every outline. Leave out what you would rather paint freely, and the painting will be yours, not a copy.</p>
-<figure class="photo photo--missing"><div class="photo__frame"><span class="photo__note">Photo follows</span></div><figcaption>Tracing the template at the window</figcaption></figure>
+<figure class="photo photo--missing"><div class="photo__frame"><span class="photo__note">Photo follows</span></div><figcaption>Tracing the drawing at the window</figcaption></figure>
 <h2 id="printing--paper-size-and-scale"><a class="anchor" href="#printing--paper-size-and-scale" aria-hidden="true" tabindex="-1">#</a>Paper size and scale</h2>
-<p>The browser&#39;s print dialog decides the paper. The picture is fitted to the width of the page and is at most 15 cm high, so that the legend starts on the same sheet. On an A4 or Letter page a landscape photo comes out at about 19 by 13 cm; a larger page adds little. For a larger painting:</p>
+<p>The browser&#39;s print dialog decides the paper. The picture has the first page to itself and is fitted to it. On an A4 or Letter page a landscape photo comes out at about 19 by 13 cm, a portrait photo at up to about 26 cm high. For a larger painting:</p>
 <ul>
 <li>choose a larger paper size in the print dialog if your printer has it,</li>
 <li>or save as PDF and print the picture at a copy shop,</li>
@@ -777,7 +785,7 @@
 <td>yes</td>
 </tr>
 <tr>
-<td>Save, Print / PDF, the template, Export as JPG</td>
+<td>Save, Print / PDF, Export as JPG</td>
 <td></td>
 <td>yes</td>
 <td>yes</td>
@@ -827,7 +835,7 @@
 <td>one payment, no renewal</td>
 </tr>
 </tbody></table></div>
-<p>The dialog shows the current prices. They include VAT. Payment is handled by Stripe; the app never sees your card. &quot;Lifetime&quot; means the life of the product: for as long as Watercolourlove is offered, not a promise that it runs forever. The terms explain this in full.</p>
+<p>The dialog shows the current prices. They include VAT. Payment is handled by Stripe; the app never sees your card. &quot;Lifetime&quot; means the lifetime of the product, Watercolourlove. The terms explain this in full.</p>
 <p>What you paid for pictures in the last 30 days comes off your first plan: the dialog says how much.</p>
 <p>With a subscription you can <strong>Switch to a lifetime licence</strong> at any time. A <strong>Voucher for a lifetime licence</strong> is redeemed in the plan dialog with <strong>Redeem</strong>; a voucher only works with the e-mail address it was made out to.</p>
 <h3 id="account--the-account-dialog"><a class="anchor" href="#account--the-account-dialog" aria-hidden="true" tabindex="-1">#</a>The account dialog</h3>
@@ -854,12 +862,19 @@
 <li>your paint boxes and the colours of your own,</li>
 <li>your preferences and the arrangement of the panels.</li>
 </ul>
-<p>None of this is part of your account. That has three consequences you should know:</p>
+<p>None of this is part of your account. That has four consequences you should know:</p>
 <ol>
 <li><strong>Another device is a fresh start.</strong> Sign in on your tablet and you have your plan there, but not your collection or your paint boxes.</li>
 <li><strong>Clearing the browser&#39;s data deletes your work.</strong> &quot;Clear browsing data&quot;, &quot;Delete cookies and site data&quot; or a private window that you close all remove it, and nobody can bring it back.</li>
+<li><strong>The browser can clear up on its own.</strong> Safari deletes the data of a website you have not opened for seven days, unless you added it to your home screen. Any browser may remove stored data when the device is nearly full. So open the app regularly, or back up what you want to keep.</li>
 <li><strong>Your work is private by design.</strong> Nobody, including us, can see your photos or your paints.</li>
 </ol>
+<p>What you can back up:</p>
+<ul>
+<li><strong>Paint boxes</strong> as a file: <strong>Export</strong> under each box in the paint box, back with <strong>Import paint box</strong>, on this device or another.</li>
+<li><strong>The result of a picture</strong> as a printed sheet or PDF with every mix (<a href="#printing">Printing</a>) or as a JPG (<a href="#pictures--exporting-a-picture">Exporting a picture</a>).</li>
+<li><strong>A picture with all its settings and colour changes</strong> as a picture file (<code>.wcl</code>): every <strong>Save</strong> downloads it, <strong>New picture</strong> opens it again, on this device or another. See <a href="#pictures--the-picture-file-wcl">The picture file</a>.</li>
+</ul>
 <aside class="note note--tip"><p><strong>Tip:</strong> Back up your paint boxes. In the paint box, <strong>Export</strong> under each box saves it as a file; <strong>Import paint box</strong> brings it back, on this device or another. A paint box with your own calibrated colours is worth keeping. See <a href="#paint-box">Paint box and palette</a>.</p>
 </aside>
 <h3 id="account--deleting-your-account"><a class="anchor" href="#account--deleting-your-account" aria-hidden="true" tabindex="-1">#</a>Deleting your account</h3>
@@ -1029,6 +1044,7 @@
 <h2 id="how-watercolour-works--how-the-app-models-paint"><a class="anchor" href="#how-watercolour-works--how-the-app-models-paint" aria-hidden="true" tabindex="-1">#</a>How the app models paint</h2>
 <p>The app treats every paint the way the light treats it: as a <strong>transparent filter</strong> on white paper.</p>
 <p>For each paint it knows one colour, the colour of its swatch. From that it works out, for red, green and blue light separately, how much the paint absorbs. When you mix paints, their absorptions add up, each weighted by how much of that paint is in the mix. That is subtractive mixing, the same law that describes coloured glass or ink in water (physicists call it Beer-Lambert). Blue and yellow give green because the blue takes away the red and the yellow takes away the blue, and only green light survives both.</p>
+<p>Water works differently. The app first works out the mix at full strength, then lays it over the paper the way a screen lays a colour at reduced opacity: an M wash at half strength is the full mix at 50 %, an L wash at a quarter is the mix at 25 %. So a wash grows paler toward the paper and does not keep the glow of the full colour. A turquoise with no red in it at all still turns into a pale, soft turquoise when you add water, as it does on paper.</p>
 <h3 id="how-watercolour-works--why-three-bright-paints-do-not-make-black"><a class="anchor" href="#how-watercolour-works--why-three-bright-paints-do-not-make-black" aria-hidden="true" tabindex="-1">#</a>Why three bright paints do not make black</h3>
 <p>On paper, adding paint does not darken a wash forever. A brush only carries so much pigment, and a thick wash approaches the paint&#39;s <strong>masstone</strong>, the colour of the paint at full strength, and stops there. The app models this as a depth limit for the mix as a whole: a bright paint can go only a little darker than its swatch (about 1.6 times its absorption), while greys, blacks and earths, whose masstone is far darker than their wash, can go much deeper (up to 4 times). So in the app, as on paper, three bright colours mixed thickly give a deep dull colour, not black.</p>
 <h3 id="how-watercolour-works--strength-1-the-darkest-the-app-uses-a-paint"><a class="anchor" href="#how-watercolour-works--strength-1-the-darkest-the-app-uses-a-paint" aria-hidden="true" tabindex="-1">#</a>Strength 1: the darkest the app uses a paint</h3>
@@ -1060,7 +1076,7 @@
 <h1 class="chapter__title">Mixing in practice</h1>
 <h2 id="mixing--from-recipe-to-puddle"><a class="anchor" href="#mixing--from-recipe-to-puddle" aria-hidden="true" tabindex="-1">#</a>From recipe to puddle</h2>
 <p>Every mix in the app comes with a recipe: the paints, their parts and the water. In the full breakdown of a colour you see it next to the target colour, with up to five recipes to choose from.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/breakdown.webp" title="Open the picture at full size"><img src="img/en/breakdown.webp" width="768" height="786" alt="The full breakdown of one colour: target and mix side by side, the recipes below" loading="lazy"></a></div><figcaption>The full breakdown of one colour: target and mix side by side, the recipes below</figcaption></figure>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/breakdown.webp" title="Open the picture at full size"><img src="img/en/breakdown.webp" width="798" height="810" alt="The full breakdown of one colour: target and mix side by side, the recipes below" loading="lazy"></a></div><figcaption>The full breakdown of one colour: target and mix side by side, the recipes below</figcaption></figure>
 <p>A recipe such as <strong>3 x P 672</strong> plus <strong>1 x T 525</strong> means three parts of paint 672 from the pan to one part of paint 525 from the tube. The water level (<strong>very watery</strong>, <strong>light</strong>, <strong>medium</strong>, <strong>rich</strong> or <strong>concentrated</strong>) says how much water the whole puddle gets. <a href="#mixes">Mixes, washes and recipes</a> explains every part of the display; here is how to do it at the desk.</p>
 <h3 id="mixing--count-in-brush-loads"><a class="anchor" href="#mixing--count-in-brush-loads" aria-hidden="true" tabindex="-1">#</a>Count in brush loads</h3>
 <p>A <strong>part</strong> is a brush load: the same brush, loaded the same way, every time. Wet the brush, take it through the paint until the belly is full, and put that load into the well. For three parts, three loads. With pans, work the paint up first with a few drops of water until it is creamy, so that every load carries the same amount. With tubes, squeeze a small blob into a separate well and take your loads from there.</p>
@@ -1423,7 +1439,7 @@
 <li>Open <strong>Llyn Idwal</strong>, press <strong>Monochrome</strong> in the settings and set <strong>Colours</strong> to its lowest, 2.</li>
 <li>Open the <strong>Paint box</strong> and put a single dark, transparent paint in the palette, for example a neutral tint, a sepia or an indigo.</li>
 <li>Set <strong>Simplify areas</strong> high enough that you count no more than about thirty areas.</li>
-<li>Print the sheet or the <strong>Template to print</strong>, transfer the outlines and paint the study with the washes the app gives you, from the lightest to the darkest.</li>
+<li>Print the sheet, transfer the outlines and paint the study with the washes the app gives you, from the lightest to the darkest.</li>
 <li>When it is dry, put it next to a grey print of the photo and squint at both.</li>
 </ol>
 <figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/values.webp" title="Open the picture at full size"><img src="img/en/values.webp" width="1440" height="900" alt="Llyn Idwal in Monochrome with one paint: the picture in grey, each value painted with a single colour of the palette" loading="lazy"></a></div><figcaption>Llyn Idwal in Monochrome with one paint: the picture in grey, each value painted with a single colour of the palette</figcaption></figure>
@@ -1616,7 +1632,7 @@
 <tr>
 <td>Details</td>
 <td>Details</td>
-<td>The setting that decides whether small areas of another hue keep a mix of their own.</td>
+<td>The setting that decides whether the mixes go to fine steps across the picture (high) or to small areas of another hue (low).</td>
 </tr>
 <tr>
 <td>Full breakdown</td>
@@ -1627,6 +1643,11 @@
 <td>Geometric</td>
 <td>Geometrisch</td>
 <td>Areas as polygons with straight edges instead of their organic outline.</td>
+</tr>
+<tr>
+<td>Grid</td>
+<td>Raster</td>
+<td>Square cells over the picture, to copy it onto paper cell by cell.</td>
 </tr>
 <tr>
 <td>Layer</td>
@@ -1674,11 +1695,6 @@
 <td>Areas that follow the outlines of the photo.</td>
 </tr>
 <tr>
-<td>Overlay</td>
-<td>Überlagerung</td>
-<td>The view of the photo at half strength over the paint.</td>
-</tr>
-<tr>
 <td>Paint box</td>
 <td>Farbkasten</td>
 <td>A named set of paints you own, for example your pans or a travel set.</td>
@@ -1707,11 +1723,6 @@
 <td>Target</td>
 <td>Ziel</td>
 <td>The colour the photo asks for in an area.</td>
-</tr>
-<tr>
-<td>Template to print</td>
-<td>Vorlage zum Drucken</td>
-<td>Only outlines and numbers, in light blue, to print and paint on.</td>
 </tr>
 <tr>
 <td>Values</td>
@@ -1841,7 +1852,7 @@
 <h3 id="troubleshooting--the-map-has-far-too-many-tiny-areas"><a class="anchor" href="#troubleshooting--the-map-has-far-too-many-tiny-areas" aria-hidden="true" tabindex="-1">#</a>The map has far too many tiny areas</h3>
 <p>Raise <strong>Simplify areas</strong>. Every step merges small shapes into their neighbours; around the middle of the range most photos become paintable. Lowering <strong>Colours</strong> helps too, because fewer mixes mean fewer boundaries between them. See <a href="#colour-areas">Colour areas</a>.</p>
 <h3 id="troubleshooting--an-important-detail-has-disappeared"><a class="anchor" href="#troubleshooting--an-important-detail-has-disappeared" aria-hidden="true" tabindex="-1">#</a>An important detail has disappeared</h3>
-<p>Small areas that differ in hue from their surroundings, a red roof, the lips in a portrait, keep a mix of their own when <strong>Details</strong> is set high. If the detail is also small in size, simplifying merges it away; look at that part of the picture on its own with <strong>Detail</strong>, where it gets finer areas and mixes of its own (Pro). See <a href="#pictures">Pictures</a>.</p>
+<p>Small areas that differ in hue from their surroundings, a red roof, the lips in a portrait, keep a mix of their own when <strong>Details</strong> is set low. If the detail is also small in size, simplifying merges it away; look at that part of the picture on its own with <strong>Detail</strong>, where it gets finer areas and mixes of its own (Pro). See <a href="#pictures">Pictures</a>.</p>
 <h3 id="troubleshooting--the-colours-look-dull-or-far-too-loud"><a class="anchor" href="#troubleshooting--the-colours-look-dull-or-far-too-loud" aria-hidden="true" tabindex="-1">#</a>The colours look dull, or far too loud</h3>
 <p>The app raises <strong>Saturation</strong> to 200% before it analyses the photo, because photos usually look flatter than the place did. For a photo that is already strongly coloured, lower it towards 100%. <strong>Contrast</strong> works the same way for the difference between light and dark. Both change only the analysis, never the photo itself.</p>
 <h2 id="troubleshooting--the-recipes"><a class="anchor" href="#troubleshooting--the-recipes" aria-hidden="true" tabindex="-1">#</a>The recipes</h2>
@@ -1886,5 +1897,6 @@
     <span>Watercolourlove by Markus Freise. Questions: <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="manual.js"></script>
 </body>
 </html>

@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Schließen" data-lightbox-prev="Bild davor" data-lightbox-next="Nächstes Bild">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,7 +74,7 @@
 <td>ja</td>
 </tr>
 <tr>
-<td>Sichern, Drucken / PDF, die Vorlage, Als JPG exportieren</td>
+<td>Sichern, Drucken / PDF, Als JPG exportieren</td>
 <td></td>
 <td>ja</td>
 <td>ja</td>
@@ -124,7 +124,7 @@
 <td>eine Zahlung, keine Verlängerung</td>
 </tr>
 </tbody></table></div>
-<p>Der Dialog zeigt die aktuellen Preise. Sie enthalten die Mehrwertsteuer. Die Zahlung wickelt Stripe ab; die App sieht deine Karte nie. „Lebenszeit“ meint die Lebenszeit des Produkts: so lange, wie Watercolourlove angeboten wird, kein Versprechen, dass es ewig läuft. Die AGB erklären das genau.</p>
+<p>Der Dialog zeigt die aktuellen Preise. Sie enthalten die Mehrwertsteuer. Die Zahlung wickelt Stripe ab; die App sieht deine Karte nie. „Lebenszeit“ meint die Lebenszeit des Produkts Watercolourlove. Die AGB erklären das genau.</p>
 <p>Was du in den letzten 30 Tagen für Bilder bezahlt hast, ziehen wir von deinem ersten Tarif ab: Der Dialog sagt dir, wie viel.</p>
 <p>Mit einem Abo kannst du jederzeit <strong>Zur Lebenszeit-Lizenz wechseln</strong>. Einen <strong>Gutschein für eine Lebenszeit-Lizenz</strong> löst du im Tarif-Dialog mit <strong>Einlösen</strong> ein; ein Gutschein gilt nur für die E-Mail-Adresse, auf die er ausgestellt ist.</p>
 <h3 id="das-konto"><a class="anchor" href="#das-konto" aria-hidden="true" tabindex="-1">#</a>Das Konto</h3>
@@ -151,12 +151,19 @@
 <li>deine Farbkästen und deine eigenen Farben,</li>
 <li>deine Einstellungen und die Anordnung der Fenster.</li>
 </ul>
-<p>Nichts davon gehört zu deinem Konto. Das hat drei Folgen, die du kennen solltest:</p>
+<p>Nichts davon gehört zu deinem Konto. Das hat vier Folgen, die du kennen solltest:</p>
 <ol>
 <li><strong>Ein anderes Gerät ist ein Neuanfang.</strong> Meldest du dich auf dem Tablet an, hast du dort deinen Tarif, aber nicht deine Sammlung und nicht deine Farbkästen.</li>
 <li><strong>Wer die Browserdaten löscht, löscht seine Arbeit.</strong> „Browserdaten löschen“, „Cookies und Websitedaten löschen“ oder ein privates Fenster, das du schließt, entfernen sie alle, und niemand kann sie zurückholen.</li>
+<li><strong>Der Browser kann von sich aus aufräumen.</strong> Safari löscht die Daten einer Website, die du sieben Tage lang nicht geöffnet hast, außer du hast sie zum Home-Bildschirm hinzugefügt. Jeder Browser kann gespeicherte Daten entfernen, wenn der Speicher des Geräts fast voll ist. Öffne die App also regelmäßig, oder sichere, was du behalten willst.</li>
 <li><strong>Deine Arbeit ist von Grund auf privat.</strong> Niemand, auch wir nicht, kann deine Fotos oder deine Farben sehen.</li>
 </ol>
+<p>Was du sichern kannst:</p>
+<ul>
+<li><strong>Farbkästen</strong> als Datei: <strong>Exportieren</strong> unter jedem Kasten im Farbkasten, zurück mit <strong>Farbkasten importieren</strong>, auf diesem oder einem anderen Gerät.</li>
+<li><strong>Das Ergebnis eines Bildes</strong> als Ausdruck oder PDF mit allen Mischungen (<a href="drucken.html">Drucken</a>) oder als JPG (<a href="bilder.html#ein-bild-exportieren">Ein Bild exportieren</a>).</li>
+<li><strong>Ein Bild mit allen Einstellungen und Farbänderungen</strong> als Bilddatei (<code>.wcl</code>): Jedes <strong>Sichern</strong> lädt sie herunter, <strong>Neues Bild</strong> öffnet sie wieder, auf diesem oder einem anderen Gerät. Siehe <a href="bilder.html#die-bilddatei-wcl">Die Bilddatei</a>.</li>
+</ul>
 <aside class="note note--tip"><p><strong>Tipp:</strong> Sichere deine Farbkästen. Im Farbkasten speichert <strong>Exportieren</strong> unter jedem Kasten ihn als Datei; <strong>Farbkasten importieren</strong> holt ihn zurück, auf diesem oder einem anderen Gerät. Ein Farbkasten mit deinen eigenen, kalibrierten Farben ist es wert, aufgehoben zu werden. Siehe <a href="farbkasten.html">Farbkasten und Palette</a>.</p>
 </aside>
 <h3 id="das-konto-loeschen"><a class="anchor" href="#das-konto-loeschen" aria-hidden="true" tabindex="-1">#</a>Das Konto löschen</h3>
@@ -179,5 +186,6 @@
     <span>Watercolourlove von Markus Freise. Fragen an <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="../../manual/manual.js"></script>
 </body>
 </html>

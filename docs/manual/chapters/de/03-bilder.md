@@ -25,7 +25,7 @@ Fotos vom Telefon sind völlig in Ordnung. Die Auflösung ist weniger wichtig, a
 
 ## Ein Bild öffnen
 
-Drück in der linken Spalte auf **Neues Bild** und wähl ein Foto. Auf Telefon und Tablet bietet derselbe Knopf auch die Kamera an, sodass du ein Motiv fotografieren und gleich vor Ort planen kannst. Jedes Bildformat, das dein Browser anzeigen kann, ist recht: JPG, PNG, WebP, auf Apple-Geräten auch HEIC.
+Drück in der linken Spalte auf **Neues Bild** und wähl ein Foto. Auf Telefon und Tablet bietet derselbe Knopf auch die Kamera an, sodass du ein Motiv fotografieren und gleich vor Ort planen kannst. Jedes Bildformat, das dein Browser anzeigen kann, ist recht: JPG, PNG, WebP, auf Apple-Geräten auch HEIC. Derselbe Knopf öffnet auch eine gesicherte Bilddatei (`.wcl`).
 
 **Beispiele** öffnet fünf Beispielfotos des Autors: eine Stadt, einen See in den Bergen, Dächer in der Dämmerung, Winterfelder und eine Altstadt im Schnee. Mit ihnen lernst du die App gut kennen, bevor du eigene Fotos mitbringst, und es sind die Bilder, die dieses Handbuch verwendet.
 
@@ -47,6 +47,10 @@ Gesichert wird:
 - jede Änderung an einer Farbe: neue Ziele, gewählte Rezepte, abgetrennte Flächen.
 
 Öffnest du ein gesichertes Bild später wieder, kommt es genau so zurück, wie du es verlassen hast, auch wenn du deine Farbkästen inzwischen geändert hast. Nachdem du ein gesichertes Bild geändert hast, heißt der Knopf **Änderungen sichern**. In der Sammlung kannst du ein Bild außerdem **Umbenennen** und **Löschen**.
+
+### Die Bilddatei (.wcl)
+
+Jedes Sichern lädt das Bild zusätzlich als Datei herunter, zum Beispiel `Llyn-Idwal.wcl`. Sie enthält das Foto und alles, was oben aufgezählt ist, und ist so groß wie das Foto. Heb sie auf, wo du willst: im Ordner zu deinem Bild, in der Cloud, auf einem Stick. Öffnest du sie mit **Neues Bild**, kommt das Bild genau so zurück, auf diesem oder einem anderen Gerät, in jedem Browser. Ein freigeschaltetes Bild bleibt in deinem Konto freigeschaltet; für jemand anderen schaltet die Datei nichts frei.
 
 > **Gut zu wissen:** Die Sammlung liegt in diesem Browser auf diesem Gerät. Sie gehört nicht zu deinem Konto und kommt nicht mit auf einen anderen Rechner. Löschst du die Browserdaten dieser Seite, ist die Sammlung weg. Bilder sichern geht mit Pro.
 

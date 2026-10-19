@@ -82,16 +82,63 @@
         grid-template-columns: 1fr;
     }
 
-    &--full &__result {
-        min-height: 0;
+    // The mix without water as a square, the washed colour with its letter beside it: two lines in the measure
+    // of the paint rows below, so that it reads against them.
+    &__wash {
+        --wash-height: calc((1.25em + 2 * var(--gap-025x) + 2px) * 2);
+        display: flex;
+        gap: #{pxtorem(6)};
+        font-size: var(--fs-small);
     }
 
+    &__swatch {
+        flex: none;
+        width: var(--wash-height);
+        height: var(--wash-height);
+        border: 1px solid var(--c-chip-border);
+        border-radius: var(--radius-small);
+        background: var(--chip-colour);
+    }
+
+    &__wash &__result {
+        flex: 1;
+        min-height: var(--wash-height);
+    }
+
+    &__explain {
+        margin-top: calc(var(--gap-025x) * -1);
+        color: var(--c-copy-light);
+        font-size: var(--fs-mini);
+    }
+
+    &__explain::first-letter {
+        text-transform: uppercase;
+    }
+
+    // The paints after the bar, so that the bar heads the recipe.
     &--full &__paints {
         grid-template-columns: 1fr;
+        order: 1;
     }
 
+    // Outlined and rounded like the paint chips below it.
+    &--full &__bar {
+        height: #{pxtorem(36)};
+        border-color: var(--c-chip-border);
+        border-radius: var(--radius-small);
+    }
+
+    // Room on the left where the colour shows, free of text.
     &--full .chip {
         font-size: var(--fs-small);
+        padding-left: 2.4em;
+    }
+
+    // Only the wash letter, in the middle of the mixed colour.
+    &--full &__result {
+        justify-content: center;
+        align-items: center;
+        padding: var(--gap-025x) #{pxtorem(10)};
     }
 
     &--full .chip__text {
@@ -99,11 +146,12 @@
         white-space: normal;
     }
 
-    &--full &__paint {
-        justify-content: flex-start;
+    // Without pan or tube, the parts and the paint are one run of text: one space between them.
+    &--bare &__paint {
+        gap: 0.3em;
     }
 
-    &--full &__part-text {
-        font-size: var(--fs-caption);
+    &--full &__paint {
+        justify-content: flex-start;
     }
 }

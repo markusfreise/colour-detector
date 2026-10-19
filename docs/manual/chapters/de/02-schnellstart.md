@@ -44,7 +44,7 @@ Wenn du unsicher bist, welche Farben du nehmen sollst, überlass es **Auto**: Di
 2. Die Flächen: organisch oder geometrisch.
 3. **Flächen vereinfachen**.
 4. **Farben**, die Zahl der Mischungen.
-5. **Details**: ob kleine Flächen eines anderen Farbtons eine eigene Mischung behalten.
+5. **Details**: ob die Mischungen feine Abstufungen im ganzen Bild geben oder kleinen Flächen eines anderen Farbtons.
 6. **Max. Farben** pro Mischung.
 
 Jeden Regler erklärt das Kapitel [Farbflächen](farbflaechen.html).
@@ -79,7 +79,7 @@ Drück auf **Sichern**, um das Bild mit seinen Einstellungen, seiner Palette und
 
 ### 7. Den Plan drucken
 
-**Drucken / PDF** gibt das Bild aus, gefolgt von jeder Mischung mit ihren Farben. Druck es für den Maltisch aus, oder wähl im Druckdialog „Als PDF speichern“ und leg es auf ein Tablet. Die **Vorlage zum Drucken** zeichnet nur Umrisse und Nummern in hellem Blau: Druck sie auf Aquarellpapier und mal direkt auf dem Blatt. Mehr unter [Drucken](drucken.html).
+**Drucken / PDF** gibt das Bild aus, gefolgt von jeder Mischung mit ihren Farben. Druck es für den Maltisch aus, oder wähl im Druckdialog „Als PDF speichern“ und leg es auf ein Tablet. **Raster** legt quadratische Felder über das Bild, damit du die Zeichnung Feld für Feld auf dein Papier überträgst. Mehr unter [Drucken](drucken.html).
 
 ## Teil 2: Malen
 

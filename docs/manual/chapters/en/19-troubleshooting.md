@@ -15,7 +15,7 @@ Raise **Simplify areas**. Every step merges small shapes into their neighbours; 
 
 ### An important detail has disappeared
 
-Small areas that differ in hue from their surroundings, a red roof, the lips in a portrait, keep a mix of their own when **Details** is set high. If the detail is also small in size, simplifying merges it away; look at that part of the picture on its own with **Detail**, where it gets finer areas and mixes of its own (Pro). See [Pictures](pictures.html).
+Small areas that differ in hue from their surroundings, a red roof, the lips in a portrait, keep a mix of their own when **Details** is set low. If the detail is also small in size, simplifying merges it away; look at that part of the picture on its own with **Detail**, where it gets finer areas and mixes of its own (Pro). See [Pictures](pictures.html).
 
 ### The colours look dull, or far too loud
 

@@ -10,7 +10,7 @@ part: Die App
 
 ## Anmelden
 
-Die Web-App bittet dich, dich anzumelden, bevor sie sich öffnet. Ein Passwort gibt es nicht: Du gibst deine E-Mail-Adresse ein und drückst **Schick mir einen Anmeldelink**. Eine Mail mit einem Link kommt; öffne ihn innerhalb von 15 Minuten auf demselben Gerät und im selben Browser, und du bist angemeldet. Kommt keine Mail, sieh im Spam-Ordner nach oder drücke **Andere Adresse verwenden**, um neu zu beginnen.
+Die Web-App bittet dich, dich anzumelden, bevor sie sich öffnet. Ein Passwort gibt es nicht: Du gibst deine E-Mail-Adresse ein und drückst **Anmeldelink erhalten**. Eine Mail mit einem Link kommt; öffne ihn innerhalb von 15 Minuten auf demselben Gerät und im selben Browser, und du bist angemeldet. Kommt keine Mail, sieh im Spam-Ordner nach oder drücke **Andere Adresse verwenden**, um neu zu beginnen.
 
 Neu hier? Wähle **Jetzt registrieren** unter dem Formular. Die Registrierung funktioniert genauso, mit einem Feld mehr: **Einladungscode (optional)**. Ohne Code bekommst du ein kostenloses Konto; mit einem gültigen Code beginnt dein Konto mit einer Lebenszeit-Lizenz. Jeder Code gilt einmal.
 
@@ -34,7 +34,7 @@ Die kostenlose Version analysiert deine Fotos und gibt dir jedes Rezept, gemisch
 | Fotos analysieren, Mischen und Schichten, Farbliste, Rezepte | ja | ja | ja |
 | Farben zum Mischen | der Einsteigerkasten | deine eigenen Farben, in deinen Farbkästen | deine eigenen Farben, in beliebig vielen Farbkästen |
 | Blocking, Ausschnitte, Flächen vereinfachen unter 0 | | ja | ja |
-| Sichern, Drucken / PDF, die Vorlage, Als JPG exportieren | | ja | ja |
+| Sichern, Drucken / PDF, Als JPG exportieren | | ja | ja |
 | Weitere Farbkästen, Farbkarten der Hersteller, Farbkasten importieren | | | ja |
 | Monochrom | | | ja |
 
@@ -60,7 +60,7 @@ Ein Guthaben schaltet **ein Bild dauerhaft frei**. Jedes Konto beginnt mit einem
 | **Jährlich** | verlängert sich jedes Jahr, jederzeit kündbar |
 | **Lebenszeit-Lizenz** | eine Zahlung, keine Verlängerung |
 
-Der Dialog zeigt die aktuellen Preise. Sie enthalten die Mehrwertsteuer. Die Zahlung wickelt Stripe ab; die App sieht deine Karte nie. „Lebenszeit“ meint die Lebenszeit des Produkts: so lange, wie Watercolourlove angeboten wird, kein Versprechen, dass es ewig läuft. Die AGB erklären das genau.
+Der Dialog zeigt die aktuellen Preise. Sie enthalten die Mehrwertsteuer. Die Zahlung wickelt Stripe ab; die App sieht deine Karte nie. „Lebenszeit“ meint die Lebenszeit des Produkts Watercolourlove. Die AGB erklären das genau.
 
 Was du in den letzten 30 Tagen für Bilder bezahlt hast, ziehen wir von deinem ersten Tarif ab: Der Dialog sagt dir, wie viel.
 
@@ -95,11 +95,18 @@ Watercolourlove arbeitet ganz auf deinem Gerät. Dein Foto wird nie hochgeladen:
 - deine Farbkästen und deine eigenen Farben,
 - deine Einstellungen und die Anordnung der Fenster.
 
-Nichts davon gehört zu deinem Konto. Das hat drei Folgen, die du kennen solltest:
+Nichts davon gehört zu deinem Konto. Das hat vier Folgen, die du kennen solltest:
 
 1. **Ein anderes Gerät ist ein Neuanfang.** Meldest du dich auf dem Tablet an, hast du dort deinen Tarif, aber nicht deine Sammlung und nicht deine Farbkästen.
 2. **Wer die Browserdaten löscht, löscht seine Arbeit.** „Browserdaten löschen“, „Cookies und Websitedaten löschen“ oder ein privates Fenster, das du schließt, entfernen sie alle, und niemand kann sie zurückholen.
-3. **Deine Arbeit ist von Grund auf privat.** Niemand, auch wir nicht, kann deine Fotos oder deine Farben sehen.
+3. **Der Browser kann von sich aus aufräumen.** Safari löscht die Daten einer Website, die du sieben Tage lang nicht geöffnet hast, außer du hast sie zum Home-Bildschirm hinzugefügt. Jeder Browser kann gespeicherte Daten entfernen, wenn der Speicher des Geräts fast voll ist. Öffne die App also regelmäßig, oder sichere, was du behalten willst.
+4. **Deine Arbeit ist von Grund auf privat.** Niemand, auch wir nicht, kann deine Fotos oder deine Farben sehen.
+
+Was du sichern kannst:
+
+- **Farbkästen** als Datei: **Exportieren** unter jedem Kasten im Farbkasten, zurück mit **Farbkasten importieren**, auf diesem oder einem anderen Gerät.
+- **Das Ergebnis eines Bildes** als Ausdruck oder PDF mit allen Mischungen ([Drucken](drucken.html)) oder als JPG ([Ein Bild exportieren](bilder.html#ein-bild-exportieren)).
+- **Ein Bild mit allen Einstellungen und Farbänderungen** als Bilddatei (`.wcl`): Jedes **Sichern** lädt sie herunter, **Neues Bild** öffnet sie wieder, auf diesem oder einem anderen Gerät. Siehe [Die Bilddatei](bilder.html#die-bilddatei-wcl).
 
 > **Tipp:** Sichere deine Farbkästen. Im Farbkasten speichert **Exportieren** unter jedem Kasten ihn als Datei; **Farbkasten importieren** holt ihn zurück, auf diesem oder einem anderen Gerät. Ein Farbkasten mit deinen eigenen, kalibrierten Farben ist es wert, aufgehoben zu werden. Siehe [Farbkasten und Palette](farbkasten.html).
 

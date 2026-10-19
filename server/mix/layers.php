@@ -17,6 +17,7 @@ namespace Mix\Layers {
 
 use function Mix\absorbanceFromHex;
 use function Mix\depthLimit;
+use function Mix\paintFilter;
 use function Mix\describeDilution;
 use function Mix\hexToRgb;
 use function Mix\rgbToLinear;
@@ -158,13 +159,15 @@ function number(float $value): string
 /** What a layer does to the light, per number of coats: (top + 1) x 3 factors on linear RGB. */
 function filterTable(array $A, float $limit, float $strength, float $ratio, int $top, float $under = 0.0): array
 {
+    // Each coat as the paint does alone on white paper (paintFilter: water thins it like opacity),
+    // over what of the same paint is already there.
     $t = [];
-    $below = depth($under, $limit);
+    $below = paintFilter($A, $under);
     for ($c = 0; $c <= $top; $c++) {
-        $d = depth($under + coatAmount($c, $strength, $ratio), $limit) - $below;
-        $t[] = exp(-$d * $A[0]);
-        $t[] = exp(-$d * $A[1]);
-        $t[] = exp(-$d * $A[2]);
+        $f = paintFilter($A, $under + coatAmount($c, $strength, $ratio));
+        $t[] = $f[0] / $below[0];
+        $t[] = $f[1] / $below[1];
+        $t[] = $f[2] / $below[2];
     }
     return $t;
 }
@@ -918,9 +921,8 @@ function accentGain(array $candidate, array $table, array &$spots, string $role,
 /** Whether one coat of this wash on white paper is dark enough for the accent for the darks. */
 function darkCoat(array $candidate, float $strength): bool
 {
-    $d = depth($strength, $candidate['limit']);
-    $A = $candidate['A'];
-    return lab(exp(-$d * $A[0]), exp(-$d * $A[1]), exp(-$d * $A[2]))[0] < DARK_COAT;
+    [$r, $g, $b] = paintFilter($candidate['A'], $strength);
+    return lab($r, $g, $b)[0] < DARK_COAT;
 }
 
 /** The accents: one strong wash at a time, as long as one pays (chooseAccents in layerPlan.js). */

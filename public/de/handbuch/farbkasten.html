@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Schließen" data-lightbox-prev="Bild davor" data-lightbox-next="Nächstes Bild">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -68,23 +68,33 @@
 <aside class="note note--info"><p><strong>Gut zu wissen:</strong> Ein kostenloses Konto mischt aus dem <strong>Einsteigerkasten</strong>: zwölf Farben, wie ein günstiger Schulmalkasten sie hat (zwei Gelb, zwei Rot, zwei Blau, ein Violett, ein Grün, drei Erdfarben und Schwarz). Du kannst unter ihnen wählen, aber keine eigenen Farben hinzufügen. Deine eigenen Farben und Farbkästen gibt es mit einem freigeschalteten Bild oder mit Pro; siehe <a href="konto.html">Konto, Pro und deine Daten</a>.</p>
 </aside>
 <h2 id="farben-hinzufuegen"><a class="anchor" href="#farben-hinzufuegen" aria-hidden="true" tabindex="-1">#</a>Farben hinzufügen</h2>
-<p>Am Ende jedes Farbkastens ist ein leerer Platz mit einem <strong>+</strong>. Ein Klick darauf fügt diesem Kasten eine Farbe hinzu.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/paintbox-add.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/paintbox-add.webp" width="912" height="130" alt="Eine Farbe zum Hinzufügen suchen" loading="lazy"></a></div><figcaption>Eine Farbe zum Hinzufügen suchen</figcaption></figure>
-<p>Tipp einen Teil der Serie, die Nummer oder den Namen ein: „Ultramarin“, „494“ oder „Horadam 494“ funktionieren alle. Gesucht wird in den Farben des Bestands und, mit Pro, in den Farbkarten dreier Hersteller:</p>
+<p>Am Ende jedes Farbkastens ist ein leerer Platz mit einem <strong>+</strong>. Ein Klick darauf öffnet <strong>Farbe hinzufügen</strong> für diesen Kasten.</p>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="../../manual/img/de/paintbox-add.webp" title="Bild in voller Größe öffnen"><img src="../../manual/img/de/paintbox-add.webp" width="952" height="1100" alt="Farben zu einem Kasten hinzufügen" loading="lazy"></a></div><figcaption>Farben zu einem Kasten hinzufügen</figcaption></figure>
+<p>Die untere Hälfte, <strong>Bibliothek</strong>, zeigt die Farben, die du hinzufügen kannst, je Serie ein Abschnitt. Für alle die Farben des Bestands und <strong>Gängige Farben</strong>: 40 Farben, die fast jeder Hersteller führt, unter ihrem üblichen Namen und Pigment (C01 Zitronengelb bis C40 Neutraltinte), jede so, wie die Farbkarte eines Herstellers sie zeigt. Mit Pro außerdem die Farbkarten von vier Herstellern:</p>
 <ul>
 <li><strong>Schmincke Horadam</strong>,</li>
 <li><strong>Winsor &amp; Newton Professional</strong> (116 Farben),</li>
-<li><strong>Michael Harding</strong> (136 Farben).</li>
+<li><strong>Michael Harding</strong> (136 Farben),</li>
+<li><strong>Sennelier L&#39;Aquarelle</strong> (98 Farben).</li>
 </ul>
-<p>Wähl eine Farbe aus der Liste, und sie kommt mit Namen und Referenzton in den Kasten.</p>
-<h3 id="eine-eigene-farbe"><a class="anchor" href="#eine-eigene-farbe" aria-hidden="true" tabindex="-1">#</a>Eine eigene Farbe</h3>
-<p>Für jede andere Farbe wählst du unter der Suche <strong>Oder eine eigene Farbe eingeben</strong>. Du gibst an:</p>
+<p>So findest du eine Farbe:</p>
 <ul>
-<li><strong>Hersteller und Serie</strong>, so wie es auf der Tube steht, zum Beispiel „Daniel Smith Extra Fine“. Ist es eine Serie mit Farbkarte in der App, füllt die Nummer Name und Farbe für dich aus.</li>
-<li><strong>Nummer</strong> und <strong>Name</strong>.</li>
-<li><strong>Form</strong>: <strong>Näpfchen</strong> oder <strong>Tube</strong>.</li>
-<li><strong>Farbe</strong>, den Referenzton der Farbe.</li>
+<li>Die Knöpfe mit den Seriennamen blenden ihre Abschnitte ein und aus. Ein dunkler Knopf ist eingeblendet.</li>
+<li>Tipp einen Teil des Namens oder die Nummer in das Suchfeld: „Ultramarin“, „494“ oder „Horadam 494“ funktionieren alle, ebenso Pigmentnamen wie „PB29“.</li>
+<li>Die Farbquadrate daneben zeigen nur Rot, Orange, Gelb, Grün, Türkis, Blau, Violett, Braun oder Grau und Schwarz. Ein zweiter Klick auf das Quadrat zeigt wieder alle Farbtöne.</li>
+<li>Der Knopf mit dem Radiergummi oben leert Suche und Filter.</li>
 </ul>
+<p>Ein Klick auf eine Farbe legt sie mit Namen und Referenzton in den Kasten. Eine Farbe, die schon im Kasten ist, ist blass dargestellt; ein Klick nimmt sie wieder heraus. Füg so viele hinzu, wie du magst, und schließ dann den Dialog. Eine Farbe mit gestricheltem Rand hat auf der Farbkarte ihres Herstellers keinen verlässlichen Referenzton: Ein Klick darauf füllt das Formular darüber aus, und du stellst den Ton selbst ein.</p>
+<h3 id="eine-eigene-farbe"><a class="anchor" href="#eine-eigene-farbe" aria-hidden="true" tabindex="-1">#</a>Eine eigene Farbe</h3>
+<p>Für jede andere Farbe nimmst du oben <strong>Eigene Farbe</strong>. Du gibst an:</p>
+<ul>
+<li>die <strong>Farbe</strong>, im Quadrat links: den Referenzton der Farbe,</li>
+<li>die <strong>Nummer</strong>,</li>
+<li>die <strong>Serie</strong>, so wie sie auf der Tube steht, zum Beispiel „Daniel Smith Extra Fine“. Ist es eine Serie mit Farbkarte in der App, füllt die Nummer Name und Farbe für dich aus,</li>
+<li>den <strong>Namen</strong>,</li>
+<li>die <strong>Form</strong>: <strong>Näpfchen</strong>, <strong>Tube</strong>, <strong>Flüssig</strong> oder <strong>Anders</strong>.</li>
+</ul>
+<p>Dann drückst du <strong>Okay</strong>: Die Farbe kommt in den Kasten, und der Dialog schließt sich.</p>
 <p>Der Referenzton ist das Wichtigste in diesem Formular. Wähl den Farbton deiner Farbe in ihrer <strong>kräftigsten Lasur</strong>: etwa gleich viel Farbe und Wasser, trocken auf weißem Papier. Nicht die Farbe direkt aus Näpfchen oder Tube: Farbe im Näpfchen ist dunkler und satter als jede Lasur, die du damit malst. Die App behandelt diesen Ton als das Dunkelste, was die Farbe je wird, und macht alles Hellere daraus mit Wasser. Ist er zu hell, werden alle Rezepte mit dieser Farbe zu vorsichtig, ist er zu dunkel, zu kräftig. Die beste Quelle ist dein eigener Farbaufstrich, auf deinem Papier gemalt und bei Tageslicht fotografiert oder eingescannt. Wie du ihn anlegst, zeigt das Kapitel <a href="kalibrieren.html">Farben kalibrieren</a>.</p>
 <p>Jede Farbe, die du selbst eingibst, steht außerdem unter <strong>Deine eigenen Farben</strong> unten im Farbkasten. Dort kannst du sie bearbeiten oder löschen: Den Knopf zum Löschen drückst du zweimal, damit nichts aus Versehen verschwindet.</p>
 <h2 id="farbkaesten-verwalten"><a class="anchor" href="#farbkaesten-verwalten" aria-hidden="true" tabindex="-1">#</a>Farbkästen verwalten</h2>
@@ -106,5 +116,6 @@
     <span>Watercolourlove von Markus Freise. Fragen an <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="../../manual/manual.js"></script>
 </body>
 </html>

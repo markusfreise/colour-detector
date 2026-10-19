@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "test:server": "php server/tests/run.php",
     "app:data": "node app/scripts/export-data.mjs",
-    "charts": "node tools/export-charts.mjs"
+    "charts": "node tools/export-charts.mjs",
+    "libraries": "node tools/libraries-report.mjs"
   },
   "dependencies": {
     "pinia": "^2.3.1",

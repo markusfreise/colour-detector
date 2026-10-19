@@ -153,13 +153,19 @@ function sendJsonText(string $json): never
     exit;
 }
 
-/** The colour charts of the paint series that come with the app: for Pro, to add colours from. */
+/**
+ * The colour charts of the paint series that come with the app, to add colours from: the free ones
+ * (the common colours) for everybody signed in, the makers' charts with a plan (`brand_charts`).
+ */
 function handleCharts(): never
 {
     method('GET');
     requireMixClient();
-    if (!mixMayUse(appUser(), 'brand_charts')) {
-        fail(403, 'Colour charts come with Pro.');
+    $user = appUser();
+    if (mixMayUse($user, 'brand_charts')) {
+        sendJsonText((string) file_get_contents(__DIR__ . '/charts.json'));
     }
-    sendJsonText((string) file_get_contents(__DIR__ . '/charts.json'));
+    $all = json_decode((string) file_get_contents(__DIR__ . '/charts.json'), true);
+    $free = array_intersect_key($all['charts'], array_flip($all['free'] ?? []));
+    sendJsonText((string) json_encode(['charts' => $free, 'free' => $all['free'] ?? []], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 }

@@ -3,12 +3,17 @@ import Foundation
 /// The words the colour logic hands over in English (it is a port of the web's and checked
 /// against it), in the chosen language for the screen and the printed sheet.
 enum Words {
-    /// "medium", "very concentrated (layer/glaze)", "excellent", "tea": each is its own text.
+    /// "medium", "concentrated (hardly any water)", "excellent", "tea": each is its own text.
     static func term(_ english: String) -> String { L(english) }
 
-    /// How watery a mix is, without the aside in brackets: "very concentrated".
+    /// How watery a mix is, without the aside in brackets: "concentrated".
     static func shortDilution(_ dilution: String) -> String {
-        L(dilution.replacingOccurrences(of: " (layer/glaze)", with: ""))
+        L(withoutAside(dilution))
+    }
+
+    /// "concentrated (hardly any water)" -> "concentrated".
+    static func withoutAside(_ text: String) -> String {
+        text.replacingOccurrences(of: #" \(.*\)$"#, with: "", options: .regularExpression)
     }
 
     /// The same with a capital, for the top of a tile.

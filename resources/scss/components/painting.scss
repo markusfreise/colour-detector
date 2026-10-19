@@ -74,6 +74,16 @@
         }
     }
 
+    // The spinner while the picture is worked out, in the middle of the window over the picture.
+    &__spinner {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+    }
+
     // The spot that was tapped, while its colour is looked at: it blinks, so that it is found
     // again in a picture of many areas.
     &__spot {
@@ -98,8 +108,8 @@
         }
     }
 
-    // Fit and frame, centred at the top of the window.
-    &__tools {
+    // The settings and the tools, centred at the top of the window.
+    &__bar {
         position: absolute;
         z-index: 2;
         top: max(var(--gap), env(safe-area-inset-top));
@@ -107,42 +117,88 @@
         transform: translateX(-50%);
         display: flex;
         align-items: center;
-        gap: #{pxtorem(6)};
+        gap: var(--gap-05x);
+    }
+
+    &__tools {
+        display: flex;
+        align-items: center;
+        gap: var(--tool-gap);
         cursor: default;
     }
 
-    // As tall as the icon buttons beside it. On a phone it sits beside the menu button instead.
+    // The settings in a toolbar of their own, a button as tall as the tools, with its name.
+    // Wider than the square icon buttons (ui.scss), so their size is undone here.
+    &__settings.button {
+        width: auto;
+        height: var(--tool);
+        aspect-ratio: auto;
+        gap: var(--gap-05x);
+        padding: 0 var(--gap-075x, calc(var(--gap) * 0.75)) 0 var(--gap-05x);
+        font-weight: 600;
+        white-space: nowrap;
+
+        svg {
+            width: calc(var(--tool) * 0.7);
+            height: calc(var(--tool) * 0.7);
+        }
+    }
+
+    // On a phone it sits beside the menu button instead.
     &__pro {
         @media (max-width: 760px) {
             display: none;
         }
-
-        height: #{pxtorem(48)};
-        padding-block: 0;
-        font-weight: 600;
     }
 
-    // The view buttons are as large as the buttons beside them (48 px, as .button with an icon).
+    // The view buttons are as large as the buttons beside them (--tool, app.scss).
     &__tools .segmented {
         display: flex;
-        height: #{pxtorem(48)};
+        height: calc(var(--tool) + #{pxtorem(2)});
+    }
+
+    &__tools .button:not(.painting__pro),
+    &__tools .segmented__option {
+        width: var(--tool);
+        height: var(--tool);
     }
 
     &__tools .segmented__option {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: #{pxtorem(48)};
         height: 100%;
         padding: 0;
         aspect-ratio: auto;
     }
 
+    &__tools .button svg,
+    &__tools .segmented__option svg {
+        width: calc(var(--tool) * 0.79);
+        height: calc(var(--tool) * 0.79);
+    }
+
     // In a narrow window the toolbars take the top corners: the buttons go to the bottom, above
     // the footer links, and get smaller so that they fit in one row on a phone.
+    // On a phone only the settings go to the top, between the menu and the panel buttons.
     @media (max-width: 760px) {
+        &__bar {
+            display: contents;
+        }
+
+        &__settings-bar {
+            position: absolute;
+            z-index: 2;
+            top: max(var(--gap), env(safe-area-inset-top));
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
         &__tools {
-            top: auto;
+            position: absolute;
+            z-index: 2;
+            left: 50%;
+            transform: translateX(-50%);
             bottom: calc(max(var(--gap), env(safe-area-inset-bottom)) + #{pxtorem(28)});
             flex-wrap: wrap;
             justify-content: center;
@@ -151,36 +207,19 @@
         }
     }
 
-    @media (max-width: 524px) {
-        &__tools .button,
-        &__tools .segmented__option {
-            width: #{pxtorem(40)};
-            height: #{pxtorem(40)};
-        }
+    // As .button--active (ui.scss): black, the icon white with a little glow.
+    &__tool--on,
+    &__tool--on:hover {
+        background: var(--c-active) !important;
+        border-color: var(--c-active-outline);
+        color: var(--c-on-active);
 
-        &__tools .segmented {
-            height: #{pxtorem(42)};
-        }
+        svg {
+            filter: var(--active-glow);
 
-        &__tools .button svg,
-        &__tools .segmented__option svg {
-            width: #{pxtorem(30)};
-            height: #{pxtorem(30)};
-        }
-
-        &__tools .painting__pro {
-            width: auto;
-            padding-inline: #{pxtorem(10)};
-        }
-    }
-
-    &__tool--on {
-        background: var(--c-corporate);
-        border-color: var(--c-corporate);
-        color: var(--c-on-corporate);
-
-        &:hover {
-            background: var(--c-corporate);
+            path {
+                fill: var(--c-on-active) !important;
+            }
         }
     }
 
@@ -238,14 +277,3 @@
     }
 }
 
-// Phone: the template to print is in the menu at the left, not among the views.
-@media (max-width: 760px) {
-    .painting__tools .viewswitch__template {
-        display: none;
-    }
-
-    // The view before it is the last one then: no dividing line on its right.
-    .painting__tools .segmented__option:has(+ .viewswitch__template) {
-        border-right: 0;
-    }
-}

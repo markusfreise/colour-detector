@@ -1,5 +1,5 @@
 // Paint box presentation: number formatting and grouping by form and colour family.
-import { COLOUR_FAMILIES, colourFamily } from './color.js'
+import { COLOUR_FAMILIES, colourFamily, hueGroup } from './color.js'
 
 // The series the stock is built on, as it is written on the tube: its paints are grouped by form,
 // every other series gets a group of its own.
@@ -18,9 +18,29 @@ export function paintNumber(number) {
   return /^\d+$/.test(n) ? n.padStart(3, '0') : n
 }
 
+// The forms a paint of one's own can come in, as the paint form offers them.
+export const OWN_FORMS = [
+  { key: 'pan', name: 'Pan', label: 'P' },
+  { key: 'tube', name: 'Tube', label: 'T' },
+  { key: 'liquid', name: 'Liquid', label: 'L' },
+  { key: 'other', name: 'Other', label: 'O' },
+]
+
+/** The form a box file or a form names, as one of OWN_FORMS; anything else is a pan. */
+export function ownForm(form) {
+  return OWN_FORMS.some((f) => f.key === form) ? form : 'pan'
+}
+
+/** The name of the form a paint of one's own comes in, in English ("Liquid"). */
+export function formName(paint) {
+  return OWN_FORMS.find((f) => f.key === ownForm(paint.forms?.[0])).name
+}
+
 /** Short form label: "P" for pan, "T" for tube, "S" for the travel box, "P/T" when owned as both. */
 export function paintForms(paint) {
-  return PAINT_FORMS.filter((form) => paint.forms.some((f) => f.includes(form.key)))
+  const forms = [...PAINT_FORMS, ...OWN_FORMS.filter((f) => !PAINT_FORMS.some((p) => p.key === f.key))]
+  return forms
+    .filter((form) => paint.forms.some((f) => f.includes(form.key)))
     .map((form) => form.label)
     .join('/')
 }
@@ -83,17 +103,38 @@ export function sortBoxPaints(box, paints) {
   return [...paints].sort((a, b) => String(a.number).localeCompare(String(b.number), undefined, { numeric: true }))
 }
 
+const colourKey = (vendor, number) => `${String(vendor ?? '').trim().toLowerCase()}|${String(number).trim().toLowerCase()}`
+
 /**
- * The colours that match what is typed, for the colour search of a paint box: every word must be
- * in the label (series, number, names). `options` are { label, ... }; at most `limit` come back.
+ * The colours of a series as the dialog that adds colours to a box lists them, by number: each
+ * colour of the chart (`catalogue`, empty without the charts), as the paint already known with that
+ * number where there is one, and the known paints of the series that are not on it.
+ * `name(paint)` gives a paint's name in the language shown; `locale` picks the chart's names.
+ * Returns [{ key, vendor, number, name, hex, paintId, search }]: `paintId` null for a colour that is
+ * on the chart only, `hex` null for one whose value the chart does not give reliably.
  */
-export function searchColours(options, query, limit = 40) {
-  const words = String(query).toLowerCase().split(/\s+/).filter(Boolean)
-  const found = []
-  for (const option of options) {
-    const text = option.search ?? option.label.toLowerCase()
-    if (words.every((w) => text.includes(w))) found.push(option)
-    if (found.length >= limit) break
+export function seriesColours(vendor, catalogue, paints, name = (p) => p.name, locale = 'en') {
+  const known = new Map(paints.map((p) => [colourKey(p.vendor, p.number), p]).filter(([key]) => key.startsWith(colourKey(vendor, ''))))
+  const listed = new Set()
+  const colours = []
+  for (const colour of catalogue) {
+    const key = colourKey(vendor, colour.number)
+    const paint = known.get(key)
+    listed.add(key)
+    const shown = paint ? name(paint) : (colour.names?.[locale] ?? colour.name)
+    const words = [vendor, colour.number, shown, colour.name, ...Object.values(colour.names ?? {}), ...(colour.pigments ?? []), paint?.nameDe ?? '']
+    colours.push({ key, vendor, number: colour.number, name: shown, chartName: colour.name, nameDe: colour.names?.de ?? '', hex: paint?.hex ?? colour.hex, paintId: paint?.id ?? null, search: words.join(' ').toLowerCase() })
   }
-  return found
+  for (const [key, paint] of known) {
+    if (listed.has(key)) continue
+    const words = [vendor, paint.number, name(paint), paint.name, paint.nameDe ?? '']
+    colours.push({ key, vendor, number: paint.number, name: name(paint), chartName: paint.name, hex: paint.hex, paintId: paint.id, search: words.join(' ').toLowerCase() })
+  }
+  return colours.sort((a, b) => String(a.number).localeCompare(String(b.number), undefined, { numeric: true }))
+}
+
+/** The colours with every word of `query` in their series, number or names, and of the hue group `hue` (or any). */
+export function filterColours(colours, query = '', hue = null) {
+  const words = String(query).toLowerCase().split(/\s+/).filter(Boolean)
+  return colours.filter((c) => (!hue || (c.hex && hueGroup(c.hex) === hue)) && words.every((w) => c.search.includes(w)))
 }

@@ -2,10 +2,12 @@
 /**
  * Subtractive watercolour mixing. Port of src/lib/mixing.js, where the model is described.
  *
- * Model: transparent watercolour behaves roughly like a filter over white paper (Beer-Lambert).
- * Each paint's swatch colour gives a per-channel absorbance A = -ln(reflectance). A mix of paints
- * with amounts a_i reflects exp(-d(S)/S * sum a_i*A_i) with S = sum a_i; d(S) is the depth a wash
- * reaches with that much paint, 1 at amount 1, levelling off at the depth limit of its paints.
+ * Model: paints mix like filters over white paper (Beer-Lambert), water thins the mix like
+ * opacity. Each paint's swatch colour gives a per-channel absorbance A = -ln(reflectance). A mix
+ * with amounts a_i is first taken at full strength, its largest amount (its fullness f) raised to
+ * 1: that mix reflects exp(-d(S)/S * sum a_i*A_i) with S = sum a_i; d(S) is the depth a wash
+ * reaches with that much paint, 1 at amount 1, levelling off at the depth limit of its paints. The
+ * wash is that colour laid over the paper at opacity f, in sRGB (decided 2026-10-18).
  */
 
 declare(strict_types=1);
@@ -75,10 +77,20 @@ function mixAbsorbances(array $absorbances, array $amounts): array
 {
     $sum = 0.0;
     $limit = 0.0;
-    $used = [];
     // No paint counts for more than its swatch (MAX_AMOUNT), whatever amount is asked for.
+    $capped = [];
+    $fullness = 0.0;
     foreach ($absorbances as $i => $A) {
-        $used[$i] = min(MAX_AMOUNT, $amounts[$i]);
+        $capped[$i] = max(0.0, min(MAX_AMOUNT, (float) $amounts[$i]));
+        $fullness = max($fullness, $capped[$i]);
+    }
+    if (!($fullness > 0)) {
+        return [1.0, 1.0, 1.0];
+    }
+    // The mix at full strength; the water comes in below, as opacity.
+    $used = [];
+    foreach ($absorbances as $i => $A) {
+        $used[$i] = $capped[$i] / $fullness;
         $sum += $used[$i];
         $limit += $used[$i] * depthLimit($A);
     }
@@ -91,7 +103,25 @@ function mixAbsorbances(array $absorbances, array $amounts): array
         $t1 += $A[1] * $d;
         $t2 += $A[2] * $d;
     }
-    return [exp(-$t0), exp(-$t1), exp(-$t2)];
+    return [thinned(exp(-$t0), $fullness), thinned(exp(-$t1), $fullness), thinned(exp(-$t2), $fullness)];
+}
+
+/** A reflectance (linear) laid over white paper at that opacity, blended in sRGB. */
+function thinned(float $reflectance, float $opacity): float
+{
+    return srgbToLinear(255 - $opacity * (255 - linearToSrgb($reflectance)));
+}
+
+/**
+ * One paint alone on white paper at that amount (capped at MAX_AMOUNT): its swatch at that
+ * opacity, linear RGB.
+ * @param array{float, float, float} $A
+ * @return array{float, float, float}
+ */
+function paintFilter(array $A, float $amount): array
+{
+    $a = max(0.0, min(MAX_AMOUNT, $amount));
+    return [thinned(exp(-$A[0]), $a), thinned(exp(-$A[1]), $a), thinned(exp(-$A[2]), $a)];
 }
 
 /** The water of a wash in words. `fullness` = its paint with least water, 1 = as the swatch shows it. */
@@ -160,9 +190,22 @@ function mixLab(array $candidate, array $amounts): array
     $sum = 0.0;
     $limit = 0.0;
     $n = count($candidate);
+    $capped = [];
+    $fullness = 0.0;
+    for ($i = 0; $i < $n; $i++) {
+        $c = max(0.0, min(MAX_AMOUNT, (float) $amounts[$i]));
+        $capped[$i] = $c;
+        if ($c > $fullness) {
+            $fullness = $c;
+        }
+    }
+    if (!($fullness > 0)) {
+        return linearToOklab([1.0, 1.0, 1.0]);
+    }
+    // The mix at full strength; the water comes in below, as opacity (see mixAbsorbances).
     $used = [];
     for ($i = 0; $i < $n; $i++) {
-        $u = min(MAX_AMOUNT, $amounts[$i]);
+        $u = $capped[$i] / $fullness;
         $used[$i] = $u;
         $sum += $u;
         $limit += $u * $candidate[$i]['L'];
@@ -181,9 +224,9 @@ function mixLab(array $candidate, array $amounts): array
         $t1 += $A[1] * $d;
         $t2 += $A[2] * $d;
     }
-    $r = exp(-$t0);
-    $g = exp(-$t1);
-    $b = exp(-$t2);
+    $r = thinned(exp(-$t0), $fullness);
+    $g = thinned(exp(-$t1), $fullness);
+    $b = thinned(exp(-$t2), $fullness);
     $l = cbrt(0.4122214708 * $r + 0.5363325363 * $g + 0.0514459929 * $b);
     $m = cbrt(0.2119034982 * $r + 0.6806995451 * $g + 0.1073969566 * $b);
     $s = cbrt(0.0883024619 * $r + 0.2817188376 * $g + 0.6299787005 * $b);
@@ -520,7 +563,9 @@ function findRecipesIn(string $targetHex, array $pool, int $maxPaints, int $limi
                     $amounts[$i] = ($v * MAX_AMOUNT) / $most;
                 }
             }
-            $results[] = ['candidate' => $candidate, 'amounts' => $amounts, 'deltaE' => evaluate($candidate, $amounts, $targetLab)];
+            // The fit is in absorbance, where water is not: it gives the proportions, the water is fitted here.
+            [$fitted, $err] = fitWater($candidate, $amounts, $targetLab, false, 12, false);
+            $results[] = ['candidate' => $candidate, 'amounts' => $fitted, 'deltaE' => $err];
         };
 
         $n = count($pool);
@@ -641,6 +686,21 @@ function washRecipe(?array $recipe, string $targetHex, array $paintsById, bool $
         $candidate[] = ['paint' => $paint, 'A' => $A, 'L' => depthLimit($A)];
         $base[] = $p['amount'];
     }
+    [$amounts, $err] = fitWater($candidate, $base, $targetLab, $values);
+    $items = [];
+    foreach ($candidate as $i => $c) {
+        $items[] = $c + ['amount' => $amounts[$i]];
+    }
+    return toRecipe($items, $err);
+}
+
+/**
+ * The amounts scaled by the one factor that brings the mix closest to the target: a coarse scan
+ * over the water level, then (with `fine`) a golden-section search around the best step.
+ * @return array{array<float>, float} the amounts and their distance
+ */
+function fitWater(array $candidate, array $base, array $targetLab, bool $values = false, int $steps = 48, bool $fine = true): array
+{
     $error = function (float $logT) use ($candidate, $base, $targetLab, $values): float {
         $e = exp($logT);
         $amounts = [];
@@ -649,11 +709,9 @@ function washRecipe(?array $recipe, string $targetHex, array $paintsById, bool $
         }
         return evaluate($candidate, $amounts, $targetLab, $values);
     };
-    // Coarse scan over the water level, then golden-section search around the best step.
     $top = max($base);
     $lo = log(0.02 / $top);
     $hi = log(MAX_AMOUNT / $top);
-    $steps = 48;
     $best = $lo;
     $bestErr = INF;
     for ($i = 0; $i <= $steps; $i++) {
@@ -664,25 +722,28 @@ function washRecipe(?array $recipe, string $targetHex, array $paintsById, bool $
             $best = $t;
         }
     }
-    $a = max($lo, $best - ($hi - $lo) / $steps);
-    $b = min($hi, $best + ($hi - $lo) / $steps);
-    $phi = (sqrt(5) - 1) / 2;
-    for ($i = 0; $i < 24; $i++) {
-        $c = $b - ($b - $a) * $phi;
-        $d = $a + ($b - $a) * $phi;
-        if ($error($c) < $error($d)) {
-            $b = $d;
-        } else {
-            $a = $c;
+    $logT = $best;
+    if ($fine) {
+        $a = max($lo, $best - ($hi - $lo) / $steps);
+        $b = min($hi, $best + ($hi - $lo) / $steps);
+        $phi = (sqrt(5) - 1) / 2;
+        for ($i = 0; $i < 24; $i++) {
+            $c = $b - ($b - $a) * $phi;
+            $d = $a + ($b - $a) * $phi;
+            if ($error($c) < $error($d)) {
+                $b = $d;
+            } else {
+                $a = $c;
+            }
         }
+        $logT = ($a + $b) / 2;
     }
-    $logT = ($a + $b) / 2;
     $factor = exp($logT);
-    $items = [];
-    foreach ($candidate as $i => $c) {
-        $items[] = $c + ['amount' => $base[$i] * $factor];
+    $amounts = [];
+    foreach ($base as $v) {
+        $amounts[] = $v * $factor;
     }
-    return toRecipe($items, $error($logT));
+    return [$amounts, $error($logT)];
 }
 
 /**
@@ -717,6 +778,8 @@ function toRecipe(array $items, float $deltaE): array
         'fullness' => $fullness,
         'dilution' => describeDilution($fullness),
         'hex' => rgbToHex(linearToRgb($linear)),
+        // The mix without water: the same ratio, its largest part at full strength.
+        'baseHex' => $fullness > 0 ? rgbToHex(linearToRgb(mixAbsorbances($absorbances, array_map(fn ($v) => $v / $fullness, $amounts)))) : '#ffffff',
         'deltaE' => $deltaE,
     ];
 }

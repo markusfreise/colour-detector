@@ -14,7 +14,7 @@
   document.addEventListener('DOMContentLoaded', () => { if (matchMedia('(max-width: 1023px)').matches) document.querySelector('.nav__details')?.removeAttribute('open') })
 </script>
 </head>
-<body>
+<body data-lightbox-close="Close" data-lightbox-prev="Previous picture" data-lightbox-next="Next picture">
 <header class="header">
   <div class="header__inner wrap">
     <a class="header__brand" href="index.html"><span class="header__logo" role="img" aria-label="Watercolourlove"><svg aria-hidden="true" width="879" height="751" viewBox="0 0 879 751" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -43,9 +43,9 @@
 </aside>
 <p>Photos taken with a phone are perfectly good. Resolution matters less than you might think, because the app works on a reduced copy anyway; the composition and the light matter far more.</p>
 <h2 id="opening-a-picture"><a class="anchor" href="#opening-a-picture" aria-hidden="true" tabindex="-1">#</a>Opening a picture</h2>
-<p>Press <strong>New picture</strong> in the left-hand column and choose a photo. On a phone or tablet the same button also offers the camera, so you can photograph a subject and plan it on the spot. Any picture format your browser can show will do: JPG, PNG, WebP, HEIC on Apple devices.</p>
+<p>Press <strong>New picture</strong> in the left-hand column and choose a photo. On a phone or tablet the same button also offers the camera, so you can photograph a subject and plan it on the spot. Any picture format your browser can show will do: JPG, PNG, WebP, HEIC on Apple devices. The same button also opens a saved picture file (<code>.wcl</code>).</p>
 <p><strong>Samples</strong> opens five example photos by the author: a town, a lake in the mountains, rooftops at dusk, winter fields and an old town in snow. They are a good way to explore the app before you bring your own photos, and they are the pictures this manual uses.</p>
-<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/samples.webp" title="Open the picture at full size"><img src="img/en/samples.webp" width="952" height="567" alt="The sample photos" loading="lazy"></a></div><figcaption>The sample photos</figcaption></figure>
+<figure class="shot"><div class="shot__frame"><a class="shot__zoom" href="img/en/samples.webp" title="Open the picture at full size"><img src="img/en/samples.webp" width="952" height="900" alt="The sample photos" loading="lazy"></a></div><figcaption>The sample photos</figcaption></figure>
 <p>As soon as a picture is open, the app analyses it with the current settings and your palette. On a large photo this takes a moment; the status is shown over the picture.</p>
 <h2 id="the-collection"><a class="anchor" href="#the-collection" aria-hidden="true" tabindex="-1">#</a>The collection</h2>
 <p>Your picture is not saved automatically. Press <strong>Save</strong> to keep it, and the <strong>Collection</strong> opens with <strong>Save this picture</strong>. Give it a name you will recognise later.</p>
@@ -58,6 +58,8 @@
 <li>every change you made to a colour: new targets, chosen recipes, areas you separated.</li>
 </ul>
 <p>When you open a saved picture later, it comes back exactly as you left it, even if you have changed your paint boxes in the meantime. After you change a saved picture, the button reads <strong>Save changes</strong>. In the collection you can also <strong>Rename</strong> and <strong>Delete</strong> a picture.</p>
+<h3 id="the-picture-file-wcl"><a class="anchor" href="#the-picture-file-wcl" aria-hidden="true" tabindex="-1">#</a>The picture file (.wcl)</h3>
+<p>Every save also downloads the picture as a file, for example <code>Llyn-Idwal.wcl</code>. It holds the photo and everything listed above, and is about as large as the photo. Keep it wherever you like: in the folder of your painting, in the cloud, on a stick. Open it with <strong>New picture</strong> and the picture comes back exactly as it was, on this device or another, in any browser. A picture you unlocked stays unlocked in your account; for anybody else the file unlocks nothing.</p>
 <aside class="note note--info"><p><strong>Note:</strong> The collection lives in this browser on this device. It is not part of your account and does not travel to another computer. If you clear your browser&#39;s data for this site, the collection is gone. Saving pictures needs Pro.</p>
 </aside>
 <h2 id="looking-closer-details-of-the-picture"><a class="anchor" href="#looking-closer-details-of-the-picture" aria-hidden="true" tabindex="-1">#</a>Looking closer: details of the picture</h2>
@@ -83,5 +85,6 @@
     <span>Watercolourlove by Markus Freise. Questions: <a href="mailto:support@markus-freise.de">support@markus-freise.de</a></span>
   </div>
 </footer>
+<script src="manual.js"></script>
 </body>
 </html>

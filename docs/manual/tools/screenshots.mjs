@@ -65,7 +65,8 @@ function pageTools(page) {
 async function shoot(browser, shot, lang) {
   const viewport = { width: 1440, height: 900, ...shot.viewport }
   const context = await browser.newContext({ viewport, deviceScaleFactor: 2 })
-  const layout = { collapsed: { controls: true, palette: true, ...shot.collapsed }, positions: {} }
+  // settingsShown: the settings do not open by themselves with the first picture (App.vue).
+  const layout = { collapsed: { controls: true, palette: true, ...shot.collapsed }, positions: {}, settingsShown: true }
   await context.addInitScript(
     ([lang, layout]) => {
       localStorage.setItem('colour-detector:preferences', JSON.stringify({ language: lang, theme: 'light' }))

@@ -3,7 +3,7 @@
 // A provider or plan without its values is switched off and not offered in the app.
 return [
     // Where the app is served, with a slash at the end. The API is expected under <app_url>api/.
-    'app_url' => 'https://watercolourlove.markus-freise.de/',
+    'app_url' => 'https://watercolourlove.de/',
     // SQLite file, outside the web root.
     'database' => '/home/www/pXXXXXX/colour-detector-accounts.sqlite',
     // Long random string; signs login states and hashes addresses for the rate limit.
@@ -48,7 +48,8 @@ return [
     'google' => ['client_id' => '', 'client_secret' => ''],
     'meta' => ['client_id' => '', 'client_secret' => ''],
     'apple' => [
-        'client_id' => '',   // the Services ID, e.g. de.markusfreise.watercolourlove.web
+        'client_id' => '',   // the Services ID, for the web: e.g. de.markusfreise.watercolourlove.web
+        'app_id' => '',      // the bundle ID, for Sign in with Apple in the native app: de.markusfreise.watercolourlove
         'team_id' => '',
         'key_id' => '',
         'key_file' => '',    // path of the .p8 key, outside the web root

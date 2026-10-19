@@ -15,7 +15,8 @@
     max-height: calc(100vh - var(--gap-2x));
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: #{pxtorem(12)};
+    --flyout-pad: #{pxtorem(12)};
+    padding: var(--flyout-pad);
     border: 1px solid var(--c-border);
     border-radius: var(--radius);
     background: var(--c-background-raised);

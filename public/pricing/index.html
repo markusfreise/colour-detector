@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prices – Watercolourlove</title>
+<meta name="description" content="What Watercolourlove costs: free to try, one picture at a time, or Pro for every picture.">
+<link rel="stylesheet" href="../legal.css">
+<link rel="stylesheet" href="../pricing.css">
+<link rel="alternate" hreflang="de" href="../de/preise/">
+</head>
+<body>
+<main class="legal pricing">
+<a class="legal__back" href="../">Back to Watercolourlove</a>
+<h1 class="legal__title">Prices</h1>
+<p class="pricing__lead">Try it for free. Book picture packs, or go Pro and unlock every feature for as many pictures as you like.</p>
+
+<!-- Early bird: plans.json early_bird; the script below takes it away after its last day. -->
+<p class="pricing__early" data-ends="2026-11-30">
+  <strong>Early bird: 40 % off</strong> the yearly plan and the lifetime licence with the code <span class="pricing__code">EARLYBIRD</span> at checkout. For the first 100 buyers, until 30 November 2026.
+</p>
+
+<div class="pricing__cards">
+  <section class="pricing__card">
+    <h2 class="pricing__name">Free</h2>
+    <p class="pricing__intro">Have a look and get to know how it works. A carefree start into Watercolourlove.</p>
+    <ul class="pricing__prices"><li><span>Your account</span><span class="pricing__amount">€0</span></li></ul>
+    <ul class="pricing__features">
+      <li>Mix from the Starter box of 12 common student colours</li>
+      <li>Many sample photos unlocked to try it out</li>
+      <li>One picture of your own to unlock, on us</li>
+    </ul>
+    <a class="pricing__cta" href="../">Sign up for free</a>
+  </section>
+
+  <section class="pricing__card">
+    <h2 class="pricing__name">Prepaid picture packs</h2>
+    <p class="pricing__intro">The right start for every hobby artist, and just right for professionals to try it out. With your own paint box, power features and more.</p>
+    <ul class="pricing__prices">
+      <li><span>1 picture</span><span class="pricing__amount">€2.49</span></li>
+      <li><span>5 pictures</span><span class="pricing__amount">€8.99</span></li>
+      <li><span>10 pictures</span><span class="pricing__amount">€14.99</span></li>
+    </ul>
+    <p class="pricing__note">Your pictures are saved in your browser. See also the <a href="../manual/account.html#where-your-work-lives">manual</a>. One credit is used per unlocked picture.</p>
+    <ul class="pricing__features">
+      <li>Let the app work out mixes from your own paints</li>
+      <li>Blocking: light and shadow in large masses</li>
+      <li>Close-ups and finer areas</li>
+      <li>Save, print or save as PDF, export as JPG</li>
+    </ul>
+    <a class="pricing__cta" href="../">Open the app</a>
+  </section>
+
+  <section class="pricing__card pricing__card--pro">
+    <h2 class="pricing__name">Pro</h2>
+    <p class="pricing__intro">Watercolourlove at its fullest. Work on as many pictures as you like, add the colours of well-known makers, set up several paint boxes and much more.</p>
+    <ul class="pricing__prices">
+      <li><span>Monthly</span><span class="pricing__amount">€4.99</span></li>
+      <li><span>Yearly <span class="pricing__note">(half the monthly price)</span></span><span class="pricing__amount">€29.99</span></li>
+      <li><span>Lifetime licence</span><span class="pricing__amount">€79</span></li>
+    </ul>
+    <p class="pricing__note">Everything for every picture, and:</p>
+    <ul class="pricing__features">
+      <li>A paint box for every set of paints you own</li>
+      <li>Many colour charts of well-known makers</li>
+      <li>Import and export of paint boxes</li>
+      <li>Monochrome value studies</li>
+    </ul>
+    <a class="pricing__cta" href="../">Go Pro in the app</a>
+  </section>
+</div>
+
+<h2 class="legal__heading">Good to know</h2>
+<ul>
+  <li>Prices include 19 % German VAT. Payment is handled by Stripe.</li>
+  <li>What you paid for picture packs in the last 30 days comes off your first Pro payment.</li>
+  <li>The monthly and the yearly plan can be cancelled at any time, with effect at the end of the period paid.</li>
+  <li>"Lifetime" means the life of the product; the <a href="../terms/">terms</a> say exactly what that includes.</li>
+  <li>Your pictures stay in your browser. Your account is only your e-mail address.</li>
+  <li>A native app for iPhone, iPad and Mac is coming soon as a separate download in the App Store.</li>
+</ul>
+
+<nav class="legal__nav" aria-label="Pages">
+  <a href="../privacy/">Privacy</a>
+  <a href="../terms/">Terms</a>
+  <a href="../imprint/">Imprint</a>
+  <a href="../de/preise/" hreflang="de" lang="de">Deutsch</a>
+</nav>
+</main>
+<script>
+  // The early-bird offer goes once its last day is over (Berlin time).
+  for (const el of document.querySelectorAll('[data-ends]')) if (Date.now() > Date.parse(el.dataset.ends + 'T23:59:59+01:00')) el.remove()
+</script>
+</body>
+</html>

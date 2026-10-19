@@ -133,6 +133,7 @@
 
       <!-- Below both columns, in one row. -->
       <footer class="gate__footer">
+        <a v-if="!isNative" :href="legalPage('manual')">{{ t('Manual') }}</a>
         <a :href="legalPage('pricing')">{{ t('Prices') }}</a>
         <a :href="legalPage('privacy')">{{ t('Privacy') }}</a>
         <a :href="legalPage('terms')">{{ t('Terms') }}</a>
@@ -160,6 +161,7 @@ import signinImage from '../../resources/howto/signin.webp'
 import { useConsentStore } from '../stores/consent.js'
 import { usePreferencesStore } from '../stores/preferences.js'
 import { useText } from '../i18n/index.js'
+import { isNative } from '../lib/native.js'
 
 const { t, legalPage } = useText()
 const consent = useConsentStore()

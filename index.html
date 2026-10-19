@@ -4,10 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Watercolourlove</title>
+    <meta name="description" content="Watercolourlove turns a photo into a plan for a real watercolour: it finds the colours that matter, tells you how to mix each one from the paints you own, and draws the photo as flat, numbered areas." />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎨</text></svg>" />
   </head>
   <body>
-    <div id="app"></div>
+    <!-- Until the app mounts, and for whoever reads the page without running it (search engines,
+         language models): what the app is and where the manual and the other pages are. Vue
+         replaces it on mount. -->
+    <div id="app">
+      <h1>Watercolourlove</h1>
+      <p>The app that shows you how to mix the right watercolours for your pictures.</p>
+      <ul>
+        <li><a href="manual/">Manual</a></li>
+        <li><a href="de/handbuch/" lang="de">Handbuch</a></li>
+        <li><a href="pricing/">Prices</a></li>
+        <li><a href="privacy/">Privacy</a></li>
+        <li><a href="terms/">Terms</a></li>
+        <li><a href="imprint/">Imprint</a></li>
+      </ul>
+    </div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

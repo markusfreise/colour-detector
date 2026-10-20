@@ -555,6 +555,16 @@
         }
       }
     },
+    "Account" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konto"
+          }
+        }
+      }
+    },
     "Actions for %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -699,6 +709,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Darstellung"
+          }
+        }
+      }
+    },
+    "Apple did not confirm the sign-in. Please try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple hat die Anmeldung nicht bestätigt. Bitte versuch es noch einmal."
           }
         }
       }
@@ -1136,6 +1157,27 @@
         }
       }
     },
+    "Continue" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter"
+          }
+        }
+      }
+    },
+    "Continue with %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter mit %@"
+          }
+        }
+      }
+    },
     "Contrast" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1287,6 +1329,16 @@
         }
       }
     },
+    "Delete account" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konto löschen"
+          }
+        }
+      }
+    },
     "Delete Box" : {
       "localizations" : {
         "de" : {
@@ -1324,6 +1376,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dieses Bild löschen?"
+          }
+        }
+      }
+    },
+    "Delete your account?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konto löschen?"
           }
         }
       }
@@ -1635,6 +1697,16 @@
         }
       }
     },
+    "Have an account on watercolourlove.de? Sign in to use your full version here as well. Your pictures, paint boxes and collection stay on this device." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du hast ein Konto bei watercolourlove.de? Melde dich an, um deine Vollversion auch hier zu nutzen. Deine Bilder, Farbkästen und deine Sammlung bleiben auf diesem Gerät."
+          }
+        }
+      }
+    },
     "Help" : {
       "localizations" : {
         "de" : {
@@ -1704,6 +1776,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Farbton"
+          }
+        }
+      }
+    },
+    "I have read the [privacy policy](%@) and the [terms](%@) and agree to them." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ich habe die [Datenschutzerklärung](%@) und die [AGB](%@) gelesen und stimme ihnen zu."
+          }
+        }
+      }
+    },
+    "I understand that my pictures, paint boxes and collection are stored only in this app on this device and not in the cloud. They are not part of my account." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mir ist klar, dass meine Bilder, Farbkästen und meine Sammlung nur in dieser App auf diesem Gerät gespeichert sind und nicht in der Cloud. Sie gehören nicht zu meinem Konto."
           }
         }
       }
@@ -2094,6 +2186,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "die Flächen feiner als „Vereinfachen 0“ zu machen"
+          }
+        }
+      }
+    },
+    "Manage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwalten"
           }
         }
       }
@@ -2531,6 +2634,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hier nicht gemalt: %@."
+          }
+        }
+      }
+    },
+    "Not signed in" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht angemeldet"
           }
         }
       }
@@ -3517,6 +3631,92 @@
         }
       }
     },
+    "Sign in" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anmelden"
+          }
+        }
+      }
+    },
+    "Sign in with your watercolourlove.de account" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit deinem Konto bei watercolourlove.de anmelden"
+          }
+        }
+      }
+    },
+    "Sign out" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abmelden"
+          }
+        }
+      }
+    },
+    "Signed in as %@." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angemeldet als %@."
+          }
+        }
+      }
+    },
+    "Signed in as %@. Before you go on:" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angemeldet als %@. Bevor es weitergeht:"
+          }
+        }
+      }
+    },
+    "Signing in did not work. Please try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Anmeldung hat nicht geklappt. Bitte versuch es noch einmal."
+          }
+        }
+      }
+    },
+    "Signing in did not work: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Anmeldung hat nicht geklappt: %@"
+          }
+        }
+      }
+    },
+    "Signing in is not available right now." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anmelden ist gerade nicht möglich."
+          }
+        }
+      }
+    },
     "Simplify areas" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3872,6 +4072,17 @@
         }
       }
     },
+    "The provider did not share an e-mail address. Please allow it, or sign in another way." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Anbieter hat keine E-Mail-Adresse weitergegeben. Bitte erlaube das oder melde dich anders an."
+          }
+        }
+      }
+    },
     "The purchase could not be verified." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3927,6 +4138,17 @@
         }
       }
     },
+    "The server is not reachable right now. Please try again later." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Server ist gerade nicht erreichbar. Bitte versuch es später noch einmal."
+          }
+        }
+      }
+    },
     "Then" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3934,6 +4156,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dann"
+          }
+        }
+      }
+    },
+    "This account has no full version." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Konto hat keine Vollversion."
           }
         }
       }
@@ -4332,6 +4565,27 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "fertig."
+          }
+        }
+      }
+    },
+    "Your account and everything stored with it on the server are deleted, and a subscription ends. Pictures, paint boxes and the collection on this device stay." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Konto und alles, was dazu auf dem Server gespeichert ist, werden gelöscht, und ein Abo endet. Bilder, Farbkästen und die Sammlung auf diesem Gerät bleiben."
+          }
+        }
+      }
+    },
+    "Your account unlocks the full version on this device." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Konto schaltet die Vollversion auf diesem Gerät frei."
           }
         }
       }

@@ -44,6 +44,9 @@ targets:
         # The analysis is number crunching; without optimisation a debug build takes seconds per picture.
         SWIFT_OPTIMIZATION_LEVEL: -O
         "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]": Sources/Watercolourlove-macOS.entitlements
+        # Sign in with Apple, for the optional account of watercolourlove.de.
+        "CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]": Sources/Watercolourlove-iOS.entitlements
+        "CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]": Sources/Watercolourlove-iOS.entitlements
     info:
       path: Sources/Info.plist
       properties:

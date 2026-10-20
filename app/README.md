@@ -47,7 +47,11 @@ A new text: write it in English in the code, build once, then add its German in 
 
 ## Free and paid
 
-Free: one saved picture and the paint boxes the app starts with. The purchase lifts the picture limit (`Store.freePictures`) and adds what the web app's `server/plans.json` lists under `native.locked`: new and imported paint boxes, the catalogues of the paint libraries (`Resources/Data/libraries.json`), close-ups, the Blocking view and Simplify below 0. Everything else is free, Monochrome included. The web's picture credits, plans and Starter box belong to its accounts; the app has none of them.
+Free: one saved picture and the paint boxes the app starts with. The purchase lifts the picture limit (`Store.freePictures`) and adds what the web app's `server/plans.json` lists under `native.locked`: new and imported paint boxes, the catalogues of the paint libraries (`Resources/Data/libraries.json`), close-ups, the Blocking view and Simplify below 0. Everything else is free, Monochrome included. The web's picture credits and Starter box belong to its accounts; the app has none of them.
+
+## Account (optional)
+
+Preferences > Account and the purchase screen offer to sign in to the account of watercolourlove.de, with Apple (in the app, `SignInWithAppleButton`) or Google (the web's sign-in in a browser sheet, `WebAuthenticationSession`). An account with a plan or licence of the web unlocks the full version as if bought here (`Store.accountPro`, App Review guideline 3.1.3(b)); the app does not name or link the web's prices. Signing in is never needed: without it the app works as before, and pictures never leave the device either way. The account sheet also asks for the web's two statements (privacy policy and terms; pictures stay on the device), signs out and deletes the account (Apple's rule for apps with sign-up). The session is a token in the keychain; the last known account is kept in UserDefaults, so that a web plan still counts offline. How the server side works: `server/README.md`, "The native app". The buttons appear only for the ways the server has keys for (`appProviders` in `GET me`).
 
 ## Screenshots
 
@@ -69,11 +73,11 @@ scripts/release.sh               # archive iOS and macOS, upload both to App Sto
 scripts/release.sh --export-only # the same, signed packages in build/release/ without uploading
 ```
 
-Signing is automatic: Xcode must be signed in to the team account (Xcode > Settings > Accounts); the distribution certificate and profiles are made in the cloud. The build number is the number of commits, the version is `MARKETING_VERSION` in `project.yml`. The app sends nothing anywhere (`Resources/PrivacyInfo.xcprivacy`, no network entitlement), so the App Privacy answer in App Store Connect is "Data Not Collected".
+Signing is automatic: Xcode must be signed in to the team account (Xcode > Settings > Accounts); the distribution certificate and profiles are made in the cloud. The build number is the number of commits, the version is `MARKETING_VERSION` in `project.yml`. The app sends nothing anywhere unless the user signs in to the optional account: then the e-mail address, linked to the user, for app functionality, no tracking (`Resources/PrivacyInfo.xcprivacy`; on the Mac the network entitlement). That is the App Privacy answer in App Store Connect.
 
 ### Once, before the first upload
 
 1. App Store Connect: create the app (iOS and macOS, bundle ID `de.markusfreise.watercolourlove`, SKU `watercolourlove`), then the in-app purchase `de.markusfreise.watercolourlove.pro` (non-consumable), with the texts from `AppStore/metadata.md`.
-2. App Privacy: "Data Not Collected". Age rating questionnaire: all "None".
+2. App Privacy: Contact Info > Email Address, linked to the user, used for App Functionality, not for tracking. Age rating questionnaire: all "None". The App ID needs the capability Sign in with Apple (the entitlements ask for it; automatic signing adds it).
 3. TestFlight: internal testers need nothing more. For external testers fill in the beta description, feedback address `support@markus-freise.de` and the privacy URL; the first external build goes to Beta App Review.
 4. Run `scripts/release.sh`. Builds show up in TestFlight after Apple's processing, usually within half an hour.

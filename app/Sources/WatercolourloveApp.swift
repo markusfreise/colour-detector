@@ -6,6 +6,7 @@ struct WatercolourloveApp: App {
     @State private var session: Session
     @State private var collection = PictureCollection()
     @State private var store = Store()
+    @State private var account = Account()
     /// The preferences, as on the web: "auto" follows the system.
     @AppStorage(Localization.languageKey) private var language = "auto"
     @AppStorage(Localization.themeKey) private var theme = "auto"
@@ -27,13 +28,17 @@ struct WatercolourloveApp: App {
                 .environment(session)
                 .environment(collection)
                 .environment(store)
+                .environment(account)
                 .environment(\.locale, Localization.locale)
                 .preferredColorScheme(Localization.colorScheme(theme))
+                // A plan bought on the web counts as the purchase.
+                .onChange(of: account.pro, initial: true) { store.accountPro = account.pro }
                 // A new language: every text is looked up again.
                 .id(language)
                 // Above the redrawn views, so that it stays open while the language changes.
                 .sheet(isPresented: $showingPreferences) {
                     PreferencesView()
+                        .environment(account)
                         .environment(\.locale, Localization.locale)
                         .preferredColorScheme(Localization.colorScheme(theme))
                 }

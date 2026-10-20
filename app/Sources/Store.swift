@@ -9,8 +9,11 @@ final class Store {
     /// What the free version holds.
     static let freePictures = 1
 
-    /// The full version: bought, or switched on or off in the debug menu of a test build.
-    var unlocked: Bool { testing ? debugPro ?? owned : owned }
+    /// The full version: bought, through a plan of the web account, or switched on or off in the
+    /// debug menu of a test build.
+    var unlocked: Bool { testing ? debugPro ?? (owned || accountPro) : owned || accountPro }
+    /// The signed-in account of watercolourlove.de has a plan or licence (Account.pro).
+    var accountPro = false
     /// Bought, as the verified transactions say.
     private var owned = false
     /// A build for testing (Xcode or TestFlight): it shows the debug menu.

@@ -4,6 +4,7 @@ import SwiftUI
 struct PaywallView: View {
     @Environment(Store.self) private var store
     @Environment(\.dismiss) private var dismiss
+    @State private var showingAccount = false
     /// What the user tried to do, e.g. "save more than one picture".
     let reason: String
 
@@ -32,6 +33,7 @@ struct PaywallView: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 Button("Restore Purchase") { Task { await store.restore() } }
+                Button("Sign in with your watercolourlove.de account") { showingAccount = true }
                 Button("Not Now") { dismiss() }
             }
             .frame(maxWidth: .infinity)
@@ -40,8 +42,11 @@ struct PaywallView: View {
         .padding(24)
         .presentationDetents([.medium, .large])
         .onChange(of: store.unlocked) { if store.unlocked { dismiss() } }
+        .sheet(isPresented: $showingAccount) {
+            AccountView()
+        }
         #if os(macOS)
-        .frame(width: 440, height: 460)
+        .frame(width: 440, height: 490)
         #endif
     }
 }

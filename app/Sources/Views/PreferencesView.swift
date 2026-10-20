@@ -1,9 +1,11 @@
 import SwiftUI
 
 /// Language and light or dark, as the web's preferences in the account dialog. Kept on this
-/// device; "Automatic" follows the system.
+/// device; "Automatic" follows the system. Below them the account, if any.
 struct PreferencesView: View {
+    @Environment(Account.self) private var account
     @Environment(\.dismiss) private var dismiss
+    @State private var showingAccount = false
     @AppStorage(Localization.languageKey) private var language = "auto"
     @AppStorage(Localization.themeKey) private var theme = "auto"
 
@@ -28,6 +30,16 @@ struct PreferencesView: View {
                         choose: { theme = $0 }
                     )
                 }
+                GridRow {
+                    Text("Account").lineLimit(1).fixedSize()
+                    HStack(spacing: Theme.gap) {
+                        Text(account.user?.email ?? L("Not signed in"))
+                            .foregroundStyle(Theme.copyLight)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                        Button(account.user == nil ? L("Sign in") : L("Manage")) { showingAccount = true }
+                    }
+                }
             }
             Divider()
             HStack {
@@ -41,6 +53,9 @@ struct PreferencesView: View {
         // Its own texts in the new language at once.
         .id(language)
         .presentationDetents([.medium])
+        .sheet(isPresented: $showingAccount) {
+            AccountView()
+        }
         #if os(macOS)
         .frame(width: 440)
         #endif

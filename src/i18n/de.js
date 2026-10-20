@@ -406,7 +406,6 @@ export default {
   '. Open it on this device; it works for 15 minutes.': '. Öffne ihn auf diesem Gerät; er gilt 15 Minuten.',
   'Or with a link by e-mail': 'Oder mit einem Link per E-Mail',
   'Your e-mail address': 'Deine E-Mail-Adresse',
-  'Your e-mail address': 'Deine E-Mail-Adresse',
   'Invitation code (optional)': 'Einladungscode (optional)',
   'Get a sign-in link': 'Anmeldelink erhalten',
   'Try again': 'Noch einmal versuchen',

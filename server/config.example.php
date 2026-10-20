@@ -11,6 +11,10 @@ return [
     // Version of the privacy text a user agreed to. Change it when the text changes: everybody is asked again.
     'consent_version' => '2026-10',
 
+    // Superadmins: always admins on the admin page (<app_url>admin/), and the only ones who can make
+    // others admins. Nobody can change or delete them there; only this list does.
+    'superadmins' => ['markus@freise.de', 'markus.freise@gmail.com'],
+
     'mail' => [
         'from' => 'Watercolourlove <support@markus-freise.de>',
         // 'mail' sends with PHP mail(); a file path writes the message there instead (for local tests).

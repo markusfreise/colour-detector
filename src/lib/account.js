@@ -16,6 +16,7 @@ export function accountsWanted(api, location) {
 
 const NOTICES = {
   'login=failed': { kind: 'error', text: 'Signing in did not work. Please try again.' },
+  'login=closed': { kind: 'error', text: 'This account is closed.' },
   'login=no-email': { kind: 'error', text: 'That account shares no e-mail address. Please sign in another way.' },
   'billing=ok': { kind: 'paid', text: 'Thank you. Your purchase is being confirmed.' },
   'billing=pictures': { kind: 'pictures', text: 'Thank you. Your pictures are being credited.' },

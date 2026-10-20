@@ -31,6 +31,8 @@ export default defineConfig(({ command }) => ({
   css: { devSourcemap: true, preprocessorOptions: { scss: { api: 'modern-compiler' } } },
   // The account API for local tests: php -S 127.0.0.1:8787 server/index.php
   server: { proxy: { '/api': 'http://127.0.0.1:8787' } },
+  // The admin page (admin/, server/admin.php) is a page of its own next to the app.
+  build: { rollupOptions: { input: { main: 'index.html', admin: 'admin/index.html' } } },
   worker: { format: 'es' },
   test: { environment: 'node' },
 }))

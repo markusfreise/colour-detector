@@ -45,7 +45,8 @@ function entitled(?string $plan, string $feature, bool $pictureUnlocked): bool
 /** The plan of an account as the rules know it. */
 function planOf(array $user): ?string
 {
-    if ((int) $user['lifetime'] === 1) {
+    // An account unlocked by hand counts as one with a licence.
+    if ((int) $user['lifetime'] === 1 || ($user['status'] ?? '') === 'unlocked') {
         return 'lifetime';
     }
     return isPro($user) ? 'subscription' : null;

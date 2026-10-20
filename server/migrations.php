@@ -11,6 +11,7 @@ const MIGRATIONS = [
     1 => 'migrateCredits',
     2 => 'migrateDeduction',
     3 => 'migrateAppSignIn',
+    4 => 'migrateAdmin',
 ];
 
 function migrate(PDO $db): void
@@ -104,4 +105,17 @@ function migrateAppSignIn(PDO $db): void
     )');
     $db->exec('ALTER TABLE identities ADD COLUMN revoke_token TEXT');
     $db->exec('ALTER TABLE identities ADD COLUMN revoke_client TEXT');
+}
+
+/**
+ * The admin page (admin.php): a role per account, a status set by hand, and who opened a session for
+ * somebody else. Superadmins come from config.php, not from here. An address that was banned and then
+ * deleted stays banned: only its hash is kept, so that it cannot sign up again.
+ */
+function migrateAdmin(PDO $db): void
+{
+    $db->exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin'))");
+    $db->exec("ALTER TABLE users ADD COLUMN status TEXT NOT NULL DEFAULT 'regular' CHECK (status IN ('regular', 'unlocked', 'banned'))");
+    $db->exec('ALTER TABLE sessions ADD COLUMN admin_id INTEGER REFERENCES users(id) ON DELETE CASCADE');
+    $db->exec('CREATE TABLE banned_emails (hash TEXT PRIMARY KEY, created_at INTEGER NOT NULL)');
 }

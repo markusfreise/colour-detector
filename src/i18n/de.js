@@ -404,7 +404,7 @@ export default {
   'Use different address': 'Andere Adresse verwenden',
   'A sign-in link is on its way to': 'Ein Anmeldelink ist unterwegs an',
   '. Open it on this device; it works for 15 minutes.': '. Öffne ihn auf diesem Gerät; er gilt 15 Minuten.',
-  'Or with a link by e-mail': 'Oder mit einem Link per E-Mail',
+  'Or sign in via e-mail': 'Oder per E-Mail anmelden',
   'Your e-mail address': 'Deine E-Mail-Adresse',
   'Invitation code (optional)': 'Einladungscode (optional)',
   'Get a sign-in link': 'Anmeldelink erhalten',

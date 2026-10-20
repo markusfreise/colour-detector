@@ -73,6 +73,7 @@
             <span v-if="p.id !== 'meta'" :class="['gate__mark', `gate__mark--${p.id}`]" aria-hidden="true"></span>
             {{ t('Continue with {name}', { name: p.name }) }}
           </button>
+          <p class="gate__or">{{ t('Or sign in via e-mail') }}</p>
         </div>
         <p v-if="account.sentTo && account.testLink" class="gate__text">
           {{ t('Local test, no mail sent. The sign-in link for') }} <strong>{{ account.sentTo }}</strong>:

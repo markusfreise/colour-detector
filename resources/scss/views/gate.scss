@@ -258,6 +258,14 @@
         margin-bottom: #{pxtorem(6)};
     }
 
+    // Between the provider buttons and the form for the address.
+    &__or {
+        margin-top: var(--gap-05x);
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+        text-align: center;
+    }
+
     &__provider {
         justify-content: center;
         gap: #{pxtorem(10)};

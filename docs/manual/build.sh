@@ -13,3 +13,4 @@ if [[ "${1:-}" != "--pages" ]]; then
   node tools/screenshots.mjs
 fi
 node tools/build.mjs
+node tools/check.mjs

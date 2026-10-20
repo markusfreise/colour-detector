@@ -877,7 +877,7 @@ Keep the ratio of the photo. A painting cropped differently from the plan will n
 
 ## Signing in
 
-The web app asks you to sign in before it opens. There is no password: you enter your e-mail address and press **Send me a sign-in link**. A mail arrives with a link; open it on the same device and in the same browser, within 15 minutes, and you are signed in. If the mail does not come, look in your spam folder or press **Use different address** to start again.
+The web app asks you to sign in before it opens. There is no password: you enter your e-mail address and press **Get a sign-in link**. A mail arrives with a link; open it on the same device and in the same browser, within 15 minutes, and you are signed in. If the mail does not come, look in your spam folder or press **Use different address** to start again.
 
 New here? Choose **Sign up** under the form. Signing up works the same way, with one extra field: **Invitation code (optional)**. Without a code you get a free account; with a valid code your account starts with a lifetime licence. Each code works once.
 

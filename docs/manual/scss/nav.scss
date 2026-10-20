@@ -96,6 +96,13 @@
         }
     }
 
+    // The topics under the chapters: the same items, without numbers.
+    &__list--topics {
+        @media (max-width: 1023px) {
+            margin-top: 0;
+        }
+    }
+
     &__whole {
         margin-top: var(--gap-15x);
         padding: var(--gap) var(--gap-05x) 0;

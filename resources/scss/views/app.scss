@@ -59,8 +59,10 @@
         top: calc(var(--app-top) + var(--app-tools));
     }
 
+    // Up by the room of the legal links while they are shown (components/legal.scss).
     &__bottom {
-        bottom: var(--app-bottom);
+        bottom: calc(var(--app-bottom) + var(--legal-room, 0rem));
+        transition: bottom 0.25s ease;
     }
 
     // A narrow window: the buttons of the picture are at the bottom (painting.scss), so nothing
@@ -113,12 +115,17 @@
             display: none;
         }
 
+        // The legal links come with the menu here.
+        &__legal-toggle {
+            display: none !important;
+        }
+
         &__left--open &__menu-pro {
             display: inline-flex;
         }
 
         &__bottom {
-            bottom: calc(var(--app-bottom) + #{pxtorem(28)} + var(--tool) + var(--gap-05x));
+            bottom: calc(var(--app-bottom) + var(--tool) + var(--gap-05x) + var(--legal-room, 0rem));
         }
     }
 

@@ -1,0 +1,74 @@
+@use "../functions" as *;
+
+// Imprint, privacy, terms and cookies (LegalBar.vue): a row centred at the bottom of the window,
+// below the window's edge until it is opened. Open, it slides in and the bottom bar moves up
+// by --legal-room (views/app.scss, components/painting.scss) to make room for it.
+
+.app {
+    --legal-height: #{pxtorem(34)};
+
+    &--legal {
+        --legal-room: calc(var(--legal-height) + var(--gap-05x));
+    }
+
+    // On a phone the row comes with the menu.
+    @media (max-width: 760px) {
+        &--menu {
+            --legal-room: calc(var(--legal-height) + var(--gap-05x));
+        }
+    }
+}
+
+.legal {
+    position: fixed;
+    // Above the floating panels (components/floating.js raises the one touched last).
+    z-index: 50;
+    left: 50%;
+    bottom: max(var(--gap), env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    height: var(--legal-height);
+    padding: 0 #{pxtorem(14)};
+    border-radius: var(--radius-medium);
+    background: var(--c-background-raised);
+    box-shadow: var(--shadow-flat);
+    white-space: nowrap;
+    transform: translate(-50%, calc(100% + var(--gap-2x)));
+    visibility: hidden;
+    transition: transform 0.25s ease, visibility 0s linear 0.25s;
+
+    &--open {
+        transform: translate(-50%, 0);
+        visibility: visible;
+        transition: transform 0.25s ease, visibility 0s;
+    }
+
+    @media (max-width: 760px) {
+        &--menu {
+            transform: translate(-50%, 0);
+            visibility: visible;
+            transition: transform 0.25s ease, visibility 0s;
+        }
+    }
+
+    &__link {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--c-copy);
+        font: inherit;
+        font-size: var(--fs-small);
+        text-decoration: none;
+        cursor: pointer;
+
+        &:hover,
+        &:focus-visible {
+            color: var(--c-corporate);
+        }
+    }
+
+    @media print {
+        display: none;
+    }
+}

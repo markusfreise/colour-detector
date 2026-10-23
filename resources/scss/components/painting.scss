@@ -186,8 +186,8 @@
         height: calc(var(--tool) * 0.79);
     }
 
-    // In a narrow window the toolbars take the top corners: the buttons go to the bottom, above
-    // the footer links, and get smaller so that they fit in one row on a phone.
+    // In a narrow window the toolbars take the top corners: the buttons go to the bottom, and
+    // get smaller so that they fit in one row on a phone.
     // On a phone only the settings go to the top, between the menu and the panel buttons.
     @media (max-width: 760px) {
         &__bar {
@@ -207,7 +207,9 @@
             z-index: 2;
             left: 50%;
             transform: translateX(-50%);
-            bottom: calc(max(var(--gap), env(safe-area-inset-bottom)) + #{pxtorem(28)});
+            // Up by the room of the legal links while they are shown (legal.scss).
+            bottom: calc(max(var(--gap), env(safe-area-inset-bottom)) + var(--legal-room, 0rem));
+            transition: bottom 0.25s ease;
             flex-wrap: wrap;
             justify-content: center;
             width: max-content;

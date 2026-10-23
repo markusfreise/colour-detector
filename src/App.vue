@@ -2,7 +2,11 @@
   <ImpersonationBar />
   <!-- With accounts on, the app opens after signing in and agreeing to the two statements. -->
   <AccountGate v-if="!account.ready" />
-  <div v-else class="app" :class="{ 'app--layer': analysis.layerMode, 'app--hints': hints }">
+  <div
+    v-else
+    class="app"
+    :class="{ 'app--layer': analysis.layerMode, 'app--hints': hints, 'app--legal': legalOpen && !isNative, 'app--menu': menuOpen && !isNative }"
+  >
     <p v-if="account.notice" class="app__notice">
       {{ account.notice.text }}
       <button class="app__footer-link" type="button" @click="account.notice = null">{{ t('Hide') }}</button>
@@ -39,6 +43,18 @@
           <a v-if="!isNative" class="button button--ghost app__manual" :href="legalPage('manual')" :data-hint="t('Manual')">
             <AppIcon name="manual" :label="t('Manual')" />
           </a>
+          <!-- Wide window: shows the legal links below the bottom bar. A phone shows them with the menu. -->
+          <button
+            v-if="!isNative"
+            class="button button--ghost app__legal-toggle"
+            :class="{ 'button--active': legalOpen }"
+            type="button"
+            :aria-expanded="legalOpen"
+            :data-hint="legalOpen ? null : t('Imprint & privacy')"
+            @click.stop="legalOpen = !legalOpen"
+          >
+            <AppIcon name="info" :label="t('Imprint & privacy')" />
+          </button>
           <DebugMenu />
         </div>
       </div>
@@ -65,12 +81,7 @@
     </main>
     <LayerSheets v-if="analysis.layerMode" />
     <PrintLegend v-else />
-    <footer v-if="!isNative" class="app__footer">
-      <a class="app__footer-link" :href="legalPage('privacy')">{{ t('Privacy') }}</a>
-      <a class="app__footer-link" :href="legalPage('terms')">{{ t('Terms') }}</a>
-      <a class="app__footer-link" :href="legalPage('imprint')">{{ t('Imprint') }}</a>
-      <button v-if="consent.available" class="app__footer-link" type="button" @click="consent.review()">{{ t('Cookies') }}</button>
-    </footer>
+    <LegalBar v-if="!isNative" v-model:open="legalOpen" :menu="menuOpen" />
     <ColourBreakdown ref="breakdown" />
     <PaintBox ref="paintBox" />
     <CollectionDialog ref="collectionDialog" />
@@ -106,6 +117,7 @@ import ProDialog from './components/ProDialog.vue'
 import AppIcon from './components/AppIcon.vue'
 import GetPro from './components/GetPro.vue'
 import DebugMenu from './components/DebugMenu.vue'
+import LegalBar from './components/LegalBar.vue'
 import AccountGate from './components/AccountGate.vue'
 import AccountDialog from './components/AccountDialog.vue'
 import { useConsentStore } from './stores/consent.js'
@@ -129,6 +141,8 @@ const collectionDialog = ref(null)
 const sampleDialog = ref(null)
 // Phone: the left column is shown with the menu button.
 const menuOpen = ref(false)
+// Wide window: the legal links below the bottom bar, shown with the info button.
+const legalOpen = ref(false)
 // Help: every button shows its label. On a phone the left column opens with it.
 const hints = ref(false)
 function toggleHints() {

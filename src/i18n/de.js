@@ -23,6 +23,7 @@ export default {
   'Terms': 'AGB',
   'Manual': 'Handbuch',
   'Cookies': 'Cookies',
+  'Imprint & privacy': 'Impressum & Datenschutz',
   'privacy policy': 'Datenschutzerklärung',
   'terms': 'AGB',
   // Details (close-ups)

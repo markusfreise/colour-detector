@@ -1,28 +1,7 @@
-@use "functions" as *;
-
-// Page footer of the app: manual and legal links, at the bottom right of the window.
+// A text link that looks like the small links once in the app's footer: the "Hide" of a notice.
+// The legal links are in the left column since 2026-10-23 (components/legal.scss).
 
 .app {
-    &__footer {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: #{pxtorem(6)} var(--gap);
-        position: fixed;
-        z-index: 2;
-        right: max(var(--gap), env(safe-area-inset-right));
-        bottom: max(var(--gap), env(safe-area-inset-bottom));
-
-        // In a narrow window the links are centred under the buttons of the picture, in one
-        // line: the buttons keep room for one only. The manual is in the menu there.
-        @media (max-width: 760px) {
-            left: max(var(--gap), env(safe-area-inset-left));
-            justify-content: center;
-            flex-wrap: nowrap;
-            white-space: nowrap;
-        }
-    }
-
     &__footer-link {
         border: 0;
         background: none;

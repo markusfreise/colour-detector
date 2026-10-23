@@ -169,10 +169,14 @@
         }
     }
 
-    // On a phone it sits beside the menu button instead.
+    // On a phone it sits above the tools, so that they keep to one row; the strip of close-ups
+    // and layers moves up for it (app--promo, app.scss).
     &__pro {
         @media (max-width: 760px) {
-            display: none;
+            position: absolute;
+            bottom: calc(100% + var(--gap-05x));
+            left: 50%;
+            transform: translateX(-50%);
         }
     }
 

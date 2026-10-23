@@ -5,7 +5,7 @@
   <div
     v-else
     class="app"
-    :class="{ 'app--layer': analysis.layerMode, 'app--hints': hints, 'app--legal': legalOpen && !isNative, 'app--menu': menuOpen && !isNative }"
+    :class="{ 'app--layer': analysis.layerMode, 'app--hints': hints, 'app--legal': legalOpen && !isNative, 'app--menu': menuOpen && !isNative, 'app--promo': !pro.active && !pro.promoHidden }"
   >
     <p v-if="account.notice" class="app__notice">
       {{ account.notice.text }}

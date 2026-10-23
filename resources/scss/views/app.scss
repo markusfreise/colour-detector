@@ -127,6 +127,11 @@
         &__bottom {
             bottom: calc(var(--app-bottom) + var(--tool) + var(--gap-05x) + var(--legal-room, 0rem));
         }
+
+        // "Get pro" above the tools (painting.scss): one row higher.
+        &--promo &__bottom {
+            bottom: calc(var(--app-bottom) + 2 * (var(--tool) + var(--gap-05x)) + var(--legal-room, 0rem));
+        }
     }
 
     &__sidebar {

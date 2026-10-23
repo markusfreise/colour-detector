@@ -1,21 +1,23 @@
 ---
-title: Schmincke Horadam Farbkarte: alle 140 Farben mit Nummern | Watercolourlove
+title: Schmincke Horadam Farbkarte: alle 189 Farben mit Nummern | Watercolourlove
 nav: Farbkarte Schmincke Horadam
 slug: schmincke-horadam-farbkarte
-lead: Schmincke Horadam ist eine der großen Künstler-Aquarellreihen, mit 140 Farben auf der Farbkarte. Hier steht, wie du diese Karte liest, wie du daraus eine kleine Palette wählst, und die ganze Reihe mit Nummern und Farbtönen, wie Watercolourlove sie kennt.
-description: Die Aquarellfarben von Schmincke Horadam: alle 140 Farben mit Nummern und Farbtönen, wie du die Farbkarte des Herstellers liest und wie du daraus eine kleine Palette wählst.
-date: 2026-10-19
+lead: Schmincke Horadam ist eine der großen Künstler-Aquarellreihen, mit 189 Farben. Hier steht, wie du diese Karte liest, wie du daraus eine kleine Palette wählst, und die ganze Reihe mit Nummern und Farbtönen, wie Watercolourlove sie kennt.
+description: Die Aquarellfarben von Schmincke Horadam: alle 189 Farben mit Nummern, Pigmenten und Farbtönen, wie du die Farbkarte des Herstellers liest und wie du daraus eine kleine Palette wählst.
+date: 2026-10-23
 ---
 
 # Welche Schmincke-Horadam-Farben brauche ich, und wie lese ich die Farbkarte?
 
-Eine Karte mit 140 Farben ist eine große Auswahl. Die meisten Malerinnen und Maler besitzen ein bis zwei Dutzend davon, und die Frage ist weniger „welche ist die beste Farbe“ als „welche wenigen Farben passen zusammen und erreichen die Farben, die ich male“. Die Farbkarte hilft dabei, sobald du weißt, was sie dir sagt.
+Eine Reihe mit 189 Farben ist eine große Auswahl. Die meisten Malerinnen und Maler besitzen ein bis zwei Dutzend davon, und die Frage ist weniger „welche ist die beste Farbe“ als „welche wenigen Farben passen zusammen und erreichen die Farben, die ich male“. Die Farbkarte hilft dabei, sobald du weißt, was sie dir sagt.
 
-Watercolourlove gehört nicht zu Schmincke und arbeitet nicht mit Schmincke zusammen. Die Farbtöne auf dieser Seite sind die Referenztöne, mit denen die App rechnet, gelesen aus der veröffentlichten Farbkarte von Schmincke; die Karte selbst und die Farbe auf deinem Tisch haben das letzte Wort.
+Watercolourlove gehört nicht zu Schmincke und arbeitet nicht mit Schmincke zusammen. Die Farbtöne auf dieser Seite sind die Referenztöne, mit denen die App rechnet, gelesen aus der veröffentlichten Farbkarte und den Farbkarten-Einträgen von Schmincke; die Karte selbst und die Farbe auf deinem Tisch haben das letzte Wort.
 
 ## Die Reihe
 
-Die Horadam-Karte in der App hat 140 Farben. Sie stehen in der Reihenfolge der Herstellerkarte: Weiß, Gelb, Blau und Türkis, Grün, Orange, Rot, Erden, Violett, Grau und Schwarz, am Ende einige Metallic- und Brillantfarben. Jede hat eine dreistellige Nummer, die auf Näpfchen und Tube steht, zum Beispiel **494 Ultramarin feinst** oder **661 Siena gebrannt**. Die Nummer ist in jeder Sprache gleich und damit der sicherste Weg, eine Farbe zu finden.
+Die Horadam-Karte in der App hat 189 Farben, die ganze Reihe, die Schmincke führt. Jede hat eine dreistellige Nummer, die auf Näpfchen und Tube steht, und die Nummern folgen dem Farbton: Weiß in den 100ern, Gelb in den 200ern, Rot in den 300ern, Violett und Blau in den 400ern, Grün in den 500ern, Erden in den 600ern, Grau und Schwarz in den 700ern, in den 800ern und 900ern die Metallic- und Brillantfarben und die 50 Supergranulationsfarben. Zum Beispiel **494 Ultramarin feinst** oder **661 Siena gebrannt**. Die App findet auch die englischen Namen (**491 Paris blue** ist **491 Pariserblau**). Die Nummer ist in jeder Sprache gleich und damit der sicherste Weg, eine Farbe zu finden.
+
+Die Supergranulationsfarben sind Mischungen aus zwei oder drei Pigmenten, die sich auf dem Papier zu einer gesprenkelten Struktur trennen. Jede hat in der App einen Ton, gelesen aus dem kräftigen Teil von Schminckes Pinselstrich; auf dem Papier zerfällt sie in ihre Pigmente.
 
 ## Wie du eine Farbkarte liest
 
@@ -39,7 +41,7 @@ Das Kapitel [Farbkasten und Palette](farbkasten.html) zeigt, wie viele Farben ei
 
 ## Wie die Farben in der App gelesen wurden
 
-Jeder Farbton in der Tabelle ist ein Ton, gelesen aus der offiziellen Farbkarte von Schmincke, und die App nimmt ihn als die Farbe in Stärke 1: das Dunkelste, wofür ein Rezept diese Farbe verwendet. Die Horadam-Karte zeigt eine mittelkräftige Lasur, nicht die Farbe in voller Stärke. Dunkle Farben wie Indigo, die Schwarztöne und die tiefen Violetts sind deshalb heller erfasst, als sie aus der Tube kommen. Helle, reine Farben liegen näher.
+Jeder Farbton in der Tabelle ist ein Ton, gelesen aus der offiziellen Farbkarte von Schmincke (die Supergranulationsfarben aus dem Farbmuster auf Schminckes Farbkarten-Eintrag), und die App nimmt ihn als die Farbe in Stärke 1: das Dunkelste, wofür ein Rezept diese Farbe verwendet. Die Horadam-Karte zeigt eine mittelkräftige Lasur, nicht die Farbe in voller Stärke. Dunkle Farben wie Indigo, die Schwarztöne und die tiefen Violetts sind deshalb heller erfasst, als sie aus der Tube kommen. Helle, reine Farben liegen näher.
 
 Die Töne auf deinem Bildschirm sind Annäherungen an ein gedrucktes Farbmuster; Bildschirme unterscheiden sich, und Farbchargen auch. Mischt eine Farbe immer wieder anders, als die App erwartet, [kalibrier sie](kalibrieren.html) nach einem eigenen Farbmuster, und die Rezepte folgen deiner Farbe.
 
@@ -53,7 +55,7 @@ Mit einem freigeschalteten Bild mischst du ebenfalls aus deinen eigenen Farben: 
 
 ## Die ganze Reihe in der App
 
-Die 140 Farben der Horadam-Karte, in der Reihenfolge der Karte, mit dem Referenzton, mit dem die App rechnet.
+Die 189 Farben von Schmincke Horadam nach Nummer, mit dem Referenzton, mit dem die App rechnet, und Pigmenten und Deckkraft von Schminckes Farbkarten-Einträgen.
 
 <!-- chart:horadam -->
 
@@ -70,7 +72,7 @@ Die 140 Farben der Horadam-Karte, in der Reihenfolge der Karte, mit dem Referenz
 
 ### Wie viele Farben hat Schmincke Horadam?
 
-Die Karte in Watercolourlove hat 140 Farben, von Weiß bis Schwarz und einigen Metallic- und Brillantfarben. Schmincke nimmt von Zeit zu Zeit Farben auf und heraus; die aktuelle Karte des Herstellers hat das letzte Wort.
+189, so wie Schmincke sie im Oktober 2026 führt: von Weiß bis Schwarz, die Metallic- und Brillantfarben und 50 Supergranulationsfarben. Sondereditionen kommen hinzu. Schmincke nimmt von Zeit zu Zeit Farben auf und heraus; die aktuelle Karte des Herstellers hat das letzte Wort.
 
 ### Sind die Farbtöne auf dieser Seite genau?
 

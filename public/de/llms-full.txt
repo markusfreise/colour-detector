@@ -450,7 +450,7 @@ Drei Farben in einer Mischung sind im Aquarell völlig normal, aber jede weitere
 
 Diese beiden Regler verändern das Foto, **bevor** es analysiert wird. An deinen Farben ändern sie nichts.
 
-**Sättigung** steht zu Beginn auf **200 %**. Das mag übertrieben aussehen, ist aber Absicht: Fotos, besonders vom Telefon, sind oft matt, und Malerinnen und Maler übertreiben Farbe ohnehin. Die doppelte Sättigung holt die Farbtöne hervor, die wirklich da sind, das Violett im Schatten, die Wärme im Stein, damit die Mischungen sie beschreiben. Senk sie für ein ruhigeres, gedämpfteres Bild; bei 0 % ist das Foto grau.
+**Sättigung** steht zu Beginn auf **100 %**, das Foto, wie es ist. Fotos, besonders vom Telefon, sind oft matt, und Malerinnen und Maler übertreiben Farbe ohnehin: Heb sie, bis 200 %, um die Farbtöne hervorzuholen, die wirklich da sind, das Violett im Schatten, die Wärme im Stein, damit die Mischungen sie beschreiben. Senk sie für ein ruhigeres, gedämpfteres Bild; bei 0 % ist das Foto grau.
 
 **Kontrast** steht zu Beginn auf **100 %** und reicht von 50 % bis 200 %. Erhöh ihn, wenn ein dunstiges Foto zu wenige klare Dunkel ergibt, senk ihn, wenn ein hartes Mittagsfoto die Schatten zu schwer macht.
 

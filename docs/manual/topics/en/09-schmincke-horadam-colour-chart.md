@@ -1,21 +1,23 @@
 ---
-title: Schmincke Horadam colour chart: all 140 colours with numbers | Watercolourlove
+title: Schmincke Horadam colour chart: all 189 colours with numbers | Watercolourlove
 nav: Schmincke Horadam chart
 slug: schmincke-horadam-colour-chart
-lead: Schmincke Horadam is one of the large artists' watercolour ranges, with 140 colours on its chart. Here is how to read that chart, how to choose a small palette from it, and the whole range with numbers and swatches as Watercolourlove knows it.
-description: The Schmincke Horadam watercolour range: all 140 colours with numbers and swatches, how to read the maker's chart, and how to choose a small palette from it.
-date: 2026-10-19
+lead: Schmincke Horadam is one of the large artists' watercolour ranges, with 189 colours. Here is how to read that chart, how to choose a small palette from it, and the whole range with numbers and swatches as Watercolourlove knows it.
+description: The Schmincke Horadam watercolour range: all 189 colours with numbers, pigments and swatches, how to read the maker's chart, and how to choose a small palette from it.
+date: 2026-10-23
 ---
 
 # Which Schmincke Horadam colours do I need, and how do I read the chart?
 
-A chart of 140 colours is a lot to choose from. Most painters own a dozen or two of them, and the question is less "which is the best colour" than "which few colours work together and reach the colours I paint". The chart helps with that once you know what it tells you.
+A range of 189 colours is a lot to choose from. Most painters own a dozen or two of them, and the question is less "which is the best colour" than "which few colours work together and reach the colours I paint". The chart helps with that once you know what it tells you.
 
-Watercolourlove is not affiliated with Schmincke. The swatches on this page are the reference colours the app uses, read from Schmincke's own published chart; the chart itself and the paint on your desk have the last word.
+Watercolourlove is not affiliated with Schmincke. The swatches on this page are the reference colours the app uses, read from Schmincke's own published chart and colour cards; the chart itself and the paint on your desk have the last word.
 
 ## The range
 
-The Horadam chart in the app has 140 colours. They run in the order of the maker's chart: whites, yellows, blues and turquoises, greens, oranges, reds, earths, violets, greys and blacks, and at the end a few metallic and brilliant colours. Each one has a three-digit number, the one printed on the pan and the tube. The names in the app are the German ones from the chart, such as **494 Ultramarin feinst** or **661 Siena gebrannt**; the number is the same in every language, so it is the safer way to find a paint.
+The Horadam chart in the app has 189 colours, the whole range Schmincke lists. Each one has a three-digit number, the one printed on the pan and the tube, and the numbers run by hue: whites in the 100s, yellows in the 200s, reds in the 300s, violets and blues in the 400s, greens in the 500s, earths in the 600s, greys and blacks in the 700s, and in the 800s and 900s the metallic and brilliant colours and the 50 supergranulating ones. The app shows the English names, such as **494 Ultramarine finest** or **661 Burnt Sienna**, and finds the German ones too (**491 Pariserblau** is **491 Paris blue**); the number is the same in every language, so it is the safest way to find a paint.
+
+The supergranulating colours are mixtures of two or three pigments that part on the paper into a speckled texture. Each has one colour in the app, read from the strong part of Schmincke's brush stroke; on paper it breaks into its pigments.
 
 ## How to read a maker's chart
 
@@ -31,7 +33,7 @@ Every maker prints the same handful of facts for each colour, each in its own sy
 
 ## Choosing a small palette
 
-Start with what you paint, not with the chart. A landscape palette from Horadam can be as small as six colours: a warm yellow such as **216 Reingelb**, a blue each side, **494 Ultramarin feinst** and **484 Phthaloblau**, a cool red such as **369 Chinacridon Magenta**, and two earths, **655 Lichter Ocker** and **661 Siena gebrannt**. With those, the pairs give greens, oranges, violets, and greys from blue to brown.
+Start with what you paint, not with the chart. A landscape palette from Horadam can be as small as six colours: a warm yellow such as **216 Pure yellow**, a blue each side, **494 Ultramarine finest** and **484 Phthalo blue**, a cool red such as **369 Quinacridone magenta**, and two earths, **655 Yellow ochre** and **661 Burnt Sienna**. With those, the pairs give greens, oranges, violets, and greys from blue to brown.
 
 Before you buy, look at the pigments on the chart: two paints that share a pigment double up, and a convenience green or grey is often a mix of colours you already have. Then swatch your choice on your paper, in strong and in thin washes, because a chart printed on a different paper only comes close.
 
@@ -39,7 +41,7 @@ The chapter [Paint box and palette](paint-box.html) shows how many paints make a
 
 ## How the colours in the app were read
 
-Each swatch in the table is one colour read from Schmincke's official chart, and the app uses it as the paint at strength 1: the darkest that paint is used in a recipe. The Horadam chart shows a mid-strength wash rather than paint at full strength, so dark colours such as the indigos, the blacks and the deep violets are recorded lighter than they get from the tube. Light, clean colours are closer.
+Each swatch in the table is one colour read from Schmincke's official chart (the supergranulating ones from the swatch on Schmincke's colour card), and the app uses it as the paint at strength 1: the darkest that paint is used in a recipe. The Horadam chart shows a mid-strength wash rather than paint at full strength, so dark colours such as the indigos, the blacks and the deep violets are recorded lighter than they get from the tube. Light, clean colours are closer.
 
 The colours on your screen are approximations of a printed swatch; screens differ, and so do batches of paint. If a paint keeps mixing differently from what the app expects, [calibrate it](calibrating.html) from a swatch of your own, and the recipes follow your paint.
 
@@ -53,7 +55,7 @@ With a picture you unlock, you mix from your own paints too: the 40 common colou
 
 ## The whole range in the app
 
-The 140 colours of the Horadam chart, in the order of the chart, with the reference colour the app uses. The names are the German ones of Schmincke's chart.
+The 189 colours of Schmincke Horadam by number, with the reference colour the app uses, the German name in brackets, the pigments and the opacity from Schmincke's colour cards.
 
 <!-- chart:horadam -->
 
@@ -70,11 +72,11 @@ The 140 colours of the Horadam chart, in the order of the chart, with the refere
 
 ### How many colours does Schmincke Horadam have?
 
-The chart in Watercolourlove has 140 colours, from the whites to the blacks and a few metallic and brilliant colours. Schmincke adds and retires colours from time to time; its current chart has the last word.
+189, as Schmincke lists them in October 2026: from the whites to the blacks, the metallic and brilliant colours, and 50 supergranulating colours. Special editions come on top. Schmincke adds and retires colours from time to time; its current chart has the last word.
 
-### Why are the Horadam names in German?
+### Can I search for the German names?
 
-They are the names on Schmincke's German chart. The number is the same in every language, so search by number when you are not sure of a name.
+Yes. The app knows the English and the German name of every Horadam colour, so "Paris blue" and "Pariserblau" both find 491. The number is the same in every language, so search by number when you are not sure of a name.
 
 ### Are the colours on this page exact?
 

@@ -109,11 +109,26 @@ describe('paint libraries', () => {
   it('ships Schmincke Horadam as the series of the stock', () => {
     const horadam = libraryByName(HOUSE_VENDOR)
     expect(horadam.id).toBe('horadam')
-    expect(horadam.catalogue.find((c) => c.number === '347').name).toBe('Kadmiumrot mittel')
+    expect(horadam.catalogue.find((c) => c.number === '347')).toMatchObject({ name: 'Cadmium red middle', names: { de: 'Kadmiumrot mittel' } })
     // However it is written in the form.
     expect(libraryByName('  schmincke horadam ')).toBe(horadam)
     expect(libraryByName('My own series')).toBe(null)
     expect(libraryByName(undefined)).toBe(null)
+  })
+
+  it('ships the whole Horadam range, found by its English and its German names', () => {
+    const horadam = libraryByName(HOUSE_VENDOR)
+    expect(horadam.catalogue).toHaveLength(189)
+    expect(new Set(horadam.catalogue.map((c) => c.number)).size).toBe(189)
+    expect(horadam.catalogue.every((c) => /^\d{3}$/.test(c.number) && /^#[0-9a-f]{6}$/.test(c.hex) && c.name && c.names.de && TRANSPARENCY[c.transparency])).toBe(true)
+    // Schmincke's page has an empty card 031 "ONETZ": no colour.
+    expect(chartColour(horadam, '031')).toBe(null)
+    // The supergranulating colours are part of it.
+    expect(chartColour(horadam, '973')).toMatchObject({ name: 'Galaxy blue', names: { de: 'Galaxie Blau' }, pigments: ['PB29', 'PG50'] })
+    const colours = seriesColours(HOUSE_VENDOR, horadam.catalogue, [])
+    expect(filterColours(colours, 'paris blue').map((c) => c.number)).toEqual(['491'])
+    expect(filterColours(colours, 'pariserblau').map((c) => c.number)).toEqual(['491'])
+    expect(seriesColours(HOUSE_VENDOR, horadam.catalogue, [], undefined, 'de').find((c) => c.number === '491').name).toBe('Pariserblau')
   })
 
   it('ships Winsor & Newton Professional with its chart', () => {

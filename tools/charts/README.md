@@ -17,6 +17,27 @@ standing for the paint at its strongest wash (the `hex` of the app). A swatch th
 reliable colour gets `hex: null` and the reason in `unverified`; it is listed in
 `docs/libraries.md`.
 
+## Schmincke Horadam Aquarell (`horadam.py`)
+
+Into one folder:
+
+- `en.html`: https://www.schmincke.de/en/produkte/aquarell/horadam-aquarell (the page as served)
+- `de.html`: https://www.schmincke.de/produkte/aquarell/horadam-aquarell
+- `swatches/14NNN.jpg`: the swatch of every card, `https://www.schmincke.de/fileadmin/schmincke_products/farbwischer/14NNN.jpg`
+  (the page names them: `grep -o 'farbwischer/14[0-9]*\.jpg' en.html`)
+
+Then `python3 -I tools/charts/horadam.py <folder> > /tmp/horadam.js` and move that file to
+`src/data/horadam-catalogue.js` (not straight into it: the script reads the colours it keeps from there).
+
+Every colour has a card with data attributes: the title (English or German by page), the pigments
+and the opacity (L, HL, HD, D: transparent to opaque). The page has one card that is no colour,
+031 "ONETZ", without pigments or opacity; it is left out. Colours: the values the catalogue had,
+measured on the printed chart, stay. A colour new to it is measured on its swatch: a wash from strong
+to pale like the chart, the median of the band 20 to 40 % down (on the colours of before that band
+is within ΔE 1.7 of their values, median); a brush stroke on white (the 50 supergranulating
+colours), the median of the darker half of the paint. Their pigments part on the paper, so one
+value only stands for them.
+
 ## Sennelier L'Aquarelle (`sennelier.py`)
 
 Into one folder:

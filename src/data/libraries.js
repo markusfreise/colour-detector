@@ -16,7 +16,13 @@ import { HOUSE_VENDOR } from '../lib/paintbox.js'
 // that no public chart of the maker has (both listed in docs/libraries.md). `free`: for everybody;
 // the others are the charts of known makers, with a plan (`brand_charts`).
 const MAKER_LIBRARIES = [
-  { id: 'horadam', name: HOUSE_VENDOR, catalogue: horadamCatalogue, source: 'Official Schmincke Horadam colour chart' },
+  {
+    id: 'horadam',
+    name: HOUSE_VENDOR,
+    catalogue: horadamCatalogue,
+    source:
+      'Official Schmincke Horadam colour chart; names, pigments, opacity and the supergranulating colours from the colour cards of schmincke.de, Horadam Aquarell page (2026-10-23)',
+  },
   {
     id: 'winsor-newton-professional',
     name: 'Winsor & Newton Professional',

@@ -8,7 +8,7 @@ header of its catalogue file and, for the newer ones, in `tools/charts/`.
 | Library | Colours | With a colour | Pigments | Transparency | Source |
 |---|---|---|---|---|---|
 | Common colours | 40 | 40 | 40 | 0 | The colours most makers have, by their usual name and pigment; each shown as one of the maker charts below shows it (src/data/common-catalogue.js) |
-| Schmincke Horadam | 140 | 140 | 0 | 0 | Official Schmincke Horadam colour chart |
+| Schmincke Horadam | 189 | 189 | 187 | 189 | Official Schmincke Horadam colour chart; names, pigments, opacity and the supergranulating colours from the colour cards of schmincke.de, Horadam Aquarell page (2026-10-23) |
 | Winsor & Newton Professional | 116 | 116 | 0 | 0 | Official Winsor & Newton Professional Watercolour colour chart (colart.s3.amazonaws.com, 2026) |
 | Michael Harding | 136 | 136 | 0 | 0 | michaelharding.co.uk/watercolours (2026-10-15) |
 | Sennelier L'Aquarelle | 98 | 97 | 97 | 98 | Sennelier colour chart ColorChart-ENG-WATERCOLOR.pdf (2012) and list of granulating colours (2022), both linked from sennelier-colors.com, L'Aquarelle page |

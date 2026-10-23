@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		002542EE5535EB66968A3E6B /* sample-woman-white-wall.webp in Resources */ = {isa = PBXBuildFile; fileRef = 5FAD645524E6A23495326B7E /* sample-woman-white-wall.webp */; };
 		062D05AE0029BD654BDCD28F /* CoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FDA3E737E6D98B7AFC34E5 /* CoreTests.swift */; };
+		06513571C0250303B200F26A /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C1F122FCAD46AECB9B9034 /* Account.swift */; };
+		09A227AF2E03105A4C5C6897 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6557626393BBA873551F27 /* AccountView.swift */; };
 		10E153A2C4206E738963D04D /* AddColourView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5E5B8B2FE0C3ED01605391 /* AddColourView.swift */; };
 		14D0E98F5AFA11D14CF56134 /* PaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 368E9530AAB28D41D628F297 /* PaletteView.swift */; };
 		1710B7F26F5F8693C7119CE6 /* Mixing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688048451E524CBAAC7E433A /* Mixing.swift */; };
@@ -17,6 +19,7 @@
 		1B254EBAB23294A6A805DD1A /* libraries.json in Resources */ = {isa = PBXBuildFile; fileRef = 3121EA152FECD8D1A4D80E93 /* libraries.json */; };
 		25403C30A67D91515B2F7A0D /* SamplesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C6E235B2A7D00440432980 /* SamplesView.swift */; };
 		286D9593E6372898DA515FB4 /* sample-llyn-idwal.webp in Resources */ = {isa = PBXBuildFile; fileRef = 504DB58C169C06AC66E180C8 /* sample-llyn-idwal.webp */; };
+		2AF685BE45EFBB62F2D7332F /* AccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBCFB56822BF03FBD2F0A10F /* AccountTests.swift */; };
 		2B3A89E9CEB16A55E57EB30F /* PictureCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3DD9ECE27C7FE3856FB59E /* PictureCollection.swift */; };
 		2C49CE956284D8A9EFE8C888 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 369E9D3DF34F8F3651BB2122 /* Localizable.xcstrings */; };
 		2F39316DEE9D82BDB95624BA /* SegmentationSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69707560BB9AC39D6BC5D03 /* SegmentationSyncTests.swift */; };
@@ -84,6 +87,7 @@
 
 /* Begin PBXFileReference section */
 		04B3D360E35FE31C5D2A5854 /* WatercolourloveApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatercolourloveApp.swift; sourceTree = "<group>"; };
+		055889FBA1DBB8B66F889B4B /* Watercolourlove-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Watercolourlove-iOS.entitlements"; sourceTree = "<group>"; };
 		0A3DD9ECE27C7FE3856FB59E /* PictureCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureCollection.swift; sourceTree = "<group>"; };
 		165CA1E1603ED5BA38158387 /* Layers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layers.swift; sourceTree = "<group>"; };
 		17E834ABF1D0C866F84511F0 /* Blocking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Blocking.swift; sourceTree = "<group>"; };
@@ -123,6 +127,7 @@
 		81FDF902F81FD393A7F259FE /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		8589FC2BAC28BEA5BA1BB18E /* PaintingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaintingView.swift; sourceTree = "<group>"; };
 		8C655769A47B8B7BC0B8DAAD /* PaintBoxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaintBoxTests.swift; sourceTree = "<group>"; };
+		8F6557626393BBA873551F27 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		9054571C862F5207DC4B9FF4 /* Details.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Details.swift; sourceTree = "<group>"; };
 		919DBD58927AD003699BC82D /* Words.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Words.swift; sourceTree = "<group>"; };
 		98FD9892754A9A9EA4885E2A /* sample-rooftops-dusk.webp */ = {isa = PBXFileReference; path = "sample-rooftops-dusk.webp"; sourceTree = "<group>"; };
@@ -137,11 +142,13 @@
 		BE701FE116333FCDD0A7506E /* Pictures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pictures.swift; sourceTree = "<group>"; };
 		C0E6CD0556C99E15D0E31DA8 /* Closeup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Closeup.swift; sourceTree = "<group>"; };
 		C69707560BB9AC39D6BC5D03 /* SegmentationSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentationSyncTests.swift; sourceTree = "<group>"; };
+		CBCFB56822BF03FBD2F0A10F /* AccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTests.swift; sourceTree = "<group>"; };
 		CEFB87CECCDEC7000AD6566A /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		D2F973137223EE3B4109BE34 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D98918E4EC4A844E8959FDD1 /* sample-bielefeld.webp */ = {isa = PBXFileReference; path = "sample-bielefeld.webp"; sourceTree = "<group>"; };
 		DA2EBE78088FB3F36089E621 /* Smooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Smooth.swift; sourceTree = "<group>"; };
 		DBA1CD768F1F5550E2B61D36 /* SeriesColours.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesColours.swift; sourceTree = "<group>"; };
+		E3C1F122FCAD46AECB9B9034 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		E8FC92AD043633F5769C87B9 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		EEE3305BCC6DAE2D02C7186D /* Paint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paint.swift; sourceTree = "<group>"; };
 		F2298D9BDFE2E4ED58CB1C41 /* MixingSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixingSyncTests.swift; sourceTree = "<group>"; };
@@ -185,6 +192,7 @@
 		2E2FB65C3411F264226C0140 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				8F6557626393BBA873551F27 /* AccountView.swift */,
 				AE5E5B8B2FE0C3ED01605391 /* AddColourView.swift */,
 				7BB7E0CB80CD6AE38F8E3337 /* BlockingControlsView.swift */,
 				7ADD282308C8DE8CE23E59FE /* Chips.swift */,
@@ -258,8 +266,10 @@
 		BB37D1338C08D17E4C98F138 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				E3C1F122FCAD46AECB9B9034 /* Account.swift */,
 				76DF2A1B9A4772D7EAF9C324 /* Info.plist */,
 				4DB9EE809B9546732175EE4A /* Store.swift */,
+				055889FBA1DBB8B66F889B4B /* Watercolourlove-iOS.entitlements */,
 				2D843BD45C199235BADFF18A /* Watercolourlove-macOS.entitlements */,
 				04B3D360E35FE31C5D2A5854 /* WatercolourloveApp.swift */,
 				12AC71D885A959DC174BFB87 /* Core */,
@@ -273,6 +283,7 @@
 		C6EE8EF2B92BBB1D98C01897 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				CBCFB56822BF03FBD2F0A10F /* AccountTests.swift */,
 				B7EF25D7D1E1AC0531B582D4 /* BlockingTests.swift */,
 				40FDA3E737E6D98B7AFC34E5 /* CoreTests.swift */,
 				742BD345C948DE84F2EBEF06 /* LayerTests.swift */,
@@ -404,6 +415,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AF685BE45EFBB62F2D7332F /* AccountTests.swift in Sources */,
 				86116D1AF0FEA560CBCF955F /* BlockingTests.swift in Sources */,
 				062D05AE0029BD654BDCD28F /* CoreTests.swift in Sources */,
 				9482778874367C9127217FCD /* LayerTests.swift in Sources */,
@@ -420,6 +432,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06513571C0250303B200F26A /* Account.swift in Sources */,
+				09A227AF2E03105A4C5C6897 /* AccountView.swift in Sources */,
 				10E153A2C4206E738963D04D /* AddColourView.swift in Sources */,
 				FB018294A7D84B17F7161832 /* Blocking.swift in Sources */,
 				F33E90DB14D97620BE3B43B7 /* BlockingControlsView.swift in Sources */,
@@ -562,6 +576,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "Sources/Watercolourlove-iOS.entitlements";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = "Sources/Watercolourlove-iOS.entitlements";
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "Sources/Watercolourlove-macOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -677,6 +693,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = "Sources/Watercolourlove-iOS.entitlements";
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" = "Sources/Watercolourlove-iOS.entitlements";
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "Sources/Watercolourlove-macOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_HARDENED_RUNTIME = YES;

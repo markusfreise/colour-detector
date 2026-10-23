@@ -15,6 +15,11 @@
     background: var(--c-background-raised);
     box-shadow: var(--shadow);
     border-radius: var(--radius-medium);
+
+    // Nothing in it (the bottom bar without close-ups or layers): not even its padding is drawn.
+    &:empty {
+        display: none;
+    }
 }
 
 .flyout {

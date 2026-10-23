@@ -84,6 +84,19 @@
         min-width: #{pxtorem(40)};
     }
 
+    // The modes across the whole card, each group as wide as its buttons need and the rest
+    // shared out; on a phone what does not fit (Monochrome) starts a second line.
+    &__modes {
+        flex: 1 1 auto;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: var(--gap-05x);
+
+        > .segmented {
+            flex: 1 0 auto;
+        }
+    }
+
     &__toggles {
         display: flex;
         gap: #{pxtorem(12)};

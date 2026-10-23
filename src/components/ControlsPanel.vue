@@ -17,8 +17,9 @@
           <BlockingControls v-if="blocking" />
           <template v-else>
           <div class="field__label">
-            <div class="segmented__group">
-              <div class="segmented segmented--fill">
+            <!-- Method, areas and monochrome: large buttons, each with its name under the icon. -->
+            <div class="segmented__group controls__modes">
+              <div class="segmented segmented--fill segmented--labelled">
                 <button
                   v-for="m in methods"
                   :key="m.value"
@@ -29,10 +30,11 @@
                   :title="t(m.title)"
                   @click="analysis.setMode(m.value)"
                 >
-                  <AppIcon :name="m.icon" :label="t(m.label)" />
+                  <AppIcon :name="m.icon" />
+                  <span class="segmented__label">{{ t(m.label) }}</span>
                 </button>
               </div>
-        <div class="segmented segmented--fill">
+        <div class="segmented segmented--fill segmented--labelled">
           <button
             v-for="a in areas"
             :key="a.label"
@@ -43,12 +45,12 @@
             :title="t(a.title)"
             @click="setGeometric(a.value)"
           >
-            <AppIcon v-if="icons[a.icon]" :name="a.icon" :label="t(a.label)" />
-            <template v-else>{{ t(a.label) }}</template>
+            <AppIcon v-if="icons[a.icon]" :name="a.icon" />
+            <span class="segmented__label">{{ t(a.label) }}</span>
           </button>
         </div>
         <!-- Monochrome: the picture in grey, each value painted with one colour of the paint box. -->
-        <div class="segmented segmented--fill">
+        <div class="segmented segmented--fill segmented--labelled">
           <button
             type="button"
             class="segmented__option"
@@ -58,7 +60,8 @@
             :title="t('Monochrome: the picture in grey, each value painted with one colour of the paint box')"
             @click="setValues(!analysis.settings.values)"
           >
-            <AppIcon name="contrast" :label="t('Monochrome')" />
+            <AppIcon name="contrast" />
+            <span class="segmented__label">{{ t('Monochrome') }}</span>
           </button>
         </div>
         </div>

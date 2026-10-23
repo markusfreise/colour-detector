@@ -80,4 +80,31 @@
         min-width: 0;
         padding-inline: var(--gap-025x);
     }
+
+    // An icon with its name under it (the modes at the top of the settings).
+    // As wide as its name at least; what is left is shared out.
+    &--labelled &__option {
+        flex: 1 0 auto;
+        min-width: max-content;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: #{pxtorem(2)};
+        aspect-ratio: auto;
+        min-height: #{pxtorem(68)};
+        padding: #{pxtorem(6)} #{pxtorem(4)};
+        font: inherit;
+
+        svg {
+            width: #{pxtorem(34)};
+            height: #{pxtorem(34)};
+        }
+    }
+
+    &__label {
+        font-size: #{pxtorem(12)};
+        line-height: 1.2;
+        white-space: nowrap;
+    }
 }

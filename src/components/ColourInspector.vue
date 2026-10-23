@@ -22,6 +22,7 @@
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { PHONE } from '../config.js'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { useLayoutStore } from '../stores/layout.js'
 import RecipeLine from './RecipeLine.vue'
@@ -37,11 +38,10 @@ const recipe = computed(() => entry.value?.recipes[entry.value.chosen] ?? null)
 const share = computed(() => Math.round((entry.value?.share ?? 0) * 100) || '<1')
 
 // In a narrow window the card is as wide as the window and only moves up and down. With room
-// beside it (wider than NARROW, as in the stylesheet) it floats free and is dragged anywhere.
-const NARROW = 760
+// beside it (not a phone, PHONE as in the stylesheet) it floats free and is dragged anywhere.
 const card = ref(null)
 const dragging = ref(false)
-const wide = ref(window.innerWidth > NARROW)
+const wide = ref(!window.matchMedia(PHONE).matches)
 let grip = { x: 0, y: 0 }
 const style = computed(() => {
   const at = layout.positions.inspector
@@ -94,7 +94,7 @@ function endDrag(event) {
 
 // A smaller window, or another colour with a taller recipe, must not push the card out of sight.
 function keepInWindow() {
-  wide.value = window.innerWidth > NARROW
+  wide.value = !window.matchMedia(PHONE).matches
   const at = layout.positions.inspector
   if (at && card.value) layout.positions.inspector = inWindow(wide.value ? at.x : null, at.y)
 }

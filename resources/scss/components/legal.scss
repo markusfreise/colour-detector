@@ -1,4 +1,5 @@
 @use "../functions" as *;
+@use "../mixins" as *;
 
 // Imprint, privacy, terms and cookies (LegalBar.vue): a row centred at the bottom of the window,
 // below the window's edge until it is opened. Open, it slides in and the bottom bar moves up
@@ -12,7 +13,7 @@
     }
 
     // On a phone the row comes with the menu.
-    @media (max-width: 760px) {
+    @include phone {
         &--menu {
             --legal-room: calc(var(--legal-height) + var(--gap-05x));
         }
@@ -44,7 +45,7 @@
         transition: transform 0.25s ease, visibility 0s;
     }
 
-    @media (max-width: 760px) {
+    @include phone {
         &--menu {
             transform: translate(-50%, 0);
             visibility: visible;

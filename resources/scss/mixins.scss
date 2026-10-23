@@ -7,6 +7,14 @@
     white-space: nowrap;
 }
 
+// A phone, upright or on its side: narrow, or low as a phone in landscape. The same query is
+// PHONE in src/config.js.
+@mixin phone {
+    @media (max-width: 760px), (max-height: 500px) {
+        @content;
+    }
+}
+
 // Dark mode: follows the system unless the visitor chose light or dark ("data-theme" on <html>,
 // set from the preferences). Used inside a rule; "&" is that rule.
 @mixin dark {

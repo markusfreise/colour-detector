@@ -3,6 +3,9 @@ import { isNative } from './lib/native.js'
 // The website and the apps in the App Store share the name.
 export const APP_NAME = 'Watercolourlove'
 
+// A phone, upright or on its side: the window as the stylesheet's phone mixin (mixins.scss) sees it.
+export const PHONE = '(max-width: 760px), (max-height: 500px)'
+
 // Google Analytics 4 measurement ID ("G-XXXXXXXXXX"). Empty = no analytics and no consent banner.
 // VITE_GA_ID overrides it for a single build or dev session.
 // The app never loads analytics.

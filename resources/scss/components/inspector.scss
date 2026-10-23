@@ -1,4 +1,5 @@
 @use "../functions" as *;
+@use "../mixins" as *;
 
 // The colour tapped in the picture: its number, its share of the picture and the recipe to mix
 // it, with the way to the whole breakdown (ColourInspector.vue).
@@ -24,7 +25,7 @@
     box-shadow: var(--shadow);
 
     // In a narrow window the buttons of the picture are at the bottom: the card starts above them.
-    @media (max-width: 760px) {
+    @include phone {
         bottom: calc(var(--app-bottom) + #{pxtorem(28 + 48)} + var(--gap-05x));
     }
 

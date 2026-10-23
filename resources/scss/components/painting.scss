@@ -172,7 +172,7 @@
     // On a phone it sits above the tools, so that they keep to one row; the strip of close-ups
     // and layers moves up for it (app--promo, app.scss).
     &__pro {
-        @media (max-width: 760px) {
+        @include phone {
             position: absolute;
             bottom: calc(100% + var(--gap-05x));
             left: 50%;
@@ -210,7 +210,7 @@
     // In a narrow window the toolbars take the top corners: the buttons go to the bottom, and
     // get smaller so that they fit in one row on a phone.
     // On a phone only the settings go to the top, between the menu and the panel buttons.
-    @media (max-width: 760px) {
+    @include phone {
         &__bar {
             display: contents;
         }

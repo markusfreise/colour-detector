@@ -100,7 +100,7 @@
         gap: var(--gap-2x);
         width: min(#{pxtorem(880)}, 100%);
 
-        @media (max-width: 760px) {
+        @include phone {
             grid-template-columns: minmax(0, 1fr);
             width: min(#{pxtorem(400)}, 100%);
             // Room above the logo for the language switch.
@@ -389,7 +389,7 @@
         display: flex;
         flex-direction: column;
 
-        @media (max-width: 760px) {
+        @include phone {
             padding-top: var(--gap-15x);
             border-top: 1px solid var(--c-border);
         }
@@ -400,7 +400,7 @@
         // Clear of EN | DE in the corner above it.
         padding-right: #{pxtorem(64)};
 
-        @media (max-width: 760px) {
+        @include phone {
             padding-right: 0;
         }
 

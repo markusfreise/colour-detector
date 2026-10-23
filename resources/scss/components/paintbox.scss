@@ -1,4 +1,5 @@
 @use "../functions" as *;
+@use "../mixins" as *;
 
 // The paint box dialog: the palette of the picture, the paint boxes, own paints (PaintBox.vue).
 
@@ -282,7 +283,7 @@
     }
 
     // On a phone the paint box takes the whole window: the chips are small enough as it is.
-    @media (max-width: 760px) {
+    @include phone {
         width: 100vw;
         max-width: none;
         height: 100vh;

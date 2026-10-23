@@ -1,4 +1,5 @@
 @use "../functions" as *;
+@use "../mixins" as *;
 
 // The one screen: the picture fills the window, and everything else lies over it. The operations
 // on the picture are attached to the top left, the panels to the top right; what belongs to the
@@ -80,7 +81,7 @@
         gap: var(--gap);
     }
 
-    @media (max-width: 760px) {
+    @include phone {
         --app-tools: 0rem;
         // The tools are one row at the bottom: ten buttons (fit, detail, settings, four views,
         // grid, outlines, numbers) and six gaps between the seven groups, inside the toolbar's

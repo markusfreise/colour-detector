@@ -24,6 +24,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { PHONE } from '../config.js'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { useFloating } from './floating.js'
 import EntryEditor from './EntryEditor.vue'
@@ -33,13 +34,12 @@ const { t } = useText()
 const analysis = useAnalysisStore()
 const entry = computed(() => analysis.inspectedColour)
 
-// Wider than NARROW (as in the stylesheet) it floats; below, it is a modal over the whole window.
-const NARROW = 760
+// Not on a phone (PHONE, as in the stylesheet) it floats; below, it is a modal over the whole window.
 const floating = ref(false)
 const { panel, style, dragging, startDrag, raise, keepInWindow } = useFloating('breakdown')
 
 function open() {
-  floating.value = window.innerWidth > NARROW
+  floating.value = !window.matchMedia(PHONE).matches
   if (panel.value.open) panel.value.close()
   if (floating.value) {
     panel.value.show()

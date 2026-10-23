@@ -1,4 +1,5 @@
 @use "../functions" as *;
+@use "../mixins" as *;
 
 // The dialog that adds colours to a paint box (AddColour.vue): a colour of one's own, then the
 // libraries, filtered by series, words and hue.
@@ -164,7 +165,7 @@
     }
 
     // On a phone the dialog takes the whole window, as the paint box does.
-    @media (max-width: 760px) {
+    @include phone {
         width: 100vw;
         max-width: none;
         height: 100vh;

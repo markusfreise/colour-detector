@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { PHONE } from '../config.js'
 
 const KEY = 'colour-detector:layout'
 
@@ -15,7 +16,7 @@ export const useLayoutStore = defineStore('layout', {
   state: () => {
     const saved = stored()
     // On a phone the picture comes first: the panels start folded, whatever was open last time.
-    const phone = typeof window !== 'undefined' && window.matchMedia?.('(max-width: 760px)').matches
+    const phone = typeof window !== 'undefined' && window.matchMedia?.(PHONE).matches
     return {
       // Panel name -> true while only its header shows.
       collapsed: phone ? { ...saved.collapsed, controls: true, palette: true } : { ...saved.collapsed },

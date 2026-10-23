@@ -1,4 +1,5 @@
 @use "functions" as *;
+@use "mixins" as *;
 
 // A card: the raised surface with rounded corners and a shadow. The floating panels and the
 // dialogs are cards.
@@ -368,7 +369,7 @@
             transform: translateX(-50%) rotate(180deg);
         }
 
-        @media (max-width: 760px) {
+        @include phone {
             &::after {
                 top: auto;
                 bottom: calc(100% + var(--gap-05x));

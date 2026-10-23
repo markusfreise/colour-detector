@@ -44,6 +44,46 @@
         }
     }
 
+    // Mix: colours, max. paints (1 2 3, as wide as its buttons) and details in one row; in a
+    // narrow window the colours above, max. paints and details still side by side.
+    // Buttons and sliders in one row: the sliders centred on the height of the buttons.
+    &__mix,
+    &__inline {
+        align-items: stretch;
+
+        .field__range {
+            margin-block: auto;
+        }
+    }
+
+    // Number size (as wide as its buttons) and grid columns: one row in every window.
+    &__inline,
+    &__inline.controls__settings {
+        grid-template-columns: auto 1fr;
+    }
+
+    &__mix {
+        grid-template-columns: 1fr auto 1fr;
+
+        @media (max-width: 524px) {
+            grid-template-columns: auto 1fr;
+        }
+    }
+
+    &__colours {
+        @media (max-width: 524px) {
+            grid-column: 1 / -1;
+        }
+    }
+
+    &__max-paints .segmented {
+        align-self: flex-start;
+    }
+
+    &__max-paints .segmented__option {
+        min-width: #{pxtorem(40)};
+    }
+
     &__toggles {
         display: flex;
         gap: #{pxtorem(12)};

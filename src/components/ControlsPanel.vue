@@ -48,17 +48,19 @@
           </button>
         </div>
         <!-- Monochrome: the picture in grey, each value painted with one colour of the paint box. -->
-        <button
-          type="button"
-          class="button"
-          :class="{ 'button--active': analysis.valueMode, 'button--locked': !pro.can('monochrome') }"
-          :aria-pressed="analysis.valueMode"
-          :disabled="analysis.layerMode"
-          :title="t('Monochrome: the picture in grey, each value painted with one colour of the paint box')"
-          @click="setValues(!analysis.settings.values)"
-        >
-          <AppIcon name="contrast" :label="t('Monochrome')" />
-        </button>
+        <div class="segmented segmented--fill">
+          <button
+            type="button"
+            class="segmented__option"
+            :class="{ 'segmented__option--active': analysis.valueMode, 'segmented__option--locked': !pro.can('monochrome') }"
+            :aria-pressed="analysis.valueMode"
+            :disabled="analysis.layerMode"
+            :title="t('Monochrome: the picture in grey, each value painted with one colour of the paint box')"
+            @click="setValues(!analysis.settings.values)"
+          >
+            <AppIcon name="contrast" :label="t('Monochrome')" />
+          </button>
+        </div>
         </div>
             <span class="controls__toggles">
                 <label v-if="analysis.settings.view === 'sketch'" class="checkbox" :title="t('Quarters and diagonals, to transfer the sketch to paper')">
@@ -79,8 +81,9 @@
               @change="simplifyChanged"
             />
           </label>
-        <div class="controls__settings">
-          <label v-if="!analysis.layerMode" class="field">
+        <!-- Mix: the colours, and beside the details how many paints a mix may have (1, 2 or 3). -->
+        <div v-if="!analysis.layerMode" class="controls__settings controls__mix">
+          <label class="field controls__colours">
             <span class="field__label">{{ t('Colours') }} <output class="field__value">{{ analysis.settings.colours }}</output></span>
             <input
               v-model.number="analysis.settings.colours"
@@ -91,7 +94,36 @@
               @change="analysis.analyse()"
             />
           </label>
-          <label v-else class="field">
+          <div class="field controls__max-paints">
+            <span class="field__label">{{ t('Max. paints') }}</span>
+            <div class="segmented segmented--text">
+              <button
+                v-for="n in [1, 2, 3]"
+                :key="n"
+                type="button"
+                class="segmented__option"
+                :class="{ 'segmented__option--active': analysis.settings.maxPaints === n }"
+                :aria-pressed="analysis.settings.maxPaints === n"
+                @click="setMaxPaints(n)"
+              >
+                {{ n }}
+              </button>
+            </div>
+          </div>
+          <label class="field">
+            <span class="field__label">{{ t('Details') }} <output class="field__value">{{ analysis.settings.details }}</output></span>
+            <input
+              v-model.number="analysis.settings.details"
+              class="field__range"
+              type="range"
+              min="0"
+              max="10"
+              @change="analysis.analyse()"
+            />
+          </label>
+        </div>
+        <div v-else class="controls__settings">
+          <label class="field">
             <span class="field__label">{{ t('Layers') }} <output class="field__value">{{ layerCount }}</output></span>
             <input
               v-model.number="analysis.settings.layerCount"
@@ -106,19 +138,7 @@
               {{ paints.palette.layerAuto ? t('Washes; accents and second coats are extra steps') : t('Chosen by hand. Auto in the paint box picks again.') }}
             </span>
           </label>
-    
-          <label v-if="!analysis.layerMode" class="field">
-            <span class="field__label">{{ t('Details') }} <output class="field__value">{{ analysis.settings.details }}</output></span>
-            <input
-              v-model.number="analysis.settings.details"
-              class="field__range"
-              type="range"
-              min="0"
-              max="10"
-              @change="analysis.analyse()"
-            />
-          </label>
-          <label v-else class="field">
+          <label class="field">
             <span class="field__label">{{ t('Accents') }} <output class="field__value">{{ analysis.settings.layerAccents }}</output></span>
             <input
               v-model.number="analysis.settings.layerAccents"
@@ -129,19 +149,7 @@
               @change="analysis.analyse()"
             />
           </label>
-    
-          <div v-if="!analysis.layerMode" class="field">
-            <span class="field__label">{{ t('Max. paints') }}<output class="field__value">{{ analysis.settings.maxPaints }}</output></span>
-            <input
-              v-model.number="analysis.settings.maxPaints"
-              class="field__range"
-              type="range"
-              min="1"
-              max="3"
-              @change="analysis.analyse()"
-            />
-          </div>
-          <label v-else class="field" :title="t('How often one wash may be painted over itself')">
+          <label class="field" :title="t('How often one wash may be painted over itself')">
             <span class="field__label">{{ t('Max. coats') }} <output class="field__value">{{ analysis.settings.maxCoats }}</output></span>
             <input
               v-model.number="analysis.settings.maxCoats"
@@ -186,8 +194,8 @@
           </label>
         </div>
           </template>
-          <!-- In every view: the numbers and the grid over the picture, side by side. -->
-          <div class="controls__settings controls__settings_two">
+          <!-- In every view: the numbers and the grid over the picture, side by side also on a phone. -->
+          <div class="controls__settings controls__inline">
             <div class="field controls__number-size">
               <span class="field__label">{{ t('Number size') }}</span>
               <div class="segmented segmented--text">
@@ -289,8 +297,8 @@ function resetAdjustment(...keys) {
 }
 
 function setMaxPaints(n) {
+  if (analysis.settings.maxPaints === n) return
   analysis.settings.maxPaints = n
-  analysis.autoPaints()
-  analysis.recomputeAllRecipes()
+  analysis.analyse()
 }
 </script>

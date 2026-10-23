@@ -33,7 +33,7 @@
             border-right: 1px solid var(--c-border);
             margin: 0;
         }
-        &:hover:not(.segmented__option--active) {
+        &:hover:not(.segmented__option--active):not(:disabled) {
             background: var(--c-border-light);
             svg {
                 path {
@@ -52,6 +52,12 @@
                 }
             }
         }
+    }
+
+    // Not available here (Monochrome in layer mode).
+    &__option:disabled {
+        cursor: default;
+        opacity: 0.4;
     }
 
     // Part of the full version, not bought: ghosted, as .button--locked.

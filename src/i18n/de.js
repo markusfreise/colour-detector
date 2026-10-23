@@ -179,7 +179,7 @@ export default {
   'White grid': 'Weißes Raster',
   'Grey grid': 'Graues Raster',
   'Black grid': 'Schwarzes Raster',
-  'Grid columns': 'Rasterspalten',
+  'Grid columns': 'Gitterspalten',
   'Normal@@size': 'Normal',
   'Large@@size': 'Groß',
   'Planning layers…': 'Schichten werden geplant …',

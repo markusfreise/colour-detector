@@ -1,4 +1,5 @@
 @use "../functions" as *;
+@use "../mixins" as *;
 
 // The picture (PaintingCanvas.vue): it fills its place, here the whole window, without a border.
 // The canvas keeps its own size and is moved and zoomed by a transform.
@@ -8,11 +9,27 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: var(--c-background);
+    // With a picture: a grey against its lightness (PaintingCanvas.vue), half as light in dark mode.
+    background: var(--c-picture-back, var(--c-background));
+
+    @include dark {
+        background: var(--c-picture-back-dark, var(--c-background));
+    }
     // Pinching and dragging move the picture, not the page.
     touch-action: none;
     overscroll-behavior: none;
     cursor: crosshair;
+
+    // The line around the picture (PaintingCanvas.vue), just outside its edge.
+    &__edge {
+        position: absolute;
+        box-shadow: 0 0 0 1px var(--c-picture-edge, transparent);
+        pointer-events: none;
+
+        @include dark {
+            box-shadow: 0 0 0 1px var(--c-picture-edge-dark, transparent);
+        }
+    }
 
     &--moving {
         cursor: grabbing;

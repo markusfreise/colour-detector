@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { lightnessOf, histogram, naturalSplit, toneOf, toneOfHex, toneGrey, blockImage, lightnessMap } from '../lib/blocking.js'
+import { lightnessOf, histogram, naturalSplit, toneOf, toneOfHex, toneGrey, blockImage, lightnessMap, greyOf, meanLightness, backgroundLightness } from '../lib/blocking.js'
 
 // A test picture: every pixel the grey (or colour) that `at(x, y)` gives.
 function picture(width, height, at) {
@@ -62,6 +62,26 @@ describe('blocking: where the photo divides', () => {
     const [light, middle, dark] = [0, 1, 2].map((t) => toneGrey(t, 3)[0])
     expect(light).toBeGreaterThan(middle)
     expect(middle).toBeGreaterThan(dark)
+  })
+})
+
+describe('blocking: the grey behind the picture', () => {
+  it('averages the lightness of the picture', () => {
+    const rgba = picture(100, 100, (x) => grey(x < 50 ? 255 : 0))
+    expect(meanLightness(rgba)).toBeCloseTo(50, 0)
+    expect(meanLightness(picture(10, 10, () => grey(255)))).toBeCloseTo(100, 3)
+  })
+
+  it('lies halfway to white behind a dark picture, halfway to black behind a light one', () => {
+    expect(backgroundLightness(20)).toBe(60)
+    expect(backgroundLightness(50)).toBe(75)
+    expect(backgroundLightness(80)).toBe(40)
+  })
+
+  it('turns an L* back into the grey of that lightness', () => {
+    expect(greyOf(100)).toEqual([255, 255, 255])
+    expect(greyOf(0)).toEqual([0, 0, 0])
+    expect(lightnessOf(...greyOf(40))).toBeCloseTo(40, 0)
   })
 })
 

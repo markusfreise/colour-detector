@@ -4,6 +4,7 @@
     ref="root"
     class="painting"
     :class="{ 'painting--moving': moving, 'painting--backdrop': backdrop }"
+    :style="backgroundStyle"
     @click="onClick"
     @wheel="onWheel"
     @pointerdown="onDown"
@@ -25,6 +26,8 @@
       @pointerup="endFrame"
       @pointercancel="frame = null"
     ></canvas>
+    <!-- A thin line around the picture, 1px on screen at every zoom. -->
+    <div v-if="analysis.image && !backdrop" class="painting__edge" :style="edgeStyle" aria-hidden="true"></div>
     <!-- No picture yet: the whole canvas is the way to the first one. -->
     <label v-if="!analysis.image && !analysis.busy && !backdrop" class="painting__welcome">
       <input class="painting__file" type="file" accept="image/*,.wcl" @change="onWelcomeFile" />
@@ -124,7 +127,7 @@ import { hexToRgb, contrastText } from '../lib/color.js'
 import { drawLayerView, labeller, paintPixels } from './layerView.js'
 import { smoothCurve } from '../lib/sketch.js'
 import { upscaleAreas } from '../lib/smooth.js'
-import { toneGrey } from '../lib/blocking.js'
+import { toneGrey, greyOf, meanLightness, backgroundLightness } from '../lib/blocking.js'
 import RecipeTip from './RecipeTip.vue'
 import AppIcon from './AppIcon.vue'
 import GetPro from './GetPro.vue'
@@ -654,11 +657,37 @@ const zoomed = computed(() => !!size.width && view.k > fitScale() * 1.001)
 
 const canvasStyle = computed(() => ({ transform: `translate(${view.x}px, ${view.y}px) scale(${view.k})` }))
 
+// Behind the picture a grey set against its mean lightness: lighter behind a dark photo, darker
+// behind a light one (backgroundLightness); in dark mode half as light (painting.scss). The line
+// around the picture is the opposite grey (100 - that L*), half transparent.
+const backgroundStyle = computed(() => {
+  const source = analysis.adjusted ?? analysis.pixels
+  if (!source) return null
+  const L = backgroundLightness(meanLightness(source.rgba))
+  const grey = (l, alpha = 1) => `rgb(${greyOf(l).join(' ')} / ${alpha})`
+  return {
+    '--c-picture-back': grey(L),
+    '--c-picture-back-dark': grey(L / 2),
+    '--c-picture-edge': grey(100 - L, 0.5),
+    '--c-picture-edge-dark': grey(100 - L / 2, 0.5),
+  }
+})
+const edgeStyle = computed(() => ({
+  left: `${view.x}px`,
+  top: `${view.y}px`,
+  width: `${size.width * view.k}px`,
+  height: `${size.height * view.k}px`,
+}))
+
+// The picture floats 1em inside the window; as a backdrop it covers the window to the edges.
+const pad = () => (props.backdrop ? 0 : parseFloat(getComputedStyle(root.value).fontSize) || 0)
+
 function fitScale() {
   const el = root.value
   if (!size.width || !el?.clientWidth) return 1
   const fill = props.backdrop ? Math.max : Math.min // cover the window, or fit into it
-  return fill(el.clientWidth / size.width, el.clientHeight / size.height)
+  const p = 2 * pad()
+  return fill(Math.max(1, el.clientWidth - p) / size.width, Math.max(1, el.clientHeight - p) / size.height)
 }
 function fit() {
   const el = root.value
@@ -668,13 +697,14 @@ function fit() {
   view.y = (el.clientHeight - size.height * view.k) / 2
   fitted = true
 }
-// The picture never leaves the window: where it is larger than the window its edges stay outside
-// or on the edge of the window, and where it is smaller it stays centred.
+// The picture never leaves the window: where it is larger than the window less its padding its
+// edges stay outside or on that padding, and where it is smaller it stays centred.
 function clampView() {
   const el = root.value
   const w = size.width * view.k, h = size.height * view.k
-  view.x = w <= el.clientWidth ? (el.clientWidth - w) / 2 : Math.min(0, Math.max(el.clientWidth - w, view.x))
-  view.y = h <= el.clientHeight ? (el.clientHeight - h) / 2 : Math.min(0, Math.max(el.clientHeight - h, view.y))
+  const p = pad()
+  view.x = w <= el.clientWidth - 2 * p ? (el.clientWidth - w) / 2 : Math.min(p, Math.max(el.clientWidth - p - w, view.x))
+  view.y = h <= el.clientHeight - 2 * p ? (el.clientHeight - h) / 2 : Math.min(p, Math.max(el.clientHeight - p - h, view.y))
 }
 function panBy(dx, dy) {
   view.x += dx

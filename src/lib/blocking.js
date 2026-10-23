@@ -82,13 +82,34 @@ export function toneOfHex(hex, thresholds) {
   return toneOf(lightnessOf((n >> 16) & 255, (n >> 8) & 255, n & 255), thresholds)
 }
 
-/** The grey a tone is shown in, as [r, g, b]. */
-export function toneGrey(tone, tones) {
-  const L = TONE_LIGHTNESS[tones]?.[tone] ?? 100
-  // From L* back to an sRGB grey.
+/** The sRGB grey of an L*, as [r, g, b]. */
+export function greyOf(L) {
   const y = L > 8 ? ((L + 16) / 116) ** 3 : L / (24389 / 27)
   const v = Math.round(255 * (y <= 0.0031308 ? 12.92 * y : 1.055 * y ** (1 / 2.4) - 0.055))
   return [v, v, v]
+}
+
+/** The grey a tone is shown in, as [r, g, b]. */
+export function toneGrey(tone, tones) {
+  return greyOf(TONE_LIGHTNESS[tones]?.[tone] ?? 100)
+}
+
+/** The mean L* of RGBA data, from about `samples` pixels spread over it. */
+export function meanLightness(rgba, samples = 40000) {
+  const count = rgba.length / 4
+  if (!count) return 50
+  const step = Math.max(1, Math.floor(count / samples))
+  let sum = 0, n = 0
+  for (let p = 0; p < count; p += step, n++) sum += lightnessOf(rgba[p * 4], rgba[p * 4 + 1], rgba[p * 4 + 2])
+  return sum / n
+}
+
+/**
+ * The L* of the grey behind a picture of mean lightness `f`: halfway from f to white for a dark
+ * picture (f up to 50), halfway from black to f for a light one.
+ */
+export function backgroundLightness(f) {
+  return f <= 50 ? (f + 100) / 2 : f / 2
 }
 
 // A blur of the lightness, so that the masses come from the large shapes and not from texture.

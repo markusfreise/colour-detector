@@ -487,7 +487,7 @@ export default {
   Palette: 'Palette',
   'The palette is saved with the picture.': 'Die Palette wird mit dem Bild gesichert.',
   'New paint box': 'Neuer Farbkasten',
-  'Import paint box': 'Farbkasten importieren',
+  'Import paint box': 'Importieren',
   'Click a colour to take it out of this box.': 'Klick eine Farbe an, um sie aus diesem Kasten zu nehmen.',
   'Add a colour to {box}': 'Eine Farbe zu {box} hinzufügen',
   'Search a colour': 'Farbe suchen',

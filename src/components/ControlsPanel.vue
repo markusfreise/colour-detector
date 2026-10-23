@@ -71,7 +71,9 @@
               </label>
             </span>
           </div>
-          <label class="field">
+        <!-- Two columns in every window: simplify and, mixing, the details beside it. -->
+        <div class="controls__settings controls__two">
+          <label class="field" :class="{ 'controls__wide': analysis.layerMode }">
             <span class="field__label">{{ t('Simplify areas') }} <output class="field__value">{{ simplifyShown }}</output></span>
             <input
               :value="analysis.settings[simplifyKey]"
@@ -84,10 +86,22 @@
               @change="simplifyChanged"
             />
           </label>
-        <!-- Mix: the colours, and beside the details how many paints a mix may have (1, 2 or 3). -->
-        <div v-if="!analysis.layerMode" class="controls__settings controls__mix">
-          <label class="field controls__colours">
-            <span class="field__label">{{ t('Colours') }} <output class="field__value">{{ analysis.settings.colours }}</output></span>
+          <label v-if="!analysis.layerMode" class="field">
+            <span class="field__label">{{ t('Details') }} <output class="field__value">{{ analysis.settings.details }}</output></span>
+            <input
+              v-model.number="analysis.settings.details"
+              class="field__range"
+              type="range"
+              min="0"
+              max="10"
+              @change="analysis.analyse()"
+            />
+          </label>
+        </div>
+        <!-- Mix: how many colours are made, and from how many paints each (1, 2 or 3). -->
+        <div v-if="!analysis.layerMode" class="controls__settings controls__two">
+          <label class="field">
+            <span class="field__label">{{ t('Colours made') }} <output class="field__value">{{ analysis.settings.colours }}</output></span>
             <input
               v-model.number="analysis.settings.colours"
               class="field__range"
@@ -113,17 +127,6 @@
               </button>
             </div>
           </div>
-          <label class="field">
-            <span class="field__label">{{ t('Details') }} <output class="field__value">{{ analysis.settings.details }}</output></span>
-            <input
-              v-model.number="analysis.settings.details"
-              class="field__range"
-              type="range"
-              min="0"
-              max="10"
-              @change="analysis.analyse()"
-            />
-          </label>
         </div>
         <div v-else class="controls__settings">
           <label class="field">
@@ -168,7 +171,7 @@
           {{ t('Accents: small strong touches painted last, first for a colour the washes miss, then for the darks') }}
         </span>
     
-        <div class="controls__settings controls__settings_two">
+        <div class="controls__settings controls__two">
           <label class="field">
             <span class="field__label">{{ t('Saturation') }} <output class="field__value">{{ analysis.settings.saturation }}%</output></span>
             <input

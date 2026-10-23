@@ -44,10 +44,9 @@
         }
     }
 
-    // Mix: colours, max. paints (1 2 3, as wide as its buttons) and details in one row; in a
-    // narrow window the colours above, max. paints and details still side by side.
+    // Simplify beside details, colours made beside max. paints (1 2 3).
     // Buttons and sliders in one row: the sliders centred on the height of the buttons.
-    &__mix,
+    &__two,
     &__inline {
         align-items: stretch;
 
@@ -56,24 +55,19 @@
         }
     }
 
+    // Two columns in every window, also on a phone.
+    &__two.controls__settings {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    // Alone in its row (simplify in layer mode).
+    &__wide {
+        grid-column: 1 / -1;
+    }
+
     // Number size (as wide as its buttons) and grid columns: one row in every window.
-    &__inline,
     &__inline.controls__settings {
         grid-template-columns: auto 1fr;
-    }
-
-    &__mix {
-        grid-template-columns: 1fr auto 1fr;
-
-        @media (max-width: 524px) {
-            grid-template-columns: auto 1fr;
-        }
-    }
-
-    &__colours {
-        @media (max-width: 524px) {
-            grid-column: 1 / -1;
-        }
     }
 
     &__max-paints .segmented {

@@ -64,6 +64,12 @@
     .painting {
         border: 0;
         padding: 0;
+        // White paper, not the grey set against the picture (also in dark mode).
+        background: var(--c-white) !important;
+
+        &__edge {
+            display: none;
+        }
 
         // The picture has the first page to itself.
         &__canvas {

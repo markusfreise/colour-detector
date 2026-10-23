@@ -12,7 +12,7 @@ struct ControlsView: View {
     // The sliders move freely; the analysis only runs when the finger lifts.
     @State private var colours = 20.0
     @State private var simplify = 0.0
-    @State private var saturation = 200.0
+    @State private var saturation = 100.0
     @State private var contrast = 100.0
     @State private var details = 5.0
     @State private var maxPaints = 3.0

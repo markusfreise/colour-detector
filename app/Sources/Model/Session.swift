@@ -92,7 +92,7 @@ struct AnalysisSettings: Codable, Equatable {
     /// `variety` of the logic (Mixes.plan, Segmenter.segment) for the Details slider.
     var variety: Int { 10 - details }
     /// Percent, applied to the photo before the analysis.
-    var saturation = 200
+    var saturation = 100
     var contrast = 100
     var view = ViewMode.mixed
     var outlines = true

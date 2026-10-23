@@ -193,7 +193,7 @@ export const useAnalysisStore = defineStore('analysis', {
       maxPaints: 3,
       details: 5, // 10 = the most steps across the picture, 0 = small areas of another hue keep their mix (see varietyOf)
       values: false, // mix mode: the picture in grey, every value painted with one paint of the box (a value study)
-      saturation: 200, // percent, applied to the photo before the analysis
+      saturation: 100, // percent, applied to the photo before the analysis
       contrast: 100,
       view: 'mixed', // mixed | target | overlay | original | template | blocking (template has no button for now)
       // Blocking: light and shadow in large masses (lib/blocking.js).

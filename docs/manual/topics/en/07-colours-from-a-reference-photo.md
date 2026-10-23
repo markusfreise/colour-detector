@@ -57,7 +57,7 @@ Choosing colours and choosing shapes go together. A photo with few colours but c
 
 This is the work Watercolourlove was made for. Open a photo and the app looks at it the way a squinting painter does: it groups the colours of the photo into areas, then groups those colours into **mixes**, from 2 to 32 as you set it. Colours that differ only in value share a mix and are shown as its washes, at up to five water levels, from very watery to concentrated. Colours that differ in hue get mixes of their own.
 
-**Details** decides how the colours share out when there are more than mixes. Towards 10, the large areas get the finest steps. Towards 0, a small area of a distinct hue keeps a mix of its own, so the red roof stays red. **Saturation** starts at 200% before the analysis, to bring back colour the camera flattened, and **Contrast** helps with a hazy or harsh photo. **Simplify areas** merges small shapes into calm ones without changing the number of mixes.
+**Details** decides how the colours share out when there are more than mixes. Towards 10, the large areas get the finest steps. Towards 0, a small area of a distinct hue keeps a mix of its own, so the red roof stays red. **Saturation** starts at 100%; raise it to bring back colour the camera flattened, and **Contrast** helps with a hazy or harsh photo. **Simplify areas** merges small shapes into calm ones without changing the number of mixes.
 
 ![The colour list of the sample Llyn Idwal: 52 colours on the paper from 20 mixes, each with its paints and washes](shot:colours)
 

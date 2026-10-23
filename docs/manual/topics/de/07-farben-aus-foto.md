@@ -57,7 +57,7 @@ Farben wählen und Formen wählen gehören zusammen. Ein Foto mit wenigen Farben
 
 Für genau diese Arbeit ist Watercolourlove gemacht. Öffne ein Foto, und die App sieht es an wie ein blinzelnder Maler: Sie fasst die Farben des Fotos zu Flächen zusammen und diese Farben dann zu **Mischungen**, 2 bis 32, wie du es einstellst. Farben, die sich nur im Tonwert unterscheiden, teilen sich eine Mischung und erscheinen als ihre Lasuren, in bis zu fünf Wasserstufen von sehr wässrig bis konzentriert. Farben mit anderem Farbton bekommen eigene Mischungen.
 
-**Details** entscheidet, wie sich die Farben aufteilen, wenn es mehr gibt als Mischungen. Richtung 10 bekommen die großen Flächen die feinsten Stufen. Richtung 0 behält eine kleine Fläche in eigenem Farbton ihre eigene Mischung, und das rote Dach bleibt rot. **Sättigung** steht vor der Analyse auf 200 %, um Farbe zurückzuholen, die die Kamera abgeflacht hat, und **Kontrast** hilft bei einem dunstigen oder harten Foto. **Flächen vereinfachen** fasst kleine Formen zu ruhigen zusammen, ohne die Zahl der Mischungen zu ändern.
+**Details** entscheidet, wie sich die Farben aufteilen, wenn es mehr gibt als Mischungen. Richtung 10 bekommen die großen Flächen die feinsten Stufen. Richtung 0 behält eine kleine Fläche in eigenem Farbton ihre eigene Mischung, und das rote Dach bleibt rot. **Sättigung** steht zu Beginn auf 100 %; heb sie, um Farbe zurückzuholen, die die Kamera abgeflacht hat, und **Kontrast** hilft bei einem dunstigen oder harten Foto. **Flächen vereinfachen** fasst kleine Formen zu ruhigen zusammen, ohne die Zahl der Mischungen zu ändern.
 
 ![Die Farbliste des Beispiels Llyn Idwal: 52 Farben auf dem Papier aus 20 Mischungen, jede mit ihren Farben und Lasuren](shot:colours)
 

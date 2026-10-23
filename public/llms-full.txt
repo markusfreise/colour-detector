@@ -450,7 +450,7 @@ Three paints in one mix are perfectly normal in watercolour, but every extra pai
 
 These two sliders change the photo **before** it is analysed. They do not change your paints.
 
-**Saturation** starts at **200%**. That may look excessive, but it is deliberate: photos, especially from phones, are often dull, and painters exaggerate colour anyway. A doubled saturation brings out the hues that are really there, the violet in a shadow, the warmth in a stone, so that the mixes describe them. Lower it for a quieter, more muted picture; at 0% the photo is grey.
+**Saturation** starts at **100%**, the photo as it is. Photos, especially from phones, are often dull, and painters exaggerate colour anyway: raise it, up to 200%, to bring out the hues that are really there, the violet in a shadow, the warmth in a stone, so that the mixes describe them. Lower it for a quieter, more muted picture; at 0% the photo is grey.
 
 **Contrast** starts at **100%** and goes from 50% to 200%. Raise it when a hazy photo gives too few clear darks, lower it when a harsh midday photo makes the shadows too heavy.
 

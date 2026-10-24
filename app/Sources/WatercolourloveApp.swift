@@ -39,6 +39,7 @@ struct WatercolourloveApp: App {
                 .sheet(isPresented: $showingPreferences) {
                     PreferencesView()
                         .environment(account)
+                        .environment(library)
                         .environment(\.locale, Localization.locale)
                         .preferredColorScheme(Localization.colorScheme(theme))
                 }

@@ -1,6 +1,39 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "iCloud" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud"
+          }
+        }
+      }
+    },
+    "Sync paint boxes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbkästen synchronisieren"
+          }
+        }
+      }
+    },
+    "Your paint boxes and your own paints on all your devices with this Apple account." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Farbkästen und eigenen Farben auf allen deinen Geräten mit diesem Apple-Account."
+          }
+        }
+      }
+    },
     "" : {
       "shouldTranslate" : false
     },

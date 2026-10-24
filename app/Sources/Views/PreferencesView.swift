@@ -1,9 +1,11 @@
 import SwiftUI
 
 /// Language and light or dark, as the web's preferences in the account dialog. Kept on this
-/// device; "Automatic" follows the system. Below them the account, if any.
+/// device; "Automatic" follows the system. Below them whether the paint boxes go to iCloud, and the
+/// account, if any.
 struct PreferencesView: View {
     @Environment(Account.self) private var account
+    @Environment(Library.self) private var library
     @Environment(\.dismiss) private var dismiss
     @State private var showingAccount = false
     @AppStorage(Localization.languageKey) private var language = "auto"
@@ -29,6 +31,18 @@ struct PreferencesView: View {
                         title: { $0 == "auto" ? L("Automatic") : $0 == "light" ? L("Light") : L("Dark") },
                         choose: { theme = $0 }
                     )
+                }
+                GridRow {
+                    Text("iCloud").lineLimit(1).fixedSize()
+                    VStack(alignment: .leading, spacing: 4) {
+                        Toggle("Sync paint boxes", isOn: Binding(get: { library.syncing }, set: { library.setSyncing($0) }))
+                            .toggleStyle(.switch)
+                            .fixedSize()
+                        Text("Your paint boxes and your own paints on all your devices with this Apple account.")
+                            .font(.footnote)
+                            .foregroundStyle(Theme.copyLight)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
                 GridRow {
                     Text("Account").lineLimit(1).fixedSize()

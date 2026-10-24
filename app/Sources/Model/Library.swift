@@ -72,7 +72,13 @@ final class Library {
         var custom: [Paint]
         var paintBoxes: [PaintBox]
         var palette: Palette
+        /// What iCloud was last told, with the time of every change (`SyncedLibrary`).
+        var sync: SyncedLibrary?
     }
+
+    /// The preference, kept on this device: paint boxes and one's own paints in iCloud.
+    static let syncKey = "syncPaintBoxes"
+    private static let cloudKey = "library-v1"
 
     /// Before paint boxes held paints, "boxes" were named selections; the active one becomes the palette.
     private struct OldSaved: Decodable {
@@ -110,8 +116,17 @@ final class Library {
     private(set) var revision = 0
 
     private let file = Storage.directory.appendingPathComponent("library.json")
+    private let cloud: LibraryCloud
+    private let defaults: UserDefaults
+    /// Whether the paint boxes and one's own paints are kept in iCloud too.
+    private(set) var syncing: Bool
+    private var synced = SyncedLibrary()
+    private var cloudObserver: NSObjectProtocol?
 
-    init() {
+    init(cloud: LibraryCloud = NSUbiquitousKeyValueStore.default, defaults: UserDefaults = .standard) {
+        self.cloud = cloud
+        self.defaults = defaults
+        syncing = defaults.bool(forKey: Self.syncKey)
         stock = Storage.bundled("paints", as: [Paint].self) ?? []
         libraries = Storage.bundled("libraries", as: [PaintLibrary].self) ?? []
         let data = try? Data(contentsOf: file)
@@ -119,6 +134,7 @@ final class Library {
             custom = Self.renamedHouseVendor(saved.custom)
             boxes = saved.paintBoxes
             palette = saved.palette
+            synced = saved.sync ?? SyncedLibrary()
         } else if let data, let old = try? JSONDecoder().decode(OldSaved.self, from: data), let active = old.boxes.first(where: { $0.id == old.activeID }) ?? old.boxes.first {
             custom = Self.renamedHouseVendor(old.custom)
             palette = active.palette
@@ -130,6 +146,50 @@ final class Library {
             palette = Palette(paintIDs: defaultIDs, auto: true)
             boxes = seedBoxes()
         }
+        if syncing { startSyncing() }
+    }
+
+    // MARK: iCloud
+
+    /// Turns syncing on or off. On, what this device has and what iCloud has are merged.
+    func setSyncing(_ on: Bool) {
+        guard on != syncing else { return }
+        syncing = on
+        defaults.set(on, forKey: Self.syncKey)
+        if on {
+            startSyncing()
+        } else if let cloudObserver {
+            NotificationCenter.default.removeObserver(cloudObserver)
+            self.cloudObserver = nil
+        }
+    }
+
+    private func startSyncing() {
+        cloudObserver = NotificationCenter.default.addObserver(forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification, object: cloud as? NSUbiquitousKeyValueStore, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.mergeFromCloud() }
+        }
+        cloud.synchronize()
+        mergeFromCloud()
+    }
+
+    /// What another device put into iCloud, merged with what this one has; the result goes back.
+    func mergeFromCloud() {
+        guard syncing else { return }
+        synced = synced.updated(boxes: boxes, paints: custom, at: Date())
+        if let data = cloud.data(forKey: Self.cloudKey), let remote = try? JSONDecoder().decode(SyncedLibrary.self, from: data) {
+            let merged = synced.merged(with: remote)
+            if merged != synced {
+                synced = merged
+                // At least one box stays, as everywhere else.
+                let live = merged.liveBoxes
+                if !live.isEmpty { boxes = live }
+                custom = merged.livePaints
+                let ids = Set(boxes.map(\.id))
+                palette.autoOff.removeAll { !ids.contains($0) && $0 != "travelbox" }
+                revision += 1
+            }
+        }
+        save()
     }
 
     /// Own paints saved while the house series was called "Schmincke" belong to it under its new name.
@@ -377,8 +437,10 @@ final class Library {
     }
 
     private func save() {
-        let saved = Saved(custom: custom, paintBoxes: boxes, palette: palette)
+        synced = synced.updated(boxes: boxes, paints: custom, at: Date())
+        let saved = Saved(custom: custom, paintBoxes: boxes, palette: palette, sync: synced)
         try? JSONEncoder().encode(saved).write(to: file, options: .atomic)
+        if syncing, let data = try? JSONEncoder().encode(synced) { cloud.set(data, forKey: Self.cloudKey) }
     }
 }
 

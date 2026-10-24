@@ -15,7 +15,7 @@ Watercolourlove is not affiliated with Schmincke. The swatches on this page are 
 
 ## The range
 
-The Horadam chart in the app has 189 colours, the whole range Schmincke lists. Each one has a three-digit number, the one printed on the pan and the tube, and the numbers run by hue: whites in the 100s, yellows in the 200s, reds in the 300s, violets and blues in the 400s, greens in the 500s, earths in the 600s, greys and blacks in the 700s, and in the 800s and 900s the metallic and brilliant colours and the 50 supergranulating ones. The app shows the English names, such as **494 Ultramarine finest** or **661 Burnt Sienna**, and finds the German ones too (**491 Pariserblau** is **491 Paris blue**); the number is the same in every language, so it is the safest way to find a paint.
+Schmincke lists 189 Horadam colours. In the app they are two libraries: **Schmincke Horadam** with 139 colours, and **Schmincke Horadam Supergranulation** with the 50 supergranulating ones, a series of their own. Each one has a three-digit number, the one printed on the pan and the tube, and the numbers run by hue: whites in the 100s, yellows in the 200s, reds in the 300s, violets and blues in the 400s, greens in the 500s, earths in the 600s, greys and blacks in the 700s, and in the 800s and 900s the metallic and brilliant colours and the 50 supergranulating ones. The app shows the English names, such as **494 Ultramarine finest** or **661 Burnt Sienna**, and finds the German ones too (**491 Pariserblau** is **491 Paris blue**); the number is the same in every language, so it is the safest way to find a paint.
 
 The supergranulating colours are mixtures of two or three pigments that part on the paper into a speckled texture. Each has one colour in the app, read from the strong part of Schmincke's brush stroke; on paper it breaks into its pigments.
 
@@ -55,9 +55,15 @@ With a picture you unlock, you mix from your own paints too: the 40 common colou
 
 ## The whole range in the app
 
-The 189 colours of Schmincke Horadam by number, with the reference colour the app uses, the German name in brackets, the pigments and the opacity from Schmincke's colour cards.
+The 139 colours of the library Schmincke Horadam by number, with the reference colour the app uses, the German name in brackets, the pigments and the opacity from Schmincke's colour cards.
 
 <!-- chart:horadam -->
+
+## The supergranulating colours
+
+The 50 colours of the library Schmincke Horadam Supergranulation, in their families (Volcano, Desert, Shire, Forest, Deep sea, Glacier, Haze, Galaxy, Tundra, Urban). Each swatch is one colour for a paint that parts into its pigments on the paper.
+
+<!-- chart:horadam-supergranulation -->
 
 <!-- cta -->
 
@@ -72,7 +78,7 @@ The 189 colours of Schmincke Horadam by number, with the reference colour the ap
 
 ### How many colours does Schmincke Horadam have?
 
-189, as Schmincke lists them in October 2026: from the whites to the blacks, the metallic and brilliant colours, and 50 supergranulating colours. Special editions come on top. Schmincke adds and retires colours from time to time; its current chart has the last word.
+189, as Schmincke lists them in October 2026: from the whites to the blacks, the metallic and brilliant colours, and 50 supergranulating colours, which the app keeps as a library of their own. Special editions come on top. Schmincke adds and retires colours from time to time; its current chart has the last word.
 
 ### Can I search for the German names?
 

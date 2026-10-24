@@ -6,6 +6,7 @@
 // whose value the chart does not give reliably has `hex: null` and says why in `unverified`: its
 // number fills in the name, the colour is set by hand. Sources: docs/libraries.md.
 import { horadamCatalogue } from './horadam-catalogue.js'
+import { horadamSupergranulationCatalogue } from './horadam-supergranulation-catalogue.js'
 import { winsorNewtonCatalogue } from './winsor-newton-catalogue.js'
 import { michaelHardingCatalogue } from './michael-harding-catalogue.js'
 import { sennelierCatalogue } from './sennelier-catalogue.js'
@@ -21,7 +22,14 @@ const MAKER_LIBRARIES = [
     name: HOUSE_VENDOR,
     catalogue: horadamCatalogue,
     source:
-      'Official Schmincke Horadam colour chart; names, pigments, opacity and the supergranulating colours from the colour cards of schmincke.de, Horadam Aquarell page (2026-10-23)',
+      'Official Schmincke Horadam colour chart; names, pigments and opacity from the colour cards of schmincke.de, Horadam Aquarell page (2026-10-23)',
+  },
+  // A series of its own on the tubes: mixtures of pigments that part on the paper.
+  {
+    id: 'horadam-supergranulation',
+    name: 'Schmincke Horadam Supergranulation',
+    catalogue: horadamSupergranulationCatalogue,
+    source: 'Colour cards of schmincke.de, Horadam Aquarell page (2026-10-23): names, pigments, opacity and the swatch each colour is measured on',
   },
   {
     id: 'winsor-newton-professional',

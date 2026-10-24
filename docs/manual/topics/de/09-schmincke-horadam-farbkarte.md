@@ -15,7 +15,7 @@ Watercolourlove gehört nicht zu Schmincke und arbeitet nicht mit Schmincke zusa
 
 ## Die Reihe
 
-Die Horadam-Karte in der App hat 189 Farben, die ganze Reihe, die Schmincke führt. Jede hat eine dreistellige Nummer, die auf Näpfchen und Tube steht, und die Nummern folgen dem Farbton: Weiß in den 100ern, Gelb in den 200ern, Rot in den 300ern, Violett und Blau in den 400ern, Grün in den 500ern, Erden in den 600ern, Grau und Schwarz in den 700ern, in den 800ern und 900ern die Metallic- und Brillantfarben und die 50 Supergranulationsfarben. Zum Beispiel **494 Ultramarin feinst** oder **661 Siena gebrannt**. Die App findet auch die englischen Namen (**491 Paris blue** ist **491 Pariserblau**). Die Nummer ist in jeder Sprache gleich und damit der sicherste Weg, eine Farbe zu finden.
+Schmincke führt 189 Horadam-Farben. In der App sind es zwei Bibliotheken: **Schmincke Horadam** mit 139 Farben und **Schmincke Horadam Supergranulation** mit den 50 Supergranulationsfarben, einer eigenen Reihe. Jede hat eine dreistellige Nummer, die auf Näpfchen und Tube steht, und die Nummern folgen dem Farbton: Weiß in den 100ern, Gelb in den 200ern, Rot in den 300ern, Violett und Blau in den 400ern, Grün in den 500ern, Erden in den 600ern, Grau und Schwarz in den 700ern, in den 800ern und 900ern die Metallic- und Brillantfarben und die 50 Supergranulationsfarben. Zum Beispiel **494 Ultramarin feinst** oder **661 Siena gebrannt**. Die App findet auch die englischen Namen (**491 Paris blue** ist **491 Pariserblau**). Die Nummer ist in jeder Sprache gleich und damit der sicherste Weg, eine Farbe zu finden.
 
 Die Supergranulationsfarben sind Mischungen aus zwei oder drei Pigmenten, die sich auf dem Papier zu einer gesprenkelten Struktur trennen. Jede hat in der App einen Ton, gelesen aus dem kräftigen Teil von Schminckes Pinselstrich; auf dem Papier zerfällt sie in ihre Pigmente.
 
@@ -55,9 +55,15 @@ Mit einem freigeschalteten Bild mischst du ebenfalls aus deinen eigenen Farben: 
 
 ## Die ganze Reihe in der App
 
-Die 189 Farben von Schmincke Horadam nach Nummer, mit dem Referenzton, mit dem die App rechnet, und Pigmenten und Deckkraft von Schminckes Farbkarten-Einträgen.
+Die 139 Farben der Bibliothek Schmincke Horadam nach Nummer, mit dem Referenzton, mit dem die App rechnet, und Pigmenten und Deckkraft von Schminckes Farbkarten-Einträgen.
 
 <!-- chart:horadam -->
+
+## Die Supergranulationsfarben
+
+Die 50 Farben der Bibliothek Schmincke Horadam Supergranulation, in ihren Familien (Vulkan, Wüste, Auen, Wald, Tiefsee, Gletscher, Nebel, Galaxie, Tundra, Urban). Jeder Farbton steht für eine Farbe, die sich auf dem Papier in ihre Pigmente trennt.
+
+<!-- chart:horadam-supergranulation -->
 
 <!-- cta -->
 
@@ -72,7 +78,7 @@ Die 189 Farben von Schmincke Horadam nach Nummer, mit dem Referenzton, mit dem d
 
 ### Wie viele Farben hat Schmincke Horadam?
 
-189, so wie Schmincke sie im Oktober 2026 führt: von Weiß bis Schwarz, die Metallic- und Brillantfarben und 50 Supergranulationsfarben. Sondereditionen kommen hinzu. Schmincke nimmt von Zeit zu Zeit Farben auf und heraus; die aktuelle Karte des Herstellers hat das letzte Wort.
+189, so wie Schmincke sie im Oktober 2026 führt: von Weiß bis Schwarz, die Metallic- und Brillantfarben und 50 Supergranulationsfarben, die die App als eigene Bibliothek führt. Sondereditionen kommen hinzu. Schmincke nimmt von Zeit zu Zeit Farben auf und heraus; die aktuelle Karte des Herstellers hat das letzte Wort.
 
 ### Sind die Farbtöne auf dieser Seite genau?
 

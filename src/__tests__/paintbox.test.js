@@ -118,13 +118,17 @@ describe('paint libraries', () => {
 
   it('ships the whole Horadam range, found by its English and its German names', () => {
     const horadam = libraryByName(HOUSE_VENDOR)
-    expect(horadam.catalogue).toHaveLength(189)
-    expect(new Set(horadam.catalogue.map((c) => c.number)).size).toBe(189)
+    expect(horadam.catalogue).toHaveLength(139)
+    expect(new Set(horadam.catalogue.map((c) => c.number)).size).toBe(139)
     expect(horadam.catalogue.every((c) => /^\d{3}$/.test(c.number) && /^#[0-9a-f]{6}$/.test(c.hex) && c.name && c.names.de && TRANSPARENCY[c.transparency])).toBe(true)
     // Schmincke's page has an empty card 031 "ONETZ": no colour.
     expect(chartColour(horadam, '031')).toBe(null)
-    // The supergranulating colours are part of it.
-    expect(chartColour(horadam, '973')).toMatchObject({ name: 'Galaxy blue', names: { de: 'Galaxie Blau' }, pigments: ['PB29', 'PG50'] })
+    // The supergranulating colours are a library of their own, with no number of the other.
+    const supergranulation = libraryByName('Schmincke Horadam Supergranulation')
+    expect(supergranulation.catalogue).toHaveLength(50)
+    expect(chartColour(horadam, '973')).toBe(null)
+    expect(chartColour(supergranulation, '973')).toMatchObject({ name: 'Galaxy blue', names: { de: 'Galaxie Blau' }, pigments: ['PB29', 'PG50'] })
+    expect(supergranulation.catalogue.some((c) => chartColour(horadam, c.number))).toBe(false)
     const colours = seriesColours(HOUSE_VENDOR, horadam.catalogue, [])
     expect(filterColours(colours, 'paris blue').map((c) => c.number)).toEqual(['491'])
     expect(filterColours(colours, 'pariserblau').map((c) => c.number)).toEqual(['491'])
@@ -213,7 +217,7 @@ describe('paint libraries', () => {
       [paint('W311', '#c88c5f', ['tube 15 ml'], 'Michael Harding'), paint('347', '#e2544d', ['half pan'])],
       PAINT_LIBRARIES,
     )
-    expect(names).toEqual(['Common colours', 'Michael Harding', HOUSE_VENDOR, "Sennelier L'Aquarelle", 'Winsor & Newton Professional'])
+    expect(names).toEqual(['Common colours', 'Michael Harding', HOUSE_VENDOR, 'Schmincke Horadam Supergranulation', "Sennelier L'Aquarelle", 'Winsor & Newton Professional'])
     expect(new Set(names).size).toBe(names.length)
     expect(seriesNames(stockPaints, PAINT_LIBRARIES)).toContain('Travelbox')
   })

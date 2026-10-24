@@ -1,11 +1,14 @@
 """Schmincke Horadam Aquarell: reads the colour cards of Schmincke's Horadam page (English and
-German) and their swatch images and writes src/data/horadam-catalogue.js. See tools/charts/README.md
-for the files it needs.
+German) and their swatch images and writes src/data/horadam-catalogue.js, or with `supergranulation`
+the supergranulating colours, a library of their own, src/data/horadam-supergranulation-catalogue.js.
+See tools/charts/README.md for the files it needs.
 
     python3 -I tools/charts/horadam.py <folder with en.html, de.html and swatches/> > /tmp/horadam.js
     mv /tmp/horadam.js src/data/horadam-catalogue.js
+    python3 -I tools/charts/horadam.py <folder> supergranulation > /tmp/horadam.js
+    mv /tmp/horadam.js src/data/horadam-supergranulation-catalogue.js
 
-The colours already in the catalogue keep their value, so that the stock and the common colours
+The colours already in a catalogue keep their value, so that the stock and the common colours
 measured from it stay as they are; only a colour new to it is measured here. That is why the
 output goes to another file first: written straight into the catalogue, the shell would empty it
 before it is read, and every colour would be measured again.
@@ -22,7 +25,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import js_catalogue, lab  # noqa: E402
 
 folder = sys.argv[1]
-CATALOGUE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../src/data/horadam-catalogue.js')
+SUPERGRANULATION = sys.argv[2:] == ['supergranulation']
+DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../src/data')
+CATALOGUES = ['horadam-catalogue.js', 'horadam-supergranulation-catalogue.js']
 # Schmincke's opacity symbols: lasierend, halb lasierend, halb deckend, deckend.
 TRANSPARENCY = {'L': 'T', 'HL': 'ST', 'HD': 'SO', 'D': 'O'}
 
@@ -60,13 +65,16 @@ def hexed(rgb):
     return '#' + ''.join(f'{int(round(v)):02x}' for v in rgb)
 
 
-known = dict(re.findall(r'"number": "(\d+)".*?"hex": "(#[0-9a-f]{6})"', open(CATALOGUE).read()))
+known = {}
+for name in CATALOGUES:
+    if os.path.exists(f'{DATA}/{name}'):
+        known.update(re.findall(r'"number": "(\d+)".*?"hex": "(#[0-9a-f]{6})"', open(f'{DATA}/{name}').read()))
 en, de = cards('en.html'), cards('de.html')
 colours = []
 for article in sorted(en):
     card, number = en[article], article[2:]
     # A card without pigments and opacity is no colour (Schmincke's page has one: 031 "ONETZ").
-    if not card.get('coverability'):
+    if not card.get('coverability') or (card.get('supergranulation') == '1') != SUPERGRANULATION:
         continue
     # Mostly "PB27,PB15:1," but also "PV19 PR179," and "PBr7/PY43,"; effect pigments have no CI name.
     pigments = [p for p in re.split(r'[,/\s]+', card['pigments']) if re.fullmatch(r'P[A-Z][a-z]?\d+(:\d+)?', p)]
@@ -76,10 +84,14 @@ for article in sorted(en):
     colour['transparency'] = TRANSPARENCY[card['coverability']]
     colours.append(colour)
 
-measured = sum(1 for c in colours if c['number'] not in known)
-print(js_catalogue('horadamCatalogue', colours, f'''// Schmincke Horadam Aquarell, {len(colours)} colours: numbers, English and German names, pigments and opacity
-// from the colour cards of Schmincke's Horadam page (schmincke.de/en/produkte/aquarell/horadam-aquarell
-// and the German page, 2026-10-23). Colours: measured on the official colour chart; the {measured}
-// supergranulating colours, new then, from the swatch of their card (the darker half of the brush
-// stroke; their pigments part on the paper, so one value only stands for them). Written by
+SOURCE = '''from the colour cards of Schmincke's Horadam page (schmincke.de/en/produkte/aquarell/horadam-aquarell
+// and the German page, 2026-10-23)'''
+if SUPERGRANULATION:
+    print(js_catalogue('horadamSupergranulationCatalogue', colours, f'''// Schmincke Horadam Aquarell Supergranulation, {len(colours)} colours: numbers, English and German names,
+// pigments and opacity {SOURCE}. Colours: from the swatch of their card, the darker half of the
+// brush stroke; their pigments part on the paper, so one value only stands for them. Written by
 // tools/charts/horadam.py.'''))
+else:
+    print(js_catalogue('horadamCatalogue', colours, f'''// Schmincke Horadam Aquarell, {len(colours)} colours (the supergranulating ones are a library of their
+// own): numbers, English and German names, pigments and opacity {SOURCE}. Colours: measured on the
+// official colour chart. Written by tools/charts/horadam.py.'''))

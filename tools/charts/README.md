@@ -27,7 +27,10 @@ Into one folder:
   (the page names them: `grep -o 'farbwischer/14[0-9]*\.jpg' en.html`)
 
 Then `python3 -I tools/charts/horadam.py <folder> > /tmp/horadam.js` and move that file to
-`src/data/horadam-catalogue.js` (not straight into it: the script reads the colours it keeps from there).
+`src/data/horadam-catalogue.js`, and `python3 -I tools/charts/horadam.py <folder> supergranulation > /tmp/horadam.js`
+moved to `src/data/horadam-supergranulation-catalogue.js` (not straight into them: the script reads
+the colours it keeps from there). The supergranulating colours (`data-supergranulation="1"`) are a
+library of their own, "Schmincke Horadam Supergranulation", as they are a series of their own.
 
 Every colour has a card with data attributes: the title (English or German by page), the pigments
 and the opacity (L, HL, HD, D: transparent to opaque). The page has one card that is no colour,

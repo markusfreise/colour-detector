@@ -124,6 +124,7 @@ import { useConsentStore } from './stores/consent.js'
 import { useAccountStore } from './stores/account.js'
 import ImpersonationBar from './components/ImpersonationBar.vue'
 import { isNative } from './lib/native.js'
+import { usePrintStamp } from './components/printStamp.js'
 import { useProStore } from './stores/pro.js'
 import { useCollectionStore } from './stores/collection.js'
 import { usePaintsStore } from './stores/paints.js'
@@ -132,6 +133,8 @@ import { useText } from './i18n/index.js'
 
 const { t, legalPage } = useText()
 const analysis = useAnalysisStore()
+// Name, date and time at the foot of every printed page.
+usePrintStamp()
 const consent = useConsentStore()
 const account = useAccountStore()
 const paintBox = ref(null)

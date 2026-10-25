@@ -1,9 +1,18 @@
 <template>
   <section class="legend">
-    <h2 class="legend__title">{{ t('{name} – colours and mixes', { name: analysis.imageName }) }}</h2>
-    <p class="legend__key">
-      <span v-for="w in WASH_LETTERS" :key="w.letter"><strong>{{ w.letter }}</strong> {{ t(w.label) }}</span>
-    </p>
+    <header class="legend__head">
+      <div>
+        <h2 class="legend__title">{{ t('{name} – colours and mixes', { name: analysis.imageName }) }}</h2>
+        <p class="legend__key">
+          <span v-for="w in WASH_LETTERS" :key="w.letter"><strong>{{ w.letter }}</strong> {{ t(w.label) }}</span>
+        </p>
+      </div>
+      <!-- A link with these settings and paints (lib/restoreLink.js); the SVG is made by qrcode-generator. -->
+      <figure v-if="qr" class="legend__restore">
+        <span class="legend__qr" v-html="qr"></span>
+        <figcaption>{{ t('Scan to bring back these paints and settings, then open the photo again.') }}</figcaption>
+      </figure>
+    </header>
     <ol class="legend__list">
       <li v-for="row in rows" :key="row.key" class="legend__item">
         <!-- At the top: the base colour (the concentrated wash) with its number, then the other washes, darkest first. -->
@@ -43,13 +52,17 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
+import qrcode from 'qrcode-generator'
 import { useAnalysisStore } from '../stores/analysis.js'
 import { usePaintsStore } from '../stores/paints.js'
 import { WASH_LETTERS, MAX_AMOUNT, mixHex } from '../lib/mixing.js'
 import { chipStyle, contrastText } from '../lib/color.js'
 import { paintNumber, paintForms } from '../lib/paintbox.js'
 import { useText } from '../i18n/index.js'
+import { defaultSettings } from '../stores/analysis.js'
+import { restoreCode, restoreLink, QR_LEVEL } from '../lib/restoreLink.js'
+import { isNative } from '../lib/native.js'
 
 const { t, paintName, region } = useText()
 const analysis = useAnalysisStore()
@@ -112,4 +125,20 @@ const rows = computed(() => {
     }
   })
 })
+
+// The QR code at the top: the settings and paints as a link, kept up to date while they change.
+// From the app it points to the website, which restores them.
+const qr = ref('')
+const base = isNative ? 'https://watercolourlove.de/' : window.location.origin + window.location.pathname
+watch(
+  () => [analysis.settings, paints.palette],
+  async () => {
+    const code = await restoreCode({ settings: analysis.settings, defaults: defaultSettings(), palette: paints.palette, paints: paints.all })
+    const symbol = qrcode(0, QR_LEVEL)
+    symbol.addData(restoreLink(base, code))
+    symbol.make()
+    qr.value = symbol.createSvgTag({ cellSize: 1, margin: 4, scalable: true })
+  },
+  { deep: true, immediate: true },
+)
 </script>

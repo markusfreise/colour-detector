@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Scan to bring back these paints and settings, then open the photo again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scannen, um diese Farben und Einstellungen zurückzuholen; danach das Foto wieder öffnen."
+          }
+        }
+      }
+    },
     "iCloud" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -418,6 +418,9 @@ export default {
   'A watercolour palette beside the printed colour cards and the picture as numbered areas': 'Ein Aquarellkasten neben den gedruckten Farbkarten und dem Bild als nummerierte Flächen',
   // App
   'Hide': 'Ausblenden',
+  'Scan to bring back these paints and settings, then open the photo again.': 'Scannen, um diese Farben und Einstellungen zurückzuholen; danach das Foto wieder öffnen.',
+  'Paints and settings restored. Now open the photo they belong to.': 'Farben und Einstellungen wiederhergestellt. Öffne jetzt das Foto, zu dem sie gehören.',
+  'Paints and settings restored. Open the photo they belong to, if this is another one.': 'Farben und Einstellungen wiederhergestellt. Öffne das Foto, zu dem sie gehören, falls es ein anderes ist.',
   'Hide “Get pro” for this session': '„Pro holen“ für diese Sitzung ausblenden',
   // Messages from the account service
   'The account service cannot be reached. Please check your connection.': 'Der Kontodienst ist nicht erreichbar. Bitte prüf deine Verbindung.',

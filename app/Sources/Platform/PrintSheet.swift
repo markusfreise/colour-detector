@@ -1,5 +1,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
+import CoreImage.CIFilterBuiltins
 #if os(macOS)
 import PDFKit
 #else
@@ -8,6 +9,8 @@ import UIKit
 
 /// The printable sheet, as the web prints it: the picture on a page of its own, then every colour
 /// as a card, four to a row: its base colour and washes on top, the ratio bar, its paints below.
+/// At the top of the colours a QR code that restores the settings and paints on the website
+/// (`RestoreLink`); at the foot of every page the picture's name, date and time, and the page number.
 @MainActor
 enum PrintSheet {
     private static let page = CGSize(width: 595, height: 842) // A4 in points
@@ -17,22 +20,15 @@ enum PrintSheet {
     private static let cardsPerRow = 4
     private static let cardGap: CGFloat = 10
     private static let rowGap: CGFloat = 28
+    /// The QR code, about 28 mm, and the room the title and key take beside it.
+    private static let qrSize: CGFloat = 80
 
     static func pdf(session: Session, library: Library) -> Data {
         if session.layerMode { return layerPDF(session: session, library: library) }
         let cards = session.mixBlocks.map(Card.init)
-
-        let data = NSMutableData()
-        var box = CGRect(origin: .zero, size: page)
-        guard let consumer = CGDataConsumer(data: data), let context = CGContext(consumer: consumer, mediaBox: &box, nil) else { return Data() }
-        func add(_ view: some View) {
-            let renderer = ImageRenderer(content: view.frame(width: page.width, height: page.height).environment(\.colorScheme, .light))
-            renderer.render { _, draw in
-                context.beginPDFPage(nil)
-                draw(context)
-                context.endPDFPage()
-            }
-        }
+        let qr = RestoreLink.url(settings: session.settings, palette: library.palette, paints: library.byID).flatMap(qrImage)
+        var pages: [AnyView] = []
+        func add(_ view: some View) { pages.append(AnyView(view)) }
 
         // The picture has the first page to itself.
         if let picture = session.printImage(), let segmentation = session.segmentation {
@@ -42,7 +38,7 @@ enum PrintSheet {
         var rows = stride(from: 0, to: cards.count, by: cardsPerRow).map { Array(cards[$0..<min($0 + cardsPerRow, cards.count)]) }
         var first = true
         repeat {
-            var room = page.height - 2 * margin - (first ? 30 + 22 : 0)
+            var room = page.height - 2 * margin - (first ? max(30 + 22, qrSize) + 10 : 0)
             var pageRows: [[Card]] = []
             while let row = rows.first {
                 let height = row.map(\.estimatedHeight).max() ?? 0
@@ -51,11 +47,55 @@ enum PrintSheet {
                 rows.removeFirst()
                 room -= height + rowGap
             }
-            add(CardsPage(title: first ? L("%@ – colours and mixes", session.imageName) : nil, rows: pageRows))
+            add(CardsPage(title: first ? L("%@ – colours and mixes", session.imageName) : nil, qr: first ? qr : nil, rows: pageRows))
             first = false
         } while !rows.isEmpty
+        return render(pages, stamp: stamp(session.imageName))
+    }
+
+    /// The pages into one PDF, each with the stamp at its foot and its number of all.
+    private static func render(_ pages: [AnyView], stamp: String) -> Data {
+        let data = NSMutableData()
+        var box = CGRect(origin: .zero, size: page)
+        guard let consumer = CGDataConsumer(data: data), let context = CGContext(consumer: consumer, mediaBox: &box, nil) else { return Data() }
+        for (index, view) in pages.enumerated() {
+            let footed = view
+                .frame(width: page.width, height: page.height)
+                .overlay(alignment: .bottom) {
+                    HStack {
+                        Text(stamp)
+                        Spacer()
+                        Text("\(index + 1) / \(pages.count)")
+                    }
+                    .font(.system(size: 8))
+                    .foregroundStyle(Color(white: 0.4))
+                    .padding(.horizontal, margin)
+                    .padding(.bottom, 14)
+                }
+                .environment(\.colorScheme, .light)
+            ImageRenderer(content: footed).render { _, draw in
+                context.beginPDFPage(nil)
+                draw(context)
+                context.endPDFPage()
+            }
+        }
         context.closePDF()
         return data as Data
+    }
+
+    /// "Underground · 24 Oct 2026, 14:03": the picture and when the sheet was made, as on the web.
+    private static func stamp(_ name: String) -> String {
+        let time = Date.now.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(Localization.locale))
+        return [name, time].filter { !$0.isEmpty }.joined(separator: " · ")
+    }
+
+    /// The QR code of a link, sharp at any size.
+    private static func qrImage(_ text: String) -> CGImage? {
+        let filter = CIFilter.qrCodeGenerator()
+        filter.message = Data(text.utf8)
+        filter.correctionLevel = "L"
+        guard let output = filter.outputImage?.transformed(by: CGAffineTransform(scaleX: 10, y: 10)) else { return nil }
+        return CIContext().createCGImage(output, from: output.extent)
     }
 
     /// One colour on the printed sheet, as the web's PrintLegend: the concentrated wash is the base
@@ -120,20 +160,40 @@ enum PrintSheet {
 
     private struct CardsPage: View {
         let title: String?
+        let qr: CGImage?
         let rows: [[Card]]
 
         var body: some View {
             VStack(alignment: .leading, spacing: 0) {
                 if let title {
-                    Text(title).font(.system(size: 15, weight: .semibold)).frame(height: 30, alignment: .top)
-                    // The letters of the water levels.
-                    HStack(spacing: 12) {
-                        ForEach(Mixing.washLetters, id: \.letter) { wash in
-                            Text("\(Text(wash.letter).bold()) \(L(wash.label))")
+                    HStack(alignment: .top, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            // Two lines where the QR code leaves too little room for one.
+                            Text(title).font(.system(size: 15, weight: .semibold)).lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                                .padding(.bottom, 8)
+                            // The letters of the water levels.
+                            HStack(spacing: 12) {
+                                ForEach(Mixing.washLetters, id: \.letter) { wash in
+                                    Text("\(Text(wash.letter).bold()) \(L(wash.label))")
+                                }
+                            }
+                            .font(.system(size: 9))
+                            .frame(height: 22, alignment: .top)
+                        }
+                        Spacer(minLength: 0)
+                        if let qr {
+                            // L: the sheet is drawn outside the views, where a plain Text would take the system's language.
+                            Text(L("Scan to bring back these paints and settings, then open the photo again."))
+                                .font(.system(size: 8))
+                                .foregroundStyle(Color(white: 0.4))
+                                .frame(width: 120, alignment: .leading)
+                            Image(decorative: qr, scale: 1)
+                                .interpolation(.none)
+                                .resizable()
+                                .frame(width: PrintSheet.qrSize, height: PrintSheet.qrSize)
                         }
                     }
-                    .font(.system(size: 9))
-                    .frame(height: 22, alignment: .top)
+                    .frame(height: max(30 + 22, qr == nil ? 0 : PrintSheet.qrSize) + 10, alignment: .top)
                 }
                 VStack(alignment: .leading, spacing: PrintSheet.rowGap) {
                     ForEach(rows.indices, id: \.self) { r in
@@ -245,17 +305,8 @@ enum PrintSheet {
     private static func layerPDF(session: Session, library: Library) -> Data {
         guard let plan = session.layers else { return Data() }
         let rows = session.layerRows(paints: library.byID)
-        let data = NSMutableData()
-        var box = CGRect(origin: .zero, size: page)
-        guard let consumer = CGDataConsumer(data: data), let context = CGContext(consumer: consumer, mediaBox: &box, nil) else { return Data() }
-        func add(_ view: some View) {
-            let renderer = ImageRenderer(content: view.frame(width: page.width, height: page.height).environment(\.colorScheme, .light))
-            renderer.render { _, draw in
-                context.beginPDFPage(nil)
-                draw(context)
-                context.endPDFPage()
-            }
-        }
+        var pages: [AnyView] = []
+        func add(_ view: some View) { pages.append(AnyView(view)) }
         add(LayerOverviewPage(
             title: L("%@ – layers", session.imageName),
             picture: session.layerPicture(show: plan.layers.map(\.top)),
@@ -284,8 +335,7 @@ enum PrintSheet {
                 }
             ))
         }
-        context.closePDF()
-        return data as Data
+        return render(pages, stamp: stamp(session.imageName))
     }
 
     private struct LayerOverviewPage: View {

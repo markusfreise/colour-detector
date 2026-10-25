@@ -125,6 +125,7 @@ import { useAccountStore } from './stores/account.js'
 import ImpersonationBar from './components/ImpersonationBar.vue'
 import { isNative } from './lib/native.js'
 import { usePrintStamp } from './components/printStamp.js'
+import { restoreCodeOf, readRestoreCode } from './lib/restoreLink.js'
 import { useProStore } from './stores/pro.js'
 import { useCollectionStore } from './stores/collection.js'
 import { usePaintsStore } from './stores/paints.js'
@@ -204,10 +205,22 @@ onMounted(() => {
 // (PaintingCanvas.vue). Behind the gate the showcase has the picture (AccountGate.vue), and it is
 // gone by the time this runs.
 const collection = useCollectionStore()
+// A restore link (the QR code of a printed sheet): its settings and paints come over the picture
+// opened last, whose own would otherwise replace them. The code leaves the address at once.
+let restoring = restoreCodeOf(window.location.hash)
+if (restoring) history.replaceState(null, '', window.location.pathname + window.location.search)
 watch(
   () => account.ready,
-  (ready) => {
-    if (ready && !analysis.image) collection.openLast()
+  async (ready) => {
+    if (!ready) return
+    if (!analysis.image) await collection.openLast()
+    if (!restoring) return
+    const read = await readRestoreCode(restoring)
+    restoring = null
+    if (!read) return
+    await analysis.applyRestore(read)
+    const text = analysis.image ? 'Paints and settings restored. Open the photo they belong to, if this is another one.' : 'Paints and settings restored. Now open the photo they belong to.'
+    account.notice = { kind: 'info', text: t(text) }
   },
   { immediate: true, flush: 'post' },
 )

@@ -73,6 +73,37 @@ const mixKeyOf = ({ saturation, contrast, simplify, colours, details, geometric,
 // Details = few mixes on the large parts, and a small area of another hue keeps a mix of its own.
 const varietyOf = (details) => 10 - details
 
+/** The settings a new visitor starts with; a restore link carries only what differs from them. */
+export const defaultSettings = () => ({
+  mode: 'mix', // mix = colours mixed on the palette; layer = glazes of a few base paints
+  layerCount: 5, // layer mode: base paints the app proposes
+  layerSimplify: 4, // layer mode: its own "Simplify areas"; every layer has to be painted by hand
+  layerAccents: 3, // layer mode: accent layers at most (a strong wash on small areas, painted last)
+  maxCoats: 2, // layer mode: coats of one wash an area can get
+  colours: 20,
+  simplify: SIMPLIFY_ZERO, // shown as 0; see SIMPLIFY_ZERO
+  guides: true, // sketch: guide lines for transferring it to paper (quarters and diagonals)
+  details: true, // with an AI plan: show the final wash of fine dark details
+  ai: false, // the colours to mix and the paints are chosen by an AI model (once asked for this picture)
+  geometric: false, // areas as polygons with straight edges that overlap, instead of their organic outline
+  maxPaints: 3,
+  details: 5, // 10 = the most steps across the picture, 0 = small areas of another hue keep their mix (see varietyOf)
+  values: false, // mix mode: the picture in grey, every value painted with one paint of the box (a value study)
+  saturation: 100, // percent, applied to the photo before the analysis
+  contrast: 100,
+  view: 'mixed', // mixed | target | overlay | original | template | blocking (template has no button for now)
+  // Blocking: light and shadow in large masses (lib/blocking.js).
+  blockingTones: 2, // 2 = light and shadow, 3 = with a middle tone
+  blockingSplit: null, // thresholds in L* set by hand; null = where the photo divides
+  blockingForms: DEFAULT_FORMS, // 0 = more detail .. 10 = the largest masses
+  blockingOpacity: 100, // percent: the tones over the photo, 100 = the photo is not seen
+  outlines: true,
+  numbers: true, // false = none, true = the numbers alone, 'backdrop' = each on a padded square
+  numberSize: 'normal', // normal | large (1.4 times)
+  grid: false, // false = none, else the colour of its lines: 'white' | 'grey' | 'black'
+  gridColumns: 8, // the picture's width in that many square cells; rows as many as fit the height
+})
+
 /**
  * Settings of a saved picture as the current version reads them. Pictures saved before 2026-10-18
  * have `variety`, the Details slider the other way round.
@@ -178,35 +209,7 @@ export const useAnalysisStore = defineStore('analysis', {
     pendingEdits: null, // { key, edits } of a picture opened in layer mode, for its first mix analysis
     busy: false,
     error: null,
-    settings: {
-      mode: 'mix', // mix = colours mixed on the palette; layer = glazes of a few base paints
-      layerCount: 5, // layer mode: base paints the app proposes
-      layerSimplify: 4, // layer mode: its own "Simplify areas"; every layer has to be painted by hand
-      layerAccents: 3, // layer mode: accent layers at most (a strong wash on small areas, painted last)
-      maxCoats: 2, // layer mode: coats of one wash an area can get
-      colours: 20,
-      simplify: SIMPLIFY_ZERO, // shown as 0; see SIMPLIFY_ZERO
-      guides: true, // sketch: guide lines for transferring it to paper (quarters and diagonals)
-      details: true, // with an AI plan: show the final wash of fine dark details
-      ai: false, // the colours to mix and the paints are chosen by an AI model (once asked for this picture)
-      geometric: false, // areas as polygons with straight edges that overlap, instead of their organic outline
-      maxPaints: 3,
-      details: 5, // 10 = the most steps across the picture, 0 = small areas of another hue keep their mix (see varietyOf)
-      values: false, // mix mode: the picture in grey, every value painted with one paint of the box (a value study)
-      saturation: 100, // percent, applied to the photo before the analysis
-      contrast: 100,
-      view: 'mixed', // mixed | target | overlay | original | template | blocking (template has no button for now)
-      // Blocking: light and shadow in large masses (lib/blocking.js).
-      blockingTones: 2, // 2 = light and shadow, 3 = with a middle tone
-      blockingSplit: null, // thresholds in L* set by hand; null = where the photo divides
-      blockingForms: DEFAULT_FORMS, // 0 = more detail .. 10 = the largest masses
-      blockingOpacity: 100, // percent: the tones over the photo, 100 = the photo is not seen
-      outlines: true,
-      numbers: true, // false = none, true = the numbers alone, 'backdrop' = each on a padded square
-      numberSize: 'normal', // normal | large (1.4 times)
-      grid: false, // false = none, else the colour of its lines: 'white' | 'grey' | 'black'
-      gridColumns: 8, // the picture's width in that many square cells; rows as many as fit the height
-    },
+    settings: defaultSettings(),
   }),
   getters: {
     selected: (state) => (state.selectedEntry == null ? null : state.entries[state.selectedEntry]),
@@ -333,6 +336,28 @@ export const useAnalysisStore = defineStore('analysis', {
       const hash = await hashOf(file).catch(() => null)
       this.settings.blockingSplit = null
       await this.loadFromSource(url, file.name, { sample: false, hash })
+    },
+    /**
+     * The settings and paints of a restore link (the QR code of a printed sheet, lib/restoreLink.js)
+     * over what is on screen. Paints of one's own that this device does not know are added to it.
+     */
+    async applyRestore({ settings, palette }) {
+      Object.assign(this.settings, defaultSettings(), savedSettings(settings), { ai: false, blockingSplit: null })
+      const paints = usePaintsStore()
+      const ids = (list) =>
+        list
+          .map((p) => (typeof p === 'string' ? p : paints.paintFor({ vendor: p[0], number: p[1], name: p[2], hex: p[3] })))
+          .filter((id) => paints.byId[id])
+      const current = paints.palette
+      paints.setPalette({
+        ...current,
+        auto: palette.auto,
+        paintIds: palette.paints ? ids(palette.paints) : current.paintIds,
+        layerAuto: palette.layerAuto,
+        layerIds: palette.layerPaints ? ids(palette.layerPaints) : current.layerIds,
+        autoOff: palette.autoOff,
+      })
+      if (this.image) await this.analyse()
     },
     /** Open a picture from the collection with its saved settings and colour changes. */
     async loadSaved(record) {

@@ -35,6 +35,7 @@
 | Hosting | markus-freise.de (shared hosting) — static files + PHP webhook | §15 |
 | Versioning | Git — GitHub private `markusfreise/colour-detector` | |
 | Testing frontend | Vitest | Unit tests for colour maths, mixing, segmentation |
+| QR code | `qrcode-generator` (MIT, no dependencies of its own) | The QR code on the printed sheet that restores settings and paints (`lib/restoreLink.js`); added 2026-10-25 |
 | Mobile / Desktop wrappers | not needed | Responsive web is enough |
 | Helper apps | not needed | |
 

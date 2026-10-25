@@ -62,6 +62,10 @@ xcrun simctl launch <device> de.markusfreise.watercolourlove -screen editor
 xcrun simctl io <device> screenshot AppStore/screenshots/iphone-2-editor.png
 ```
 
+## Printed sheet
+
+`Platform/PrintSheet.swift` draws the sheet as the web prints it. Every page has the picture's name, date and time at its foot and its number of all; the first page of the colours has a QR code with a link to the website that restores the settings and paints (`Model/RestoreLink.swift`, the web's format of `src/lib/restoreLink.js`: the settings in the web's terms, raw deflate, base64url). The photo is not in it.
+
 ## Website
 
 The app's pages are part of the web app: `public/app/` (overview, support, privacy) at https://watercolourlove.de/app/, with the web's imprint. These are the URLs in `metadata.md`. They go online with every deploy of the web app.

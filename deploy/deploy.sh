@@ -14,6 +14,10 @@ REPO_DIR="${1:?repo dir missing}"
 WEB_ROOT="${2:?web root missing}"
 BRANCH="${3:-main}"
 
+# Mittwald's web PHP passes LD_LIBRARY_PATH/LD_PRELOAD pointing at 32-bit libraries; node's native
+# modules (rollup) then fail with "libdl.so.2: wrong ELF class: ELFCLASS32". A login shell has neither.
+unset LD_LIBRARY_PATH LD_PRELOAD
+
 # Shared hosts often keep node outside the default PATH (e.g. via nvm).
 export PATH="$HOME/.nvm/current/bin:$HOME/bin:/usr/local/bin:$PATH"
 if [ -s "$HOME/.nvm/nvm.sh" ]; then . "$HOME/.nvm/nvm.sh" >/dev/null; fi

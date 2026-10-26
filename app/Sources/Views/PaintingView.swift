@@ -39,7 +39,9 @@ struct PaintingView: View {
                     .scaleEffect(zoom)
                     .offset(offset)
                 if session.busy {
-                    ProgressView(L(session.layerMode ? "Planning layers" : "Analysing"))
+                    // The spinner alone, as on the web; the words only for VoiceOver.
+                    ProgressView()
+                        .accessibilityLabel(L(session.layerMode ? "Planning layers" : "Analysing"))
                         .padding(12)
                         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                 }

@@ -108,8 +108,8 @@
       >
         <AppIcon :name="numbersStep.icon" :label="t(numbersStep.label)" />
       </button>
-      <p v-if="analysis.busy" class="painting__status">{{ analysis.layerMode ? t('Planning layers…') : t('Analysing…') }}</p>
-      <p v-else-if="framing && !frame" class="painting__status">{{ t('Drag a frame over the part to zoom in on') }}</p>
+      <!-- Busy is the spinner over the picture: no words here, which would push the tools about. -->
+      <p v-if="framing && !frame" class="painting__status">{{ t('Drag a frame over the part to zoom in on') }}</p>
     </div>
     </div>
     <!-- Without a paint the picture would be blank paper. One is enough: it is painted in washes. -->

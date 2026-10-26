@@ -183,8 +183,6 @@ export default {
   'Grid columns': 'Gitterspalten',
   'Normal@@size': 'Normal',
   'Large@@size': 'Groß',
-  'Planning layers…': 'Schichten werden geplant …',
-  'Analysing…': 'Wird analysiert …',
   'Drag a frame over the part to zoom in on': 'Zieh einen Rahmen über den Teil, den du vergrößern willst',
   'Put at least one colour in paintbox': 'Leg mindestens eine Farbe in den Farbkasten',
   // Colour card

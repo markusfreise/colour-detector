@@ -39,8 +39,10 @@ npm test --silent 2>&1 | grep -E "Tests|FAIL" || true
 npm run build --silent
 
 SSH="ssh -i $SSH_KEY -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=accept-new"
-# The build replaces the web root; the server's own files there stay (.htaccess, the API's config).
-rsync -a --delete -e "$SSH" --exclude '.htaccess' --exclude 'api/' dist/ "$TARGET"
+# The build replaces the web root; the server's own files there stay: .htaccess, the API and its
+# config, and the GitHub webhook with its secret (webhook.php, webhook-config.php), which a deploy
+# from here deleted on 2026-10-23.
+rsync -a --delete -e "$SSH" --exclude '.htaccess' --exclude 'api/' --exclude 'webhook.php' --exclude 'webhook-config.php' dist/ "$TARGET"
 rsync -a --delete -e "$SSH" --exclude 'config.php' --exclude 'README.md' --exclude 'tests/' server/ "${TARGET}api/"
 rm -rf "$BUILD"
 echo "=== $(date -Is) done ==="

@@ -1,6 +1,39 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Albert Memorial, London (sample)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Albert Memorial, London (Beispiel)"
+          }
+        }
+      }
+    },
+    "Menai Bridge, Wales (sample)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menai-Brücke, Wales (Beispiel)"
+          }
+        }
+      }
+    },
+    "Piccadilly Circus tube (sample)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "U-Bahn Piccadilly Circus (Beispiel)"
+          }
+        }
+      }
+    },
     "Scan to bring back these paints and settings, then open the photo again." : {
       "extractionState" : "manual",
       "localizations" : {

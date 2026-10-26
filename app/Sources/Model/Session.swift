@@ -344,6 +344,10 @@ final class Session {
         Sample(file: "sample-old-town-snow", name: "Old town in snow (sample)"),
         Sample(file: "sample-red-train", name: "Red train (sample)", url: "https://unsplash.com/photos/red-and-white-train-on-train-station-Zi8T2OwJf44"),
         Sample(file: "sample-woman-white-wall", name: "Woman by a white wall (sample)", photographer: "Ayo Ogunseinde", url: "https://unsplash.com/photos/woman-looking-sideways-leaning-on-white-wall-6W4F62sN_yI"),
+        // Only in the app (Resources/Data, not exported from the web's public/).
+        Sample(file: "sample-albert-memorial-london", name: "Albert Memorial, London (sample)"),
+        Sample(file: "sample-menai-bridge-wales", name: "Menai Bridge, Wales (sample)"),
+        Sample(file: "sample-piccadilly-circus-tube", name: "Piccadilly Circus tube (sample)"),
     ]
 
     struct Sample {

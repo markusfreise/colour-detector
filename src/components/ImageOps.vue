@@ -1,11 +1,11 @@
 <template>
   <!-- What is done with the picture as a whole: a new one, saving, the collection, printing. -->
   <nav class="imageops" :aria-label="t('Picture')">
-    <label class="button button--secondary imageops__button" :data-hint="t('New picture')">
+    <label class="button button--secondary imageops__button" data-tour="photo" :data-hint="t('New picture')">
       <AppIcon name="new" />
       <input class="imageops__file" type="file" accept="image/*,.wcl" :aria-label="t('New: choose a photo')" @change="onFile" />
     </label>
-    <button class="button button--ghost imageops__button" type="button" :data-hint="t('Samples')" @click="emit('show-samples')">
+    <button class="button button--ghost imageops__button" type="button" data-tour="photo" :data-hint="t('Samples')" @click="emit('show-samples')">
       <AppIcon name="sample" :label="t('Samples')" />
     </button>
     <button class="button button--ghost imageops__button" type="button" :disabled="!analysis.image" :data-hint="t('Save')" @click="collection.saveCurrent()">
@@ -14,7 +14,7 @@
     <button class="button button--ghost imageops__button" type="button" :data-hint="t('Collection')" @click="emit('show-collection')">
       <AppIcon name="collection" :label="t('Collection')" />
     </button>
-    <button class="button button--ghost imageops__button" type="button" :disabled="!printable" :data-hint="t('Print / PDF')" @click="print">
+    <button class="button button--ghost imageops__button" type="button" data-tour="print" :disabled="!printable" :data-hint="t('Print / PDF')" @click="print">
       <AppIcon name="pdf" :label="t('Print / PDF')" />
     </button>
     <!-- A download does not work inside the app's web view. -->

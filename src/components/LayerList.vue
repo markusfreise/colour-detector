@@ -4,7 +4,7 @@
   <section class="panel sidebar layers" :class="{ 'panel--collapsed': collapsed }">
     <div class="toolbar">
       <PanelToggle name="palette" icon="layers" label="the layers" />
-      <button class="button button--ghost" type="button" :data-hint="t('Paint box')" @click="emit('show-paintbox')">
+      <button class="button button--ghost" type="button" data-tour="paints" :data-hint="t('Paint box')" @click="emit('show-paintbox')">
         <AppIcon name="paintbox" />
       </button>
     </div>

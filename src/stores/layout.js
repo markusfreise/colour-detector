@@ -42,6 +42,13 @@ export const useLayoutStore = defineStore('layout', {
       this.collapsed.controls = false
       this.persist()
     },
+    /** The panels as on a first visit: folded and placed by default (the debug menu). */
+    reset() {
+      this.collapsed = {}
+      this.positions = {}
+      this.settingsShown = false
+      this.persist()
+    },
     persist() {
       try {
         localStorage.setItem(KEY, JSON.stringify({ collapsed: this.collapsed, positions: this.positions, settingsShown: this.settingsShown }))

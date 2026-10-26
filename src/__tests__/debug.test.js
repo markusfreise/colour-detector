@@ -11,12 +11,18 @@ describe('debugWanted', () => {
     expect(debugWanted({ hostname: 'localhost', search: '' })).toBe(true)
     expect(debugWanted({ hostname: 'colour-detector.test', search: '' })).toBe(true)
     expect(debugWanted({ hostname: 'watercolourlove.croeso.de', search: '' })).toBe(true)
+    // The dev server opened from a phone in the same network.
+    expect(debugWanted({ hostname: '192.168.1.24', search: '' })).toBe(true)
+    expect(debugWanted({ hostname: '10.0.0.5', search: '' })).toBe(true)
+    expect(debugWanted({ hostname: 'markus-mac.local', search: '' })).toBe(true)
   })
 
   it('hides it on public hosts', () => {
     expect(debugWanted({ hostname: 'markus-freise.de', search: '' })).toBe(false)
     expect(debugWanted({ hostname: 'watercolourlove.markus-freise.de', search: '' }, memory())).toBe(false)
     expect(debugWanted({ hostname: 'notcroeso.de', search: '' })).toBe(false)
+    expect(debugWanted({ hostname: '172.32.0.1', search: '' })).toBe(false)
+    expect(debugWanted({ hostname: '8.8.8.8', search: '' })).toBe(false)
   })
 
   it('shows it for the session once the address carried ?debug', () => {

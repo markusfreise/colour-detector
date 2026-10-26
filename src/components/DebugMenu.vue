@@ -44,6 +44,11 @@
         <button class="button" type="button" :disabled="!account.ready" @click="pro.require(null, 'use everything', false, true)">Show plans</button>
         <button class="button" type="button" :disabled="!pro.promoHidden" @click="showPromo">Show “Get pro” again</button>
       </div>
+      <p class="debug__title">Reset</p>
+      <div class="debug__list">
+        <button class="button" type="button" :disabled="!account.ready" @click="resetApp">Settings and tour to default</button>
+      </div>
+      <p class="debug__note">Paint boxes, own paints, the paint selection and saved pictures stay.</p>
     </div>
   </div>
 </template>
@@ -53,6 +58,9 @@ import { ref } from 'vue'
 import { useAccountStore } from '../stores/account.js'
 import { useProStore } from '../stores/pro.js'
 import { debugWanted } from '../lib/debug.js'
+import { useAnalysisStore, defaultSettings } from '../stores/analysis.js'
+import { useLayoutStore } from '../stores/layout.js'
+import { useTourStore } from '../stores/tour.js'
 
 const account = useAccountStore()
 const pro = useProStore()
@@ -72,6 +80,15 @@ const screens = [
   { value: null, label: 'Back to the app' },
 ]
 
+// The settings and the panels as on a first visit, and the tour again; everything about paints stays.
+async function resetApp() {
+  open.value = false
+  const analysis = useAnalysisStore()
+  Object.assign(analysis.settings, defaultSettings())
+  useLayoutStore().reset()
+  useTourStore().reset()
+  if (analysis.image) await analysis.analyse()
+}
 function showPromo() {
   pro.promoHidden = false
   try {

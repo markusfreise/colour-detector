@@ -41,11 +41,14 @@
         background: var(--c-danger);
     }
 
+    // Upwards from the foot of the button, the last one of the column; scrolls in a low window.
     &__card {
         position: absolute;
         z-index: 6;
-        top: 0;
+        bottom: 0;
         left: calc(100% + var(--gap-05x));
+        max-height: calc(100vh - var(--gap-2x));
+        overflow-y: auto;
         display: flex;
         flex-direction: column;
         gap: var(--gap-05x);
@@ -55,7 +58,6 @@
     }
 
     &--link &__card {
-        top: auto;
         bottom: calc(100% + var(--gap-05x));
         left: 0;
     }
@@ -63,6 +65,12 @@
     &__title {
         font-size: var(--fs-small);
         font-weight: 650;
+        color: var(--c-copy-light);
+    }
+
+    &__note {
+        max-width: #{pxtorem(240)};
+        font-size: var(--fs-small);
         color: var(--c-copy-light);
     }
 

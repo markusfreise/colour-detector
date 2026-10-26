@@ -48,6 +48,7 @@
     <div class="painting__settings-bar toolbar">
     <button
       class="button painting__settings"
+      data-tour="settings"
       :class="{ 'button--active': !layout.collapsed.controls }"
       type="button"
       :aria-expanded="!layout.collapsed.controls"

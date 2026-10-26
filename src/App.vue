@@ -7,6 +7,11 @@
     class="app"
     :class="{ 'app--layer': analysis.layerMode, 'app--hints': hints, 'app--legal': legalOpen && !isNative, 'app--menu': menuOpen && !isNative, 'app--promo': !pro.active && !pro.promoHidden }"
   >
+    <!-- Help on: the way to the tour again. -->
+    <p v-if="hints && tour.step === null" class="app__notice">
+      {{ t('Help is on: every button shows its name.') }}
+      <button class="app__footer-link" type="button" @click="startTour">{{ t('Show the tour') }}</button>
+    </p>
     <p v-if="account.notice" class="app__notice">
       {{ account.notice.text }}
       <button class="app__footer-link" type="button" @click="account.notice = null">{{ t('Hide') }}</button>
@@ -88,6 +93,7 @@
     <SampleDialog ref="sampleDialog" />
     <ProDialog />
     <AccountDialog />
+    <GuidedTour />
   </div>
   <!-- Over the app and over the sign-in alike. -->
   <ConsentBanner />
@@ -126,6 +132,8 @@ import ImpersonationBar from './components/ImpersonationBar.vue'
 import { isNative } from './lib/native.js'
 import { usePrintStamp } from './components/printStamp.js'
 import { restoreCodeOf, readRestoreCode } from './lib/restoreLink.js'
+import GuidedTour from './components/GuidedTour.vue'
+import { useTourStore } from './stores/tour.js'
 import { useProStore } from './stores/pro.js'
 import { useCollectionStore } from './stores/collection.js'
 import { usePaintsStore } from './stores/paints.js'
@@ -149,6 +157,26 @@ const menuOpen = ref(false)
 const legalOpen = ref(false)
 // Help: every button shows its label. On a phone the left column opens with it.
 const hints = ref(false)
+// The guided tour: once on every device, when the app is open and the cookie question answered;
+// again from Help or from a link to #tour (the manual has one).
+const tour = useTourStore()
+const askedForTour = window.location.hash === '#tour'
+// The picture used last is in place (or there is none): only then, so that its loading does not
+// count as the photo of step 1.
+const opened = ref(false)
+if (askedForTour) history.replaceState(null, '', window.location.pathname + window.location.search)
+function startTour() {
+  hints.value = false
+  menuOpen.value = false
+  tour.start()
+}
+watch(
+  () => account.ready && opened.value && !consent.bannerVisible,
+  (free) => {
+    if (free && tour.step === null && (askedForTour || !tour.seen)) tour.start()
+  },
+  { immediate: true, flush: 'post' },
+)
 function toggleHints() {
   hints.value = !hints.value
   if (hints.value) menuOpen.value = true
@@ -213,14 +241,18 @@ watch(
   () => account.ready,
   async (ready) => {
     if (!ready) return
-    if (!analysis.image) await collection.openLast()
-    if (!restoring) return
-    const read = await readRestoreCode(restoring)
-    restoring = null
-    if (!read) return
-    await analysis.applyRestore(read)
-    const text = analysis.image ? 'Paints and settings restored. Open the photo they belong to, if this is another one.' : 'Paints and settings restored. Now open the photo they belong to.'
-    account.notice = { kind: 'info', text: t(text) }
+    try {
+      if (!analysis.image) await collection.openLast()
+      if (!restoring) return
+      const read = await readRestoreCode(restoring)
+      restoring = null
+      if (!read) return
+      await analysis.applyRestore(read)
+      const text = analysis.image ? 'Paints and settings restored. Open the photo they belong to, if this is another one.' : 'Paints and settings restored. Now open the photo they belong to.'
+      account.notice = { kind: 'info', text: t(text) }
+    } finally {
+      opened.value = true
+    }
   },
   { immediate: true, flush: 'post' },
 )

@@ -1,0 +1,82 @@
+@use "../functions" as *;
+
+// The guided tour (GuidedTour.vue): what one step is about outlined, the rest dimmed by the
+// outline's shadow, and a card beside it. Only the card takes clicks.
+
+.tour {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+
+    &__spot {
+        position: fixed;
+        border-radius: var(--radius-medium);
+        outline: 2px solid var(--c-white);
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.38);
+        transition: left 0.2s ease, top 0.2s ease, width 0.2s ease, height 0.2s ease;
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
+    }
+
+    &__card {
+        position: fixed;
+        width: min(#{pxtorem(320)}, calc(100vw - var(--gap-2x)));
+        padding: #{pxtorem(16)} #{pxtorem(18)};
+        border-radius: var(--radius-medium);
+        background: var(--c-background-raised);
+        box-shadow: var(--shadow);
+        color: var(--c-copy);
+        pointer-events: auto;
+    }
+
+    &__count {
+        color: var(--c-copy-light);
+        font-size: var(--fs-small);
+    }
+
+    &__title {
+        margin: #{pxtorem(2)} 0 #{pxtorem(6)};
+        color: var(--c-head);
+        font-size: var(--fs-medium);
+        font-weight: 650;
+    }
+
+    &__text {
+        line-height: 1.45;
+    }
+
+    &__link {
+        color: inherit;
+        text-decoration: underline;
+    }
+
+    &__buttons {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--gap);
+        margin-top: #{pxtorem(14)};
+    }
+
+    &__skip {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--c-copy-light);
+        font: inherit;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    &__next {
+        width: auto;
+        padding-inline: #{pxtorem(16)};
+    }
+
+    @media print {
+        display: none;
+    }
+}

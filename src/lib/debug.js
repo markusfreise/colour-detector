@@ -1,7 +1,8 @@
-// The debug menu: on development hosts, and anywhere once the address has carried "?debug".
+// The debug menu: on development hosts (this machine, an address in the local network, *.test,
+// *.croeso.de), and anywhere once the address has carried "?debug".
 // It only changes what this browser shows; the account API decides for itself.
 
-const DEV_HOST = /^(localhost|127\.0\.0\.1|\[::1\])$|\.(localhost|test)$|(^|\.)croeso\.de$/
+const DEV_HOST = /^(localhost|127\.0\.0\.1|\[::1\])$|\.(localhost|test|local)$|(^|\.)croeso\.de$|^(10\.\d+|192\.168|172\.(1[6-9]|2\d|3[01]))\.\d+\.\d+$/
 const KEY = 'colour-detector:debug'
 
 /**

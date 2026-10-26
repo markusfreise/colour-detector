@@ -31,6 +31,8 @@ struct RootView: View {
     @State private var boxRevision = 0
     /// Help: every button shows its label (the web's .app--hints).
     @State private var hints = false
+    /// The guided tour: once on every device, again from Help.
+    @State private var tour = Tour()
     /// A phone: the picture buttons are folded behind the menu button.
     @State private var menuOpen = false
     /// The cards floating over the picture, the front one last: a card touched comes to the front.
@@ -54,6 +56,18 @@ struct RootView: View {
                         .padding(.horizontal, 8)
                         .padding(.top, Theme.gap)
                 }
+            }
+            // Over everything: the tour, pointing at what its step marked with tourAnchor.
+            .overlayPreferenceValue(TourAnchorKey.self) { anchors in
+                if let step = tour.step {
+                    TourOverlay(tour: tour, step: step, anchors: anchors[step] ?? [])
+                }
+            }
+            // Step 1 is done as soon as another picture is there.
+            .onChange(of: session.imageName) { if tour.step == .photo { tour.next() } }
+            // On a phone the settings card covers the buttons the tour points at, except in its own step.
+            .onChange(of: [tour.step?.rawValue ?? -1, showingSettings ? 1 : 0]) {
+                if compact, let step = tour.step, step != .settings, showingSettings { close(.settings) }
             }
             .background(Theme.page.ignoresSafeArea())
             .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { windowWidth = $0 }
@@ -109,6 +123,19 @@ struct RootView: View {
             #if DEBUG
             await openScreenForScreenshot()
             #endif
+            // Not over the screens opened for App Store screenshots; "-tour" shows it anyway.
+            let arguments = ProcessInfo.processInfo.arguments
+            let shooting = arguments.contains { ["-screen", "-snapshot", "-pdf"].contains($0) }
+            if arguments.contains("-tour") || (!tour.seen && !shooting) {
+                try? await Task.sleep(for: .milliseconds(600))
+                tour.start()
+                #if DEBUG
+                // "-tour 2" opens that step, for screenshots.
+                if let index = arguments.firstIndex(of: "-tour"), index + 1 < arguments.count, let number = Int(arguments[index + 1]), let step = TourStep(rawValue: number) {
+                    tour.step = step
+                }
+                #endif
+            }
         }
     }
 
@@ -288,6 +315,7 @@ struct RootView: View {
                 HStack(spacing: Theme.gap) {
                     IconButton(title: "Menu", symbol: menuOpen ? "xmark" : "line.3.horizontal", active: menuOpen) { menuOpen.toggle() }
                         .environment(\.showHints, false)
+                        .tourAnchor(.photo)
                     if !store.unlocked, !promoHidden {
                         GetProButton(size: buttonSize) {
                             menuOpen = false
@@ -324,7 +352,9 @@ struct RootView: View {
             .webMenu(active: true)
             .help("New: choose a photo")
             .hint("New picture")
+            .tourAnchor(.photo)
             IconButton(title: "Samples: choose a sample picture", symbol: "square.inset.filled", hint: "Samples") { closeMenu(); showingSamples = true }
+                .tourAnchor(.photo)
             IconButton(title: "Save", symbol: "square.and.arrow.down") { closeMenu(); save() }
                 .disabled(session.image == nil)
             IconButton(title: "Collection", symbol: "photo.on.rectangle.angled") { closeMenu(); showingCollection = true }
@@ -386,9 +416,18 @@ struct RootView: View {
                     active: showingColours
                 ) { toggle(.colours) }
                 IconButton(title: "Paint box", symbol: "circle.grid.2x2", action: openPaintBox)
+                    .tourAnchor(.paints)
                 // Help: the labels of all buttons at once, for screens without a pointer to hover with.
                 IconButton(title: "Help", symbol: "questionmark", active: hints, action: toggleHints)
                     .padding(.top, Theme.gap)
+                // With Help on: the way to the tour again.
+                if hints {
+                    IconButton(title: "Show the tour", symbol: "signpost.right") {
+                        toggleHints()
+                        menuOpen = false
+                        tour.start()
+                    }
+                }
                 if store.testing { debugMenu }
             }
             .environment(\.hintSide, .leading)
@@ -464,6 +503,7 @@ struct RootView: View {
             frameButton
             // The settings beside the views they belong to; their card floats at the top right.
             IconButton(title: "Settings", symbol: "slider.horizontal.3", active: showingSettings) { toggle(.settings) }
+                .tourAnchor(.settings)
             SegmentedGroup(
                 options: viewModes, selection: session.settings.view,
                 title: { layered($0) ?? $0.title }, symbol: { $0.symbol },

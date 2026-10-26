@@ -64,6 +64,10 @@ xcrun simctl launch <device> de.markusfreise.watercolourlove -screen editor
 xcrun simctl io <device> screenshot AppStore/screenshots/iphone-2-editor.png
 ```
 
+## Guided tour
+
+`Views/GuidedTour.swift`: four cards over the app's own buttons (photo, paints, settings, recipes), as the web's tour. Once on every device (UserDefaults `tourSeen`), again from Help ("Show the tour"). What a step points at is marked with `.tourAnchor(step)`. Launches for screenshots (`-screen`, `-snapshot`, `-pdf`) leave it out; `-tour` shows it, `-tour 2` at that step.
+
 ## Printed sheet
 
 `Platform/PrintSheet.swift` draws the sheet as the web prints it. Every page has the picture's name, date and time at its foot and its number of all; the first page of the colours has a QR code with a link to the website that restores the settings and paints (`Model/RestoreLink.swift`, the web's format of `src/lib/restoreLink.js`: the settings in the web's terms, raw deflate, base64url). The photo is not in it.

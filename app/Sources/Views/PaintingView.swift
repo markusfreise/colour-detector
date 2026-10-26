@@ -78,6 +78,7 @@ struct PaintingView: View {
         if let image = session.rendered, let size = session.workingSize {
             // A phone keeps its 14 points; iPad and Mac size the numbers with the picture, as the web.
             NumberedPicture(image: image, width: size.width, labels: session.pictureLabels(), fontSize: compact ? 14 : nil, settings: session.settings)
+                .tourAnchor(.recipes)
                 .overlay {
                     GeometryReader { geometry in
                         Color.clear

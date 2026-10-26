@@ -1,6 +1,138 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "First choose a photo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähl zuerst ein Foto"
+          }
+        }
+      }
+    },
+    "Now choose your paints" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt deine Farben"
+          }
+        }
+      }
+    },
+    "Adjust the settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Einstellungen anpassen"
+          }
+        }
+      }
+    },
+    "Find the recipes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Rezepte finden"
+          }
+        }
+      }
+    },
+    "Try one of the samples, or load a reference photo of your own." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Probier eines der Beispiele oder lade ein eigenes Referenzfoto."
+          }
+        }
+      }
+    },
+    "Pick the paints you want to use, or leave it on Auto and the app chooses them from your paint box." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähl die Farben, mit denen du malen willst, oder lass „Auto“ an, dann wählt die App sie aus deinem Farbkasten."
+          }
+        }
+      }
+    },
+    "Set them to the way you work: how many colours, how simple the areas, mixing or layers." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stell sie so ein, wie du arbeitest: wie viele Farben, wie einfach die Flächen, Mischen oder Schichten."
+          }
+        }
+      }
+    },
+    "Hover over an area, or tap it, to see the recipe for its colour. Print or export the sheet to paint away from the screen. Have fun painting!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fahr über eine Fläche oder tipp sie an, um das Rezept ihrer Farbe zu sehen. Druck das Blatt oder exportier es, um ohne Bildschirm zu malen. Viel Spaß beim Malen!"
+          }
+        }
+      }
+    },
+    "Open the manual" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Handbuch"
+          }
+        }
+      }
+    },
+    "Skip tour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rundgang überspringen"
+          }
+        }
+      }
+    },
+    "Let's paint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los geht’s"
+          }
+        }
+      }
+    },
+    "Show the tour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rundgang zeigen"
+          }
+        }
+      }
+    },
     "Albert Memorial, London (sample)" : {
       "extractionState" : "manual",
       "localizations" : {

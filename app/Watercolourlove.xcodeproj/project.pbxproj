@@ -38,6 +38,7 @@
 		572D198E14B414E3A3F14F58 /* sample-bielefeld.webp in Resources */ = {isa = PBXBuildFile; fileRef = D98918E4EC4A844E8959FDD1 /* sample-bielefeld.webp */; };
 		5C3D94CBAF7A590FBB28E6C6 /* ControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3EA37994A31884F250D9D6 /* ControlsView.swift */; };
 		5DD4EDC889E882E2864D3DFF /* Pictures.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE701FE116333FCDD0A7506E /* Pictures.swift */; };
+		6010D29D98A17BC891E20820 /* GuidedTour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E7D188664834A0CBC0E6BCD /* GuidedTour.swift */; };
 		61A2BEE300B72FBFB9791742 /* Closeup.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E6CD0556C99E15D0E31DA8 /* Closeup.swift */; };
 		6AC76D76F5672CBB4B3A31AF /* RestoreLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81B4614CD725D987759F45B /* RestoreLinkTests.swift */; };
 		7C68AFA4F1CBC599DC5D76DA /* PaintBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E35334A7F66EEBB8E3AE119 /* PaintBoxView.swift */; };
@@ -123,6 +124,7 @@
 		5FAD645524E6A23495326B7E /* sample-woman-white-wall.webp */ = {isa = PBXFileReference; path = "sample-woman-white-wall.webp"; sourceTree = "<group>"; };
 		613420ACE81E2F798B3D3B2E /* EntryEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryEditorView.swift; sourceTree = "<group>"; };
 		688048451E524CBAAC7E433A /* Mixing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mixing.swift; sourceTree = "<group>"; };
+		6E7D188664834A0CBC0E6BCD /* GuidedTour.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidedTour.swift; sourceTree = "<group>"; };
 		728722D8C8FBE2E918D8B747 /* LibrarySync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySync.swift; sourceTree = "<group>"; };
 		742BD345C948DE84F2EBEF06 /* LayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerTests.swift; sourceTree = "<group>"; };
 		76DF2A1B9A4772D7EAF9C324 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 				7D3D73F08E945C5A2A30550D /* ColourCard.swift */,
 				2A3EA37994A31884F250D9D6 /* ControlsView.swift */,
 				613420ACE81E2F798B3D3B2E /* EntryEditorView.swift */,
+				6E7D188664834A0CBC0E6BCD /* GuidedTour.swift */,
 				78B2C029D64DD44C0EC1A98F /* LayerViews.swift */,
 				3E35334A7F66EEBB8E3AE119 /* PaintBoxView.swift */,
 				8589FC2BAC28BEA5BA1BB18E /* PaintingView.swift */,
@@ -474,6 +477,7 @@
 				D6A20B5D2AF2D49BFF74F233 /* Details.swift in Sources */,
 				87CFD6C72C892BBEA6A5B909 /* EntryEditorView.swift in Sources */,
 				ECCB8D93CC4A514AB72CDA59 /* Geometric.swift in Sources */,
+				6010D29D98A17BC891E20820 /* GuidedTour.swift in Sources */,
 				C5A5CF806FF069FD6EBDD2AB /* LayerViews.swift in Sources */,
 				E8A029583A483531F59BA52E /* Layers.swift in Sources */,
 				A0941EF972E0C27574F8DB72 /* Library.swift in Sources */,

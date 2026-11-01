@@ -34,7 +34,7 @@ Was du auf dem Bild, in der Farbliste und in den Rezepten liest.
 |---|---|---|
 | Akzent | Accent | Schichten: eine kräftige Lasur auf kleinen Flächen, zuletzt gemalt, zuerst für eine Farbe, die die Schichten nicht treffen, dann für die dunklen Stellen. |
 | Alle Details | Full breakdown | Ziel und Mischung nebeneinander, die Farbe von Hand und alle Rezepte einer Farbe. |
-| Ausschnitt | Detail | Ein Teil des Bildes, als eigenes Bild analysiert. Pro. |
+| Ausschnitt | Detail | Ein Zoom auf einen Teil des Bildes: feinere Flächen in der Palette des ganzen Bildes. Pro. |
 | Auto | Auto | Die App wählt die Farben, die zum Bild passen, aus den Kästen mit **Für „Auto“ nutzen**. |
 | Deine Mischung | Your mix | Die Farbe, die das Rezept auf weißem Papier ergibt. |
 | Details | Details | Die Einstellung, ob die Mischungen feine Abstufungen im ganzen Bild geben (hoch) oder kleinen Flächen eines anderen Farbtons (niedrig). |

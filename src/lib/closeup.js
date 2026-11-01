@@ -1,4 +1,4 @@
-// Close-ups: a part of the picture chosen with the pointer, analysed as a picture of its own.
+// Close-ups: a part of the picture chosen with the pointer, seen at a finer scale in the same palette.
 
 // A drag shorter than this share of a side is a slip of the hand, not a choice.
 export const MIN_SIDE = 0.04

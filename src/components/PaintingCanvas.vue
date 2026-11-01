@@ -304,7 +304,7 @@ function drawGrid(el) {
 
 // The final wash of fine dark details from the AI's plan, over the mixes or the layers.
 function drawDetails(el) {
-  const details = analysis.aiActive && analysis.settings.details ? analysis.aiDetails : null
+  const details = analysis.aiActive && analysis.settings.details && analysis.closeupId == null ? analysis.aiDetails : null
   if (!details || details.key !== analysis.aiKey || analysis.settings.view === 'original') return
   if (details.width * SCALE !== el.width || details.height * SCALE !== el.height) return
   const [r, g, b] = hexToRgb(details.hex)
@@ -349,7 +349,7 @@ function drawSketch(el) {
     ctx.stroke()
   }
   // The fine dark details of an AI plan, filled in.
-  const details = analysis.aiDetails?.key === analysis.aiKey && analysis.aiDetails.width === sketch.width ? analysis.aiDetails : null
+  const details = analysis.closeupId == null && analysis.aiDetails?.key === analysis.aiKey && analysis.aiDetails.width === sketch.width ? analysis.aiDetails : null
   if (details) {
     const rgba = new Uint8ClampedArray(details.mask.length * 4)
     for (let p = 0; p < details.mask.length; p++) {

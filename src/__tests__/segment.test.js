@@ -81,3 +81,15 @@ describe('segment', () => {
     expect(regionCluster.length).toBe(4)
   })
 })
+
+describe('fixed colours', () => {
+  it('assigns the picture to the given colours and finds none of its own', () => {
+    const width = 40, height = 40
+    const rgba = new Uint8ClampedArray(width * height * 4)
+    for (let p = 0; p < width * height; p++) rgba.set(p % width < 20 ? [200, 30, 30, 255] : [30, 40, 200, 255], p * 4)
+    const fixed = [{ hex: '#ffff00', group: 0, level: 0 }, { hex: '#ff0000', group: 1, level: 0 }, { hex: '#0000ff', group: 2, level: 1 }]
+    const { clusters, regions } = segmentImage(rgba, width, height, { simplify: 0, fixed })
+    expect(clusters.map((c) => [c.group, c.level])).toEqual([[0, 0], [1, 0], [2, 1]])
+    expect(new Set(regions.map((r) => r.cluster))).toEqual(new Set([1, 2]))
+  })
+})

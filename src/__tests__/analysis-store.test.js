@@ -319,3 +319,75 @@ describe('base paints in the paint box', () => {
     expect(paints.boxes.find((b) => b.id === box.id).paintIds).toEqual([])
   })
 })
+
+describe('a close-up keeps the palette of the whole picture', () => {
+  // Stand-ins for the part of the photo the browser would cut: a detail with fewer colours.
+  const canvasOf = ({ rgba, width, height }) => ({ width, height, getContext: () => ({ drawImage() {}, getImageData: () => ({ data: rgba }) }) })
+  const part = picture(24, 16, 1)
+
+  async function openPart(rect = { x: 0, y: 0, w: 0.5, h: 0.5 }) {
+    analysis.closeups.push({ id: 'closeup-1', number: 1, rect, thumb: '' })
+    globalThis.document = { createElement: () => canvasOf(part) }
+    analysis.openCloseup('closeup-1')
+    await new Promise((resolve) => setTimeout(resolve))
+  }
+  const palette = () => JSON.stringify(analysis.entries.map((e) => [e.targetHex, e.recipes.map((r) => r.hex), e.chosen, e.label]))
+
+  beforeEach(async () => {
+    paints.setEnabled(stockIds(6))
+    analysis.image = { width: 24, height: 16 }
+    const done = analysis.analyse()
+    await answer()
+    await done
+  })
+
+  it('opening one adds finer areas and leaves the palette as it is', async () => {
+    const before = palette()
+    const enabled = [...paints.palette.paintIds]
+    const baseSeg = analysis.segmentation
+    await openPart()
+    expect(waiting()).toBe(1)
+    expect(FakeWorker.queue[0].fixed.length).toBeGreaterThan(0)
+    await answer()
+    expect(palette()).toBe(before)
+    expect(paints.palette.paintIds).toEqual(enabled)
+    expect(analysis.segmentation).not.toBe(baseSeg)
+    expect(analysis.regionEntry.every((e) => analysis.entries[e])).toBe(true)
+    expect(analysis.busy).toBe(false)
+  })
+
+  it('a colour change made in it is there on return, without a new analysis', async () => {
+    await openPart()
+    await answer()
+    analysis.setTarget(0, '#123456')
+    await analysis.showBase()
+    expect(waiting()).toBe(0)
+    expect(analysis.entries[0].targetHex).toBe('#123456')
+    expect(analysis.regionEntry.length).toBe(analysis.segmentation.regions.length)
+  })
+
+  it('a changed setting rebuilds the palette from the whole picture', async () => {
+    await openPart()
+    await answer()
+    analysis.settings.colours = 2
+    analysis.analyse()
+    expect(FakeWorker.queue[0].width).toBe(24)
+    expect(FakeWorker.queue[0].fixed).toBeUndefined()
+    await answer()
+    expect(analysis.mixCount).toBeLessThanOrEqual(2)
+    expect(waiting()).toBe(1) // and the close-up is coloured with the new palette
+    expect(FakeWorker.queue[0].fixed.length).toBeGreaterThan(0)
+    await answer()
+    expect(analysis.busy).toBe(false)
+  })
+
+  it('a changed paint box rebuilds the recipes and recolours the close-up', async () => {
+    await openPart()
+    await answer()
+    paints.setEnabled(stockIds(3))
+    analysis.recomputeAllRecipes()
+    expect(FakeWorker.queue.at(-1).fixed.length).toBeGreaterThan(0)
+    while (waiting()) await answer()
+    expect(analysis.regionEntry.every((e) => analysis.entries[e])).toBe(true)
+  })
+})

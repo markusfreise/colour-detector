@@ -161,6 +161,31 @@ enum Segmenter {
         return (points, counts, binOf)
     }
 
+    /// A colour of a settled palette, see `assignColours`.
+    struct FixedColour: Sendable {
+        var hex: String
+        var group: Int
+        var level: Int
+    }
+
+    /// Assigns the picture to colours that are already settled (a close-up in the palette of the
+    /// whole picture): every colour of the picture takes the closest of them. Nothing is found or changed.
+    static func assignColours(_ lab: [Float], count: Int, fixed: [FixedColour], lightnessWeight: Double = Segmenter.lightnessWeight) -> (labels: [Int32], clusters: [(group: Int, level: Int)]) {
+        let (points, _, binOf) = colourBins(lab, count: count)
+        let colours = fixed.map { ColorMath.oklab(hex: $0.hex) }
+        var closest = [Int32](repeating: 0, count: points.count / 3)
+        for i in closest.indices {
+            var least = Double.infinity
+            for (c, colour) in colours.enumerated() {
+                let dL = (Double(colour.x) - points[i * 3]) * lightnessWeight, da = Double(colour.y) - points[i * 3 + 1], db = Double(colour.z) - points[i * 3 + 2]
+                let d = dL * dL + da * da + db * db
+                if d < least { least = d; closest[i] = Int32(c) }
+            }
+        }
+        return (binOf.map { closest[Int($0)] }, fixed.map { (group: $0.group, level: $0.level) })
+    }
+
+
     /// Cluster the picture into `k` mixes, each painted in one or more washes.
     ///
     /// A watercolour mix with more or less water keeps the direction of its absorbance
@@ -608,12 +633,14 @@ enum Segmenter {
     ///     with it.
     ///   - geometric: areas as polygons with straight edges instead of their organic outline
     ///   - anchors: hex colours that are the mixes (then `colours` is not used)
+    ///   - fixed: the colours of a settled palette: the picture is only assigned to them, in this
+    ///     order (then neither `colours` nor `anchors` are used)
     ///   - focus: boxes in which the areas stay as fine as at Simplify 0 and details are kept more
     ///     readily, whatever `simplify` is
     ///   - maxWashes, washStep: washes a mix is split into at most, and the factor of strength (log)
     ///     between two of them: a grey picture is one mix, so these set the number of its values
     ///   - variety: the Details slider (see `varietyWeights`), unless areaPower / lightnessWeight are given
-    static func segment(rgba: [UInt8], width: Int, height: Int, colours: Int = 12, simplify: Int = 4, geometric: Bool = false, anchors given: [String]? = nil, focus: [Details.Box]? = nil, seed: UInt32 = 7, variety: Int = 5, areaPower: Double? = nil, maxWashes: Int = Segmenter.maxWashes, washStep: Double = Segmenter.washStep, lightnessWeight: Double? = nil) -> Segmentation {
+    static func segment(rgba: [UInt8], width: Int, height: Int, colours: Int = 12, simplify: Int = 4, geometric: Bool = false, anchors given: [String]? = nil, fixed: [FixedColour]? = nil, focus: [Details.Box]? = nil, seed: UInt32 = 7, variety: Int = 5, areaPower: Double? = nil, maxWashes: Int = Segmenter.maxWashes, washStep: Double = Segmenter.washStep, lightnessWeight: Double? = nil) -> Segmentation {
         let count = width * height
         let weights = varietyWeights(variety)
         let areaPower = areaPower ?? weights.areaPower
@@ -629,9 +656,15 @@ enum Segmenter {
             let restless = Smooth.settlePatches(original, width, height, &patches)
             lab = Smooth.patchColours(original, width, height, patches, blend: patchBlend * calm, restless: restless)
         }
-        let (raw, found) = clusterWashes(lab, count: count, k: max(1, min(colours, count)), seed: seed, areaPower: areaPower, maxWashes: maxWashes, washStep: washStep, lightnessWeight: lightnessWeight,
+        let raw: [Int32]
+        let found: [(group: Int, level: Int)]
+        if let fixed, !fixed.isEmpty {
+            (raw, found) = assignColours(lab, count: count, fixed: fixed, lightnessWeight: lightnessWeight)
+        } else {
+            (raw, found) = clusterWashes(lab, count: count, k: max(1, min(colours, count)), seed: seed, areaPower: areaPower, maxWashes: maxWashes, washStep: washStep, lightnessWeight: lightnessWeight,
                                          // Given colours (hex) as the mixes, instead of finding them.
                                          anchors: given?.isEmpty == false ? given!.map { ColorMath.oklab(hex: $0) } : nil)
+        }
         let k = found.count
         let whereMask = focus?.isEmpty == false ? Details.boxMask(focus!, width, height) : nil
         let calmed = calmAreas(raw, lab, width, height, k: k, simplify: simplify, where: whereMask, photo: original, kindOf: found.map { Int32($0.group) })

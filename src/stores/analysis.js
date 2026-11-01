@@ -57,6 +57,10 @@ let worker = null
 let jobCounter = 0
 // Every analysis takes a number; only the latest one may write its result or end `busy`.
 let analysisToken = 0
+// The palette belongs to the whole picture: while a close-up is on screen, what the palette was
+// built from waits in `base`, and `segmentation` and `regionEntry` are the close-up's.
+const paletteOf = (state) => state.base ?? state
+
 // Layer mode on Auto: the base paints are proposed once per picture and then kept, so that moving
 // an unrelated slider does not swap the paints under the painter's hands.
 let pictureSerial = 0
@@ -180,6 +184,7 @@ export const useAnalysisStore = defineStore('analysis', {
     order: [], // entry indices in the order of their labels (mix by mix, lightest wash first)
     baseEntries: 0, // entries that came from the analysis (detached areas are appended after them)
     regionEntry: null, // Int32Array region -> entry index (raw)
+    clusterEntry: null, // Map cluster -> entry index (raw), what a close-up is coloured with
     mixRecipes: {}, // mix (group) -> its recipes, fitted to the largest wash of the mix (raw)
     renderVersion: 0, // bumped whenever the canvas needs a redraw
     selectedEntry: null,
@@ -202,10 +207,11 @@ export const useAnalysisStore = defineStore('analysis', {
     blockingSolo: null, // the tone shown on its own in the Blocking view, or null
     aiBusy: false,
     aiError: null,
-    pictureStamp: 0, // counts the pictures opened
-    closeups: [], // [{ id, number, rect, thumb, edits }] parts of the base picture, each analysed as its own picture
+    pictureStamp: 0, // counts the pictures shown, close-ups too
+    planStamp: 0, // the picture the palette and an AI plan belong to: a close-up does not change it
+    closeups: [], // [{ id, number, rect, thumb }] parts of the base picture, in its colours at a finer scale
     closeupId: null, // the close-up on screen, null for the base picture
-    base: null, // { image, pixels, name, savedId, edits } of the base picture while a close-up is on screen (raw)
+    base: null, // { image, pixels, name, savedId, segmentation, regionEntry, clusterEntry } of the base picture while a close-up is on screen (raw)
     pendingEdits: null, // { key, edits } of a picture opened in layer mode, for its first mix analysis
     busy: false,
     error: null,
@@ -217,7 +223,7 @@ export const useAnalysisStore = defineStore('analysis', {
     inspectedColour: (state) => (state.inspected == null ? null : state.entries[state.inspected.entry] ?? null),
     layerMode: (state) => state.settings.mode === 'layer',
     /** What an AI plan belongs to: the picture as it is analysed. */
-    aiKey: (state) => [state.pictureStamp, state.settings.saturation, state.settings.contrast, state.settings.values ? 'values' : ''].join('/'),
+    aiKey: (state) => [state.planStamp, state.settings.saturation, state.settings.contrast, state.settings.values ? 'values' : ''].join('/'),
     // Monochrome (setting `values`) belongs to mix mode: layers are fitted to colours. It is a Pro
     // feature, so a picture saved with it opens in colour without Pro.
     valueMode: (state) => !!state.settings.values && state.settings.mode !== 'layer' && useProStore().can('monochrome'),
@@ -388,7 +394,7 @@ export const useAnalysisStore = defineStore('analysis', {
     },
     /** Whether the mixes belong to the picture and the settings as they are now. */
     mixCurrent() {
-      return !!this.segmentation && mixKey === mixKeyOf(this.settings, this.aiActive?.mixes.length ? this.aiPlan.serial : 0)
+      return !!paletteOf(this).segmentation && mixKey === mixKeyOf(this.settings, this.aiActive?.mixes.length ? this.aiPlan.serial : 0)
     },
     /** Colour changes worth saving. Detached areas are not kept: they depend on the exact area ids. */
     exportEdits() {
@@ -432,8 +438,9 @@ export const useAnalysisStore = defineStore('analysis', {
     },
 
     /**
-     * A part of the base picture as a picture of its own: cut from the photo at its full size, so
-     * the analysis finds what the whole picture has no room for. `rect` is in shares of the picture.
+     * A closer look at a part of the base picture: cut from the photo at its full size, so its
+     * areas are finer, and painted in the palette of the whole picture, which stays as it is.
+     * `rect` is in shares of the picture.
      */
     async addCloseup(rect) {
       if (!this.image || !useProStore().require('closeups', 'zoom in on a part of the picture')) return
@@ -444,24 +451,17 @@ export const useAnalysisStore = defineStore('analysis', {
       thumb.height = cut.height
       thumb.getContext('2d').drawImage(source, cut.sx, cut.sy, cut.sw, cut.sh, 0, 0, cut.width, cut.height)
       const number = this.closeups.reduce((most, c) => Math.max(most, c.number), 0) + 1
-      const closeup = { id: `closeup-${number}`, number, rect, thumb: thumb.toDataURL('image/jpeg', 0.8), edits: [] }
+      const closeup = { id: `closeup-${number}`, number, rect, thumb: thumb.toDataURL('image/jpeg', 0.8) }
       this.closeups.push(closeup)
       await this.openCloseup(closeup.id)
-    },
-    // The colour changes of the picture on screen go with it, so they are there again on return.
-    keepEdits() {
-      const edits = this.exportEdits()
-      const closeup = this.closeups.find((c) => c.id === this.closeupId)
-      if (closeup) closeup.edits = edits
-      else if (this.base) this.base.edits = edits
     },
     async openCloseup(id) {
       const closeup = this.closeups.find((c) => c.id === id)
       if (!closeup || id === this.closeupId || !this.image) return
       if (this.closeupId == null) {
-        this.base = markRaw({ image: this.image, pixels: this.pixels, name: this.imageName, savedId: this.savedId, edits: [] })
+        const { image, pixels, imageName: name, savedId, segmentation, regionEntry, clusterEntry } = this
+        this.base = markRaw({ image, pixels, name, savedId, segmentation, regionEntry, clusterEntry })
       }
-      this.keepEdits()
       const source = this.base.image
       const cut = closeupSize(source.naturalWidth ?? source.width, source.naturalHeight ?? source.height, closeup.rect, WORK_PIXELS)
       const canvas = document.createElement('canvas')
@@ -475,11 +475,13 @@ export const useAnalysisStore = defineStore('analysis', {
       this.image = markRaw(canvas)
       this.pixels = markRaw({ rgba: ctx.getImageData(0, 0, cut.width, cut.height).data, width: cut.width, height: cut.height })
       this.imageName = t('{name} – detail {n}', { name: this.base.name, n: closeup.number })
-      await this.showPicture(closeup.edits)
+      this.newView()
+      // Only what is missing is worked out: in mix mode with a palette at hand, that is the areas.
+      if (this.layerMode || !this.mixCurrent()) await this.analyse()
+      else await this.assignCloseup()
     },
     async showBase() {
       if (this.closeupId == null || !this.base) return
-      this.keepEdits()
       const base = this.base
       this.closeupId = null
       this.base = null
@@ -487,20 +489,61 @@ export const useAnalysisStore = defineStore('analysis', {
       this.pixels = base.pixels
       this.imageName = base.name
       this.savedId = base.savedId
-      await this.showPicture(base.edits)
+      this.segmentation = base.segmentation
+      this.regionEntry = base.regionEntry
+      this.clusterEntry = base.clusterEntry
+      this.newView()
+      // What was still being worked out for the close-up.
+      analysisToken++
+      this.busy = false
+      if (this.layerMode || !this.mixCurrent()) return this.analyse()
+      this.adjustPicture()
+      if (this.aiDetails?.key !== this.aiKey) this.findDetails()
+      this.renderVersion++
     },
-    // Analyses the picture that was just put in place and brings its colour changes back.
-    async showPicture(edits) {
+    /** Another view of the same picture: the palette stays, what was picked on the view before goes. */
+    newView() {
       this.selectedEntry = null
       this.selectedRegion = null
       this.inspected = null
-      this.forgetPicture()
-      this.pendingEdits = { key: mixKeyOf(this.settings, 0), edits }
-      await this.analyse()
+      this.blockingSolo = null
+      this.pictureStamp = ++pictureSerial
     },
     async removeCloseup(id) {
       if (id === this.closeupId) await this.showBase()
       this.closeups = this.closeups.filter((c) => c.id !== id)
+    },
+
+    /** The areas of the close-up on screen, each in the colour of the palette closest to it. */
+    async assignCloseup() {
+      if (!this.base?.segmentation || !this.base.clusterEntry) return
+      const token = ++analysisToken
+      const { segmentation, clusterEntry } = this.base
+      const colours = segmentation.clusters.filter((c) => clusterEntry.has(c.index))
+      const { rgba, width, height } = this.adjustPicture()
+      this.busy = true
+      this.error = null
+      try {
+        const { result } = await runSegmentation({
+          rgba: rgba.slice(),
+          width,
+          height,
+          simplify: this.settings.simplify,
+          variety: this.valueMode ? undefined : varietyOf(this.settings.details),
+          geometric: this.settings.geometric,
+          fixed: colours.map(({ hex, group, level }) => ({ hex, group, level })),
+        })
+        if (token !== analysisToken || this.layerMode) return // superseded
+        this.segmentation = markRaw(result)
+        this.regionEntry = markRaw(Int32Array.from(result.regions, (r) => clusterEntry.get(colours[r.cluster].index)))
+        this.selectedRegion = null
+        if (this.inspected?.region != null) this.inspected = null
+        this.renderVersion++
+      } catch (e) {
+        if (token === analysisToken) this.error = t('Analysis failed: {reason}', { reason: t(e.message) })
+      } finally {
+        if (token === analysisToken) this.busy = false
+      }
     },
 
     /**
@@ -535,8 +578,7 @@ export const useAnalysisStore = defineStore('analysis', {
      * the current mode keeps its result on screen until the new one is there.
      */
     forgetPicture() {
-      pictureSerial++
-      this.pictureStamp = pictureSerial
+      this.pictureStamp = this.planStamp = ++pictureSerial
       this.blockingSolo = null
       mixKey = null
       this.pendingEdits = null
@@ -556,18 +598,30 @@ export const useAnalysisStore = defineStore('analysis', {
       }
     },
 
+    /** The picture on screen with saturation and contrast applied, kept as `adjusted`. */
+    adjustPicture() {
+      const { width, height } = this.pixels
+      const rgba = this.adjustedRgba(this.pixels)
+      this.adjusted = rgba === this.pixels.rgba ? null : markRaw({ rgba, width, height })
+      return { rgba, width, height }
+    },
+    adjustedRgba({ rgba }) {
+      const { saturation, contrast } = this.settings
+      // In value mode the picture is grey, whatever the saturation is set to.
+      return adjustImage(rgba, { saturation: this.valueMode ? 0 : saturation / 100, contrast: contrast / 100 })
+    },
+
     async analyse() {
       if (!this.pixels) return
       const token = ++analysisToken
       this.busy = true
       this.error = null
-      const { width, height } = this.pixels
-      const { saturation, contrast } = this.settings
-      // In value mode the picture is grey, whatever the saturation is set to.
-      const rgba = adjustImage(this.pixels.rgba, { saturation: this.valueMode ? 0 : saturation / 100, contrast: contrast / 100 })
-      this.adjusted = rgba === this.pixels.rgba ? null : markRaw({ rgba, width, height })
-      if (this.aiDetails?.key !== this.aiKey) this.findDetails()
-      if (this.layerMode) return this.analyseLayers(rgba, width, height, token)
+      const shown = this.adjustPicture()
+      if (!this.base && this.aiDetails?.key !== this.aiKey) this.findDetails()
+      if (this.layerMode) return this.analyseLayers(shown.rgba, shown.width, shown.height, token)
+      // The palette comes from the whole picture, also when a close-up is on screen.
+      const { width, height } = this.base?.pixels ?? shown
+      const rgba = this.base ? this.adjustedRgba(this.base.pixels) : shown.rgba
       // With an AI plan its colours are the mixes; the analysis only assigns the picture to them.
       const plan = this.aiActive
       // The colours of the details are mixes too, so that a small thing keeps its colour.
@@ -619,13 +673,14 @@ export const useAnalysisStore = defineStore('analysis', {
       const paints = usePaintsStore()
       const palette = paints.palette
       const { layerCount, maxCoats, layerAccents } = this.settings
-      const proposalKey = [pictureSerial, layerCount, maxCoats, layerAccents].join('/')
+      const proposalKey = [this.planStamp, layerCount, maxCoats, layerAccents].join('/')
       // Propose only when there is nothing to keep: a new picture, another number of layers or
       // coats or accents (the best paints depend on those), or Auto pressed.
       // With an AI plan its paints are the layers, in its order; the paint box is left alone.
       const chosen = (this.aiActive?.layers ?? []).filter((id) => paints.byId[id])
-      const propose = !chosen.length && palette.layerAuto && !(layerProposal === proposalKey && palette.layerIds.length)
-      const pool = (chosen.length ? chosen.map((id) => paints.byId[id]) : propose ? paints.autoCandidates : paints.layerPaints).map(({ id, hex }) => ({ id, hex }))
+      let propose = !chosen.length && palette.layerAuto && !(layerProposal === proposalKey && palette.layerIds.length)
+      const poolOf = () => (chosen.length ? chosen.map((id) => paints.byId[id]) : propose ? paints.autoCandidates : paints.layerPaints).map(({ id, hex }) => ({ id, hex }))
+      const pool = poolOf()
       this.layerStep = null
       this.layerPoint = null
       try {
@@ -635,21 +690,31 @@ export const useAnalysisStore = defineStore('analysis', {
           this.renderVersion++
           return
         }
-        const { result } = await runSegmentation({
-          kind: 'layers',
-          rgba: rgba.slice(),
-          width,
-          height,
-          paints: pool,
-          // Auto: the number of wash layers (accent paints come on top). By hand: every chosen paint may be one.
-          count: !chosen.length && palette.layerAuto ? this.settings.layerCount : undefined,
-          // A plain copy: the worker cannot be sent the reactive array of the store.
-          paintIds: chosen.length ? chosen : propose ? undefined : [...palette.layerIds],
-          maxCoats: this.settings.maxCoats,
-          simplify: this.settings.layerSimplify,
-          geometric: this.settings.geometric,
-          accents: this.settings.layerAccents,
-        })
+        const plan = (picture, rgbaOf, paintPool) =>
+          runSegmentation({
+            kind: 'layers',
+            rgba: rgbaOf,
+            width: picture.width,
+            height: picture.height,
+            paints: paintPool,
+            // Auto: the number of wash layers (accent paints come on top). By hand: every chosen paint may be one.
+            count: !chosen.length && palette.layerAuto ? this.settings.layerCount : undefined,
+            // A plain copy: the worker cannot be sent the reactive array of the store.
+            paintIds: chosen.length ? chosen : propose ? undefined : [...palette.layerIds],
+            maxCoats: this.settings.maxCoats,
+            simplify: this.settings.layerSimplify,
+            geometric: this.settings.geometric,
+            accents: this.settings.layerAccents,
+          })
+        // The paints are chosen from the whole picture; a close-up is only fitted with them.
+        if (propose && this.base) {
+          const { result } = await plan(this.base.pixels, this.adjustedRgba(this.base.pixels).slice(), pool)
+          if (token !== analysisToken || !this.layerMode) return
+          paints.setLayerPaints(result.paintIds, true, palette)
+          layerProposal = proposalKey
+          propose = false
+        }
+        const { result } = await plan({ width, height }, rgba.slice(), propose || !this.base ? pool : poolOf())
         if (token !== analysisToken || !this.layerMode) return // superseded
         // The proposal goes to the palette it was made for, also when another picture was opened meanwhile.
         if (propose) {
@@ -737,10 +802,11 @@ export const useAnalysisStore = defineStore('analysis', {
     },
 
     applySegmentation(result) {
-      this.segmentation = markRaw(result)
+      const whole = paletteOf(this)
+      whole.segmentation = markRaw(result)
+      whole.regionEntry = null
       this.entries = []
       this.baseEntries = 0
-      this.regionEntry = null
       this.selectedEntry = null
       this.selectedRegion = null
       this.inspected = null
@@ -768,7 +834,8 @@ export const useAnalysisStore = defineStore('analysis', {
       this.aiBusy = true
       this.aiError = null
       try {
-        const source = this.adjusted ?? this.pixels
+        // A plan is for the whole picture, like the palette.
+        const source = this.base ? { ...this.base.pixels, rgba: this.adjustedRgba(this.base.pixels) } : this.adjusted ?? this.pixels
         const image = smallCopy(source)
         const size = { width: image.width, height: image.height }
         const request = aiRequest({
@@ -805,7 +872,8 @@ export const useAnalysisStore = defineStore('analysis', {
       const plan = this.aiPlan?.key === this.aiKey ? this.aiPlan.plan : null
       const source = this.adjusted ?? this.pixels
       this.aiDetails = null
-      if (!plan?.details.length || !source) return
+      // The boxes of a plan lie in the whole picture.
+      if (!plan?.details.length || !source || this.base) return
       const { width, height } = source
       const lab = toOklabPixels(source.rgba, width * height)
       const wash = detailWash(lab, width, height, boxMask(plan.details.map((d) => d.box), width, height))
@@ -839,7 +907,7 @@ export const useAnalysisStore = defineStore('analysis', {
       const key = this.sketchKey
       if (!source || this.sketch?.key === key || sketchRunning === key) return
       sketchRunning = key
-      const plan = this.aiPlan?.key === this.aiKey ? this.aiPlan.plan : null
+      const plan = this.aiPlan?.key === this.aiKey && !this.base ? this.aiPlan.plan : null
       try {
         const { result } = await runSegmentation({
           kind: 'sketch',
@@ -881,6 +949,7 @@ export const useAnalysisStore = defineStore('analysis', {
 
     /** Notes how close the picture is to the photo now, with or without the AI's choices. */
     noteMatch() {
+      if (this.base) return // the match is that of the whole picture
       const key = this.aiKey
       let value = null
       if (this.layerMode) value = this.layers?.deltaE.mean ?? null
@@ -914,10 +983,11 @@ export const useAnalysisStore = defineStore('analysis', {
     /** While the paint box is on Auto, pick the paints that suit the colours of this picture. */
     autoPaints(force = false) {
       const paints = usePaintsStore()
-      if (!this.segmentation || !(force || paints.palette.auto)) return
+      const { segmentation } = paletteOf(this)
+      if (!segmentation || !(force || paints.palette.auto)) return
       if (!force && this.aiPaints) return // the AI chose them
       // Every wash is a target: a wash its mix cannot reach needs paints for a mix of its own.
-      const targets = this.segmentation.clusters.filter((c) => c.pixelCount).map((c) => ({ hex: c.hex, weight: c.pixelCount }))
+      const targets = segmentation.clusters.filter((c) => c.pixelCount).map((c) => ({ hex: c.hex, weight: c.pixelCount }))
       paints.setEnabled(proposePaints(targets, paints.autoCandidates, { maxPaints: this.settings.maxPaints, values: this.valueMode }), true)
     },
 
@@ -932,14 +1002,15 @@ export const useAnalysisStore = defineStore('analysis', {
     recomputeAllRecipes() {
       // Layer mode has no recipes: a changed paint box means the layers are planned again.
       if (this.layerMode) return this.analyse()
-      const seg = this.segmentation
+      const whole = paletteOf(this)
+      const seg = whole.segmentation
       if (!seg) return
       // With an AI plan its paints are mixed with; the paint box is left alone.
       const paints = this.aiPaints ?? usePaintsStore().enabled
       const byId = usePaintsStore().byId
       const total = seg.width * seg.height
       const old = this.entries
-      const oldRegionEntry = this.regionEntry
+      const oldRegionEntry = whole.regionEntry
 
       const values = this.valueMode
       const washOf = (recipe, hex) => (recipe.paints.length ? washRecipe(recipe, hex, byId, { values }) : recipe)
@@ -1041,7 +1112,8 @@ export const useAnalysisStore = defineStore('analysis', {
       this.mixRecipes = markRaw(mixRecipes)
       this.entries = entries
       this.baseEntries = baseEntries
-      this.regionEntry = markRaw(regionEntry)
+      whole.regionEntry = markRaw(regionEntry)
+      whole.clusterEntry = markRaw(clusterToEntry)
       this.entries.forEach((entry, i) => {
         this.recomputeRecipes(i, false)
         const wanted = entry.overridden ? entry.kept : pickedPaints[entry.group]
@@ -1052,6 +1124,12 @@ export const useAnalysisStore = defineStore('analysis', {
       if (this.inspected && !this.entries[this.inspected.entry]) this.inspected = null
       this.relabel()
       this.renderVersion++
+      // A new palette: the close-up on screen takes its colours from it. Until then its areas
+      // stay drawn, and must not point past the end of the new list.
+      if (this.base) {
+        if (this.regionEntry) this.regionEntry = markRaw(this.regionEntry.map((e) => Math.max(0, Math.min(e, entries.length - 1))))
+        this.assignCloseup()
+      }
     },
 
     /** Recipes of one colour: washes of its mix, or recipes of its own once its colour was changed by hand. */

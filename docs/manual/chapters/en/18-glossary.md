@@ -38,7 +38,7 @@ What you read on the picture, in the colour list and in the recipes.
 | Coat | Lasur (Durchgang) | Layer mode: one pass of a layer's wash. An area can get the same wash once, twice or three times. |
 | Colour area | Farbfläche | A shape of the picture that gets one wash of one mix. |
 | Colours | Farben | The setting for the number of mixes, and the list of them. |
-| Detail | Ausschnitt | A part of the picture analysed as a picture of its own. Pro. |
+| Detail | Ausschnitt | A zoom on a part of the picture: finer areas in the palette of the whole picture. Pro. |
 | Details | Details | The setting that decides whether the mixes go to fine steps across the picture (high) or to small areas of another hue (low). |
 | Full breakdown | Alle Details | Target and mix side by side, the colour by hand and every recipe of a colour. |
 | Geometric | Geometrisch | Areas as polygons with straight edges instead of their organic outline. |

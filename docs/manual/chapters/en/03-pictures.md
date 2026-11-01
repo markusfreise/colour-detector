@@ -56,13 +56,13 @@ Every save also downloads the picture as a file, for example `Llyn-Idwal.wcl`. I
 
 ## Looking closer: details of the picture
 
-Some pictures have one part that deserves more attention than the rest: a face in a landscape, the window of a house, a boat on a lake. The **Detail** tool lets you treat that part as a picture of its own.
+Some pictures have one part that deserves more attention than the rest: a face in a landscape, the window of a house, a boat on a lake. The **Detail** tool zooms in on that part.
 
-Press **Detail** among the tools of the picture and drag a frame over the part you want. The app cuts that part out of the original photo at full resolution, enlarges a small part up to four times, and analyses it with its own areas and its own mixes. Painted in a separate study, or as a guide for the most important passage of the large painting, this gives you far more precise information than the overall plan.
+Press **Detail** among the tools of the picture and drag a frame over the part you want. The app cuts that part out of the original photo at full resolution, enlarges a small part up to four times, and draws it with finer areas. The palette stays that of the whole picture: the same mixes, numbers and recipes, so a detail never asks for a mix you have not prepared. As a guide for the most important passage of the painting, this shows you far more precisely where each colour goes than the overall plan.
 
-![A detail of the sample photo, analysed as a picture of its own](shot:closeup)
+![A detail of the sample photo, with finer areas in the palette of the whole picture](shot:closeup)
 
-Every detail you make stays as a small picture in a strip under the main picture. Click one to go back to it; the small cross on it removes it. **Back** returns to the whole picture. Colour changes you make in the whole picture and in each detail are kept while you switch between them.
+Every detail you make stays as a small picture in a strip under the main picture. Click one to go back to it; the small cross on it removes it. **Back** returns to the whole picture. Colour changes belong to the palette, so they count for the whole picture and every detail. If you change a setting or the paints while a detail is on screen, the palette is worked out again from the whole picture and the detail follows it.
 
 > **Note:** Details are a Pro feature. They are not yet saved with a picture in the collection: when you open a saved picture, make the details again.
 

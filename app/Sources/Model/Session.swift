@@ -421,12 +421,15 @@ final class Session {
     @ObservationIgnored private var blockingRunning: String?
     /// The tones at the size of the drawn picture, kept per blocking.
     @ObservationIgnored private var blockingAtPicture: (key: String, toneAt: [Int32])?
-    /// Parts of the base picture, each analysed as a picture of its own.
+    /// Parts of the base picture, in its palette at a finer scale.
     private(set) var closeups: [Closeup] = []
     /// The close-up on screen, nil for the base picture.
     private(set) var closeupID: Int?
-    /// The base picture while a close-up is on screen.
-    @ObservationIgnored private var base: (image: CGImage, pixels: (rgba: [UInt8], width: Int, height: Int), name: String, savedID: String?, edits: [EntryEdit])?
+    /// The base picture while a close-up is on screen. The palette belongs to it: `segmentation`
+    /// and `regionEntry` are then the close-up's, and what the palette was built from waits here.
+    @ObservationIgnored private var base: (image: CGImage, pixels: (rgba: [UInt8], width: Int, height: Int), name: String, savedID: String?, segmentation: Segmentation?, regionEntry: [Int], clusterEntry: [Int: Int])?
+    /// Cluster of the whole picture -> entry, what a close-up is coloured with.
+    @ObservationIgnored private var clusterEntry = [Int: Int]()
 
     // Layer mode (glazing): the picture as coats of a few base paints.
     /// The plan; nil until analysed or without base paints.
@@ -563,12 +566,11 @@ final class Session {
         /// The part of the base picture, in shares of it.
         let rect: CGRect
         let thumb: CGImage
-        /// Colour changes made while it was on screen.
-        var edits: [EntryEdit] = []
     }
 
-    /// A part of the base picture as a picture of its own, cut from the photo as it is kept, so the
-    /// analysis finds what the whole picture has no room for. `rect` is in shares of the picture.
+    /// A closer look at a part of the base picture: cut from the photo as it is kept, so its areas
+    /// are finer, and painted in the palette of the whole picture, which stays as it is. `rect` is
+    /// in shares of the picture.
     func addCloseup(_ rect: CGRect) {
         guard let source = base?.image ?? image else { return }
         let cut = Closeups.size(sourceWidth: source.width, sourceHeight: source.height, rect: rect, workPixels: 160 * 160)
@@ -581,27 +583,42 @@ final class Session {
 
     func openCloseup(_ id: Int) {
         guard let closeup = closeups.first(where: { $0.id == id }), id != closeupID, let image, let pixels else { return }
-        if closeupID == nil { base = (image, pixels, imageName, savedID, []) }
-        keepEdits()
-        guard let base else { return }
-        let source = base.image
+        let whole = base ?? (image, pixels, imageName, savedID, segmentation, regionEntry, clusterEntry)
+        let source = whole.image
         let cut = Closeups.size(sourceWidth: source.width, sourceHeight: source.height, rect: closeup.rect, workPixels: Self.workPixels)
         guard let part = source.cropping(to: CGRect(x: cut.sx, y: cut.sy, width: cut.sw, height: cut.sh)),
               let rgba = Pictures.pixels(of: part, width: cut.width, height: cut.height) else {
             error = L("Could not cut out this part of the picture.")
             return
         }
+        base = whole
         framing = false
         closeupID = id
-        show(image: part, pixels: (rgba, cut.width, cut.height), name: L("%@ – detail %lld", base.name, id), savedID: nil, edits: closeup.edits)
+        self.image = part
+        self.pixels = (rgba, cut.width, cut.height)
+        imageName = L("%@ – detail %lld", whole.name, id)
+        savedID = nil
+        newView()
+        // Only what is missing is worked out: in mix mode with a palette at hand, that is the areas.
+        if layerMode || !mixCurrent { analyse() } else { assignCloseup() }
     }
 
     func showBase() {
         guard closeupID != nil, let base else { return }
-        keepEdits()
         closeupID = nil
         self.base = nil
-        show(image: base.image, pixels: base.pixels, name: base.name, savedID: base.savedID, edits: base.edits)
+        image = base.image
+        pixels = base.pixels
+        imageName = base.name
+        savedID = base.savedID
+        segmentation = base.segmentation
+        regionEntry = base.regionEntry
+        clusterEntry = base.clusterEntry
+        newView()
+        // What was still being worked out for the close-up.
+        analysisRun += 1
+        busy = false
+        if layerMode || !mixCurrent { analyse() } else { render() }
     }
 
     func removeCloseup(_ id: Int) {
@@ -609,13 +626,39 @@ final class Session {
         closeups.removeAll { $0.id == id }
     }
 
-    /// The colour changes of the picture on screen go with it, so they are there again on return.
-    private func keepEdits() {
-        let edits = exportEdits()
-        if let index = closeups.firstIndex(where: { $0.id == closeupID }) {
-            closeups[index].edits = edits
-        } else {
-            base?.edits = edits
+    /// Another view of the same picture: the palette stays, what was picked on the view before goes.
+    private func newView() {
+        originalPixels = nil
+        blockingSolo = nil
+        selectedEntry = nil
+        selectedRegion = nil
+        inspectedEntry = nil
+    }
+
+    /// The areas of the close-up on screen, each in the colour of the palette closest to it.
+    private func assignCloseup() {
+        guard let whole = base, let seg = whole.segmentation, !whole.clusterEntry.isEmpty, let pixels, !layerMode else { return }
+        analysisRun += 1
+        let run = analysisRun
+        let colours = seg.clusters.filter { whole.clusterEntry[$0.index] != nil }
+        let fixed = colours.map { Segmenter.FixedColour(hex: $0.hex, group: $0.group, level: $0.level) }
+        let simplify = settings.simplify + Segmenter.simplifyZero
+        let geometric = settings.geometric
+        let variety = settings.variety
+        let saturation = analysisSaturation
+        let contrast = Double(settings.contrast) / 100
+        busy = true
+        Task {
+            let result = await Task.detached(priority: .userInitiated) {
+                let adjusted = ColorMath.adjust(rgba: pixels.rgba, saturation: saturation, contrast: contrast)
+                return Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, simplify: simplify, geometric: geometric, fixed: fixed, variety: variety)
+            }.value
+            guard run == analysisRun, base != nil, !layerMode else { return } // superseded
+            segmentation = result
+            regionEntry = result.regions.map { whole.clusterEntry[colours[$0.cluster].index] ?? 0 }
+            selectedRegion = nil
+            busy = false
+            render()
         }
     }
 
@@ -623,7 +666,8 @@ final class Session {
 
     /// Finds the colour areas again, e.g. after the number of colours changed.
     func analyse(edits: [EntryEdit] = []) {
-        guard let pixels else { return }
+        // The palette comes from the whole picture, also when a close-up is on screen.
+        guard let pixels = base?.pixels ?? pixels else { return }
         if layerMode {
             if !edits.isEmpty { pendingEdits = (pictureSerial, edits) }
             analyseLayers()
@@ -659,11 +703,16 @@ final class Session {
             }.value
             guard run == analysisRun else { return } // a newer analysis superseded this one
             mixKey = key
-            segmentation = result
+            if base != nil {
+                base?.segmentation = result
+                base?.regionEntry = []
+            } else {
+                segmentation = result
+                regionEntry = []
+            }
             entries = []
             order = []
             baseEntries = 0
-            regionEntry = []
             selectedEntry = nil
             selectedRegion = nil
             inspectedEntry = nil
@@ -674,6 +723,9 @@ final class Session {
     // MARK: Layer mode
 
     var layerMode: Bool { settings.mode == .layer }
+
+    /// Whether the mixes belong to the picture and the settings as they are now.
+    private var mixCurrent: Bool { (base?.segmentation ?? segmentation) != nil && mixKey == mixKeyNow }
 
     private var mixKeyNow: String {
         "\(pictureSerial)/\(settings.colours)/\(settings.details)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)/\(settings.geometric)/\(valueMode)"
@@ -692,6 +744,8 @@ final class Session {
         // Propose only when there is nothing to keep: a new picture, another number of layers,
         // coats or accents (the best paints depend on those), or Auto pressed.
         let propose = chosen.layerAuto && !(layerProposal == proposalKey && !chosen.layerIDs.isEmpty)
+        // The paints are chosen from the whole picture; a close-up is only fitted with them.
+        let whole = propose ? base?.pixels : nil
         let pool = (propose ? library.autoCandidates : library.layerPaints).map(\.mixPaint)
         let paintIDs = propose ? nil : chosen.layerIDs
         layerStep = nil
@@ -707,6 +761,13 @@ final class Session {
         Task {
             let (plan, source) = await Task.detached(priority: .userInitiated) {
                 let adjusted = ColorMath.adjust(rgba: pixels.rgba, saturation: Double(s.saturation) / 100, contrast: Double(s.contrast) / 100)
+                let paintIDs = whole.map { whole in
+                    Layers.layerImage(
+                        rgba: ColorMath.adjust(rgba: whole.rgba, saturation: Double(s.saturation) / 100, contrast: Double(s.contrast) / 100),
+                        width: whole.width, height: whole.height, paints: pool, count: chosen.layerAuto ? s.layerCount : nil,
+                        paintIDs: paintIDs, maxCoats: s.maxCoats, simplify: s.layerSimplify, accents: s.layerAccents, geometric: s.geometric
+                    ).paintIDs
+                } ?? paintIDs
                 let plan = Layers.layerImage(
                     rgba: adjusted, width: pixels.width, height: pixels.height, paints: pool,
                     // Auto: the number of wash layers (accent paints come on top). By hand: every chosen paint may be one.
@@ -753,7 +814,7 @@ final class Session {
         inspectedEntry = nil
         layerStep = nil
         layerPoint = nil
-        if mode == .mix, segmentation != nil, mixKey == mixKeyNow {
+        if mode == .mix, mixCurrent {
             // The mixes are still those of this picture: they come back with every colour change
             // made by hand, only the paint box may have changed. A running layer job is dropped.
             analysisRun += 1
@@ -956,6 +1017,7 @@ final class Session {
         var entries: [PaletteEntry]
         var baseEntries: Int
         var regionEntry: [Int]
+        var clusterEntry: [Int: Int]
         var mixRecipes: [Int: [Recipe]]
         /// The paints Auto picked, when it was asked to.
         var paintIDs: [String]?
@@ -967,7 +1029,7 @@ final class Session {
     /// Builds the colours and their recipes from the analysis and the paint box, e.g. after the
     /// paint box changed. While the box is on Auto, the paints are picked for this picture first.
     func recomputeAllRecipes(edits: [EntryEdit] = []) {
-        guard let seg = segmentation else { return }
+        guard let seg = base?.segmentation ?? segmentation else { return }
         recipeRun += 1
         let run = recipeRun
         let paints = library.enabled.map(\.mixPaint)
@@ -978,18 +1040,26 @@ final class Session {
         let values = valueMode
         let old = entries
         let oldBase = baseEntries
-        let oldRegionEntry = regionEntry
+        let oldRegionEntry = base?.regionEntry ?? regionEntry
         busy = true
         Task {
             let palette = await Task.detached(priority: .userInitiated) {
                 Self.buildPalette(seg: seg, paints: paints, candidates: candidates, maxPaints: maxPaints, wanted: wanted, variety: variety, values: values, old: old, oldBase: oldBase, oldRegionEntry: oldRegionEntry)
             }.value
-            guard run == recipeRun, seg.regions.count == segmentation?.regions.count else { return }
+            guard run == recipeRun, seg.regions.count == (base?.segmentation ?? segmentation)?.regions.count else { return }
             if let ids = palette.paintIDs, Set(ids) != library.enabledIDs || !library.palette.auto { library.setEnabled(ids, auto: true) }
             mixRecipes = palette.mixRecipes
             entries = palette.entries
             baseEntries = palette.baseEntries
-            regionEntry = palette.regionEntry
+            if base != nil {
+                base?.regionEntry = palette.regionEntry
+                base?.clusterEntry = palette.clusterEntry
+                // Until the close-up is coloured anew its areas stay drawn, and must not point past the new list.
+                regionEntry = regionEntry.map { max(0, min($0, entries.count - 1)) }
+            } else {
+                regionEntry = palette.regionEntry
+                clusterEntry = palette.clusterEntry
+            }
             for edit in edits where edit.index < baseEntries {
                 if let hex = edit.targetHex { applyTarget(edit.index, hex: hex) }
                 if entries[edit.index].recipes.indices.contains(edit.chosen) { entries[edit.index].chosen = edit.chosen }
@@ -999,6 +1069,8 @@ final class Session {
             relabel()
             busy = false
             render()
+            // A new palette: the close-up on screen takes its colours from it.
+            assignCloseup()
         }
     }
 
@@ -1132,7 +1204,7 @@ final class Session {
                 entries[i].chosen = entries[i].recipes.firstIndex { paintKey($0) == wanted } ?? 0
             }
         }
-        return BuiltPalette(entries: entries, baseEntries: baseEntries, regionEntry: regionEntry, mixRecipes: mixRecipes, paintIDs: picked)
+        return BuiltPalette(entries: entries, baseEntries: baseEntries, regionEntry: regionEntry, clusterEntry: clusterToEntry, mixRecipes: mixRecipes, paintIDs: picked)
     }
 
     /// Recipes of one colour: washes of its mix, or recipes of its own once its colour was changed by hand.

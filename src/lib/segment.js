@@ -186,6 +186,28 @@ export function colourBins(lab, count) {
 }
 
 /**
+ * Assign the picture to colours that are already settled (a close-up in the palette of the whole
+ * picture): every colour of the picture takes the closest of them. Nothing is found or changed.
+ *
+ * @param {Array<{hex:string, group:number, level:number}>} fixed
+ * @returns {{labels: Int32Array, clusters: Array<{group:number, level:number}>}}
+ */
+export function assignColours(lab, count, fixed, lightnessWeight = LIGHTNESS_WEIGHT) {
+  const { points, binOf } = colourBins(lab, count)
+  const colours = fixed.map((f) => hexToOklab(f.hex))
+  const closest = new Int32Array(points.length / 3)
+  for (let i = 0; i < closest.length; i++) {
+    let least = Infinity
+    colours.forEach(([L, a, b], c) => {
+      const dL = (L - points[i * 3]) * lightnessWeight, da = a - points[i * 3 + 1], db = b - points[i * 3 + 2]
+      const d = dL * dL + da * da + db * db
+      if (d < least) { least = d; closest[i] = c }
+    })
+  }
+  return { labels: Int32Array.from(binOf, (bin) => closest[bin]), clusters: fixed.map(({ group, level }) => ({ group, level })) }
+}
+
+/**
  * Cluster the picture into `k` mixes, each painted in one or more washes.
  *
  * A watercolour mix with more or less water keeps the direction of its absorbance
@@ -539,13 +561,15 @@ export function calmAreas(raw, lab, width, height, k, simplify, where = null, ph
  *   simplify FINEST..10 (0 and up: calm areas, ever fewer; below 0: ever finer, at FINEST the areas
  *   follow the photo), geometric = areas as polygons with straight edges instead of their organic outline,
  *   anchors = hex colours that are the mixes (then `colours` is not used),
+ *   fixed = [{ hex, group, level }] the colours of a settled palette: the picture is only assigned
+ *   to them, in this order (then neither `colours` nor `anchors` are used),
  *   focus = boxes [left, top, right, bottom] (0..1) in which the areas stay as fine as at Simplify 0
  *   and details are kept more readily, whatever `simplify` is,
  *   maxWashes / washStep = washes a mix is split into at most, and the factor of strength (log)
  *   between two of them: a grey picture is one mix, so these set the number of its values,
  *   variety = 0..10, 10 minus the Details slider (see `varietyWeights`), unless areaPower / lightnessWeight are given
  */
-export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, focus = null, seed = 7, variety = 5, areaPower, maxWashes, washStep, lightnessWeight } = {}) {
+export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, fixed = null, focus = null, seed = 7, variety = 5, areaPower, maxWashes, washStep, lightnessWeight } = {}) {
   const count = width * height
   const weights = varietyWeights(variety)
   areaPower ??= weights.areaPower
@@ -561,11 +585,13 @@ export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, 
     const restless = settlePatches(original, width, height, patches)
     lab = patchColours(original, width, height, patches, { blend: PATCH_BLEND * calm, restless })
   }
-  const { labels: raw, clusters: found } = clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), {
-    seed, areaPower, maxWashes, washStep, lightnessWeight,
-    // Given colours (hex) as the mixes, instead of finding them.
-    anchors: given?.length ? given.map(hexToOklab) : null,
-  })
+  const { labels: raw, clusters: found } = fixed?.length
+    ? assignColours(lab, count, fixed, lightnessWeight)
+    : clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), {
+        seed, areaPower, maxWashes, washStep, lightnessWeight,
+        // Given colours (hex) as the mixes, instead of finding them.
+        anchors: given?.length ? given.map(hexToOklab) : null,
+      })
   const k = found.length
   const where = focus?.length ? boxMask(focus, width, height) : null
   const calmed = calmAreas(raw, lab, width, height, k, simplify, where, original, Int32Array.from(found, (c) => c.group))

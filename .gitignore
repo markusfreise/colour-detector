@@ -19,3 +19,5 @@ tools/contest/photos/
 local-samples/
 __pycache__/
 .deploy.log
+HORADAM_Aquarell_Farbkarte_DE.pdf
+*.p8

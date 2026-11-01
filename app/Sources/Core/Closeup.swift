@@ -1,7 +1,7 @@
 import CoreGraphics
 import Foundation
 
-/// Close-ups: a part of the picture chosen with a frame, analysed as a picture of its own.
+/// Close-ups: a part of the picture chosen with a frame, seen at a finer scale in the same palette.
 /// Port of `src/lib/closeup.js`.
 enum Closeups {
     /// A drag shorter than this share of a side is a slip of the hand, not a choice.

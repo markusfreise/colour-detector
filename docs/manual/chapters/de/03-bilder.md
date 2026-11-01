@@ -56,13 +56,13 @@ Jedes Sichern lädt das Bild zusätzlich als Datei herunter, zum Beispiel `Llyn-
 
 ## Genauer hinsehen: Ausschnitte des Bildes
 
-Manche Bilder haben eine Stelle, die mehr Aufmerksamkeit verdient als der Rest: ein Gesicht in einer Landschaft, das Fenster eines Hauses, ein Boot auf dem See. Mit dem Werkzeug **Ausschnitt** behandelst du diese Stelle wie ein eigenes Bild.
+Manche Bilder haben eine Stelle, die mehr Aufmerksamkeit verdient als der Rest: ein Gesicht in einer Landschaft, das Fenster eines Hauses, ein Boot auf dem See. Mit dem Werkzeug **Ausschnitt** zoomst du in diese Stelle hinein.
 
-Drück unter den Werkzeugen des Bildes auf **Ausschnitt** und zieh einen Rahmen über die Stelle, die du willst. Die App schneidet sie in voller Auflösung aus dem Originalfoto, vergrößert einen kleinen Ausschnitt bis zum Vierfachen und analysiert ihn mit eigenen Flächen und eigenen Mischungen. Als eigene Studie gemalt oder als Hilfe für die wichtigste Partie des großen Bildes gibt dir das weit genauere Angaben als der Gesamtplan.
+Drück unter den Werkzeugen des Bildes auf **Ausschnitt** und zieh einen Rahmen über die Stelle, die du willst. Die App schneidet sie in voller Auflösung aus dem Originalfoto, vergrößert einen kleinen Ausschnitt bis zum Vierfachen und zeichnet ihn mit feineren Flächen. Die Palette bleibt die des ganzen Bildes: dieselben Mischungen, Nummern und Rezepte, so verlangt ein Ausschnitt nie eine Mischung, die du nicht angesetzt hast. Als Hilfe für die wichtigste Partie des Bildes zeigt dir das weit genauer als der Gesamtplan, wohin jede Farbe gehört.
 
-![Ein Ausschnitt des Beispielfotos, als eigenes Bild analysiert](shot:closeup)
+![Ein Ausschnitt des Beispielfotos, mit feineren Flächen in der Palette des ganzen Bildes](shot:closeup)
 
-Jeder Ausschnitt bleibt als kleines Bild in einer Leiste unter dem Hauptbild. Klick auf eines, um zu ihm zurückzukehren; das kleine Kreuz darauf entfernt es. **Zurück** führt zum ganzen Bild. Farbänderungen am ganzen Bild und an jedem Ausschnitt bleiben erhalten, während du zwischen ihnen wechselst.
+Jeder Ausschnitt bleibt als kleines Bild in einer Leiste unter dem Hauptbild. Klick auf eines, um zu ihm zurückzukehren; das kleine Kreuz darauf entfernt es. **Zurück** führt zum ganzen Bild. Farbänderungen gehören zur Palette und gelten deshalb für das ganze Bild und jeden Ausschnitt. Änderst du eine Einstellung oder die Farben, während ein Ausschnitt zu sehen ist, berechnet die App die Palette neu aus dem ganzen Bild, und der Ausschnitt folgt ihr.
 
 > **Gut zu wissen:** Ausschnitte gehören zu Pro. Sie werden noch nicht mit einem Bild in der Sammlung gesichert: Wenn du ein gesichertes Bild öffnest, leg die Ausschnitte neu an.
 

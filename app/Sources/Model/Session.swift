@@ -82,15 +82,16 @@ struct AnalysisSettings: Codable, Equatable {
     /// Areas as polygons with straight edges that overlap, instead of their organic outline.
     var geometric = false
     var maxPaints = 3
-    /// The Details slider: 10 = the most steps across the picture, 0 = small areas of another hue
-    /// keep their mix. The logic takes it the other way round, as `variety`.
+    /// The Details slider: 10 = small areas of another hue (a highlight, a red flower in the green)
+    /// keep a mix of their own, 0 = the most steps across the large parts of the picture. It is
+    /// `variety` of the logic; until 2026-11-08 the slider ran the other way.
     var details = 5
 
     /// What pictures saved before 2026-10-18 have instead of `details`.
     private enum LegacyKeys: String, CodingKey { case variety }
 
     /// `variety` of the logic (Mixes.plan, Segmenter.segment) for the Details slider.
-    var variety: Int { 10 - details }
+    var variety: Int { details }
     /// Percent, applied to the photo before the analysis.
     var saturation = 100
     var contrast = 100
@@ -132,7 +133,7 @@ struct AnalysisSettings: Codable, Equatable {
         maxPaints = try values.decodeIfPresent(Int.self, forKey: .maxPaints) ?? defaults.maxPaints
         let legacy = try decoder.container(keyedBy: LegacyKeys.self)
         details = try values.decodeIfPresent(Int.self, forKey: .details)
-            ?? legacy.decodeIfPresent(Int.self, forKey: .variety).map { 10 - $0 }
+            ?? legacy.decodeIfPresent(Int.self, forKey: .variety)
             ?? defaults.details
         saturation = try values.decodeIfPresent(Int.self, forKey: .saturation) ?? 100
         contrast = try values.decodeIfPresent(Int.self, forKey: .contrast) ?? 100
@@ -249,6 +250,10 @@ struct PaletteEntry: Identifiable, Sendable {
     var family = ""
     /// What the picture and the list call this colour: mix number plus water level, e.g. 6L.
     var label = ""
+    /// The white of the paper: on top of "Colours", numbered 0, painted with nothing.
+    var paper = false
+    /// Its share of the palette, what the numbers go by; `share` is that of the areas on screen.
+    var weight = 0.0
 
     var recipe: Recipe? { recipes.indices.contains(chosen) ? recipes[chosen] : nil }
 }
@@ -379,9 +384,14 @@ final class Session {
         set { library.setPalette(newValue) }
     }
     private(set) var image: CGImage?
+    /// The areas on screen; their clusters are those of the palette (`colourAnalysis`).
     private(set) var segmentation: Segmentation? {
         didSet { segmentationStamp += 1 }
     }
+    /// The palette: the colours of the whole picture, found at the finest Simplify (shown as -2)
+    /// with the white of the paper, and kept while only Simplify or Geometric change. Those only
+    /// change the areas, which are then assigned to these colours, as a close-up is.
+    @ObservationIgnored private var colourAnalysis: Segmentation?
     /// Counts the analyses, to know which one the areas at picture size belong to.
     @ObservationIgnored private var segmentationStamp = 0
     /// The colour of every pixel of the drawn picture, kept for the analysis and colours it was made for.
@@ -427,7 +437,7 @@ final class Session {
     private(set) var closeupID: Int?
     /// The base picture while a close-up is on screen. The palette belongs to it: `segmentation`
     /// and `regionEntry` are then the close-up's, and what the palette was built from waits here.
-    @ObservationIgnored private var base: (image: CGImage, pixels: (rgba: [UInt8], width: Int, height: Int), name: String, savedID: String?, segmentation: Segmentation?, regionEntry: [Int], clusterEntry: [Int: Int])?
+    @ObservationIgnored private var base: (image: CGImage, pixels: (rgba: [UInt8], width: Int, height: Int), name: String, savedID: String?, colourAnalysis: Segmentation?, segmentation: Segmentation?, regionEntry: [Int], clusterEntry: [Int: Int])?
     /// Cluster of the whole picture -> entry, what a close-up is coloured with.
     @ObservationIgnored private var clusterEntry = [Int: Int]()
 
@@ -447,8 +457,11 @@ final class Session {
     @ObservationIgnored private var layerProposal: String?
     /// Counts the pictures opened, to tell results for an earlier one apart.
     @ObservationIgnored private var pictureSerial = 0
-    /// What the mixes were analysed from.
-    @ObservationIgnored private var mixKey: String?
+    /// What the palette was found from (`paletteKeyNow`), and the Simplify and Geometric the areas
+    /// of the whole picture and of the close-up on screen were made with (`areaKeyNow`).
+    @ObservationIgnored private var paletteKey: String?
+    @ObservationIgnored private var areaKey: String?
+    @ObservationIgnored private var closeupAreaKey: String?
     /// Colour changes of a picture that was opened in layer mode, for its first mix analysis.
     @ObservationIgnored private var pendingEdits: (serial: Int, edits: [EntryEdit])?
     /// The photo at working size with saturation and contrast applied, as the layers were planned from.
@@ -494,8 +507,8 @@ final class Session {
         Set(entries.flatMap { $0.recipe?.paints.map(\.paintID) ?? [] })
     }
 
-    /// Number of different mixes; the washes of a mix count once.
-    var mixCount: Int { Set(entries.map(\.family)).count }
+    /// Number of different mixes; the washes of a mix count once, the paper not at all.
+    var mixCount: Int { Set(entries.filter { !($0.paper && !$0.overridden) }.map(\.family)).count }
 
     /// Loads the next sample photo; `restart` goes back to the first one (used at start).
     func loadSample(restart: Bool = false) {
@@ -583,7 +596,7 @@ final class Session {
 
     func openCloseup(_ id: Int) {
         guard let closeup = closeups.first(where: { $0.id == id }), id != closeupID, let image, let pixels else { return }
-        let whole = base ?? (image, pixels, imageName, savedID, segmentation, regionEntry, clusterEntry)
+        let whole = base ?? (image, pixels, imageName, savedID, colourAnalysis, segmentation, regionEntry, clusterEntry)
         let source = whole.image
         let cut = Closeups.size(sourceWidth: source.width, sourceHeight: source.height, rect: closeup.rect, workPixels: Self.workPixels)
         guard let part = source.cropping(to: CGRect(x: cut.sx, y: cut.sy, width: cut.sw, height: cut.sh)),
@@ -600,7 +613,8 @@ final class Session {
         savedID = nil
         newView()
         // Only what is missing is worked out: in mix mode with a palette at hand, that is the areas.
-        if layerMode || !mixCurrent { analyse() } else { assignCloseup() }
+        closeupAreaKey = nil
+        if layerMode || !paletteCurrent { analyse() } else { assignCloseup() }
     }
 
     func showBase() {
@@ -611,6 +625,7 @@ final class Session {
         pixels = base.pixels
         imageName = base.name
         savedID = base.savedID
+        colourAnalysis = base.colourAnalysis
         segmentation = base.segmentation
         regionEntry = base.regionEntry
         clusterEntry = base.clusterEntry
@@ -637,11 +652,11 @@ final class Session {
 
     /// The areas of the close-up on screen, each in the colour of the palette closest to it.
     private func assignCloseup() {
-        guard let whole = base, let seg = whole.segmentation, !whole.clusterEntry.isEmpty, let pixels, !layerMode else { return }
+        guard let whole = base, let palette = whole.colourAnalysis, !whole.clusterEntry.isEmpty, let pixels, !layerMode else { return }
         analysisRun += 1
         let run = analysisRun
-        let colours = seg.clusters.filter { whole.clusterEntry[$0.index] != nil }
-        let fixed = colours.map { Segmenter.FixedColour(hex: $0.hex, group: $0.group, level: $0.level) }
+        let fixed = Self.fixedColours(palette).filter { whole.clusterEntry[$0.index] != nil }
+        let areas = areaKeyNow
         let simplify = settings.simplify + Segmenter.simplifyZero
         let geometric = settings.geometric
         let variety = settings.variety
@@ -651,11 +666,13 @@ final class Session {
         Task {
             let result = await Task.detached(priority: .userInitiated) {
                 let adjusted = ColorMath.adjust(rgba: pixels.rgba, saturation: saturation, contrast: contrast)
-                return Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, simplify: simplify, geometric: geometric, fixed: fixed, variety: variety)
+                let result = Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, simplify: simplify, geometric: geometric, fixed: fixed.map { $0.colour }, variety: variety)
+                return Self.onPalette(result, fixed, palette)
             }.value
             guard run == analysisRun, base != nil, !layerMode else { return } // superseded
             segmentation = result
-            regionEntry = result.regions.map { whole.clusterEntry[colours[$0.cluster].index] ?? 0 }
+            regionEntry = result.regions.map { whole.clusterEntry[$0.cluster] ?? 0 }
+            closeupAreaKey = areas
             selectedRegion = nil
             busy = false
             render()
@@ -664,7 +681,9 @@ final class Session {
 
     // MARK: Analysis
 
-    /// Finds the colour areas again, e.g. after the number of colours changed.
+    /// Works out what the settings now need: the palette again (Colours, Details, Saturation,
+    /// Contrast, Monochrome, a new picture), only the areas in its colours (Simplify, Geometric), or
+    /// only the recipes (the paint box).
     func analyse(edits: [EntryEdit] = []) {
         // The palette comes from the whole picture, also when a close-up is on screen.
         guard let pixels = base?.pixels ?? pixels else { return }
@@ -677,9 +696,25 @@ final class Session {
         var edits = edits
         if edits.isEmpty, let pending = pendingEdits, pending.serial == pictureSerial { edits = pending.edits }
         pendingEdits = nil
+        let key = paletteKeyNow
+        let areas = areaKeyNow
+        let known = base?.colourAnalysis ?? colourAnalysis
+        let fresh = known == nil || paletteKey != key
+        let closeupOpen = base != nil
+        if !fresh {
+            if closeupOpen {
+                // The close-up's areas in the palette's colours; the whole picture follows when it is shown.
+                if closeupAreaKey != areas { assignCloseup() } else { recomputeAllRecipes(edits: edits) }
+                return
+            }
+            if areaKey == areas && segmentation != nil {
+                // Nothing of the analysis changed: the paint box did.
+                recomputeAllRecipes(edits: edits)
+                return
+            }
+        }
         analysisRun += 1
         let run = analysisRun
-        let key = mixKeyNow
         // "Colours" counts mixes. The analysis is asked for more, and the planning joins them down
         // to the wanted number once the paints are known.
         // Monochrome: a grey picture is one mix in the eyes of the analysis, split into up to
@@ -690,46 +725,125 @@ final class Session {
         // from Segmenter.finest, with the shown 0 at Segmenter.simplifyZero, as the web app does.
         let simplify = settings.simplify + Segmenter.simplifyZero
         let geometric = settings.geometric
-        let variety = settings.variety
+        // Details weighs small colours and lightness in the analysis too; a grey picture has no hues to keep.
+        let variety = values ? 5 : settings.variety
         let saturation = analysisSaturation
         let contrast = Double(settings.contrast) / 100
         busy = true
         Task {
-            let result = await Task.detached(priority: .userInitiated) {
+            let (palette, onScreen) = await Task.detached(priority: .userInitiated) { () -> (Segmentation, Segmentation?) in
                 let adjusted = ColorMath.adjust(rgba: pixels.rgba, saturation: saturation, contrast: contrast)
-                return values
-                    ? Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify, geometric: geometric, maxWashes: Self.valueSteps, washStep: Self.valueStep)
-                    : Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: simplify, geometric: geometric, variety: variety)
+                // The palette: found at the finest Simplify with its own areas, whatever Simplify is set to.
+                let palette = !fresh && known != nil ? known! : values
+                    ? Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: Segmenter.finest, maxWashes: Self.valueSteps, washStep: Self.valueStep, paper: true)
+                    : Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, colours: colours, simplify: Segmenter.finest, variety: variety, paper: true)
+                // A close-up takes its own areas (assignCloseup); the whole picture's wait until it is shown.
+                if closeupOpen { return (palette, nil) }
+                // The areas at the Simplify and Geometric set, in the colours of the palette.
+                if simplify == Segmenter.finest && !geometric { return (palette, palette) }
+                let fixed = Self.fixedColours(palette)
+                let result = Segmenter.segment(rgba: adjusted, width: pixels.width, height: pixels.height, simplify: simplify, geometric: geometric, fixed: fixed.map { $0.colour }, variety: variety)
+                return (palette, Self.onPalette(result, fixed, palette))
             }.value
-            guard run == analysisRun else { return } // a newer analysis superseded this one
-            mixKey = key
-            if base != nil {
-                base?.segmentation = result
-                base?.regionEntry = []
+            guard run == analysisRun, !layerMode else { return } // a newer analysis superseded this one
+            if fresh {
+                paletteKey = key
+                areaKey = nil
+                closeupAreaKey = nil
+                if closeupOpen {
+                    base?.colourAnalysis = palette
+                    base?.segmentation = nil
+                    base?.regionEntry = []
+                } else {
+                    colourAnalysis = palette
+                    segmentation = onScreen
+                    regionEntry = []
+                    areaKey = areas
+                }
+                entries = []
+                order = []
+                baseEntries = 0
+                selectedEntry = nil
+                selectedRegion = nil
+                inspectedEntry = nil
+                recomputeAllRecipes(edits: edits)
             } else {
-                segmentation = result
-                regionEntry = []
+                segmentation = onScreen
+                areaKey = areas
+                busy = false
+                mapAreas()
             }
-            entries = []
-            order = []
-            baseEntries = 0
-            selectedEntry = nil
-            selectedRegion = nil
-            inspectedEntry = nil
-            recomputeAllRecipes(edits: edits)
         }
+    }
+
+    /// The colours of a palette as `fixed` for the segmentation, with the cluster each one is.
+    private nonisolated static func fixedColours(_ palette: Segmentation) -> [(index: Int, colour: Segmenter.FixedColour)] {
+        palette.clusters.filter { $0.pixelCount > 0 || $0.paper }.map {
+            ($0.index, Segmenter.FixedColour(hex: $0.paper && $0.pixelCount == 0 ? Self.paperHex : $0.hex, group: $0.group, level: $0.level, paper: $0.paper))
+        }
+    }
+
+    /// A segmentation against `fixed`, its areas pointing at the clusters of the palette.
+    private nonisolated static func onPalette(_ result: Segmentation, _ fixed: [(index: Int, colour: Segmenter.FixedColour)], _ palette: Segmentation) -> Segmentation {
+        let regions = result.regions.map {
+            Segmentation.Region(id: $0.id, cluster: fixed[$0.cluster].index, size: $0.size, anchorX: $0.anchorX, anchorY: $0.anchorY, anchorDist: $0.anchorDist)
+        }
+        return Segmentation(width: result.width, height: result.height, regionMap: result.regionMap, regions: regions, clusters: palette.clusters)
+    }
+
+    /// New areas on the same palette (Simplify or Geometric changed): every area takes the entry of
+    /// its colour. Detached areas belonged to the areas before and are gone; colour changes stay.
+    private func mapAreas() {
+        guard let seg = segmentation, !clusterEntry.isEmpty else { return }
+        entries = Array(entries.prefix(baseEntries))
+        order = order.filter { $0 < baseEntries }
+        regionEntry = seg.regions.map { clusterEntry[$0.cluster] ?? 0 }
+        entries = Self.withShares(entries, areas: seg, regionEntry: regionEntry)
+        selectedEntry = nil
+        selectedRegion = nil
+        inspectedEntry = nil
+        render()
+    }
+
+    /// How much of the picture every entry covers, from the areas of the whole picture as they are
+    /// on screen; without them (the palette was found while a close-up was open), its share of the palette.
+    private nonisolated static func withShares(_ entries: [PaletteEntry], areas: Segmentation?, regionEntry: [Int]) -> [PaletteEntry] {
+        var entries = entries
+        guard let areas, areas.regions.count == regionEntry.count else {
+            for i in entries.indices { entries[i].share = entries[i].weight }
+            return entries
+        }
+        let total = Double(areas.width * areas.height)
+        var shares = [Double](repeating: 0, count: entries.count)
+        for (r, region) in areas.regions.enumerated() where shares.indices.contains(regionEntry[r]) { shares[regionEntry[r]] += Double(region.size) / total }
+        for i in entries.indices { entries[i].share = shares[i] }
+        return entries
+    }
+
+    static let paperHex = "#ffffff"
+
+    /// The white of the paper, painted with nothing.
+    nonisolated static func paperRecipe(_ target: String) -> Recipe {
+        Recipe(paints: [], parts: [], strength: 0, fullness: 0, dilution: "paper only", hex: paperHex, deltaE: ColorMath.deltaE(ColorMath.oklab(hex: paperHex), ColorMath.oklab(hex: target)))
     }
 
     // MARK: Layer mode
 
     var layerMode: Bool { settings.mode == .layer }
 
-    /// Whether the mixes belong to the picture and the settings as they are now.
-    private var mixCurrent: Bool { (base?.segmentation ?? segmentation) != nil && mixKey == mixKeyNow }
+    /// Whether the palette belongs to the picture and the settings as they are now.
+    private var paletteCurrent: Bool { (base?.colourAnalysis ?? colourAnalysis) != nil && paletteKey == paletteKeyNow }
 
-    private var mixKeyNow: String {
-        "\(pictureSerial)/\(settings.colours)/\(settings.details)/\(settings.simplify)/\(settings.saturation)/\(settings.contrast)/\(settings.geometric)/\(valueMode)"
+    /// Whether the palette and the areas on screen belong to the picture and the settings as they are now.
+    private var mixCurrent: Bool { paletteCurrent && segmentation != nil && (base != nil ? closeupAreaKey : areaKey) == areaKeyNow }
+
+    /// What the palette is found from. Max paints and the paint box only change the recipes.
+    private var paletteKeyNow: String {
+        "\(pictureSerial)/\(settings.colours)/\(settings.details)/\(settings.saturation)/\(settings.contrast)/\(valueMode)"
     }
+
+    /// What the areas are made with, in the colours of the palette.
+    private var areaKeyNow: String { "\(settings.simplify)/\(settings.geometric)" }
 
     /// Glazes of the base paints. On Auto the app proposes the paints from the palette's Auto
     /// pool, otherwise the ones chosen in the paint box are fitted.
@@ -1029,7 +1143,11 @@ final class Session {
     /// Builds the colours and their recipes from the analysis and the paint box, e.g. after the
     /// paint box changed. While the box is on Auto, the paints are picked for this picture first.
     func recomputeAllRecipes(edits: [EntryEdit] = []) {
-        guard let seg = base?.segmentation ?? segmentation else { return }
+        guard let found = base?.colourAnalysis ?? colourAnalysis else { return }
+        // The areas on screen of the whole picture; while a close-up is open they can be those of
+        // a palette before, or none, and are worked out again when it is closed.
+        let seg = base?.segmentation ?? segmentation
+        let areasCurrent = seg != nil && areaKey == areaKeyNow
         recipeRun += 1
         let run = recipeRun
         let paints = library.enabled.map(\.mixPaint)
@@ -1044,9 +1162,9 @@ final class Session {
         busy = true
         Task {
             let palette = await Task.detached(priority: .userInitiated) {
-                Self.buildPalette(seg: seg, paints: paints, candidates: candidates, maxPaints: maxPaints, wanted: wanted, variety: variety, values: values, old: old, oldBase: oldBase, oldRegionEntry: oldRegionEntry)
+                Self.buildPalette(palette: found, seg: seg, areasCurrent: areasCurrent, paints: paints, candidates: candidates, maxPaints: maxPaints, wanted: wanted, variety: variety, values: values, old: old, oldBase: oldBase, oldRegionEntry: oldRegionEntry)
             }.value
-            guard run == recipeRun, seg.regions.count == (base?.segmentation ?? segmentation)?.regions.count else { return }
+            guard run == recipeRun, seg?.regions.count == (base?.segmentation ?? segmentation)?.regions.count else { return }
             if let ids = palette.paintIDs, Set(ids) != library.enabledIDs || !library.palette.auto { library.setEnabled(ids, auto: true) }
             mixRecipes = palette.mixRecipes
             entries = palette.entries
@@ -1083,34 +1201,37 @@ final class Session {
     /// wash; every other wash is that recipe with more or less water. Washes that end up on the same
     /// water level are the same instruction for the painter, so they become one colour.
     /// Colours changed by hand, detached areas and picked recipes are carried over where they still fit.
+    /// The colours come from `palette`; `seg` are the areas on screen of the whole picture, in its colours.
     private nonisolated static func buildPalette(
-        seg: Segmentation, paints: [MixPaint], candidates: [MixPaint]?, maxPaints: Int, wanted: Int, variety: Int, values: Bool,
+        palette: Segmentation, seg: Segmentation?, areasCurrent: Bool, paints: [MixPaint], candidates: [MixPaint]?, maxPaints: Int, wanted: Int, variety: Int, values: Bool,
         old: [PaletteEntry], oldBase: Int, oldRegionEntry: [Int]
     ) -> BuiltPalette {
         var box = paints
         var picked: [String]?
         if let candidates {
             // Every wash is a target: a wash its mix cannot reach needs paints for a mix of its own.
-            let targets = seg.clusters.filter { $0.pixelCount > 0 }.map { (hex: $0.hex, weight: Double($0.pixelCount)) }
+            let targets = palette.clusters.filter { $0.pixelCount > 0 && !$0.paper }.map { (hex: $0.hex, weight: Double($0.pixelCount)) }
             let ids = Mixing.proposePaints(targets: targets, paints: candidates, maxPaints: maxPaints, values: values)
             box = candidates.filter { ids.contains($0.id) }
             picked = ids
         }
         let byID = Dictionary(box.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
-        let total = Double(seg.width * seg.height)
+        let total = Double(palette.width * palette.height)
         func wash(_ recipe: Recipe, _ hex: String) -> Recipe { Mixing.washRecipe(recipe, target: hex, paints: byID, values: values) ?? recipe }
 
         // Monochrome with paints that do not get as dark as the picture (a yellow alone): the values
         // of the picture are spread over what the paints reach, from blank paper for the lightest to
         // the darkest paint for the darkest, so that the picture keeps all its steps instead of
         // ending in one flat dark. Paints that reach the darks leave the values alone.
-        var clusters = seg.clusters
+        // The paper is no mix: it comes on top of "Colours".
+        let paper = palette.clusters.first { $0.paper }
+        var clusters = palette.clusters.filter { !$0.paper }
         if values, !box.isEmpty {
-            let used = seg.clusters.filter { $0.pixelCount > 0 }.map { ColorMath.oklab(hex: $0.hex).x }
+            let used = clusters.filter { $0.pixelCount > 0 }.map { ColorMath.oklab(hex: $0.hex).x }
             if let light = used.max(), let dark = used.min() {
                 let reach = Mixing.valueReach(paints: box, maxPaints: maxPaints)
                 if reach > dark && light > dark {
-                    clusters = seg.clusters.map { c in
+                    clusters = clusters.map { c in
                         let L = ColorMath.oklab(hex: c.hex).x
                         let hex = ColorMath.hex(oklab: Vec3(1 - (light - L) * (1 - reach) / (light - dark), 0, 0))
                         return Segmentation.Cluster(index: c.index, group: c.group, level: c.level, hex: hex, pixelCount: c.pixelCount)
@@ -1126,6 +1247,7 @@ final class Session {
             var lab: Vec3
             var hex = ""
             var letter = ""
+            var paper = false
         }
         var mixRecipes = [Int: [Recipe]]()
         var built: [Item] = []
@@ -1154,15 +1276,24 @@ final class Session {
             }
             built += items
         }
+        if let paper {
+            mixRecipes[paper.group] = [paperRecipe(paperHex)]
+            let lab = ColorMath.oklab(hex: paper.pixelCount > 0 ? paper.hex : paperHex)
+            built.append(Item(group: paper.group, clusters: [paper.index], pixels: paper.pixelCount, lab: lab, hex: ColorMath.hex(oklab: lab), paper: true))
+        }
 
-        // Largest first, so the entry numbers used in saved pictures stay meaningful.
-        let sorted = built.enumerated().sorted { $0.element.pixels != $1.element.pixels ? $0.element.pixels > $1.element.pixels : $0.offset < $1.offset }.map(\.element)
+        // Largest first, so the entry numbers used in saved pictures stay meaningful; the paper last.
+        let sorted = built.enumerated().sorted {
+            if $0.element.paper != $1.element.paper { return !$0.element.paper }
+            return $0.element.pixels != $1.element.pixels ? $0.element.pixels > $1.element.pixels : $0.offset < $1.offset
+        }.map(\.element)
         var clusterToEntry = [Int: Int]()
         var entries = sorted.enumerated().map { i, item -> PaletteEntry in
             for c in item.clusters { clusterToEntry[c] = i }
-            return PaletteEntry(id: i, group: item.group, letter: item.letter, sourceHex: item.hex, targetHex: item.hex, share: Double(item.pixels) / total)
+            let weight = Double(item.pixels) / total
+            return PaletteEntry(id: i, group: item.group, letter: item.letter, sourceHex: item.hex, targetHex: item.hex, share: weight, paper: item.paper, weight: weight)
         }
-        var regionEntry = seg.regions.map { clusterToEntry[$0.cluster] ?? 0 }
+        var regionEntry = seg?.regions.map { clusterToEntry[$0.cluster] ?? 0 } ?? []
 
         // Carry over what the user changed.
         var pickedPaints = [Int: String]()
@@ -1171,22 +1302,19 @@ final class Session {
             if let recipe = e.recipe { pickedPaints[e.group] = paintKey(recipe) }
         }
         for e in old.prefix(oldBase) where e.overridden {
-            guard let match = entries.firstIndex(where: { $0.group == e.group && $0.letter == e.letter }) else { continue }
+            guard let match = entries.firstIndex(where: { $0.group == e.group && $0.letter == e.letter && $0.paper == e.paper }) else { continue }
             entries[match].targetHex = e.targetHex
             entries[match].overridden = true
             if e.chosen != 0, let recipe = e.recipe { kept[match] = paintKey(recipe) }
         }
         let baseEntries = entries.count
         for (n, e) in old.dropFirst(oldBase).enumerated() {
+            // Detached areas point at the areas on screen: they are only there while those are the same.
+            guard let seg, oldRegionEntry.count == seg.regions.count else { break }
             let id = entries.count
             let oldIndex = oldBase + n
-            var size = 0
-            for (r, region) in seg.regions.enumerated() where oldRegionEntry.indices.contains(r) && oldRegionEntry[r] == oldIndex {
-                if entries.indices.contains(regionEntry[r]) { entries[regionEntry[r]].share -= Double(region.size) / total }
-                regionEntry[r] = id
-                size += region.size
-            }
-            var entry = PaletteEntry(id: id, group: e.group, letter: e.letter, sourceHex: e.sourceHex, targetHex: e.targetHex, share: Double(size) / total)
+            for r in seg.regions.indices where oldRegionEntry[r] == oldIndex { regionEntry[r] = id }
+            var entry = PaletteEntry(id: id, group: e.group, letter: e.letter, sourceHex: e.sourceHex, targetHex: e.targetHex, share: 0, paper: e.paper)
             entry.overridden = e.overridden
             if e.chosen != 0, let recipe = e.recipe { kept[id] = paintKey(recipe) }
             entries.append(entry)
@@ -1198,12 +1326,13 @@ final class Session {
                 entries[i].recipes = Mixing.findRecipes(target: entries[i].targetHex, paints: box, maxPaints: maxPaints, values: values)
             } else {
                 entries[i].family = "mix-\(entries[i].group)"
-                entries[i].recipes = (mixRecipes[entries[i].group] ?? []).map { wash($0, entries[i].targetHex) }
+                entries[i].recipes = (mixRecipes[entries[i].group] ?? []).map { $0.paints.isEmpty ? paperRecipe(entries[i].targetHex) : wash($0, entries[i].targetHex) }
             }
             if let wanted = entries[i].overridden ? kept[i] : pickedPaints[entries[i].group] ?? kept[i] {
                 entries[i].chosen = entries[i].recipes.firstIndex { paintKey($0) == wanted } ?? 0
             }
         }
+        entries = withShares(entries, areas: areasCurrent ? seg : nil, regionEntry: regionEntry)
         return BuiltPalette(entries: entries, baseEntries: baseEntries, regionEntry: regionEntry, clusterEntry: clusterToEntry, mixRecipes: mixRecipes, paintIDs: picked)
     }
 
@@ -1217,31 +1346,36 @@ final class Session {
             let byID = Dictionary(paints.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
             let hex = entries[index].targetHex
             entries[index].family = "mix-\(entries[index].group)"
-            entries[index].recipes = (mixRecipes[entries[index].group] ?? []).map { Mixing.washRecipe($0, target: hex, paints: byID, values: valueMode) ?? $0 }
+            entries[index].recipes = (mixRecipes[entries[index].group] ?? []).map { $0.paints.isEmpty ? Self.paperRecipe(hex) : Mixing.washRecipe($0, target: hex, paints: byID, values: valueMode) ?? $0 }
         }
         entries[index].chosen = 0
     }
 
     /// Labels: one number per mix, largest first. A mix painted in several washes adds a letter
     /// for the water level: 6L is mix 6 as a light wash, 6R the same mix rich.
+    /// The numbers go by the palette, not by the areas on screen: Simplify leaves them alone. The
+    /// paper is 0, after every mix.
     private func relabel() {
-        var families: [(key: String, share: Double, members: [Int])] = []
+        var families: [(key: String, share: Double, paper: Bool, members: [Int])] = []
         for (i, e) in entries.enumerated() {
             if let f = families.firstIndex(where: { $0.key == e.family }) {
-                families[f].share += e.share
+                families[f].share += e.weight
                 families[f].members.append(i)
             } else {
-                families.append((e.family, e.share, [i]))
+                families.append((e.family, e.weight, e.paper && !e.overridden, [i]))
             }
         }
         func strength(_ i: Int) -> Double { entries[i].recipes.first?.strength ?? 0 }
         var next: [Int] = []
-        let sorted = families.enumerated().sorted { $0.element.share != $1.element.share ? $0.element.share > $1.element.share : $0.offset < $1.offset }
+        let sorted = families.enumerated().sorted {
+            if $0.element.paper != $1.element.paper { return !$0.element.paper }
+            return $0.element.share != $1.element.share ? $0.element.share > $1.element.share : $0.offset < $1.offset
+        }
         for (n, family) in sorted.map(\.element).enumerated() {
             let members = family.members.sorted { strength($0) != strength($1) ? strength($0) < strength($1) : $0 < $1 }
             let washes = Set(members.map { entries[$0].letter }).count > 1
             for i in members {
-                entries[i].label = "\(n + 1)\(washes ? entries[i].letter : "")"
+                entries[i].label = family.paper ? "0" : "\(n + 1)\(washes ? entries[i].letter : "")"
                 next.append(i)
             }
         }
@@ -1369,7 +1503,7 @@ final class Session {
         let from = regionEntry[region]
         let source = entries[from]
         let share = Double(segmentation.regions[region].size) / Double(segmentation.width * segmentation.height)
-        var entry = PaletteEntry(id: entries.count, group: source.group, letter: source.letter, sourceHex: source.sourceHex, targetHex: source.targetHex, share: share)
+        var entry = PaletteEntry(id: entries.count, group: source.group, letter: source.letter, sourceHex: source.sourceHex, targetHex: source.targetHex, share: share, paper: source.paper)
         entry.overridden = source.overridden
         entry.recipes = source.recipes
         entry.chosen = source.chosen

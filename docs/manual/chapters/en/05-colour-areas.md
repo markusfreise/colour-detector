@@ -26,6 +26,8 @@ The button with the half-filled circle beside the areas switches to [Monochrome]
 
 The number is not the number of colours on the paper. Every mix is painted at up to five strengths of water, its washes, so a picture with 20 mixes in this sample shows 52 different colours. Colours that differ only in how light or dark they are share one mix; colours that differ in hue get their own.
 
+On top of the mixes there is always one more colour: the white of the paper, numbered **0**. It is painted with nothing. A highlight, a glint on water or a white window frame that is lighter than any wash stays paper, and you leave it out when you paint. The paper does not count towards **Colours**.
+
 ![The same photo with 6 mixes](shot:colours-6)
 
 Six mixes give a bold, poster-like picture that you can paint in an afternoon. Twelve to twenty is the range for most paintings. Above twenty-four you are painting very precisely, and the gain is usually smaller than the extra work.
@@ -42,16 +44,18 @@ At **0**, where every picture opens, the areas follow the photo closely but leav
 
 With Pro the slider goes below 0, down to **-2**. There the app takes back step by step what calms the areas, until they follow the photo almost pixel by pixel. That is useful for a detailed study, for a [detail of the picture](pictures.html#looking-closer-details-of-the-picture), or simply to see how much is really there. For painting, most people end up between 3 and 8.
 
-> **Tip:** Simplify does not change the number of mixes, only the shapes. If a picture feels busy, raise **Simplify areas** first; if it feels flat or too uniform, raise **Colours**.
+The colours themselves are always found at the finest setting, -2, and Simplify only redraws the areas in them. So moving the slider never changes the mixes, their recipes or their numbers, and a colour you changed by hand stays as it is.
+
+> **Tip:** Simplify does not change the mixes, only the shapes. If a picture feels busy, raise **Simplify areas** first; if it feels flat or too uniform, raise **Colours**.
 
 ## Details: which colours get their own mix
 
 When the photo has more colours than you asked for, some of them have to share a mix. **Details** decides which.
 
-- **High (towards 10)** keeps the picture as a whole as close to the photo as possible. The large areas, a sky, a wall, a street, get the finest steps, and a small area of another hue may be painted with the nearest large mix.
-- **Low (towards 0)** keeps small areas of a distinct hue in a mix of their own: the red roof in a green valley, the lips in a portrait, a single yellow boat. In exchange, similar large colours share mixes more often, and a sky may become one flat colour.
+- **High (towards 10)** keeps small areas of a distinct hue in a mix of their own: the red roof in a green valley, the lips in a portrait, a single yellow boat. In exchange, similar large colours share mixes more often, and a sky may become one flat colour.
+- **Low (towards 0)** keeps the picture as a whole as close to the photo as possible. The large areas, a sky, a wall, a street, get the finest steps, and a small area of another hue may be painted with the nearest large mix.
 
-The default of 5 is a balance. Lower it for pictures that live from a small accent; raise it for quiet landscapes where the large colour fields matter most.
+The default of 5 is a balance. Raise it for pictures that live from a small accent; lower it for quiet landscapes where the large colour fields matter most.
 
 ## Max. paints
 
@@ -113,10 +117,10 @@ These are starting points, not rules.
 
 | Subject | Colours | Simplify areas | Details | Max. paints |
 |---|---|---|---|---|
-| Landscape, large shapes | 12 to 20 | 4 to 8 | 5 to 7 | 2 or 3 |
-| Portrait | 16 to 24 | 2 to 5 | 2 to 4 | 2 or 3 |
+| Landscape, large shapes | 12 to 20 | 4 to 8 | 3 to 5 | 2 or 3 |
+| Portrait | 16 to 24 | 2 to 5 | 6 to 8 | 2 or 3 |
 | Architecture, streets | 14 to 20 | 3 to 6, or **Geometric** | 5 | 2 |
-| Flowers, still life | 10 to 16 | 3 to 6 | 2 to 4 | 2 |
-| Quick sketch, plein air | 6 to 10 | 7 to 10 | 7 | 2 |
+| Flowers, still life | 10 to 16 | 3 to 6 | 6 to 8 | 2 |
+| Quick sketch, plein air | 6 to 10 | 7 to 10 | 3 | 2 |
 
-For portraits, the small features (eyes, mouth, the shadow under the nose) carry the likeness, so keep **Details** and **Simplify areas** low, or make a [detail](pictures.html#looking-closer-details-of-the-picture) of the face. For landscapes, the opposite usually works: few, large, calm areas, and the small accents painted freely at the end.
+For portraits, the small features (eyes, mouth, the shadow under the nose) carry the likeness, so keep **Details** high and **Simplify areas** low, or make a [detail](pictures.html#looking-closer-details-of-the-picture) of the face. For landscapes, the opposite usually works: few, large, calm areas, and the small accents painted freely at the end.

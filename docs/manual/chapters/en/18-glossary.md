@@ -39,7 +39,7 @@ What you read on the picture, in the colour list and in the recipes.
 | Colour area | Farbfläche | A shape of the picture that gets one wash of one mix. |
 | Colours | Farben | The setting for the number of mixes, and the list of them. |
 | Detail | Ausschnitt | A zoom on a part of the picture: finer areas in the palette of the whole picture. Pro. |
-| Details | Details | The setting that decides whether the mixes go to fine steps across the picture (high) or to small areas of another hue (low). |
+| Details | Details | The setting that decides whether the mixes go to small areas of another hue (high) or to fine steps across the picture (low). |
 | Full breakdown | Alle Details | Target and mix side by side, the colour by hand and every recipe of a colour. |
 | Geometric | Geometrisch | Areas as polygons with straight edges instead of their organic outline. |
 | Grid | Raster | Square cells over the picture, to copy it onto paper cell by cell. |

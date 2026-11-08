@@ -26,6 +26,8 @@ Der Knopf mit dem halb gefüllten Kreis neben den Flächen schaltet auf [Monochr
 
 Die Zahl ist nicht die Zahl der Farben auf dem Papier. Jede Mischung wird in bis zu fünf Wasserstufen gemalt, ihren Lasuren; ein Bild mit 20 Mischungen zeigt in diesem Beispiel 52 verschiedene Farben. Töne, die sich nur in Hell und Dunkel unterscheiden, teilen sich eine Mischung; Töne, die sich im Farbton unterscheiden, bekommen eine eigene.
 
+Zu den Mischungen kommt immer noch eine Farbe: das Weiß des Papiers, mit der Nummer **0**. Es wird mit nichts gemalt. Ein Glanzlicht, ein Blitzen auf dem Wasser oder ein weißer Fensterrahmen, heller als jede Lasur, bleibt Papier, und du sparst es beim Malen aus. Das Papier zählt nicht zu den **Farben**.
+
 ![Dasselbe Foto mit 6 Mischungen](shot:colours-6)
 
 Sechs Mischungen geben ein kräftiges, plakatartiges Bild, das du an einem Nachmittag malst. Zwölf bis zwanzig ist der Bereich für die meisten Bilder. Über vierundzwanzig malst du sehr genau, und der Gewinn ist meist kleiner als die zusätzliche Arbeit.
@@ -42,16 +44,18 @@ Bei **0**, wo jedes Bild startet, folgen die Flächen dem Foto eng, lassen aber 
 
 Mit Pro geht der Regler unter 0, bis **-2**. Dort nimmt die App Schritt für Schritt zurück, was die Flächen beruhigt, bis sie dem Foto fast Pixel für Pixel folgen. Das hilft bei einer genauen Studie, bei einem [Ausschnitt des Bildes](bilder.html#genauer-hinsehen-ausschnitte-des-bildes) oder einfach, um zu sehen, wie viel wirklich da ist. Zum Malen landen die meisten zwischen 3 und 8.
 
-> **Tipp:** Vereinfachen ändert nicht die Zahl der Mischungen, nur die Formen. Wirkt ein Bild unruhig, erhöh zuerst **Flächen vereinfachen**; wirkt es flach oder zu gleichförmig, erhöh **Farben**.
+Die Farben selbst findet die App immer bei der feinsten Stufe, -2, und Vereinfachen zeichnet nur die Flächen in ihnen neu. Der Regler ändert also nie die Mischungen, ihre Rezepte oder ihre Nummern, und eine Farbe, die du von Hand geändert hast, bleibt, wie sie ist.
+
+> **Tipp:** Vereinfachen ändert nicht die Mischungen, nur die Formen. Wirkt ein Bild unruhig, erhöh zuerst **Flächen vereinfachen**; wirkt es flach oder zu gleichförmig, erhöh **Farben**.
 
 ## Details: welche Farben eine eigene Mischung bekommen
 
 Hat das Foto mehr Farben, als du verlangst, müssen sich einige eine Mischung teilen. **Details** entscheidet, welche.
 
-- **Hoch (Richtung 10)** hält das Bild als Ganzes so nah am Foto wie möglich. Die großen Flächen, ein Himmel, eine Wand, eine Straße, bekommen die feinsten Abstufungen, und eine kleine Fläche eines anderen Farbtons wird unter Umständen mit der nächsten großen Mischung gemalt.
-- **Niedrig (Richtung 0)** behält kleinen Flächen mit eigenem Farbton eine eigene Mischung: das rote Dach im grünen Tal, die Lippen im Porträt, ein einzelnes gelbes Boot. Dafür teilen sich ähnliche große Farben öfter eine Mischung, und ein Himmel wird unter Umständen eine einzige flache Farbe.
+- **Hoch (Richtung 10)** behält kleinen Flächen mit eigenem Farbton eine eigene Mischung: das rote Dach im grünen Tal, die Lippen im Porträt, ein einzelnes gelbes Boot. Dafür teilen sich ähnliche große Farben öfter eine Mischung, und ein Himmel wird unter Umständen eine einzige flache Farbe.
+- **Niedrig (Richtung 0)** hält das Bild als Ganzes so nah am Foto wie möglich. Die großen Flächen, ein Himmel, eine Wand, eine Straße, bekommen die feinsten Abstufungen, und eine kleine Fläche eines anderen Farbtons wird unter Umständen mit der nächsten großen Mischung gemalt.
 
-Der Ausgangswert 5 ist ein Mittelweg. Senk ihn für Bilder, die von einem kleinen Akzent leben; erhöh ihn für ruhige Landschaften, in denen die großen Farbfelder am meisten zählen.
+Der Ausgangswert 5 ist ein Mittelweg. Erhöh ihn für Bilder, die von einem kleinen Akzent leben; senk ihn für ruhige Landschaften, in denen die großen Farbfelder am meisten zählen.
 
 ## Max. Farben
 
@@ -113,10 +117,10 @@ Das sind Ausgangspunkte, keine Regeln.
 
 | Motiv | Farben | Flächen vereinfachen | Details | Max. Farben |
 |---|---|---|---|---|
-| Landschaft, große Formen | 12 bis 20 | 4 bis 8 | 5 bis 7 | 2 oder 3 |
-| Porträt | 16 bis 24 | 2 bis 5 | 2 bis 4 | 2 oder 3 |
+| Landschaft, große Formen | 12 bis 20 | 4 bis 8 | 3 bis 5 | 2 oder 3 |
+| Porträt | 16 bis 24 | 2 bis 5 | 6 bis 8 | 2 oder 3 |
 | Architektur, Straßen | 14 bis 20 | 3 bis 6 oder **Geometrisch** | 5 | 2 |
-| Blumen, Stillleben | 10 bis 16 | 3 bis 6 | 2 bis 4 | 2 |
-| Schnelle Skizze, draußen | 6 bis 10 | 7 bis 10 | 7 | 2 |
+| Blumen, Stillleben | 10 bis 16 | 3 bis 6 | 6 bis 8 | 2 |
+| Schnelle Skizze, draußen | 6 bis 10 | 7 bis 10 | 3 | 2 |
 
-Bei Porträts tragen die kleinen Züge (Augen, Mund, der Schatten unter der Nase) die Ähnlichkeit, also halt **Details** und **Flächen vereinfachen** niedrig, oder leg einen [Ausschnitt](bilder.html#genauer-hinsehen-ausschnitte-des-bildes) vom Gesicht an. Bei Landschaften klappt meist das Gegenteil: wenige, große, ruhige Flächen, und die kleinen Akzente am Ende frei gemalt.
+Bei Porträts tragen die kleinen Züge (Augen, Mund, der Schatten unter der Nase) die Ähnlichkeit, also stell **Details** hoch und **Flächen vereinfachen** niedrig, oder leg einen [Ausschnitt](bilder.html#genauer-hinsehen-ausschnitte-des-bildes) vom Gesicht an. Bei Landschaften klappt meist das Gegenteil: wenige, große, ruhige Flächen, und die kleinen Akzente am Ende frei gemalt.

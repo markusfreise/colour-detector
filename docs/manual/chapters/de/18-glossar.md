@@ -37,7 +37,7 @@ Was du auf dem Bild, in der Farbliste und in den Rezepten liest.
 | Ausschnitt | Detail | Ein Zoom auf einen Teil des Bildes: feinere Flächen in der Palette des ganzen Bildes. Pro. |
 | Auto | Auto | Die App wählt die Farben, die zum Bild passen, aus den Kästen mit **Für „Auto“ nutzen**. |
 | Deine Mischung | Your mix | Die Farbe, die das Rezept auf weißem Papier ergibt. |
-| Details | Details | Die Einstellung, ob die Mischungen feine Abstufungen im ganzen Bild geben (hoch) oder kleinen Flächen eines anderen Farbtons (niedrig). |
+| Details | Details | Die Einstellung, ob die Mischungen kleinen Flächen eines anderen Farbtons eine eigene geben (hoch) oder feine Abstufungen im ganzen Bild (niedrig). |
 | Farben | Colours | Die Einstellung für die Anzahl der Mischungen und ihre Liste. |
 | Farbfläche | Colour area | Eine Form des Bildes, die eine Lasur einer Mischung bekommt. |
 | Farbkasten | Paint box | Eine benannte Sammlung deiner Farben, zum Beispiel deine Näpfchen oder ein Reiseset. |

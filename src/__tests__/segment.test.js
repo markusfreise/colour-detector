@@ -93,3 +93,52 @@ describe('fixed colours', () => {
     expect(new Set(regions.map((r) => r.cluster))).toEqual(new Set([1, 2]))
   })
 })
+
+describe('the paper', () => {
+  // A red ball in shades of red with a small white highlight on it, on a blue ground.
+  function ball() {
+    const width = 60, height = 40
+    const rgba = new Uint8ClampedArray(width * height * 4)
+    for (let p = 0; p < width * height; p++) {
+      const x = p % width, y = Math.floor(p / width)
+      const r = Math.hypot(x - 30, y - 20)
+      let c = [40, 70, 160]
+      if (r < 16) c = [Math.round(230 - r * 6), Math.round(60 - r * 2), 50]
+      if (Math.hypot(x - 25, y - 15) < 2.5) c = [252, 250, 246]
+      rgba.set([...c, 255], p * 4)
+    }
+    return { rgba, width, height }
+  }
+
+  it('is no colour of its own unless asked for', () => {
+    const { rgba, width, height } = ball()
+    expect(segmentImage(rgba, width, height, { colours: 3, simplify: -2 }).clusters.some((c) => c.paper)).toBe(false)
+  })
+
+  it('is always the last colour, a group of its own, and takes the highlight', () => {
+    const { rgba, width, height } = ball()
+    const { clusters, regionMap, regions } = segmentImage(rgba, width, height, { colours: 3, simplify: -2, paper: true })
+    const paper = clusters.at(-1)
+    expect(paper.paper).toBe(true)
+    expect(clusters.filter((c) => c.group === paper.group)).toHaveLength(1)
+    expect(regions[regionMap[15 * width + 25]].cluster).toBe(paper.index)
+    // Nothing of the ball or the ground goes to it.
+    expect(regions[regionMap[20 * width + 40]].cluster).not.toBe(paper.index)
+    expect(regions[regionMap[2 * width + 2]].cluster).not.toBe(paper.index)
+  })
+
+  it('is there when nothing of the picture is that light', () => {
+    const rgba = new Uint8ClampedArray(10 * 10 * 4)
+    for (let p = 0; p < 100; p++) rgba.set([40, 70, 160, 255], p * 4)
+    const { clusters } = segmentImage(rgba, 10, 10, { colours: 2, simplify: -2, paper: true })
+    expect(clusters.at(-1)).toMatchObject({ paper: true, pixelCount: 0 })
+  })
+
+  it('is kept by fixed colours', () => {
+    const { rgba, width, height } = ball()
+    const fixed = [{ hex: '#2846a0', group: 0, level: 0 }, { hex: '#c83232', group: 1, level: 0 }, { hex: '#ffffff', group: 2, level: 0, paper: true }]
+    const { clusters, regionMap, regions } = segmentImage(rgba, width, height, { simplify: -2, fixed })
+    expect(clusters[2].paper).toBe(true)
+    expect(regions[regionMap[15 * width + 25]].cluster).toBe(2)
+  })
+})

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { segmentImage, SIMPLIFY_ZERO } from '../lib/segment.js'
+import { segmentImage, SIMPLIFY_ZERO, FINEST } from '../lib/segment.js'
 import { layerImage } from '../lib/layers.js'
 import { useAnalysisStore, savedSettings } from '../stores/analysis.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
@@ -43,7 +43,7 @@ beforeEach(() => {
   analysis = useAnalysisStore()
   paints = usePaintsStore()
   analysis.pixels = picture()
-  Object.assign(analysis.settings, { colours: 4, simplify: SIMPLIFY_ZERO, saturation: 100, contrast: 100, layerCount: 2, maxCoats: 1 })
+  Object.assign(analysis.settings, { colours: 4, simplify: FINEST, saturation: 100, contrast: 100, layerCount: 2, maxCoats: 1 })
 })
 
 const stockIds = (n) => paints.autoCandidates.slice(0, n).map((p) => p.id)
@@ -400,11 +400,11 @@ describe('the palette stays while only the areas change', () => {
     while (waiting()) await answer()
   })
 
-  it('is found at Simplify SIMPLIFY_ZERO, whatever Simplify is set to', async () => {
+  it('is found at the finest Simplify, whatever Simplify is set to', async () => {
     analysis.settings.simplify = 3
     analysis.forgetPicture()
     analysis.analyse()
-    expect(FakeWorker.queue[0]).toMatchObject({ simplify: SIMPLIFY_ZERO, paper: true, geometric: false })
+    expect(FakeWorker.queue[0]).toMatchObject({ simplify: FINEST, paper: true, geometric: false })
     await answer()
     expect(FakeWorker.queue[0]).toMatchObject({ simplify: 3 })
     expect(FakeWorker.queue[0].fixed.length).toBeGreaterThan(0)
@@ -416,7 +416,7 @@ describe('the palette stays while only the areas change', () => {
   it('keeps colours, recipes, numbers and colour changes when Simplify or Geometric change', async () => {
     analysis.setTarget(0, '#123456')
     const before = palette()
-    for (const change of [{ simplify: 4 }, { geometric: true }, { simplify: SIMPLIFY_ZERO, geometric: false }]) {
+    for (const change of [{ simplify: 4 }, { geometric: true }, { simplify: FINEST, geometric: false }, { simplify: SIMPLIFY_ZERO }]) {
       Object.assign(analysis.settings, change)
       analysis.analyse()
       expect(waiting()).toBeLessThanOrEqual(1)

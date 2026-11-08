@@ -8,7 +8,7 @@ import { renderLayers } from '../lib/layers.js'
 import { useAiStore } from './ai.js'
 import { aiRequest, readAiAnswer, aiCost, aiImageSize } from '../lib/ai.js'
 import { boxMask, detailWash } from '../lib/details.js'
-import { toOklabPixels, SIMPLIFY_ZERO } from '../lib/segment.js'
+import { toOklabPixels, SIMPLIFY_ZERO, FINEST } from '../lib/segment.js'
 import { closeupSize } from '../lib/closeup.js'
 import { useProStore } from './pro.js'
 import { hashOf } from '../lib/picture.js'
@@ -60,7 +60,7 @@ let analysisToken = 0
 // The palette belongs to the whole picture: while a close-up is on screen, what the palette was
 // built from waits in `base`, and `segmentation` and `regionEntry` are the close-up's.
 //
-// The palette (`palette`) is found once, at Simplify SIMPLIFY_ZERO, and kept while only Simplify or
+// The palette (`palette`) is found once, at the finest Simplify (FINEST, shown as -2), and kept while only Simplify or
 // Geometric change: those settings change the areas (`segmentation`), which are then assigned to
 // the colours of the palette, as a close-up is. So the colours to mix stay the same whatever the
 // areas look like; only the settings in `paletteKeyOf` and the paint box change them.
@@ -203,7 +203,7 @@ export const useAnalysisStore = defineStore('analysis', {
     image: null, // HTMLImageElement (raw)
     pixels: null, // { rgba, width, height } at working resolution (raw)
     adjusted: null, // the same pixels with saturation and contrast applied, null when both are at 100 (raw)
-    palette: null, // raw result from worker: the colours of the whole picture at Simplify SIMPLIFY_ZERO
+    palette: null, // raw result from worker: the colours of the whole picture at Simplify FINEST
     segmentation: null, // raw result from worker: the areas on screen, their clusters those of `palette`
     entries: [], // palette entries
     order: [], // entry indices in the order of their labels (mix by mix, lightest wash first)
@@ -671,7 +671,7 @@ export const useAnalysisStore = defineStore('analysis', {
       try {
         let fresh = false
         if (key !== paletteKey || !whole.palette) {
-          // The palette: found at Simplify SIMPLIFY_ZERO with its own areas, whatever Simplify is
+          // The palette: found at the finest Simplify (FINEST) with its own areas, whatever Simplify is
           // set to. "Colours" counts mixes. The analysis is asked for more, and planMixes joins
           // them down to the wanted number once the paints are known.
           const { result } = await runSegmentation({
@@ -683,7 +683,7 @@ export const useAnalysisStore = defineStore('analysis', {
             colours: values ? 1 : mixesToRequest(this.settings.colours),
             maxWashes: values ? VALUE_STEPS : undefined,
             washStep: values ? VALUE_STEP : undefined,
-            simplify: SIMPLIFY_ZERO,
+            simplify: FINEST,
             geometric: false,
             // Details weighs small colours and lightness in the analysis too, not only when mixes
             // are joined: a grey picture has no hues to keep.
@@ -702,7 +702,7 @@ export const useAnalysisStore = defineStore('analysis', {
         if (!this.base && areasChanged) {
           // The areas at the Simplify and Geometric set, in the colours of the palette.
           let seg = whole.palette
-          if (this.settings.simplify !== SIMPLIFY_ZERO || this.settings.geometric) {
+          if (this.settings.simplify !== FINEST || this.settings.geometric) {
             const fixed = fixedOf(whole.palette)
             const { result } = await runSegmentation({ rgba: rgba.slice(), width, height, simplify: this.settings.simplify, variety, geometric: this.settings.geometric, focus, fixed })
             if (token !== analysisToken || this.layerMode) return

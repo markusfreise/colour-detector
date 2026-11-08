@@ -24,7 +24,7 @@ Der Knopf mit dem halb gefüllten Kreis neben den Flächen schaltet auf [Monochr
 
 **Farben** ist die Zahl der Mischungen auf deiner Palette, von 2 bis 32. Das ist die wichtigste Entscheidung über die Arbeit, die ein Bild macht, denn jede Mischung ist eine Pfütze, die du ansetzt, prüfst und feucht hältst.
 
-Die Zahl ist nicht die Zahl der Farben auf dem Papier. Jede Mischung wird in bis zu fünf Wasserstufen gemalt, ihren Lasuren; ein Bild mit 20 Mischungen zeigt in diesem Beispiel 52 verschiedene Farben. Töne, die sich nur in Hell und Dunkel unterscheiden, teilen sich eine Mischung; Töne, die sich im Farbton unterscheiden, bekommen eine eigene.
+Die Zahl ist nicht die Zahl der Farben auf dem Papier. Jede Mischung wird in bis zu fünf Wasserstufen gemalt, ihren Lasuren; ein Bild mit 20 Mischungen zeigt in diesem Beispiel 49 verschiedene Farben. Töne, die sich nur in Hell und Dunkel unterscheiden, teilen sich eine Mischung; Töne, die sich im Farbton unterscheiden, bekommen eine eigene.
 
 Zu den Mischungen kommt immer noch eine Farbe: das Weiß des Papiers, mit der Nummer **0**. Es wird mit nichts gemalt. Ein Glanzlicht, ein Blitzen auf dem Wasser oder ein weißer Fensterrahmen, heller als jede Lasur, bleibt Papier, und du sparst es beim Malen aus. Das Papier zählt nicht zu den **Farben**.
 

@@ -24,7 +24,7 @@ Eine **Mischung** ist eine Kombination von Farben in einem festen Verhältnis: e
 
 Jede Fläche im Bild trägt eine Beschriftung aus beidem: **6L** ist Mischung 6 als leichte Lasur, **6R** dieselbe Mischung als kräftige Lasur. Du mischst die 6 einmal, nimmst etwas davon für die L-Flächen, gibst Farbe dazu für die R-Flächen und musst nie eine Farbe zweimal treffen.
 
-Deshalb zählt **Farben** in den Einstellungen Mischungen, nicht Farben. Beim Beispielfoto Llyn Idwal mit Farben auf 20 steht in der Liste **52 in 20 Mischungen**: zweiundfünfzig Farben auf dem Papier aus zwanzig Pfützen auf der Palette.
+Deshalb zählt **Farben** in den Einstellungen Mischungen, nicht Farben. Beim Beispielfoto Llyn Idwal mit Farben auf 20 steht in der Liste **49 in 20 Mischungen**: neunundvierzig Farben auf dem Papier, sein eigenes Weiß mitgezählt, aus zwanzig Pfützen auf der Palette.
 
 > **Gut zu wissen:** Keine Farbe wird je stärker verwendet als ihr eigenes Farbmuster. Wasser macht eine Farbe nur heller; eine Farbe, die dunkler ist als jede einzelne Farbe, braucht eine zweite Farbe in der Mischung. So verhält sich echte Farbe, und deshalb enthalten manche dunklen Mischungen drei Farben.
 
@@ -34,7 +34,7 @@ Tippe rechts auf **Farben**, um die Liste zu öffnen. Sie zeigt einen Block pro 
 
 ![Die Farbliste von Llyn Idwal](shot:colours)
 
-1. **52 in 20 Mischungen:** wie viele Farben das Bild hat und aus wie vielen Pfützen sie kommen.
+1. **49 in 20 Mischungen:** wie viele Farben das Bild hat und aus wie vielen Pfützen sie kommen.
 2. **Der Schlüssel** zu den Wasserstufen W bis C, wie sie im Bild und in den Balken stehen.
 3. **Eine Mischung:** ihre Nummer, ihre Grundfarbe, die Farben mit Nummer und Namen, wie viele Lasuren sie hat und wie viel vom Bild sie bedeckt. Darunter zwei Balken: die Farben im Verhältnis des Rezepts (die Zahlen sind Teile) und die Lasuren dieser Mischung nebeneinander, von wässrig bis konzentriert, jede in ihrer Farbe.
 

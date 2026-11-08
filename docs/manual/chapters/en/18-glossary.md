@@ -26,7 +26,7 @@ What you read on the picture, in the colour list and in the recipes.
 | 3 x P 672 | 3 x P 672 | Three parts of paint 672 from the pan. Parts are counted in brush loads. |
 | 1:9 with water | 1:9 mit Wasser | Layer mode: one part paint to nine parts water, with a comparison such as "like coffee". |
 | 0.8 | 0,8 | The distance between target and mix, in steps the eye can just tell apart (see Match quality). |
-| 52 in 20 mixes | 52 in 20 Mischungen | 52 colours on the paper, made from 20 puddles in different washes. |
+| 49 in 20 mixes | 49 in 20 Mischungen | 49 colours on the paper, made from 20 puddles in different washes. |
 
 ## In the app
 

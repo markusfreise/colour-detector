@@ -24,7 +24,7 @@ The button with the half-filled circle beside the areas switches to [Monochrome]
 
 **Colours** is the number of mixes on your palette, from 2 to 32. It is the most important decision about the work a picture takes, because every mix is a puddle you prepare, test and keep wet.
 
-The number is not the number of colours on the paper. Every mix is painted at up to five strengths of water, its washes, so a picture with 20 mixes in this sample shows 52 different colours. Colours that differ only in how light or dark they are share one mix; colours that differ in hue get their own.
+The number is not the number of colours on the paper. Every mix is painted at up to five strengths of water, its washes, so a picture with 20 mixes in this sample shows 49 different colours. Colours that differ only in how light or dark they are share one mix; colours that differ in hue get their own.
 
 On top of the mixes there is always one more colour: the white of the paper, numbered **0**. It is painted with nothing. A highlight, a glint on water or a white window frame that is lighter than any wash stays paper, and you leave it out when you paint. The paper does not count towards **Colours**.
 

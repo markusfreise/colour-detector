@@ -24,7 +24,7 @@ A **mix** is a combination of paints in a fixed ratio: one puddle on the palette
 
 Every area on the picture carries a label made of both: **6L** is mix 6 as a light wash, **6R** the same mix as a rich wash. You mix 6 once, take some of it for the L areas, add paint for the R areas, and never have to match a colour twice.
 
-That is why **Colours** in the settings counts mixes, not colours. With the sample photo Llyn Idwal and Colours at 20, the list says **49 in 20 mixes**: forty-nine colours on the paper, its own white among them, from twenty puddles on the palette.
+That is why **Colours** in the settings counts mixes, not colours. With the sample photo Llyn Idwal and Colours at 20, the list says **58 in 20 mixes**: fifty-eight colours on the paper, its own white among them, from twenty puddles on the palette.
 
 > **Note:** No paint is ever used stronger than its own swatch. Water only makes a paint lighter; a colour darker than any single paint can be needs a second paint in the mix. That is how real paint behaves, and it is why some dark mixes contain three paints.
 
@@ -34,7 +34,7 @@ Press **Colours** on the right to open the list. It shows one block per mix, fro
 
 ![The colour list of Llyn Idwal](shot:colours)
 
-1. **49 in 20 mixes:** how many colours the picture has, and how many puddles they come from.
+1. **58 in 20 mixes:** how many colours the picture has, and how many puddles they come from.
 2. **The key** to the water levels, W to C, as they appear on the picture and in the bars.
 3. **One mix:** its number, its base colour, the paints by number and name, how many washes it has and how much of the picture it covers. Below, two bars: the paints in the proportions of the recipe (the numbers are parts), and the washes of this mix side by side, from watery to concentrated, each in its own colour.
 

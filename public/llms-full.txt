@@ -411,7 +411,9 @@ The button with the half-filled circle beside the areas switches to [Monochrome]
 
 **Colours** is the number of mixes on your palette, from 2 to 32. It is the most important decision about the work a picture takes, because every mix is a puddle you prepare, test and keep wet.
 
-The number is not the number of colours on the paper. Every mix is painted at up to five strengths of water, its washes, so a picture with 20 mixes in this sample shows 52 different colours. Colours that differ only in how light or dark they are share one mix; colours that differ in hue get their own.
+The number is not the number of colours on the paper. Every mix is painted at up to five strengths of water, its washes, so a picture with 20 mixes in this sample shows 49 different colours. Colours that differ only in how light or dark they are share one mix; colours that differ in hue get their own.
+
+On top of the mixes there is always one more colour: the white of the paper, numbered **0**. It is painted with nothing. A highlight, a glint on water or a white window frame that is lighter than any wash stays paper, and you leave it out when you paint. The paper does not count towards **Colours**.
 
 *Screenshot: The same photo with 6 mixes*
 
@@ -429,16 +431,18 @@ At **0**, where every picture opens, the areas follow the photo closely but leav
 
 With Pro the slider goes below 0, down to **-2**. There the app takes back step by step what calms the areas, until they follow the photo almost pixel by pixel. That is useful for a detailed study, for a [detail of the picture](https://watercolourlove.de/manual/pictures.html#looking-closer-details-of-the-picture), or simply to see how much is really there. For painting, most people end up between 3 and 8.
 
-> **Tip:** Simplify does not change the number of mixes, only the shapes. If a picture feels busy, raise **Simplify areas** first; if it feels flat or too uniform, raise **Colours**.
+The colours themselves are always found at the finest setting, -2, and Simplify only redraws the areas in them. So moving the slider never changes the mixes, their recipes or their numbers, and a colour you changed by hand stays as it is.
+
+> **Tip:** Simplify does not change the mixes, only the shapes. If a picture feels busy, raise **Simplify areas** first; if it feels flat or too uniform, raise **Colours**.
 
 ## Details: which colours get their own mix
 
 When the photo has more colours than you asked for, some of them have to share a mix. **Details** decides which.
 
-- **High (towards 10)** keeps the picture as a whole as close to the photo as possible. The large areas, a sky, a wall, a street, get the finest steps, and a small area of another hue may be painted with the nearest large mix.
-- **Low (towards 0)** keeps small areas of a distinct hue in a mix of their own: the red roof in a green valley, the lips in a portrait, a single yellow boat. In exchange, similar large colours share mixes more often, and a sky may become one flat colour.
+- **High (towards 10)** keeps small areas of a distinct hue in a mix of their own: the red roof in a green valley, the lips in a portrait, a single yellow boat. In exchange, similar large colours share mixes more often, and a sky may become one flat colour.
+- **Low (towards 0)** keeps the picture as a whole as close to the photo as possible. The large areas, a sky, a wall, a street, get the finest steps, and a small area of another hue may be painted with the nearest large mix.
 
-The default of 5 is a balance. Lower it for pictures that live from a small accent; raise it for quiet landscapes where the large colour fields matter most.
+The default of 5 is a balance. Raise it for pictures that live from a small accent; lower it for quiet landscapes where the large colour fields matter most.
 
 ## Max. paints
 
@@ -500,13 +504,13 @@ These are starting points, not rules.
 
 | Subject | Colours | Simplify areas | Details | Max. paints |
 |---|---|---|---|---|
-| Landscape, large shapes | 12 to 20 | 4 to 8 | 5 to 7 | 2 or 3 |
-| Portrait | 16 to 24 | 2 to 5 | 2 to 4 | 2 or 3 |
+| Landscape, large shapes | 12 to 20 | 4 to 8 | 3 to 5 | 2 or 3 |
+| Portrait | 16 to 24 | 2 to 5 | 6 to 8 | 2 or 3 |
 | Architecture, streets | 14 to 20 | 3 to 6, or **Geometric** | 5 | 2 |
-| Flowers, still life | 10 to 16 | 3 to 6 | 2 to 4 | 2 |
-| Quick sketch, plein air | 6 to 10 | 7 to 10 | 7 | 2 |
+| Flowers, still life | 10 to 16 | 3 to 6 | 6 to 8 | 2 |
+| Quick sketch, plein air | 6 to 10 | 7 to 10 | 3 | 2 |
 
-For portraits, the small features (eyes, mouth, the shadow under the nose) carry the likeness, so keep **Details** and **Simplify areas** low, or make a [detail](https://watercolourlove.de/manual/pictures.html#looking-closer-details-of-the-picture) of the face. For landscapes, the opposite usually works: few, large, calm areas, and the small accents painted freely at the end.
+For portraits, the small features (eyes, mouth, the shadow under the nose) carry the likeness, so keep **Details** high and **Simplify areas** low, or make a [detail](https://watercolourlove.de/manual/pictures.html#looking-closer-details-of-the-picture) of the face. For landscapes, the opposite usually works: few, large, calm areas, and the small accents painted freely at the end.
 
 ---
 
@@ -530,7 +534,7 @@ A **mix** is a combination of paints in a fixed ratio: one puddle on the palette
 
 Every area on the picture carries a label made of both: **6L** is mix 6 as a light wash, **6R** the same mix as a rich wash. You mix 6 once, take some of it for the L areas, add paint for the R areas, and never have to match a colour twice.
 
-That is why **Colours** in the settings counts mixes, not colours. With the sample photo Llyn Idwal and Colours at 20, the list says **52 in 20 mixes**: fifty-two colours on the paper, from twenty puddles on the palette.
+That is why **Colours** in the settings counts mixes, not colours. With the sample photo Llyn Idwal and Colours at 20, the list says **58 in 20 mixes**: fifty-eight colours on the paper, its own white among them, from twenty puddles on the palette.
 
 > **Note:** No paint is ever used stronger than its own swatch. Water only makes a paint lighter; a colour darker than any single paint can be needs a second paint in the mix. That is how real paint behaves, and it is why some dark mixes contain three paints.
 
@@ -540,7 +544,7 @@ Press **Colours** on the right to open the list. It shows one block per mix, fro
 
 *Screenshot: The colour list of Llyn Idwal*
 
-1. **52 in 20 mixes:** how many colours the picture has, and how many puddles they come from.
+1. **58 in 20 mixes:** how many colours the picture has, and how many puddles they come from.
 2. **The key** to the water levels, W to C, as they appear on the picture and in the bars.
 3. **One mix:** its number, its base colour, the paints by number and name, how many washes it has and how much of the picture it covers. Below, two bars: the paints in the proportions of the recipe (the numbers are parts), and the washes of this mix side by side, from watery to concentrated, each in its own colour.
 
@@ -1669,7 +1673,7 @@ What you read on the picture, in the colour list and in the recipes.
 | 3 x P 672 | 3 x P 672 | Three parts of paint 672 from the pan. Parts are counted in brush loads. |
 | 1:9 with water | 1:9 mit Wasser | Layer mode: one part paint to nine parts water, with a comparison such as "like coffee". |
 | 0.8 | 0,8 | The distance between target and mix, in steps the eye can just tell apart (see Match quality). |
-| 52 in 20 mixes | 52 in 20 Mischungen | 52 colours on the paper, made from 20 puddles in different washes. |
+| 58 in 20 mixes | 58 in 20 Mischungen | 58 colours on the paper, made from 20 puddles in different washes. |
 
 ## In the app
 
@@ -1682,7 +1686,7 @@ What you read on the picture, in the colour list and in the recipes.
 | Colour area | Farbfläche | A shape of the picture that gets one wash of one mix. |
 | Colours | Farben | The setting for the number of mixes, and the list of them. |
 | Detail | Ausschnitt | A zoom on a part of the picture: finer areas in the palette of the whole picture. Pro. |
-| Details | Details | The setting that decides whether the mixes go to fine steps across the picture (high) or to small areas of another hue (low). |
+| Details | Details | The setting that decides whether the mixes go to small areas of another hue (high) or to fine steps across the picture (low). |
 | Full breakdown | Alle Details | Target and mix side by side, the colour by hand and every recipe of a colour. |
 | Geometric | Geometrisch | Areas as polygons with straight edges instead of their organic outline. |
 | Grid | Raster | Square cells over the picture, to copy it onto paper cell by cell. |
@@ -1743,7 +1747,7 @@ Raise **Simplify areas**. Every step merges small shapes into their neighbours; 
 
 ### An important detail has disappeared
 
-Small areas that differ in hue from their surroundings, a red roof, the lips in a portrait, keep a mix of their own when **Details** is set low. If the detail is also small in size, simplifying merges it away; look at that part of the picture on its own with **Detail**, where it gets finer areas and mixes of its own (Pro). See [Pictures](https://watercolourlove.de/manual/pictures.html).
+Small areas that differ in hue from their surroundings, a red roof, the lips in a portrait, keep a mix of their own when **Details** is set high. If the detail is also small in size, simplifying merges it away; look at that part of the picture on its own with **Detail**, where it gets finer areas and mixes of its own (Pro). See [Pictures](https://watercolourlove.de/manual/pictures.html).
 
 ### The colours look dull, or far too loud
 

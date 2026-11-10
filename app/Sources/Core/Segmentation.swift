@@ -129,8 +129,14 @@ enum Segmenter {
     /// One more wash for every factor of about 1.7 between the weakest and the strongest part of a mix.
     static let washStep = 0.55
     private static let minReflectance = 0.0005
-    /// A colour closer than this to white (OKLab) is left as paper: no wash is that watery.
-    static let paperDelta = 0.05
+    /// A colour closer than this to white (OKLab) is left as paper: no wash is that watery. Kept
+    /// small: the lights of a cloud or of a white wall are a little darker than the paper, and with
+    /// a wider limit they were all paper, one flat white without the steps of light in it.
+    static let paperDelta = 0.02
+    /// A mix also gets one more wash for every step of this much lightness (OKLab L) between its
+    /// lightest and its darkest part. Water levels are even steps of strength, and in the lights a
+    /// step of strength is a large step for the eye: a pale zone had one wash where it shows two.
+    static let washLightStep = 0.04
     private static let binL = 50.0 // histogram steps per unit of L
     private static let binAB = 100.0 // histogram steps per unit of a and b
 
@@ -336,7 +342,18 @@ enum Segmenter {
                 return logS[members[members.count - 1]]
             }
             let lo = at(0.02), hi = at(0.98)
-            let levels = max(1, min(maxWashes, members.count, 1 + Int(Smooth.jsRound((hi - lo) / washStep))))
+            // The same range in lightness (the members are sorted by strength, so nearly by lightness).
+            func lightAt(_ share: Double) -> Double {
+                var run = 0.0
+                for i in members {
+                    run += counts[i]
+                    if run >= total * share { return points[i * 3] }
+                }
+                return points[members[members.count - 1] * 3]
+            }
+            let byStrength = 1 + Int(Smooth.jsRound((hi - lo) / washStep))
+            let byLightness = 1 + Int(Smooth.jsRound(abs(lightAt(0.02) - lightAt(0.98)) / washLightStep))
+            let levels = max(1, min(maxWashes, members.count, max(byStrength, byLightness)))
             var centres = (0..<levels).map { levels == 1 ? (lo + hi) / 2 : lo + (hi - lo) * Double($0) / Double(levels - 1) }
             var level = [Int](repeating: 0, count: members.count)
             for _ in 0..<12 {

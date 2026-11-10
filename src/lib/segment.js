@@ -97,8 +97,14 @@ export const MAX_WASHES = 5
 // One more wash for every factor of about 1.7 between the weakest and the strongest part of a mix.
 export const WASH_STEP = 0.55
 const MIN_REFLECTANCE = 0.0005
-// A colour closer than this to white (OKLab) is left as paper: no wash is that watery.
-export const PAPER_DELTA = 0.05
+// A colour closer than this to white (OKLab) is left as paper: no wash is that watery. Kept
+// small: the lights of a cloud or of a white wall are a little darker than the paper, and with
+// a wider limit they were all paper, one flat white without the steps of light in it.
+export const PAPER_DELTA = 0.02
+// A mix also gets one more wash for every step of this much lightness (OKLab L) between its
+// lightest and its darkest part. Water levels are even steps of strength, and in the lights a
+// step of strength is a large step for the eye: a pale zone had one wash where it shows two.
+export const WASH_LIGHT_STEP = 0.04
 
 // Side of the patches the picture is cut into before its colours are found, in pixels.
 const PATCH_STEP = 5
@@ -341,7 +347,15 @@ export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPo
       return logS.get(members[members.length - 1])
     }
     const lo = at(0.02), hi = at(0.98)
-    const levels = Math.max(1, Math.min(maxWashes, members.length, 1 + Math.round((hi - lo) / washStep)))
+    // The same range in lightness (the members are sorted by strength, so nearly by lightness).
+    const lightAt = (share) => {
+      let run = 0
+      for (const i of members) { run += counts[i]; if (run >= total * share) return points[i * 3] }
+      return points[members[members.length - 1] * 3]
+    }
+    const byStrength = 1 + Math.round((hi - lo) / washStep)
+    const byLightness = 1 + Math.round(Math.abs(lightAt(0.02) - lightAt(0.98)) / WASH_LIGHT_STEP)
+    const levels = Math.max(1, Math.min(maxWashes, members.length, Math.max(byStrength, byLightness)))
     const centres = Array.from({ length: levels }, (_, l) => (levels === 1 ? (lo + hi) / 2 : lo + ((hi - lo) * l) / (levels - 1)))
     const level = new Map()
     for (let it = 0; it < 12; it++) {

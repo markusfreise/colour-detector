@@ -10,7 +10,7 @@ highlight costs next to nothing. This one counts what gets lost.
   in magenta, dark ones in blue).
 - `photos.py`: prepares the photos from `public/sample-*.webp` and, where there, `local-samples/`
   (needs Python with Pillow). `photos/` is not committed.
-- `baseline.txt`: the figures of the code before TASK-75, the thing to beat.
+- `baseline.txt`: the figures of the code before TASK-75; `after.txt`: those of TASK-75.
 
 ## Figures
 
@@ -27,6 +27,15 @@ highlight costs next to nothing. This one counts what gets lost.
 
 ## Stages
 
-Each photo is measured four times, so that a loss can be put down to its cause: `finest/target`
-(what the palette can show at all), `finest/mixed` (what the paints and the water levels leave of
-it), `s0/mixed` (what the calming leaves at the opening step) and `s3/mixed`.
+Each photo is measured five times, so that a loss can be put down to its cause: `finest/found`
+(every wash as the analysis found it), `finest/target` (washes of a mix on one water level as one
+colour, as the app lists them), `finest/mixed` (what the paints leave of it), `s0/mixed` (what the
+calming leaves at the opening step) and `s3/mixed`. The line "modelling of pale zones" under
+"All photos" is taken over all photos together, so a photo whose lights hardly vary counts little.
+
+## Switches for trying things
+
+- `ACCURACY_STAGES=finest` or `s0`: only those stages, which is quicker (no sheets with `finest`).
+- `ACCURACY_FINE=n`: water levels split in n, to see what finer levels would give and cost in
+  colours (`colours` in `metrics.json`); `ACCURACY_FINE_ONLY=WL` splits only those levels.
+- `ACCURACY_THINGS=1`: one line per small thing on stderr (stage, sign, pixels, contrast, kept).

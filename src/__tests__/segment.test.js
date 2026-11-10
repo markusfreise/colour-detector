@@ -134,6 +134,24 @@ describe('the paper', () => {
     expect(clusters.at(-1)).toMatchObject({ paper: true, pixelCount: 0 })
   })
 
+  it('leaves the shadow of a cloud a wash and only its lightest part white', () => {
+    // A cloud: its lit top nearly white, its underside a pale blue grey, over a dark hill.
+    const width = 60, height = 40
+    const rgba = makeImage(width, height, (x, y) => (y >= 30 ? [60, 70, 50] : y < 15 ? [252, 252, 253] : [236, 240, 246]))
+    const { clusters, regionMap, regions } = segmentImage(rgba, width, height, { colours: 3, simplify: -2, paper: true })
+    const paper = clusters.at(-1)
+    expect(regions[regionMap[5 * width + 30]].cluster).toBe(paper.index)
+    expect(regions[regionMap[22 * width + 30]].cluster).not.toBe(paper.index)
+  })
+
+  it('gives a pale zone a wash for every step of light the eye sees', () => {
+    // A white wall in soft light: one hue, from a pale grey to a slightly darker one.
+    const width = 120, height = 20
+    const rgba = makeImage(width, height, (x) => { const v = Math.round(232 - (x / (width - 1)) * 52); return [v, v, Math.min(255, v + 6)] })
+    const { clusters } = segmentImage(rgba, width, height, { colours: 1, simplify: -2, paper: true })
+    expect(clusters.filter((c) => c.pixelCount && !c.paper).length).toBeGreaterThanOrEqual(4)
+  })
+
   it('is kept by fixed colours', () => {
     const { rgba, width, height } = ball()
     const fixed = [{ hex: '#2846a0', group: 0, level: 0 }, { hex: '#c83232', group: 1, level: 0 }, { hex: '#ffffff', group: 2, level: 0, paper: true }]

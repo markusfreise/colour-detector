@@ -6,7 +6,8 @@
 // the steps of light inside pale zones. Writes pictures and figures to compare versions.
 //
 // Each photo is measured at several stages, so that a loss can be put down to its cause:
-//   finest/target  the palette at the finest Simplify, every colour as the analysis found it
+//   finest/found   the palette at the finest Simplify, every wash as the analysis found it
+//   finest/target  the same with the washes of a mix on one water level as one colour, as the app lists them
 //   finest/mixed   the same areas in the colours the paints give (washes on one water level are one colour)
 //   s0/mixed       the areas of Simplify shown as 0, as the app opens a picture
 //   s3/mixed       the areas of Simplify shown as 3
@@ -97,7 +98,7 @@ function smallThings(L, w, h) {
 }
 
 /** The figures of one flat picture: `flat` = OKLab per pixel, `labels` = its colour per pixel. */
-function measure(photo, soft, things, flat, labels, w, h) {
+function measure(photo, soft, things, flat, labels, w, h, stage = '') {
   const count = w * h
   const Lf = new Float32Array(count)
   for (let p = 0; p < count; p++) Lf[p] = flat[p * 3]
@@ -113,6 +114,7 @@ function measure(photo, soft, things, flat, labels, w, h) {
     k.n++
     k.weight += thing.weight
     if (part >= KEPT) { k.kept++; k.keptWeight += thing.weight } else lost.push(thing)
+    if (process.env.ACCURACY_THINGS) process.stderr.write(`T ${stage} ${thing.sign} ${thing.pixels.length} ${Math.abs(thing.contrast).toFixed(3)} ${part >= KEPT ? 1 : 0} ${part.toFixed(2)}\n`)
   }
   // Light and dark: the error of L in each band of the photo, so that a small band counts as much as a large one.
   const bands = [0, 1, 2].map(() => ({ n: 0, error: 0, bias: 0 }))
@@ -142,7 +144,7 @@ function measure(photo, soft, things, flat, labels, w, h) {
     if (Lf[p] > 0.995) onPaper++
   }
   const pale = lights > count * 0.005 && Math.sqrt(spread / lights) > 0.01
-    ? { modelling: Math.max(-1, 1 - miss / spread), steps: [...used.values()].filter((n) => n >= lights * 0.02).length, paper: onPaper / lights }
+    ? { modelling: Math.max(-1, 1 - miss / spread), miss, spread, steps: [...used.values()].filter((n) => n >= lights * 0.02).length, paper: onPaper / lights }
     : null
   const { regionSize } = connectedComponents(labels, w, h)
   return {
@@ -180,6 +182,15 @@ for (const name of names) {
   // The colours, as `recomputeAllRecipes` builds them: washes of a mix on one water level are one colour.
   const groups = planMixes(palette.clusters.filter((c) => !c.paper), box, { maxPaints: MAX_PAINTS, wanted: COLOURS, variety: DETAILS })
   const washOf = (recipe, hex) => (recipe.paints.length ? washRecipe(recipe, hex, byId) : recipe)
+  // ACCURACY_FINE=n tries water levels split in n (the app has one step per level in mix mode).
+  const fine = Number(process.env.ACCURACY_FINE ?? 1)
+  const letterOf = (fullness) => {
+    if (fine <= 1) return washLetter(fullness)
+    const exact = washLetter(fullness, true)
+    // ACCURACY_FINE_ONLY=WL splits only those levels.
+    if (exact && process.env.ACCURACY_FINE_ONLY && !process.env.ACCURACY_FINE_ONLY.includes(exact[0])) return exact[0]
+    return exact ? exact[0] + Math.ceil((Number(exact.slice(1)) * fine) / 5) : ''
+  }
   const targetOf = new Map(), mixedOf = new Map()
   for (const { clusters, recipes } of groups) {
     let items = clusters.map((c) => ({ clusters: [c.index], pixels: c.pixelCount, lab: hexToOklab(c.hex) }))
@@ -187,7 +198,7 @@ for (const name of names) {
       const levels = new Map()
       for (const item of items) {
         item.hex = oklabToHex(item.lab)
-        item.letter = recipes.length ? washLetter(washOf(recipes[0], item.hex).fullness) : ''
+        item.letter = recipes.length ? letterOf(washOf(recipes[0], item.hex).fullness) : ''
         const same = levels.get(item.letter)
         if (same) {
           const n = same.pixels + item.pixels
@@ -232,12 +243,16 @@ for (const name of names) {
     }
     return { flat, labels, rgb: hexes.map(hexToRgb) }
   }
-  const stages = { 'finest/target': [null, targetOf], 'finest/mixed': [null, mixedOf], 's0/mixed': [0, mixedOf], 's3/mixed': [3, mixedOf] }
+  const foundOf = new Map(palette.clusters.map((c) => [c.index, c.paper && !c.pixelCount ? PAPER_HEX : c.hex]))
+  const stages = { 'finest/found': [null, foundOf], 'finest/target': [null, targetOf], 'finest/mixed': [null, mixedOf], 's0/mixed': [0, mixedOf], 's3/mixed': [3, mixedOf] }
+  // ACCURACY_STAGES=finest measures the palette alone (no sheets), which is quick.
+  if (process.env.ACCURACY_STAGES === 'finest') { delete stages['s0/mixed']; delete stages['s3/mixed'] }
+  if (process.env.ACCURACY_STAGES === 's0') for (const key of Object.keys(stages)) if (key !== 's0/mixed') delete stages[key]
   const cache = new Map()
   for (const [stage, [shown, hexOf]] of Object.entries(stages)) {
     if (!cache.has(shown)) cache.set(shown, clustersAt(shown))
     const { flat, labels, rgb } = flatOf(cache.get(shown), hexOf)
-    const m = measure(photo, soft, things, flat, labels, w, h)
+    const m = measure(photo, soft, things, flat, labels, w, h, stage)
     const { lost, ...figures } = m
     metrics[`${name} ${stage}`] = { ms, mixes, colours, ...figures }
     if (stage !== 's0/mixed' && stage !== 's3/mixed') continue
@@ -268,10 +283,12 @@ const rows = Object.entries(metrics).map(([k, m]) =>
 // The same over all photos, per stage.
 const stageNames = [...new Set(Object.keys(metrics).map((k) => k.split(' ')[1]))]
 const mean = (list) => (list.length ? list.reduce((s, v) => s + v, 0) / list.length : NaN)
+// Over all photos together, so that a photo whose lights hardly vary counts for little.
+const pooled = (all) => { const pale = all.filter((m) => m.pale); return 1 - pale.reduce((s, m) => s + m.pale.miss, 0) / pale.reduce((s, m) => s + m.pale.spread, 0) }
 const summary = stageNames.map((stage) => {
   const all = Object.entries(metrics).filter(([k]) => k.endsWith(` ${stage}`)).map(([, m]) => m)
   const share = (key) => mean(all.filter((m) => m[key].n).map((m) => m[key].keptWeight / m[key].weight)) * 100
-  return `${stage.padEnd(16)} lights kept ${share('lightsKept').toFixed(0).padStart(3)}%  darks kept ${share('darksKept').toFixed(0).padStart(3)}%  L error in the lights ${mean(all.filter((m) => m.tone[2]).map((m) => m.tone[2].error)).toFixed(1)}  balanced ${mean(all.map((m) => m.toneBalanced)).toFixed(1)}  modelling of pale zones ${mean(all.filter((m) => m.pale).map((m) => m.pale.modelling)).toFixed(2)}  areas ${Math.round(mean(all.map((m) => m.areas)))}  specks ${Math.round(mean(all.map((m) => m.specks)))}  dE ${mean(all.map((m) => m.dE)).toFixed(2)}`
+  return `${stage.padEnd(16)} lights kept ${share('lightsKept').toFixed(0).padStart(3)}%  darks kept ${share('darksKept').toFixed(0).padStart(3)}%  L error in the lights ${mean(all.filter((m) => m.tone[2]).map((m) => m.tone[2].error)).toFixed(1)}  balanced ${mean(all.map((m) => m.toneBalanced)).toFixed(1)}  modelling of pale zones ${pooled(all).toFixed(2)}  areas ${Math.round(mean(all.map((m) => m.areas)))}  specks ${Math.round(mean(all.map((m) => m.specks)))}  dE ${mean(all.map((m) => m.dE)).toFixed(2)}`
 })
 const text = [head, ...rows, '', 'All photos:', ...summary].join('\n') + '\n'
 fs.writeFileSync(path.join(outDir, 'metrics.txt'), text)

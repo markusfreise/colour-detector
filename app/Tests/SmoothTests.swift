@@ -200,6 +200,16 @@ final class SmoothTests: XCTestCase {
         XCTAssertEqual(Smooth.apart(0.2, 0.01, 0, 0.1, 0, 0), Smooth.apart(0.1, 0, 0, 0.2, 0.01, 0))
     }
 
+    func testCountsAStepOfLightnessBetweenTwoPaleColoursForMore() {
+        let mid = Smooth.apart(0.6, 0, 0, 0.64, 0, 0), pale = Smooth.apart(0.92, 0, 0, 0.96, 0, 0)
+        XCTAssertEqual(pale, mid * 1.5 * 1.5, accuracy: 1e-6)
+        // Only the lightness: a step of hue between two pale colours counts as it is.
+        XCTAssertEqual(Smooth.apart(0.95, 0.02, 0, 0.95, 0, 0), 0.0004, accuracy: 1e-8)
+        // A pale thing on a mid tone counts as it is too.
+        XCTAssertEqual(Smooth.apart(0.95, 0, 0, 0.6, 0, 0), 0.1225, accuracy: 1e-6)
+        XCTAssertEqual(Smooth.apart(0.9, 0, 0.01, 0.95, 0, 0), Smooth.apart(0.95, 0, 0, 0.9, 0, 0.01))
+    }
+
     func testTakesNoiseFromPixelToPixelForOneColourButNotFineLines() throws {
         let w = 100, h = 60
         let rand = P.random(4)

@@ -78,6 +78,10 @@ enum Smooth {
     // to be less than darkLeast of their distance apart.
     static let dark = 0.35
     static let darkLeast = 0.7
+    // Above this lightness (OKLab) colours count as pale: see `apart`. A step of lightness between two
+    // pale colours counts up to paleMost times its size, reached halfway between pale and white.
+    static let pale = 0.75
+    static let paleMost = 1.5
 
     /// Math.round of JavaScript: halves go up, also below zero.
     @inline(__always) static func jsRound(_ x: Double) -> Double {
@@ -803,10 +807,15 @@ enum Smooth {
     /// How far apart two colours are for joining areas: the square of their distance in OKLab, counted
     /// less when both are dark (below `dark` in lightness). Two darks that the numbers tell apart look
     /// alike on paper, so the patches of a shadow run together; a dark eye on light skin counts in full.
+    /// Between two pale colours (both above `pale`) a step of lightness counts more: the light on a cloud
+    /// or a white wall is a small step in numbers and all the modelling a pale zone has, so the steps of
+    /// it stay apart where two mid tones as close would join.
     @inline(__always) static func apart(_ L1: Double, _ a1: Double, _ b1: Double, _ L2: Double, _ a2: Double, _ b2: Double) -> Double {
-        let dL = L1 - L2, da = a1 - a2, db = b1 - b2
-        let lighter = L1 > L2 ? L1 : L2
+        let da = a1 - a2, db = b1 - b2
+        let lighter = L1 > L2 ? L1 : L2, darker = L1 > L2 ? L2 : L1
         let seen = lighter >= dark ? 1 : max(darkLeast, lighter / dark)
+        let more = darker <= pale ? 1 : 1 + (paleMost - 1) * min(1, ((darker - pale) / (1 - pale)) * 2)
+        let dL = (L1 - L2) * more
         return (dL * dL + da * da + db * db) * seen * seen
     }
 

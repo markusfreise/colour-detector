@@ -129,7 +129,7 @@ struct ControlsView: View {
                     slider("Colours", value: $colours, range: 2...32, hint: "More colours = more detail") {
                         session.settings.colours = Int(colours.rounded())
                     }
-                    slider("Details", value: $details, range: 0...10, hint: "Higher = finer steps across the picture, lower = small areas keep their own colour") {
+                    slider("Details", value: $details, range: 0...10, hint: "Higher = small areas keep their own colour, lower = finer steps across the picture") {
                         session.settings.details = Int(details.rounded())
                     }
                     slider("Max. paints", value: $maxPaints, range: 1...3, hint: "Paints in one mix at most") {

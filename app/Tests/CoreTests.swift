@@ -71,6 +71,60 @@ final class CoreTests: XCTestCase {
         XCTAssertNotEqual(result.regionMap[0], result.regionMap[width - 1])
     }
 
+    // MARK: The paper (as segment.test.js)
+
+    /// A red ball in shades of red with a small white highlight on it, on a blue ground.
+    private func ball() -> (rgba: [UInt8], width: Int, height: Int) {
+        let width = 60, height = 40
+        var rgba = [UInt8](repeating: 255, count: width * height * 4)
+        for p in 0..<(width * height) {
+            let x = Double(p % width), y = Double(p / width)
+            let r = hypot(x - 30, y - 20)
+            var c: [Double] = [40, 70, 160]
+            if r < 16 { c = [(230 - r * 6).rounded(), (60 - r * 2).rounded(), 50] }
+            if hypot(x - 25, y - 15) < 2.5 { c = [252, 250, 246] }
+            for i in 0..<3 { rgba[p * 4 + i] = UInt8(c[i]) }
+        }
+        return (rgba, width, height)
+    }
+
+    func testPaperIsNoColourUnlessAskedFor() {
+        let (rgba, width, height) = ball()
+        XCTAssertFalse(Segmenter.segment(rgba: rgba, width: width, height: height, colours: 3, simplify: -2).clusters.contains { $0.paper })
+    }
+
+    func testPaperIsTheLastColourAndTakesTheHighlight() throws {
+        let (rgba, width, height) = ball()
+        let result = Segmenter.segment(rgba: rgba, width: width, height: height, colours: 3, simplify: -2, paper: true)
+        let paper = try XCTUnwrap(result.clusters.last)
+        XCTAssertTrue(paper.paper)
+        XCTAssertEqual(result.clusters.filter { $0.group == paper.group }.count, 1)
+        XCTAssertEqual(result.regions[Int(result.regionMap[15 * width + 25])].cluster, paper.index)
+        // Nothing of the ball or the ground goes to it.
+        XCTAssertNotEqual(result.regions[Int(result.regionMap[20 * width + 40])].cluster, paper.index)
+        XCTAssertNotEqual(result.regions[Int(result.regionMap[2 * width + 2])].cluster, paper.index)
+    }
+
+    func testPaperIsThereWhenNothingIsThatLight() throws {
+        var rgba = [UInt8](repeating: 255, count: 10 * 10 * 4)
+        for p in 0..<100 { rgba[p * 4] = 40; rgba[p * 4 + 1] = 70; rgba[p * 4 + 2] = 160 }
+        let last = try XCTUnwrap(Segmenter.segment(rgba: rgba, width: 10, height: 10, colours: 2, simplify: -2, paper: true).clusters.last)
+        XCTAssertTrue(last.paper)
+        XCTAssertEqual(last.pixelCount, 0)
+    }
+
+    func testFixedColoursKeepThePaper() {
+        let (rgba, width, height) = ball()
+        let fixed = [
+            Segmenter.FixedColour(hex: "#2846a0", group: 0, level: 0),
+            Segmenter.FixedColour(hex: "#c83232", group: 1, level: 0),
+            Segmenter.FixedColour(hex: "#ffffff", group: 2, level: 0, paper: true),
+        ]
+        let result = Segmenter.segment(rgba: rgba, width: width, height: height, simplify: -2, fixed: fixed)
+        XCTAssertTrue(result.clusters[2].paper)
+        XCTAssertEqual(result.regions[Int(result.regionMap[15 * width + 25])].cluster, 2)
+    }
+
     // MARK: Washes and mixes (reference values from the web app's logic)
 
     func testDepthLevelsOff() {

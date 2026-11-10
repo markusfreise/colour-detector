@@ -233,6 +233,16 @@ describe('smooth', () => {
     expect(apart(0.2, 0.01, 0, 0.1, 0, 0)).toBe(apart(0.1, 0, 0, 0.2, 0.01, 0))
   })
 
+  it('counts a step of lightness between two pale colours for more', () => {
+    const mid = apart(0.6, 0, 0, 0.64, 0, 0), pale = apart(0.92, 0, 0, 0.96, 0, 0)
+    expect(pale).toBeCloseTo(mid * 1.5 * 1.5, 6)
+    // Only the lightness: a step of hue between two pale colours counts as it is.
+    expect(apart(0.95, 0.02, 0, 0.95, 0, 0)).toBeCloseTo(0.0004, 8)
+    // A pale thing on a mid tone counts as it is too.
+    expect(apart(0.95, 0, 0, 0.6, 0, 0)).toBeCloseTo(0.1225, 6)
+    expect(apart(0.9, 0, 0.01, 0.95, 0, 0)).toBe(apart(0.95, 0, 0, 0.9, 0, 0.01))
+  })
+
   it('takes noise from pixel to pixel for one colour, but not fine lines', () => {
     const w = 100, h = 60
     const rand = mulberry32(4)

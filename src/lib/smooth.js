@@ -74,6 +74,10 @@ const TEXTURE_ALIKE = 0.14
 // to be less than DARK_LEAST of their distance apart.
 const DARK = 0.35
 const DARK_LEAST = 0.7
+// Above this lightness (OKLab) colours count as pale: see `apart`. A step of lightness between two
+// pale colours counts up to PALE_MOST times its size, reached halfway between PALE and white.
+const PALE = 0.75
+const PALE_MOST = 1.5
 
 /**
  * Cut the picture into compact patches of about step x step pixels that follow its edges
@@ -744,11 +748,16 @@ function dropTexture(worth, standing, thin, kind, kinds, areaOf, sizeOf, first, 
  * How far apart two colours are for joining areas: the square of their distance in OKLab, counted
  * less when both are dark (below DARK in lightness). Two darks that the numbers tell apart look
  * alike on paper, so the patches of a shadow run together; a dark eye on light skin counts in full.
+ * Between two pale colours (both above PALE) a step of lightness counts more: the light on a cloud
+ * or a white wall is a small step in numbers and all the modelling a pale zone has, so the steps of
+ * it stay apart where two mid tones as close would join.
  */
 export function apart(L1, a1, b1, L2, a2, b2) {
-  const dL = L1 - L2, da = a1 - a2, db = b1 - b2
-  const lighter = L1 > L2 ? L1 : L2
+  const da = a1 - a2, db = b1 - b2
+  const lighter = L1 > L2 ? L1 : L2, darker = L1 > L2 ? L2 : L1
   const seen = lighter >= DARK ? 1 : Math.max(DARK_LEAST, lighter / DARK)
+  const pale = darker <= PALE ? 1 : 1 + (PALE_MOST - 1) * Math.min(1, ((darker - PALE) / (1 - PALE)) * 2)
+  const dL = (L1 - L2) * pale
   return (dL * dL + da * da + db * db) * seen * seen
 }
 

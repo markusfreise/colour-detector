@@ -81,7 +81,7 @@ export const AREA_POWER = 0.4
 export const LIGHTNESS_WEIGHT = 0.5
 
 /**
- * The two weights above for a `variety` of 0..10 (the Details slider the other way round). At 5
+ * The two weights above for a `variety` of 0..10 (the Details slider). At 5
  * they are the constants. Higher variety weighs small colours more and lightness less, so a small
  * area of another hue gets a mix of its own already here; lower weighs colours by area and
  * lightness more, so the large areas get finer steps. `planMixes` reads the same slider when it joins mixes, but that only acts when the
@@ -97,6 +97,14 @@ export const MAX_WASHES = 5
 // One more wash for every factor of about 1.7 between the weakest and the strongest part of a mix.
 export const WASH_STEP = 0.55
 const MIN_REFLECTANCE = 0.0005
+// A colour closer than this to white (OKLab) is left as paper: no wash is that watery. Kept
+// small: the lights of a cloud or of a white wall are a little darker than the paper, and with
+// a wider limit they were all paper, one flat white without the steps of light in it.
+export const PAPER_DELTA = 0.02
+// A mix also gets one more wash for every step of this much lightness (OKLab L) between its
+// lightest and its darkest part. Water levels are even steps of strength, and in the lights a
+// step of strength is a large step for the eye: a pale zone had one wash where it shows two.
+export const WASH_LIGHT_STEP = 0.04
 
 // Side of the patches the picture is cut into before its colours are found, in pixels.
 const PATCH_STEP = 5
@@ -189,14 +197,17 @@ export function colourBins(lab, count) {
  * Assign the picture to colours that are already settled (a close-up in the palette of the whole
  * picture): every colour of the picture takes the closest of them. Nothing is found or changed.
  *
- * @param {Array<{hex:string, group:number, level:number}>} fixed
+ * @param {Array<{hex:string, group:number, level:number, paper?:boolean}>} fixed
  * @returns {{labels: Int32Array, clusters: Array<{group:number, level:number}>}}
  */
 export function assignColours(lab, count, fixed, lightnessWeight = LIGHTNESS_WEIGHT) {
   const { points, binOf } = colourBins(lab, count)
   const colours = fixed.map((f) => hexToOklab(f.hex))
   const closest = new Int32Array(points.length / 3)
+  // What the palette left as paper stays paper (see `clusterWashes`).
+  const paper = fixed.findIndex((f) => f.paper)
   for (let i = 0; i < closest.length; i++) {
+    if (paper >= 0 && Math.hypot(1 - points[i * 3], points[i * 3 + 1], points[i * 3 + 2]) < PAPER_DELTA) { closest[i] = paper; continue }
     let least = Infinity
     colours.forEach(([L, a, b], c) => {
       const dL = (L - points[i * 3]) * lightnessWeight, da = a - points[i * 3 + 1], db = b - points[i * 3 + 2]
@@ -204,7 +215,7 @@ export function assignColours(lab, count, fixed, lightnessWeight = LIGHTNESS_WEI
       if (d < least) { least = d; closest[i] = c }
     })
   }
-  return { labels: Int32Array.from(binOf, (bin) => closest[bin]), clusters: fixed.map(({ group, level }) => ({ group, level })) }
+  return { labels: Int32Array.from(binOf, (bin) => closest[bin]), clusters: fixed.map(({ group, level, paper }) => (paper ? { group, level, paper } : { group, level })) }
 }
 
 /**
@@ -219,10 +230,13 @@ export function assignColours(lab, count, fixed, lightnessWeight = LIGHTNESS_WEI
  * With `anchors` (colours as OKLab triples) the mixes are given instead of found: every anchor is
  * a mix, the colours are only assigned to them and `k` is not used.
  *
+ * With `paper` the white of the paper is one more colour, the last one, `{ paper: true }` and a
+ * group of its own: it is there whether or not anything of the picture goes to it.
+ *
  * @returns {{labels: Int32Array, clusters: Array<{group:number, level:number}>}}
  *   labels = cluster per pixel; clusters are ordered mix by mix, lightest wash first
  */
-export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPower = AREA_POWER, maxWashes = MAX_WASHES, washStep = WASH_STEP, lightnessWeight = LIGHTNESS_WEIGHT, anchors = null } = {}) {
+export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPower = AREA_POWER, maxWashes = MAX_WASHES, washStep = WASH_STEP, lightnessWeight = LIGHTNESS_WEIGHT, anchors = null, paper = false } = {}) {
   const rand = mulberry32(seed)
   const { points, counts, binOf } = colourBins(lab, count)
   const n = counts.length
@@ -251,10 +265,23 @@ export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPo
     return lightnessWeight * lightnessWeight * dL * dL + da * da + db * db
   }
 
+  // Squared OKLab distance between bin i and the white of the paper.
+  const toPaper = (i) => {
+    const dL = 1 - points[i * 3]
+    return lightnessWeight * lightnessWeight * dL * dL + points[i * 3 + 1] ** 2 + points[i * 3 + 2] ** 2
+  }
+  // The paper is a colour that is there from the start and never moves: what is about as close to
+  // it as to a mix is left white, and no mix is spent on it. (Every mix reaches white at strength 0,
+  // so a white bin is as close to every mix as to the paper: the paper wins a tie.)
+  const PAPER = -1
+  const paperGap = (i) => (paper ? toPaper(i) : Infinity)
+  const nearPaper = (i) => paper && Math.hypot(1 - points[i * 3], points[i * 3 + 1], points[i * 3 + 2]) < PAPER_DELTA
+
   // k-means++ seeding: the first mix is the most common colour, the rest are drawn
   // with probability weight x squared distance to the nearest mix so far.
   let first = 0
-  for (let i = 1; i < n; i++) if (counts[i] > counts[first]) first = i
+  const seedable = (i) => (nearPaper(i) ? 0 : counts[i])
+  for (let i = 1; i < n; i++) if (seedable(i) > seedable(first)) first = i
   if (anchors?.length) {
     // Given mixes: the direction of each anchor's absorbance, kept as it is.
     anchors.forEach((anchor, c) => {
@@ -263,7 +290,7 @@ export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPo
     })
     iterations = 1
   } else setDir(0, absorb[first * 3], absorb[first * 3 + 1], absorb[first * 3 + 2])
-  const d = new Float64Array(n).fill(Infinity)
+  const d = Float64Array.from({ length: n }, (_, i) => (nearPaper(i) ? 0 : paperGap(i)))
   for (let c = 1; c < kk && !anchors?.length; c++) {
     let sum = 0
     for (let i = 0; i < n; i++) {
@@ -291,7 +318,9 @@ export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPo
         const dd = d2(i, c)
         if (dd < bestD) { bestD = dd; best = c }
       }
+      if (nearPaper(i) || paperGap(i) <= bestD + 1e-6) best = PAPER
       if (group[i] !== best) { group[i] = best; changed = true }
+      if (best === PAPER) continue
       const w = weight[i]
       sums[best * 3] += absorb[i * 3] * w; sums[best * 3 + 1] += absorb[i * 3 + 1] * w; sums[best * 3 + 2] += absorb[i * 3 + 2] * w
     }
@@ -318,7 +347,15 @@ export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPo
       return logS.get(members[members.length - 1])
     }
     const lo = at(0.02), hi = at(0.98)
-    const levels = Math.max(1, Math.min(maxWashes, members.length, 1 + Math.round((hi - lo) / washStep)))
+    // The same range in lightness (the members are sorted by strength, so nearly by lightness).
+    const lightAt = (share) => {
+      let run = 0
+      for (const i of members) { run += counts[i]; if (run >= total * share) return points[i * 3] }
+      return points[members[members.length - 1] * 3]
+    }
+    const byStrength = 1 + Math.round((hi - lo) / washStep)
+    const byLightness = 1 + Math.round(Math.abs(lightAt(0.02) - lightAt(0.98)) / WASH_LIGHT_STEP)
+    const levels = Math.max(1, Math.min(maxWashes, members.length, Math.max(byStrength, byLightness)))
     const centres = Array.from({ length: levels }, (_, l) => (levels === 1 ? (lo + hi) / 2 : lo + ((hi - lo) * l) / (levels - 1)))
     const level = new Map()
     for (let it = 0; it < 12; it++) {
@@ -334,6 +371,26 @@ export function clusterWashes(lab, count, k, { iterations = 24, seed = 7, areaPo
     const base = clusters.length
     for (let l = 0; l < levels; l++) clusters.push({ group: c, level: l })
     for (const i of members) clusterOfBin[i] = base + level.get(i)
+    if (paper) {
+      // The paper is the lightest wash of every mix: a colour closer to the white of the paper
+      // than to the wash it was given is left unpainted. A highlight no mix reaches stays white.
+      const washLab = centres.map((centre) => {
+        const t = Math.exp(centre)
+        return linearToOklab([Math.exp(-t * dirs[c * 3]), Math.exp(-t * dirs[c * 3 + 1]), Math.exp(-t * dirs[c * 3 + 2])])
+      })
+      for (const i of members) {
+        const [L, a, b] = washLab[level.get(i)]
+        const dL = L - points[i * 3], da = a - points[i * 3 + 1], db = b - points[i * 3 + 2]
+        const toWash = lightnessWeight * lightnessWeight * dL * dL + da * da + db * db
+        if (toPaper(i) < toWash) clusterOfBin[i] = -1
+      }
+    }
+  }
+  if (paper) {
+    // Always there, also when nothing of the picture is that light: a mix group of its own.
+    const index = clusters.length
+    clusters.push({ group: kk, level: 0, paper: true })
+    for (let i = 0; i < n; i++) if (clusterOfBin[i] === -1 || group[i] === PAPER) clusterOfBin[i] = index
   }
 
   const labels = new Int32Array(count)
@@ -567,9 +624,10 @@ export function calmAreas(raw, lab, width, height, k, simplify, where = null, ph
  *   and details are kept more readily, whatever `simplify` is,
  *   maxWashes / washStep = washes a mix is split into at most, and the factor of strength (log)
  *   between two of them: a grey picture is one mix, so these set the number of its values,
- *   variety = 0..10, 10 minus the Details slider (see `varietyWeights`), unless areaPower / lightnessWeight are given
+ *   variety = 0..10, the Details slider (see `varietyWeights`), unless areaPower / lightnessWeight are given,
+ *   paper = the white of the paper is a colour too, the last one (see `clusterWashes`)
  */
-export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, fixed = null, focus = null, seed = 7, variety = 5, areaPower, maxWashes, washStep, lightnessWeight } = {}) {
+export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, geometric = false, anchors: given = null, fixed = null, focus = null, seed = 7, variety = 5, areaPower, maxWashes, washStep, lightnessWeight, paper = false } = {}) {
   const count = width * height
   const weights = varietyWeights(variety)
   areaPower ??= weights.areaPower
@@ -588,7 +646,7 @@ export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, 
   const { labels: raw, clusters: found } = fixed?.length
     ? assignColours(lab, count, fixed, lightnessWeight)
     : clusterWashes(lab, count, Math.max(1, Math.min(colours, count)), {
-        seed, areaPower, maxWashes, washStep, lightnessWeight,
+        seed, areaPower, maxWashes, washStep, lightnessWeight, paper,
         // Given colours (hex) as the mixes, instead of finding them.
         anchors: given?.length ? given.map(hexToOklab) : null,
       })
@@ -613,7 +671,8 @@ export function segmentImage(rgba, width, height, { colours = 12, simplify = 4, 
     sums[c * 3] += original[p * 3]; sums[c * 3 + 1] += original[p * 3 + 1]; sums[c * 3 + 2] += original[p * 3 + 2]
     counts[c]++
   }
-  const clusters = found.map(({ group, level }, c) => ({
+  const clusters = found.map(({ group, level, paper: blank }, c) => ({
+    ...(blank ? { paper: true } : {}),
     index: c,
     group, // the mix this colour is a wash of
     level, // wash within the mix, 0 = lightest

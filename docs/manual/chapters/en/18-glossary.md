@@ -26,7 +26,7 @@ What you read on the picture, in the colour list and in the recipes.
 | 3 x P 672 | 3 x P 672 | Three parts of paint 672 from the pan. Parts are counted in brush loads. |
 | 1:9 with water | 1:9 mit Wasser | Layer mode: one part paint to nine parts water, with a comparison such as "like coffee". |
 | 0.8 | 0,8 | The distance between target and mix, in steps the eye can just tell apart (see Match quality). |
-| 52 in 20 mixes | 52 in 20 Mischungen | 52 colours on the paper, made from 20 puddles in different washes. |
+| 58 in 20 mixes | 58 in 20 Mischungen | 58 colours on the paper, made from 20 puddles in different washes. |
 
 ## In the app
 
@@ -39,7 +39,7 @@ What you read on the picture, in the colour list and in the recipes.
 | Colour area | Farbfläche | A shape of the picture that gets one wash of one mix. |
 | Colours | Farben | The setting for the number of mixes, and the list of them. |
 | Detail | Ausschnitt | A zoom on a part of the picture: finer areas in the palette of the whole picture. Pro. |
-| Details | Details | The setting that decides whether the mixes go to fine steps across the picture (high) or to small areas of another hue (low). |
+| Details | Details | The setting that decides whether the mixes go to small areas of another hue (high) or to fine steps across the picture (low). |
 | Full breakdown | Alle Details | Target and mix side by side, the colour by hand and every recipe of a colour. |
 | Geometric | Geometrisch | Areas as polygons with straight edges instead of their organic outline. |
 | Grid | Raster | Square cells over the picture, to copy it onto paper cell by cell. |

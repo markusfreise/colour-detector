@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { segmentImage } from '../lib/segment.js'
+import { segmentImage, SIMPLIFY_ZERO, FINEST } from '../lib/segment.js'
 import { layerImage } from '../lib/layers.js'
 import { useAnalysisStore, savedSettings } from '../stores/analysis.js'
 import { usePaintsStore, MAX_LAYER_PAINTS } from '../stores/paints.js'
@@ -43,7 +43,7 @@ beforeEach(() => {
   analysis = useAnalysisStore()
   paints = usePaintsStore()
   analysis.pixels = picture()
-  Object.assign(analysis.settings, { colours: 4, simplify: 0, saturation: 100, contrast: 100, layerCount: 2, maxCoats: 1 })
+  Object.assign(analysis.settings, { colours: 4, simplify: FINEST, saturation: 100, contrast: 100, layerCount: 2, maxCoats: 1 })
 })
 
 const stockIds = (n) => paints.autoCandidates.slice(0, n).map((p) => p.id)
@@ -54,8 +54,8 @@ async function toLayerMode() {
 }
 
 describe('settings of saved pictures', () => {
-  it('turns the old variety into Details the other way round', () => {
-    expect(savedSettings({ colours: 12, variety: 8 })).toEqual({ colours: 12, details: 2 })
+  it('turns the old variety into Details, which now runs the same way', () => {
+    expect(savedSettings({ colours: 12, variety: 8 })).toEqual({ colours: 12, details: 8 })
     expect(savedSettings({ variety: 5 })).toEqual({ details: 5 })
     expect(savedSettings({ details: 7, variety: 1 })).toEqual({ details: 7 })
     expect(savedSettings({ colours: 12 })).toEqual({ colours: 12 })
@@ -163,7 +163,7 @@ describe('layer mode in the analysis store', () => {
     analysis.setTarget(0, '#123456')
     await toLayerMode()
     expect(analysis.exportEdits()).toHaveLength(1)
-    analysis.settings.simplify = 3
+    analysis.settings.colours = 3
     analysis.analyse()
     await answer()
     // The mixes are those of other settings now: their colour changes are not this picture's.
@@ -198,7 +198,7 @@ describe('layer mode in the analysis store', () => {
   it('keeps the colour changes of a picture opened in layer mode for its first mix analysis', async () => {
     await toLayerMode()
     const edits = [{ index: 0, targetHex: '#123456', chosen: 0 }]
-    analysis.pendingEdits = { key: '100/100/0/4/5/false/0', edits }
+    analysis.pendingEdits = { key: '100/100/4/5/0', edits }
     expect(analysis.exportEdits()).toEqual(edits)
     analysis.setMode('mix')
     await answer()
@@ -389,5 +389,68 @@ describe('a close-up keeps the palette of the whole picture', () => {
     expect(FakeWorker.queue.at(-1).fixed.length).toBeGreaterThan(0)
     while (waiting()) await answer()
     expect(analysis.regionEntry.every((e) => analysis.entries[e])).toBe(true)
+  })
+})
+
+describe('the palette stays while only the areas change', () => {
+  const palette = () => JSON.stringify(analysis.entries.slice(0, analysis.baseEntries).map((e) => [e.group, e.letter, e.targetHex, e.recipes.map((r) => r.hex), e.label]))
+  beforeEach(async () => {
+    paints.setEnabled(stockIds(6))
+    analysis.analyse()
+    while (waiting()) await answer()
+  })
+
+  it('is found at the finest Simplify, whatever Simplify is set to', async () => {
+    analysis.settings.simplify = 3
+    analysis.forgetPicture()
+    analysis.analyse()
+    expect(FakeWorker.queue[0]).toMatchObject({ simplify: FINEST, paper: true, geometric: false })
+    await answer()
+    expect(FakeWorker.queue[0]).toMatchObject({ simplify: 3 })
+    expect(FakeWorker.queue[0].fixed.length).toBeGreaterThan(0)
+    await answer()
+    expect(analysis.busy).toBe(false)
+    expect(analysis.regionEntry.every((e) => analysis.entries[e])).toBe(true)
+  })
+
+  it('keeps colours, recipes, numbers and colour changes when Simplify or Geometric change', async () => {
+    analysis.setTarget(0, '#123456')
+    const before = palette()
+    for (const change of [{ simplify: 4 }, { geometric: true }, { simplify: FINEST, geometric: false }, { simplify: SIMPLIFY_ZERO }]) {
+      Object.assign(analysis.settings, change)
+      analysis.analyse()
+      expect(waiting()).toBeLessThanOrEqual(1)
+      if (waiting()) expect(FakeWorker.queue[0].fixed.length).toBeGreaterThan(0)
+      while (waiting()) await answer()
+      expect(palette()).toBe(before)
+      expect(analysis.regionEntry.length).toBe(analysis.segmentation.regions.length)
+    }
+    expect(analysis.exportEdits()).toEqual([{ index: 0, targetHex: '#123456', chosen: 0 }])
+  })
+
+  it('is found again when Colours, Details, Saturation or Contrast change', async () => {
+    for (const change of [{ colours: 3 }, { details: 9 }, { saturation: 120 }, { contrast: 80 }]) {
+      Object.assign(analysis.settings, change)
+      analysis.analyse()
+      expect(FakeWorker.queue[0].fixed).toBeUndefined()
+      while (waiting()) await answer()
+    }
+  })
+
+  it('only fits the recipes again when Max paints changes', async () => {
+    analysis.settings.maxPaints = 1
+    analysis.analyse()
+    expect(waiting()).toBe(0)
+    await new Promise((resolve) => setTimeout(resolve))
+    expect(analysis.entries.filter((e) => !e.paper).every((e) => e.recipes.every((r) => r.paints.length <= 1))).toBe(true)
+  })
+
+  it('always holds the paper, numbered 0, after the mixes and not counted as one', () => {
+    const paper = analysis.entries.filter((e) => e.paper)
+    expect(paper).toHaveLength(1)
+    expect(paper[0]).toMatchObject({ label: '0' })
+    expect(paper[0].recipes[0]).toMatchObject({ paints: [], hex: '#ffffff', dilution: 'paper only' })
+    expect(analysis.order.at(-1)).toBe(analysis.entries.indexOf(paper[0]))
+    expect(analysis.mixCount).toBeLessThanOrEqual(analysis.settings.colours)
   })
 })

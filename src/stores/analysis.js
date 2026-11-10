@@ -8,7 +8,7 @@ import { renderLayers } from '../lib/layers.js'
 import { useAiStore } from './ai.js'
 import { aiRequest, readAiAnswer, aiCost, aiImageSize } from '../lib/ai.js'
 import { boxMask, detailWash } from '../lib/details.js'
-import { toOklabPixels, SIMPLIFY_ZERO } from '../lib/segment.js'
+import { toOklabPixels, SIMPLIFY_ZERO, FINEST } from '../lib/segment.js'
 import { closeupSize } from '../lib/closeup.js'
 import { useProStore } from './pro.js'
 import { hashOf } from '../lib/picture.js'
@@ -59,23 +59,47 @@ let jobCounter = 0
 let analysisToken = 0
 // The palette belongs to the whole picture: while a close-up is on screen, what the palette was
 // built from waits in `base`, and `segmentation` and `regionEntry` are the close-up's.
+//
+// The palette (`palette`) is found once, at the finest Simplify (FINEST, shown as -2), and kept while only Simplify or
+// Geometric change: those settings change the areas (`segmentation`), which are then assigned to
+// the colours of the palette, as a close-up is. So the colours to mix stay the same whatever the
+// areas look like; only the settings in `paletteKeyOf` and the paint box change them.
 const paletteOf = (state) => state.base ?? state
 
 // Layer mode on Auto: the base paints are proposed once per picture and then kept, so that moving
 // an unrelated slider does not swap the paints under the painter's hands.
 let pictureSerial = 0
 let layerProposal = null // "picture/count" the current proposal was made for
-// The settings the mix analysis (`segmentation`) was made with, see `mixCurrent`.
-let mixKey = null
+// The settings the palette was found with, and those the areas of the whole picture (or of the
+// close-up on screen) were made with; see `paletteCurrent` and `mixCurrent`.
+let paletteKey = null
+let areaKey = null
+let closeupAreaKey = null
 let sketchRunning = null // the picture a sketch is being worked out for
 let blockingRunning = null // the blocking being worked out (its key)
 let loadSerial = 0 // counts the pictures asked for, see loadFromSource
-const mixKeyOf = ({ saturation, contrast, simplify, colours, details, geometric, values }, plan = 0) => [saturation, contrast, simplify, colours, details, !!geometric, plan].join('/') + (values ? '/values' : '')
+const paletteKeyOf = ({ saturation, contrast, colours, details, values }, plan = 0) => [saturation, contrast, colours, details, plan].join('/') + (values ? '/values' : '')
+const areaKeyOf = ({ simplify, geometric }) => `${simplify}/${!!geometric}`
 
-// The Details slider runs the other way from `variety` in the logic (segment.js, mixes.js): high
-// Details = the mixes follow the area, so the large parts of the picture keep the most steps; low
-// Details = few mixes on the large parts, and a small area of another hue keeps a mix of its own.
-const varietyOf = (details) => 10 - details
+// The Details slider is `variety` in the logic (segment.js, mixes.js): high Details = a small area
+// of another hue (a highlight, a red flower in the green) keeps a mix of its own; low Details = the
+// mixes follow the area, so the large parts of the picture get the most steps. Until 2026-11-08 the
+// slider ran the other way.
+const varietyOf = (details) => details
+
+// The white of the paper: an entry of every palette, on top of "Colours", painted with nothing.
+const PAPER_HEX = '#ffffff'
+const paperRecipe = (targetHex) => ({ paints: [], parts: [], strength: 0, fullness: 0, dilution: 'paper only', hex: PAPER_HEX, deltaE: deltaE(hexToOklab(PAPER_HEX), hexToOklab(targetHex)) })
+
+/** The colours of a palette as `fixed` for the segmentation: the areas are only assigned to them. */
+const fixedOf = (palette) =>
+  palette.clusters.filter((c) => c.pixelCount || c.paper).map(({ index, hex, group, level, paper, pixelCount }) => ({ index, hex: paper && !pixelCount ? PAPER_HEX : hex, group, level, paper }))
+
+/** A segmentation against `fixed`, its areas pointing at the clusters of the palette. */
+function onPalette(result, fixed) {
+  for (const region of result.regions) region.cluster = fixed[region.cluster].index
+  return result
+}
 
 /** The settings a new visitor starts with; a restore link carries only what differs from them. */
 export const defaultSettings = () => ({
@@ -179,7 +203,8 @@ export const useAnalysisStore = defineStore('analysis', {
     image: null, // HTMLImageElement (raw)
     pixels: null, // { rgba, width, height } at working resolution (raw)
     adjusted: null, // the same pixels with saturation and contrast applied, null when both are at 100 (raw)
-    segmentation: null, // raw result from worker
+    palette: null, // raw result from worker: the colours of the whole picture at Simplify FINEST
+    segmentation: null, // raw result from worker: the areas on screen, their clusters those of `palette`
     entries: [], // palette entries
     order: [], // entry indices in the order of their labels (mix by mix, lightest wash first)
     baseEntries: 0, // entries that came from the analysis (detached areas are appended after them)
@@ -211,7 +236,7 @@ export const useAnalysisStore = defineStore('analysis', {
     planStamp: 0, // the picture the palette and an AI plan belong to: a close-up does not change it
     closeups: [], // [{ id, number, rect, thumb }] parts of the base picture, in its colours at a finer scale
     closeupId: null, // the close-up on screen, null for the base picture
-    base: null, // { image, pixels, name, savedId, segmentation, regionEntry, clusterEntry } of the base picture while a close-up is on screen (raw)
+    base: null, // { image, pixels, name, savedId, palette, segmentation, regionEntry, clusterEntry } of the base picture while a close-up is on screen (raw)
     pendingEdits: null, // { key, edits } of a picture opened in layer mode, for its first mix analysis
     busy: false,
     error: null,
@@ -311,7 +336,7 @@ export const useAnalysisStore = defineStore('analysis', {
       return chosen.length ? chosen : null
     },
     /** Number of different mixes; the washes of a mix count once. */
-    mixCount: (state) => new Set(state.entries.map((e) => e.family)).size,
+    mixCount: (state) => new Set(state.entries.filter((e) => !(e.paper && !e.overridden)).map((e) => e.family)).size,
     usedPaintIds: (state) => {
       const ids = new Set()
       for (const e of state.entries) e.recipes[e.chosen]?.paints.forEach((p) => ids.add(p.paintId))
@@ -379,7 +404,7 @@ export const useAnalysisStore = defineStore('analysis', {
       if (this.error) return
       this.savedId = record.id
       // The colour changes belong to the mixes. In layer mode they wait for the first mix analysis.
-      if (this.layerMode) this.pendingEdits = { key: mixKeyOf(this.settings), edits: record.edits ?? [] }
+      if (this.layerMode) this.pendingEdits = { key: paletteKeyOf(this.settings), edits: record.edits ?? [] }
       else this.applyEdits(record.edits)
     },
     /** Saved colour changes onto the colours of a fresh mix analysis. */
@@ -392,14 +417,19 @@ export const useAnalysisStore = defineStore('analysis', {
       }
       this.renderVersion++
     },
-    /** Whether the mixes belong to the picture and the settings as they are now. */
+    /** Whether the palette belongs to the picture and the settings as they are now. */
+    paletteCurrent() {
+      return !!paletteOf(this).palette && paletteKey === paletteKeyOf(this.settings, this.aiActive?.mixes.length ? this.aiPlan.serial : 0)
+    },
+    /** Whether the palette and the areas on screen belong to the picture and the settings as they are now. */
     mixCurrent() {
-      return !!paletteOf(this).segmentation && mixKey === mixKeyOf(this.settings, this.aiActive?.mixes.length ? this.aiPlan.serial : 0)
+      if (!this.paletteCurrent() || !this.segmentation) return false
+      return (this.base ? closeupAreaKey : areaKey) === areaKeyOf(this.settings)
     },
     /** Colour changes worth saving. Detached areas are not kept: they depend on the exact area ids. */
     exportEdits() {
       // In layer mode the mixes can be those of other settings: then the saved changes are kept as they were.
-      if (!this.mixCurrent()) return this.pendingEdits?.edits ?? []
+      if (!this.paletteCurrent()) return this.pendingEdits?.edits ?? []
       return this.entries
         .slice(0, this.baseEntries)
         .map((e, index) => ({ index, targetHex: e.overridden ? e.targetHex : null, chosen: e.chosen }))
@@ -459,8 +489,8 @@ export const useAnalysisStore = defineStore('analysis', {
       const closeup = this.closeups.find((c) => c.id === id)
       if (!closeup || id === this.closeupId || !this.image) return
       if (this.closeupId == null) {
-        const { image, pixels, imageName: name, savedId, segmentation, regionEntry, clusterEntry } = this
-        this.base = markRaw({ image, pixels, name, savedId, segmentation, regionEntry, clusterEntry })
+        const { image, pixels, imageName: name, savedId, palette, segmentation, regionEntry, clusterEntry } = this
+        this.base = markRaw({ image, pixels, name, savedId, palette, segmentation, regionEntry, clusterEntry })
       }
       const source = this.base.image
       const cut = closeupSize(source.naturalWidth ?? source.width, source.naturalHeight ?? source.height, closeup.rect, WORK_PIXELS)
@@ -477,7 +507,8 @@ export const useAnalysisStore = defineStore('analysis', {
       this.imageName = t('{name} – detail {n}', { name: this.base.name, n: closeup.number })
       this.newView()
       // Only what is missing is worked out: in mix mode with a palette at hand, that is the areas.
-      if (this.layerMode || !this.mixCurrent()) await this.analyse()
+      closeupAreaKey = null
+      if (this.layerMode || !this.paletteCurrent()) await this.analyse()
       else await this.assignCloseup()
     },
     async showBase() {
@@ -489,6 +520,7 @@ export const useAnalysisStore = defineStore('analysis', {
       this.pixels = base.pixels
       this.imageName = base.name
       this.savedId = base.savedId
+      this.palette = base.palette
       this.segmentation = base.segmentation
       this.regionEntry = base.regionEntry
       this.clusterEntry = base.clusterEntry
@@ -516,10 +548,11 @@ export const useAnalysisStore = defineStore('analysis', {
 
     /** The areas of the close-up on screen, each in the colour of the palette closest to it. */
     async assignCloseup() {
-      if (!this.base?.segmentation || !this.base.clusterEntry) return
+      if (!this.base?.palette || !this.base.clusterEntry) return
       const token = ++analysisToken
-      const { segmentation, clusterEntry } = this.base
-      const colours = segmentation.clusters.filter((c) => clusterEntry.has(c.index))
+      const { palette, clusterEntry } = this.base
+      const colours = fixedOf(palette).filter((c) => clusterEntry.has(c.index))
+      const areas = areaKeyOf(this.settings)
       const { rgba, width, height } = this.adjustPicture()
       this.busy = true
       this.error = null
@@ -531,11 +564,12 @@ export const useAnalysisStore = defineStore('analysis', {
           simplify: this.settings.simplify,
           variety: this.valueMode ? undefined : varietyOf(this.settings.details),
           geometric: this.settings.geometric,
-          fixed: colours.map(({ hex, group, level }) => ({ hex, group, level })),
+          fixed: colours,
         })
         if (token !== analysisToken || this.layerMode) return // superseded
-        this.segmentation = markRaw(result)
-        this.regionEntry = markRaw(Int32Array.from(result.regions, (r) => clusterEntry.get(colours[r.cluster].index)))
+        this.segmentation = markRaw(onPalette(result, colours))
+        this.regionEntry = markRaw(Int32Array.from(result.regions, (r) => clusterEntry.get(r.cluster)))
+        closeupAreaKey = areas
         this.selectedRegion = null
         if (this.inspected?.region != null) this.inspected = null
         this.renderVersion++
@@ -557,6 +591,7 @@ export const useAnalysisStore = defineStore('analysis', {
         image: null,
         pixels: null,
         adjusted: null,
+        palette: null,
         segmentation: null,
         entries: [],
         order: [],
@@ -580,9 +615,10 @@ export const useAnalysisStore = defineStore('analysis', {
     forgetPicture() {
       this.pictureStamp = this.planStamp = ++pictureSerial
       this.blockingSolo = null
-      mixKey = null
+      paletteKey = areaKey = closeupAreaKey = null
       this.pendingEdits = null
       if (this.layerMode) {
+        this.palette = null
         this.segmentation = null
         this.entries = []
         this.order = []
@@ -620,6 +656,7 @@ export const useAnalysisStore = defineStore('analysis', {
       if (!this.base && this.aiDetails?.key !== this.aiKey) this.findDetails()
       if (this.layerMode) return this.analyseLayers(shown.rgba, shown.width, shown.height, token)
       // The palette comes from the whole picture, also when a close-up is on screen.
+      const whole = paletteOf(this)
       const { width, height } = this.base?.pixels ?? shown
       const rgba = this.base ? this.adjustedRgba(this.base.pixels) : shown.rgba
       // With an AI plan its colours are the mixes; the analysis only assigns the picture to them.
@@ -628,34 +665,65 @@ export const useAnalysisStore = defineStore('analysis', {
       const values = this.valueMode
       const anchors = !values && plan?.mixes.length ? [...new Set([...plan.mixes, ...plan.details.filter((d) => d.hex)].map((m) => m.hex))] : undefined
       const focus = plan?.details.length ? plan.details.map((d) => [...d.box]) : undefined
-      const key = mixKeyOf(this.settings, anchors ? this.aiPlan.serial : 0)
+      const key = paletteKeyOf(this.settings, anchors ? this.aiPlan.serial : 0)
+      const areas = areaKeyOf(this.settings)
+      const variety = values ? undefined : varietyOf(this.settings.details)
       try {
-        // "Colours" counts mixes. The analysis is asked for more, and planMixes joins them down to
-        // the wanted number once the paints are known.
-        const { result } = await runSegmentation({
-          rgba: rgba.slice(),
-          width,
-          height,
-          // A grey picture is one mix in the eyes of the analysis: it is split into values, and
-          // "Colours" still counts the mixes those are painted with (planMixes).
-          colours: values ? 1 : mixesToRequest(this.settings.colours),
-          maxWashes: values ? VALUE_STEPS : undefined,
-          washStep: values ? VALUE_STEP : undefined,
-          simplify: this.settings.simplify,
-          // Details weighs small colours and lightness in the analysis too, not only when mixes
-          // are joined: a grey picture has no hues to keep.
-          variety: values ? undefined : varietyOf(this.settings.details),
-          geometric: this.settings.geometric,
-          anchors,
-          focus,
-        })
-        if (token !== analysisToken || this.layerMode) return // a newer analysis superseded this one
-        mixKey = key
-        this.applySegmentation(result)
-        // Colour changes of a picture that was opened in layer mode.
-        const pending = this.pendingEdits
-        this.pendingEdits = null
-        if (pending?.key === key) this.applyEdits(pending.edits)
+        let fresh = false
+        if (key !== paletteKey || !whole.palette) {
+          // The palette: found at the finest Simplify (FINEST) with its own areas, whatever Simplify is
+          // set to. "Colours" counts mixes. The analysis is asked for more, and planMixes joins
+          // them down to the wanted number once the paints are known.
+          const { result } = await runSegmentation({
+            rgba: rgba.slice(),
+            width,
+            height,
+            // A grey picture is one mix in the eyes of the analysis: it is split into values, and
+            // "Colours" still counts the mixes those are painted with (planMixes).
+            colours: values ? 1 : mixesToRequest(this.settings.colours),
+            maxWashes: values ? VALUE_STEPS : undefined,
+            washStep: values ? VALUE_STEP : undefined,
+            simplify: FINEST,
+            geometric: false,
+            // Details weighs small colours and lightness in the analysis too, not only when mixes
+            // are joined: a grey picture has no hues to keep.
+            variety,
+            anchors,
+            focus,
+            paper: true,
+          })
+          if (token !== analysisToken || this.layerMode) return // a newer analysis superseded this one
+          whole.palette = markRaw(result)
+          paletteKey = key
+          areaKey = closeupAreaKey = null
+          fresh = true
+        }
+        const areasChanged = this.base ? closeupAreaKey !== areas : areaKey !== areas || !whole.segmentation
+        if (!this.base && areasChanged) {
+          // The areas at the Simplify and Geometric set, in the colours of the palette.
+          let seg = whole.palette
+          if (this.settings.simplify !== FINEST || this.settings.geometric) {
+            const fixed = fixedOf(whole.palette)
+            const { result } = await runSegmentation({ rgba: rgba.slice(), width, height, simplify: this.settings.simplify, variety, geometric: this.settings.geometric, focus, fixed })
+            if (token !== analysisToken || this.layerMode) return
+            seg = onPalette(result, fixed)
+          }
+          whole.segmentation = markRaw(seg)
+          areaKey = areas
+        }
+        if (fresh) {
+          this.applySegmentation()
+          // Colour changes of a picture that was opened in layer mode.
+          const pending = this.pendingEdits
+          this.pendingEdits = null
+          if (pending?.key === key) this.applyEdits(pending.edits)
+        } else if (areasChanged) {
+          if (this.base) await this.assignCloseup()
+          else this.mapAreas()
+        } else {
+          // Nothing of the analysis changed: the paint box or Max paints did.
+          this.recomputeAllRecipes()
+        }
         this.noteMatch()
       } catch (e) {
         if (token === analysisToken) this.error = t('Analysis failed: {reason}', { reason: t(e.message) })
@@ -663,6 +731,41 @@ export const useAnalysisStore = defineStore('analysis', {
         // A superseded analysis leaves `busy` to the one that is still running.
         if (token === analysisToken) this.busy = false
       }
+    },
+
+    /**
+     * New areas on the same palette (Simplify or Geometric changed): every area takes the entry of
+     * its colour. Detached areas belonged to the areas before and are gone; colour changes stay.
+     */
+    mapAreas() {
+      const seg = this.segmentation
+      if (!seg || !this.clusterEntry) return
+      this.entries = this.entries.slice(0, this.baseEntries)
+      this.order = this.order.filter((i) => i < this.baseEntries)
+      this.regionEntry = markRaw(Int32Array.from(seg.regions, (r) => this.clusterEntry.get(r.cluster) ?? 0))
+      this.countShares()
+      this.selectedEntry = null
+      this.selectedRegion = null
+      this.inspected = null
+      this.renderVersion++
+    },
+
+    /**
+     * How much of the picture every entry covers, from the areas of the whole picture as they are
+     * on screen. Without them (the palette was found while a close-up was open), its share of the palette.
+     */
+    countShares() {
+      const whole = paletteOf(this)
+      const seg = whole.segmentation
+      const current = seg && whole.regionEntry && areaKey === areaKeyOf(this.settings) && seg.regions.length === whole.regionEntry.length
+      if (!current) {
+        for (const e of this.entries) e.share = e.weight ?? 0
+        return
+      }
+      const total = seg.width * seg.height
+      const shares = new Float64Array(this.entries.length)
+      seg.regions.forEach((region, r) => { shares[whole.regionEntry[r]] += region.size / total })
+      this.entries.forEach((e, i) => { e.share = shares[i] })
     },
 
     /**
@@ -801,9 +904,9 @@ export const useAnalysisStore = defineStore('analysis', {
       this.renderVersion++
     },
 
-    applySegmentation(result) {
+    /** A new palette: the colours are built from it again. */
+    applySegmentation() {
       const whole = paletteOf(this)
-      whole.segmentation = markRaw(result)
       whole.regionEntry = null
       this.entries = []
       this.baseEntries = 0
@@ -983,11 +1086,11 @@ export const useAnalysisStore = defineStore('analysis', {
     /** While the paint box is on Auto, pick the paints that suit the colours of this picture. */
     autoPaints(force = false) {
       const paints = usePaintsStore()
-      const { segmentation } = paletteOf(this)
-      if (!segmentation || !(force || paints.palette.auto)) return
+      const { palette } = paletteOf(this)
+      if (!palette || !(force || paints.palette.auto)) return
       if (!force && this.aiPaints) return // the AI chose them
       // Every wash is a target: a wash its mix cannot reach needs paints for a mix of its own.
-      const targets = segmentation.clusters.filter((c) => c.pixelCount).map((c) => ({ hex: c.hex, weight: c.pixelCount }))
+      const targets = palette.clusters.filter((c) => c.pixelCount && !c.paper).map((c) => ({ hex: c.hex, weight: c.pixelCount }))
       paints.setEnabled(proposePaints(targets, paints.autoCandidates, { maxPaints: this.settings.maxPaints, values: this.valueMode }), true)
     },
 
@@ -1003,12 +1106,15 @@ export const useAnalysisStore = defineStore('analysis', {
       // Layer mode has no recipes: a changed paint box means the layers are planned again.
       if (this.layerMode) return this.analyse()
       const whole = paletteOf(this)
+      const palette = whole.palette
+      if (!palette) return
+      // The areas on screen of the whole picture; while a close-up is open they can be those of
+      // a palette before (see countShares) and are worked out again when it is closed.
       const seg = whole.segmentation
-      if (!seg) return
       // With an AI plan its paints are mixed with; the paint box is left alone.
       const paints = this.aiPaints ?? usePaintsStore().enabled
       const byId = usePaintsStore().byId
-      const total = seg.width * seg.height
+      const total = palette.width * palette.height
       const old = this.entries
       const oldRegionEntry = whole.regionEntry
 
@@ -1018,13 +1124,15 @@ export const useAnalysisStore = defineStore('analysis', {
       // of the picture are spread over what the paints reach, from blank paper for the lightest to
       // the darkest paint for the darkest, so that the picture keeps all its steps instead of
       // ending in one flat dark. Paints that reach the darks leave the values alone.
-      let clusters = seg.clusters
+      // The paper is no mix: it comes on top of "Colours".
+      const paper = palette.clusters.find((c) => c.paper)
+      let clusters = palette.clusters.filter((c) => !c.paper)
       if (values && paints.length) {
-        const used = seg.clusters.filter((c) => c.pixelCount).map((c) => hexToOklab(c.hex)[0])
+        const used = clusters.filter((c) => c.pixelCount).map((c) => hexToOklab(c.hex)[0])
         const light = Math.max(...used), dark = Math.min(...used)
         const reach = valueReach(paints, { maxPaints: this.settings.maxPaints })
         if (reach > dark && light > dark) {
-          clusters = seg.clusters.map((c) => {
+          clusters = clusters.map((c) => {
             const L = hexToOklab(c.hex)[0]
             return { ...c, hex: oklabToHex([1 - ((light - L) * (1 - reach)) / (light - dark), 0, 0]) }
           })
@@ -1064,49 +1172,53 @@ export const useAnalysisStore = defineStore('analysis', {
         }
         for (const item of items) built.push({ group, ...item })
       }
+      if (paper) {
+        mixRecipes[paper.group] = [paperRecipe(PAPER_HEX)]
+        built.push({ group: paper.group, clusters: [paper.index], pixels: paper.pixelCount, lab: hexToOklab(paper.pixelCount ? paper.hex : PAPER_HEX), letter: '', paper: true })
+      }
 
-      // Largest first, so the entry numbers used in saved pictures stay meaningful.
-      built.sort((x, y) => y.pixels - x.pixels)
+      // Largest first, so the entry numbers used in saved pictures stay meaningful; the paper last.
+      built.sort((x, y) => !!x.paper - !!y.paper || y.pixels - x.pixels)
       const clusterToEntry = new Map()
       const entries = built.map((item, i) => {
         item.clusters.forEach((c) => clusterToEntry.set(c, i))
+        const hex = item.hex ?? oklabToHex(item.lab)
         return {
           id: i,
           group: item.group,
           letter: item.letter,
-          sourceHex: item.hex,
-          targetHex: item.hex,
+          ...(item.paper ? { paper: true } : {}),
+          sourceHex: hex,
+          targetHex: hex,
           overridden: false,
-          share: item.pixels / total,
+          weight: item.pixels / total, // its share of the palette: what the numbers go by
+          share: item.pixels / total, // its share of the areas on screen, see countShares
           recipes: [],
           chosen: 0,
           family: `mix-${item.group}`,
           label: '',
         }
       })
-      const regionEntry = Int32Array.from(seg.regions, (r) => clusterToEntry.get(r.cluster))
+      const regionEntry = Int32Array.from(seg?.regions ?? [], (r) => clusterToEntry.get(r.cluster) ?? 0)
 
       // Carry over what the user changed.
       const pickedPaints = {}
       for (const e of old) if (!e.overridden && e.chosen && e.recipes[e.chosen]) pickedPaints[e.group] = paintKey(e.recipes[e.chosen])
       old.slice(0, this.baseEntries).forEach((e) => {
         if (!e.overridden) return
-        const match = entries.find((n) => n.group === e.group && n.letter === e.letter)
+        const match = entries.find((n) => n.group === e.group && n.letter === e.letter && !!n.paper === !!e.paper)
         if (match) Object.assign(match, { targetHex: e.targetHex, overridden: true, kept: e.chosen ? paintKey(e.recipes[e.chosen]) : null })
       })
       const baseEntries = entries.length
       old.slice(this.baseEntries).forEach((e, n) => {
         const id = entries.length
         const oldIndex = this.baseEntries + n
-        let size = 0
-        seg.regions.forEach((region, r) => {
-          if (oldRegionEntry[r] !== oldIndex) return
-          const from = entries[regionEntry[r]]
-          if (from) from.share -= region.size / total
-          regionEntry[r] = id
-          size += region.size
+        // Detached areas point at the areas on screen: they are only there while those are the same.
+        if (!seg || oldRegionEntry?.length !== seg.regions.length) return
+        seg.regions.forEach((_, r) => {
+          if (oldRegionEntry[r] === oldIndex) regionEntry[r] = id
         })
-        entries.push({ ...e, id, share: size / total, recipes: [], kept: e.chosen ? paintKey(e.recipes[e.chosen]) : null })
+        entries.push({ ...e, id, recipes: [], kept: e.chosen ? paintKey(e.recipes[e.chosen]) : null })
       })
 
       this.mixRecipes = markRaw(mixRecipes)
@@ -1114,6 +1226,7 @@ export const useAnalysisStore = defineStore('analysis', {
       this.baseEntries = baseEntries
       whole.regionEntry = markRaw(regionEntry)
       whole.clusterEntry = markRaw(clusterToEntry)
+      this.countShares()
       this.entries.forEach((entry, i) => {
         this.recomputeRecipes(i, false)
         const wanted = entry.overridden ? entry.kept : pickedPaints[entry.group]
@@ -1142,7 +1255,7 @@ export const useAnalysisStore = defineStore('analysis', {
       } else {
         entry.family = `mix-${entry.group}`
         entry.recipes = (this.mixRecipes[entry.group] ?? []).map((r) =>
-          r.paints.length ? washRecipe(r, entry.targetHex, store.byId, { values: this.valueMode }) : r,
+          r.paints.length ? washRecipe(r, entry.targetHex, store.byId, { values: this.valueMode }) : paperRecipe(entry.targetHex),
         )
       }
       entry.chosen = 0
@@ -1159,20 +1272,22 @@ export const useAnalysisStore = defineStore('analysis', {
     relabel() {
       const families = new Map()
       this.entries.forEach((e, i) => {
-        if (!families.has(e.family)) families.set(e.family, { share: 0, members: [] })
+        if (!families.has(e.family)) families.set(e.family, { weight: 0, paper: !!e.paper && !e.overridden, members: [] })
         const family = families.get(e.family)
-        family.share += e.share
+        // The numbers go by the palette, not by the areas on screen: Simplify leaves them alone.
+        family.weight += e.weight ?? e.share
         family.members.push(i)
       })
       const strength = (i) => this.entries[i].recipes[0]?.strength ?? 0
       this.order = []
+      // The paper is 0, after every mix.
       ;[...families.values()]
-        .sort((a, b) => b.share - a.share)
+        .sort((a, b) => a.paper - b.paper || b.weight - a.weight)
         .forEach((family, n) => {
           family.members.sort((a, b) => strength(a) - strength(b) || a - b)
           const washes = new Set(family.members.map((i) => this.entries[i].letter)).size > 1
           for (const i of family.members) {
-            this.entries[i].label = `${n + 1}${washes ? this.entries[i].letter : ''}`
+            this.entries[i].label = family.paper ? '0' : `${n + 1}${washes ? this.entries[i].letter : ''}`
             this.order.push(i)
           }
         })
@@ -1240,6 +1355,8 @@ export const useAnalysisStore = defineStore('analysis', {
         targetHex: source.targetHex,
         overridden: source.overridden,
         share: region.size / total,
+        weight: 0,
+        ...(source.paper ? { paper: true } : {}),
         recipes: source.recipes,
         chosen: source.chosen,
         group: source.group,

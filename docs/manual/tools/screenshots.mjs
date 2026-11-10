@@ -71,6 +71,8 @@ async function shoot(browser, shot, lang) {
     ([lang, layout]) => {
       localStorage.setItem('colour-detector:preferences', JSON.stringify({ language: lang, theme: 'light' }))
       localStorage.setItem('colour-detector:layout', JSON.stringify(layout))
+      // The guided tour only on first start: the shots show the app as it is used.
+      localStorage.setItem('colour-detector:tour', 'seen')
     },
     [lang, layout],
   )

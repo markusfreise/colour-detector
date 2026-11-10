@@ -32,6 +32,8 @@ struct Segmentation: Sendable {
         let level: Int
         let hex: String
         let pixelCount: Int
+        /// The white of the paper (see `clusterWashes`): painted with nothing.
+        var paper = false
     }
 
     let width: Int
@@ -127,6 +129,14 @@ enum Segmenter {
     /// One more wash for every factor of about 1.7 between the weakest and the strongest part of a mix.
     static let washStep = 0.55
     private static let minReflectance = 0.0005
+    /// A colour closer than this to white (OKLab) is left as paper: no wash is that watery. Kept
+    /// small: the lights of a cloud or of a white wall are a little darker than the paper, and with
+    /// a wider limit they were all paper, one flat white without the steps of light in it.
+    static let paperDelta = 0.02
+    /// A mix also gets one more wash for every step of this much lightness (OKLab L) between its
+    /// lightest and its darkest part. Water levels are even steps of strength, and in the lights a
+    /// step of strength is a large step for the eye: a pale zone had one wash where it shows two.
+    static let washLightStep = 0.04
     private static let binL = 50.0 // histogram steps per unit of L
     private static let binAB = 100.0 // histogram steps per unit of a and b
 
@@ -166,15 +176,19 @@ enum Segmenter {
         var hex: String
         var group: Int
         var level: Int
+        var paper = false
     }
 
     /// Assigns the picture to colours that are already settled (a close-up in the palette of the
     /// whole picture): every colour of the picture takes the closest of them. Nothing is found or changed.
-    static func assignColours(_ lab: [Float], count: Int, fixed: [FixedColour], lightnessWeight: Double = Segmenter.lightnessWeight) -> (labels: [Int32], clusters: [(group: Int, level: Int)]) {
+    static func assignColours(_ lab: [Float], count: Int, fixed: [FixedColour], lightnessWeight: Double = Segmenter.lightnessWeight) -> (labels: [Int32], clusters: [(group: Int, level: Int, paper: Bool)]) {
         let (points, _, binOf) = colourBins(lab, count: count)
         let colours = fixed.map { ColorMath.oklab(hex: $0.hex) }
         var closest = [Int32](repeating: 0, count: points.count / 3)
+        // What the palette left as paper stays paper (see `clusterWashes`).
+        let paper = fixed.firstIndex { $0.paper }
         for i in closest.indices {
+            if let paper, hypot3(1 - points[i * 3], points[i * 3 + 1], points[i * 3 + 2]) < paperDelta { closest[i] = Int32(paper); continue }
             var least = Double.infinity
             for (c, colour) in colours.enumerated() {
                 let dL = (Double(colour.x) - points[i * 3]) * lightnessWeight, da = Double(colour.y) - points[i * 3 + 1], db = Double(colour.z) - points[i * 3 + 2]
@@ -182,7 +196,7 @@ enum Segmenter {
                 if d < least { least = d; closest[i] = Int32(c) }
             }
         }
-        return (binOf.map { closest[Int($0)] }, fixed.map { (group: $0.group, level: $0.level) })
+        return (binOf.map { closest[Int($0)] }, fixed.map { (group: $0.group, level: $0.level, paper: $0.paper) })
     }
 
 
@@ -197,9 +211,12 @@ enum Segmenter {
     /// With `anchors` (colours in OKLab) the mixes are given instead of found: every anchor is a
     /// mix, the colours are only assigned to them and `k` is not used.
     ///
+    /// With `paper` the white of the paper is one more colour, the last one, `paper: true` and a
+    /// group of its own: it is there whether or not anything of the picture goes to it.
+    ///
     /// Returns the cluster per pixel and, per cluster, its mix and wash; clusters are ordered mix by
     /// mix, lightest wash first.
-    static func clusterWashes(_ lab: [Float], count: Int, k: Int, iterations requested: Int = 24, seed: UInt32 = 7, areaPower: Double = Segmenter.areaPower, maxWashes: Int = Segmenter.maxWashes, washStep: Double = Segmenter.washStep, lightnessWeight: Double = Segmenter.lightnessWeight, anchors: [Vec3]? = nil) -> (labels: [Int32], clusters: [(group: Int, level: Int)]) {
+    static func clusterWashes(_ lab: [Float], count: Int, k: Int, iterations requested: Int = 24, seed: UInt32 = 7, areaPower: Double = Segmenter.areaPower, maxWashes: Int = Segmenter.maxWashes, washStep: Double = Segmenter.washStep, lightnessWeight: Double = Segmenter.lightnessWeight, anchors: [Vec3]? = nil, paper: Bool = false) -> (labels: [Int32], clusters: [(group: Int, level: Int, paper: Bool)]) {
         var random = Mulberry32(seed: seed)
         let (points, counts, binOf) = colourBins(lab, count: count)
         let n = counts.count
@@ -236,11 +253,23 @@ enum Segmenter {
             let dL = reached.x - points[i * 3], da = reached.y - points[i * 3 + 1], db = reached.z - points[i * 3 + 2]
             return lw2 * dL * dL + da * da + db * db
         }
+        // Squared OKLab distance between bin i and the white of the paper.
+        func toPaper(_ i: Int) -> Double {
+            let dL = 1 - points[i * 3]
+            return lw2 * dL * dL + points[i * 3 + 1] * points[i * 3 + 1] + points[i * 3 + 2] * points[i * 3 + 2]
+        }
+        // The paper is a colour that is there from the start and never moves: what is about as close
+        // to it as to a mix is left white, and no mix is spent on it. (Every mix reaches white at
+        // strength 0, so a white bin is as close to every mix as to the paper: the paper wins a tie.)
+        let paperGroup = -1
+        func paperGap(_ i: Int) -> Double { paper ? toPaper(i) : .infinity }
+        func nearPaper(_ i: Int) -> Bool { paper && hypot3(1 - points[i * 3], points[i * 3 + 1], points[i * 3 + 2]) < paperDelta }
 
         // k-means++ seeding: the first mix is the most common colour, the rest are drawn
         // with probability weight x squared distance to the nearest mix so far.
         var first = 0
-        for i in 1..<max(1, n) where counts[i] > counts[first] { first = i }
+        func seedable(_ i: Int) -> Double { nearPaper(i) ? 0 : counts[i] }
+        for i in 1..<max(1, n) where seedable(i) > seedable(first) { first = i }
         if let given {
             // Given mixes: the direction of each anchor's absorbance, kept as it is.
             for (c, anchor) in given.enumerated() {
@@ -251,7 +280,7 @@ enum Segmenter {
         } else if n > 0 {
             setDir(0, absorb[first * 3], absorb[first * 3 + 1], absorb[first * 3 + 2])
         }
-        var d = [Double](repeating: .infinity, count: n)
+        var d = (0..<n).map { nearPaper($0) ? 0 : paperGap($0) }
         if given == nil && kk > 1 {
             for c in 1..<kk {
                 var sum = 0.0
@@ -282,7 +311,9 @@ enum Segmenter {
                     let dd = d2(i, c)
                     if dd < bestD { bestD = dd; best = c }
                 }
+                if nearPaper(i) || paperGap(i) <= bestD + 1e-6 { best = paperGroup }
                 if group[i] != best { group[i] = best; changed = true }
+                if best == paperGroup { continue }
                 let w = weight[i]
                 sums[best * 3] += absorb[i * 3] * w; sums[best * 3 + 1] += absorb[i * 3 + 1] * w; sums[best * 3 + 2] += absorb[i * 3 + 2] * w
             }
@@ -291,7 +322,7 @@ enum Segmenter {
         }
 
         // Washes: split every mix by strength (log scale, like the water levels of a recipe).
-        var clusters: [(group: Int, level: Int)] = []
+        var clusters: [(group: Int, level: Int, paper: Bool)] = []
         var clusterOfBin = [Int32](repeating: 0, count: n)
         var logS = [Double](repeating: 0, count: n)
         for c in 0..<kk {
@@ -311,7 +342,18 @@ enum Segmenter {
                 return logS[members[members.count - 1]]
             }
             let lo = at(0.02), hi = at(0.98)
-            let levels = max(1, min(maxWashes, members.count, 1 + Int(Smooth.jsRound((hi - lo) / washStep))))
+            // The same range in lightness (the members are sorted by strength, so nearly by lightness).
+            func lightAt(_ share: Double) -> Double {
+                var run = 0.0
+                for i in members {
+                    run += counts[i]
+                    if run >= total * share { return points[i * 3] }
+                }
+                return points[members[members.count - 1] * 3]
+            }
+            let byStrength = 1 + Int(Smooth.jsRound((hi - lo) / washStep))
+            let byLightness = 1 + Int(Smooth.jsRound(abs(lightAt(0.02) - lightAt(0.98)) / washLightStep))
+            let levels = max(1, min(maxWashes, members.count, max(byStrength, byLightness)))
             var centres = (0..<levels).map { levels == 1 ? (lo + hi) / 2 : lo + (hi - lo) * Double($0) / Double(levels - 1) }
             var level = [Int](repeating: 0, count: members.count)
             for _ in 0..<12 {
@@ -327,8 +369,27 @@ enum Segmenter {
                 for l in 0..<levels where w[l] != 0 { centres[l] = sum[l] / w[l] }
             }
             let base = clusters.count
-            for l in 0..<levels { clusters.append((c, l)) }
+            for l in 0..<levels { clusters.append((c, l, false)) }
             for (m, i) in members.enumerated() { clusterOfBin[i] = Int32(base + level[m]) }
+            if paper {
+                // The paper is the lightest wash of every mix: a colour closer to the white of the
+                // paper than to the wash it was given is left unpainted. A highlight no mix reaches stays white.
+                let washLab = centres.map { centre -> Vec3 in
+                    let t = exp(centre)
+                    return ColorMath.oklab(linear: Vec3(exp(-t * dirs[c * 3]), exp(-t * dirs[c * 3 + 1]), exp(-t * dirs[c * 3 + 2])))
+                }
+                for (m, i) in members.enumerated() {
+                    let wash = washLab[level[m]]
+                    let dL = wash.x - points[i * 3], da = wash.y - points[i * 3 + 1], db = wash.z - points[i * 3 + 2]
+                    if toPaper(i) < lw2 * dL * dL + da * da + db * db { clusterOfBin[i] = -1 }
+                }
+            }
+        }
+        if paper {
+            // Always there, also when nothing of the picture is that light: a mix group of its own.
+            let index = Int32(clusters.count)
+            clusters.append((kk, 0, true))
+            for i in 0..<n where clusterOfBin[i] == -1 || group[i] == paperGroup { clusterOfBin[i] = index }
         }
 
         var labels = [Int32](repeating: 0, count: count)
@@ -640,7 +701,8 @@ enum Segmenter {
     ///   - maxWashes, washStep: washes a mix is split into at most, and the factor of strength (log)
     ///     between two of them: a grey picture is one mix, so these set the number of its values
     ///   - variety: the Details slider (see `varietyWeights`), unless areaPower / lightnessWeight are given
-    static func segment(rgba: [UInt8], width: Int, height: Int, colours: Int = 12, simplify: Int = 4, geometric: Bool = false, anchors given: [String]? = nil, fixed: [FixedColour]? = nil, focus: [Details.Box]? = nil, seed: UInt32 = 7, variety: Int = 5, areaPower: Double? = nil, maxWashes: Int = Segmenter.maxWashes, washStep: Double = Segmenter.washStep, lightnessWeight: Double? = nil) -> Segmentation {
+    ///   - paper: the white of the paper is a colour too, the last one (see `clusterWashes`)
+    static func segment(rgba: [UInt8], width: Int, height: Int, colours: Int = 12, simplify: Int = 4, geometric: Bool = false, anchors given: [String]? = nil, fixed: [FixedColour]? = nil, focus: [Details.Box]? = nil, seed: UInt32 = 7, variety: Int = 5, areaPower: Double? = nil, maxWashes: Int = Segmenter.maxWashes, washStep: Double = Segmenter.washStep, lightnessWeight: Double? = nil, paper: Bool = false) -> Segmentation {
         let count = width * height
         let weights = varietyWeights(variety)
         let areaPower = areaPower ?? weights.areaPower
@@ -657,13 +719,13 @@ enum Segmenter {
             lab = Smooth.patchColours(original, width, height, patches, blend: patchBlend * calm, restless: restless)
         }
         let raw: [Int32]
-        let found: [(group: Int, level: Int)]
+        let found: [(group: Int, level: Int, paper: Bool)]
         if let fixed, !fixed.isEmpty {
             (raw, found) = assignColours(lab, count: count, fixed: fixed, lightnessWeight: lightnessWeight)
         } else {
             (raw, found) = clusterWashes(lab, count: count, k: max(1, min(colours, count)), seed: seed, areaPower: areaPower, maxWashes: maxWashes, washStep: washStep, lightnessWeight: lightnessWeight,
                                          // Given colours (hex) as the mixes, instead of finding them.
-                                         anchors: given?.isEmpty == false ? given!.map { ColorMath.oklab(hex: $0) } : nil)
+                                         anchors: given?.isEmpty == false ? given!.map { ColorMath.oklab(hex: $0) } : nil, paper: paper)
         }
         let k = found.count
         let whereMask = focus?.isEmpty == false ? Details.boxMask(focus!, width, height) : nil
@@ -688,7 +750,7 @@ enum Segmenter {
         }
         let clusters = (0..<k).map { c -> Segmentation.Cluster in
             let hex = counts[c] > 0 ? ColorMath.hex(oklab: Vec3(sums[c * 3] / Double(counts[c]), sums[c * 3 + 1] / Double(counts[c]), sums[c * 3 + 2] / Double(counts[c]))) : "#ffffff"
-            return Segmentation.Cluster(index: c, group: found[c].group, level: found[c].level, hex: hex, pixelCount: counts[c])
+            return Segmentation.Cluster(index: c, group: found[c].group, level: found[c].level, hex: hex, pixelCount: counts[c], paper: found[c].paper)
         }
 
         let (regionMap, regionCluster, regionSize) = connectedComponents(labels, width, height)

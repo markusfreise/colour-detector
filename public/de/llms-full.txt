@@ -411,7 +411,9 @@ Der Knopf mit dem halb gefüllten Kreis neben den Flächen schaltet auf [Monochr
 
 **Farben** ist die Zahl der Mischungen auf deiner Palette, von 2 bis 32. Das ist die wichtigste Entscheidung über die Arbeit, die ein Bild macht, denn jede Mischung ist eine Pfütze, die du ansetzt, prüfst und feucht hältst.
 
-Die Zahl ist nicht die Zahl der Farben auf dem Papier. Jede Mischung wird in bis zu fünf Wasserstufen gemalt, ihren Lasuren; ein Bild mit 20 Mischungen zeigt in diesem Beispiel 52 verschiedene Farben. Töne, die sich nur in Hell und Dunkel unterscheiden, teilen sich eine Mischung; Töne, die sich im Farbton unterscheiden, bekommen eine eigene.
+Die Zahl ist nicht die Zahl der Farben auf dem Papier. Jede Mischung wird in bis zu fünf Wasserstufen gemalt, ihren Lasuren; ein Bild mit 20 Mischungen zeigt in diesem Beispiel 49 verschiedene Farben. Töne, die sich nur in Hell und Dunkel unterscheiden, teilen sich eine Mischung; Töne, die sich im Farbton unterscheiden, bekommen eine eigene.
+
+Zu den Mischungen kommt immer noch eine Farbe: das Weiß des Papiers, mit der Nummer **0**. Es wird mit nichts gemalt. Ein Glanzlicht, ein Blitzen auf dem Wasser oder ein weißer Fensterrahmen, heller als jede Lasur, bleibt Papier, und du sparst es beim Malen aus. Das Papier zählt nicht zu den **Farben**.
 
 *Screenshot: Dasselbe Foto mit 6 Mischungen*
 
@@ -429,16 +431,18 @@ Bei **0**, wo jedes Bild startet, folgen die Flächen dem Foto eng, lassen aber 
 
 Mit Pro geht der Regler unter 0, bis **-2**. Dort nimmt die App Schritt für Schritt zurück, was die Flächen beruhigt, bis sie dem Foto fast Pixel für Pixel folgen. Das hilft bei einer genauen Studie, bei einem [Ausschnitt des Bildes](https://watercolourlove.de/de/handbuch/bilder.html#genauer-hinsehen-ausschnitte-des-bildes) oder einfach, um zu sehen, wie viel wirklich da ist. Zum Malen landen die meisten zwischen 3 und 8.
 
-> **Tipp:** Vereinfachen ändert nicht die Zahl der Mischungen, nur die Formen. Wirkt ein Bild unruhig, erhöh zuerst **Flächen vereinfachen**; wirkt es flach oder zu gleichförmig, erhöh **Farben**.
+Die Farben selbst findet die App immer bei der feinsten Stufe, -2, und Vereinfachen zeichnet nur die Flächen in ihnen neu. Der Regler ändert also nie die Mischungen, ihre Rezepte oder ihre Nummern, und eine Farbe, die du von Hand geändert hast, bleibt, wie sie ist.
+
+> **Tipp:** Vereinfachen ändert nicht die Mischungen, nur die Formen. Wirkt ein Bild unruhig, erhöh zuerst **Flächen vereinfachen**; wirkt es flach oder zu gleichförmig, erhöh **Farben**.
 
 ## Details: welche Farben eine eigene Mischung bekommen
 
 Hat das Foto mehr Farben, als du verlangst, müssen sich einige eine Mischung teilen. **Details** entscheidet, welche.
 
-- **Hoch (Richtung 10)** hält das Bild als Ganzes so nah am Foto wie möglich. Die großen Flächen, ein Himmel, eine Wand, eine Straße, bekommen die feinsten Abstufungen, und eine kleine Fläche eines anderen Farbtons wird unter Umständen mit der nächsten großen Mischung gemalt.
-- **Niedrig (Richtung 0)** behält kleinen Flächen mit eigenem Farbton eine eigene Mischung: das rote Dach im grünen Tal, die Lippen im Porträt, ein einzelnes gelbes Boot. Dafür teilen sich ähnliche große Farben öfter eine Mischung, und ein Himmel wird unter Umständen eine einzige flache Farbe.
+- **Hoch (Richtung 10)** behält kleinen Flächen mit eigenem Farbton eine eigene Mischung: das rote Dach im grünen Tal, die Lippen im Porträt, ein einzelnes gelbes Boot. Dafür teilen sich ähnliche große Farben öfter eine Mischung, und ein Himmel wird unter Umständen eine einzige flache Farbe.
+- **Niedrig (Richtung 0)** hält das Bild als Ganzes so nah am Foto wie möglich. Die großen Flächen, ein Himmel, eine Wand, eine Straße, bekommen die feinsten Abstufungen, und eine kleine Fläche eines anderen Farbtons wird unter Umständen mit der nächsten großen Mischung gemalt.
 
-Der Ausgangswert 5 ist ein Mittelweg. Senk ihn für Bilder, die von einem kleinen Akzent leben; erhöh ihn für ruhige Landschaften, in denen die großen Farbfelder am meisten zählen.
+Der Ausgangswert 5 ist ein Mittelweg. Erhöh ihn für Bilder, die von einem kleinen Akzent leben; senk ihn für ruhige Landschaften, in denen die großen Farbfelder am meisten zählen.
 
 ## Max. Farben
 
@@ -500,13 +504,13 @@ Das sind Ausgangspunkte, keine Regeln.
 
 | Motiv | Farben | Flächen vereinfachen | Details | Max. Farben |
 |---|---|---|---|---|
-| Landschaft, große Formen | 12 bis 20 | 4 bis 8 | 5 bis 7 | 2 oder 3 |
-| Porträt | 16 bis 24 | 2 bis 5 | 2 bis 4 | 2 oder 3 |
+| Landschaft, große Formen | 12 bis 20 | 4 bis 8 | 3 bis 5 | 2 oder 3 |
+| Porträt | 16 bis 24 | 2 bis 5 | 6 bis 8 | 2 oder 3 |
 | Architektur, Straßen | 14 bis 20 | 3 bis 6 oder **Geometrisch** | 5 | 2 |
-| Blumen, Stillleben | 10 bis 16 | 3 bis 6 | 2 bis 4 | 2 |
-| Schnelle Skizze, draußen | 6 bis 10 | 7 bis 10 | 7 | 2 |
+| Blumen, Stillleben | 10 bis 16 | 3 bis 6 | 6 bis 8 | 2 |
+| Schnelle Skizze, draußen | 6 bis 10 | 7 bis 10 | 3 | 2 |
 
-Bei Porträts tragen die kleinen Züge (Augen, Mund, der Schatten unter der Nase) die Ähnlichkeit, also halt **Details** und **Flächen vereinfachen** niedrig, oder leg einen [Ausschnitt](https://watercolourlove.de/de/handbuch/bilder.html#genauer-hinsehen-ausschnitte-des-bildes) vom Gesicht an. Bei Landschaften klappt meist das Gegenteil: wenige, große, ruhige Flächen, und die kleinen Akzente am Ende frei gemalt.
+Bei Porträts tragen die kleinen Züge (Augen, Mund, der Schatten unter der Nase) die Ähnlichkeit, also stell **Details** hoch und **Flächen vereinfachen** niedrig, oder leg einen [Ausschnitt](https://watercolourlove.de/de/handbuch/bilder.html#genauer-hinsehen-ausschnitte-des-bildes) vom Gesicht an. Bei Landschaften klappt meist das Gegenteil: wenige, große, ruhige Flächen, und die kleinen Akzente am Ende frei gemalt.
 
 ---
 
@@ -530,7 +534,7 @@ Eine **Mischung** ist eine Kombination von Farben in einem festen Verhältnis: e
 
 Jede Fläche im Bild trägt eine Beschriftung aus beidem: **6L** ist Mischung 6 als leichte Lasur, **6R** dieselbe Mischung als kräftige Lasur. Du mischst die 6 einmal, nimmst etwas davon für die L-Flächen, gibst Farbe dazu für die R-Flächen und musst nie eine Farbe zweimal treffen.
 
-Deshalb zählt **Farben** in den Einstellungen Mischungen, nicht Farben. Beim Beispielfoto Llyn Idwal mit Farben auf 20 steht in der Liste **52 in 20 Mischungen**: zweiundfünfzig Farben auf dem Papier aus zwanzig Pfützen auf der Palette.
+Deshalb zählt **Farben** in den Einstellungen Mischungen, nicht Farben. Beim Beispielfoto Llyn Idwal mit Farben auf 20 steht in der Liste **58 in 20 Mischungen**: achtundfünfzig Farben auf dem Papier, sein eigenes Weiß mitgezählt, aus zwanzig Pfützen auf der Palette.
 
 > **Gut zu wissen:** Keine Farbe wird je stärker verwendet als ihr eigenes Farbmuster. Wasser macht eine Farbe nur heller; eine Farbe, die dunkler ist als jede einzelne Farbe, braucht eine zweite Farbe in der Mischung. So verhält sich echte Farbe, und deshalb enthalten manche dunklen Mischungen drei Farben.
 
@@ -540,7 +544,7 @@ Tippe rechts auf **Farben**, um die Liste zu öffnen. Sie zeigt einen Block pro 
 
 *Screenshot: Die Farbliste von Llyn Idwal*
 
-1. **52 in 20 Mischungen:** wie viele Farben das Bild hat und aus wie vielen Pfützen sie kommen.
+1. **58 in 20 Mischungen:** wie viele Farben das Bild hat und aus wie vielen Pfützen sie kommen.
 2. **Der Schlüssel** zu den Wasserstufen W bis C, wie sie im Bild und in den Balken stehen.
 3. **Eine Mischung:** ihre Nummer, ihre Grundfarbe, die Farben mit Nummer und Namen, wie viele Lasuren sie hat und wie viel vom Bild sie bedeckt. Darunter zwei Balken: die Farben im Verhältnis des Rezepts (die Zahlen sind Teile) und die Lasuren dieser Mischung nebeneinander, von wässrig bis konzentriert, jede in ihrer Farbe.
 
@@ -1660,7 +1664,7 @@ Was du auf dem Bild, in der Farbliste und in den Rezepten liest.
 | 1, 2 (auf einer Schicht) | 1, 2 | Schichten, eine Schicht allein gezeigt: wie viele Lasuren eine Fläche bekommt. |
 | 1:9 mit Wasser | 1:9 with water | Schichten: ein Teil Farbe auf neun Teile Wasser, mit einem Vergleich wie „wie Kaffee“. |
 | 3 x P 672 | 3 x P 672 | Drei Teile der Farbe 672 aus dem Näpfchen. Die Teile zählst du in Pinselladungen. |
-| 52 in 20 Mischungen | 52 in 20 mixes | 52 Farben auf dem Papier, aus 20 Pfützen in verschiedenen Lasuren. |
+| 58 in 20 Mischungen | 58 in 20 mixes | 58 Farben auf dem Papier, aus 20 Pfützen in verschiedenen Lasuren. |
 | 6L, 6R | 6L, 6R | Mischung 6 als leichte (L) oder kräftige Lasur (R). Die Zahl ist die Mischung, der Buchstabe die Wassermenge. |
 | A1, A2 | A1, A2 | Schichten: Akzente, nummeriert in der Reihenfolge, in der sie gemalt werden, ganz zuletzt. |
 | C | C, concentrated | Konzentriert: Farbe, die kaum noch fließt. |
@@ -1680,7 +1684,7 @@ Was du auf dem Bild, in der Farbliste und in den Rezepten liest.
 | Ausschnitt | Detail | Ein Zoom auf einen Teil des Bildes: feinere Flächen in der Palette des ganzen Bildes. Pro. |
 | Auto | Auto | Die App wählt die Farben, die zum Bild passen, aus den Kästen mit **Für „Auto“ nutzen**. |
 | Deine Mischung | Your mix | Die Farbe, die das Rezept auf weißem Papier ergibt. |
-| Details | Details | Die Einstellung, ob die Mischungen feine Abstufungen im ganzen Bild geben (hoch) oder kleinen Flächen eines anderen Farbtons (niedrig). |
+| Details | Details | Die Einstellung, ob die Mischungen kleinen Flächen eines anderen Farbtons eine eigene geben (hoch) oder feine Abstufungen im ganzen Bild (niedrig). |
 | Farben | Colours | Die Einstellung für die Anzahl der Mischungen und ihre Liste. |
 | Farbfläche | Colour area | Eine Form des Bildes, die eine Lasur einer Mischung bekommt. |
 | Farbkasten | Paint box | Eine benannte Sammlung deiner Farben, zum Beispiel deine Näpfchen oder ein Reiseset. |
@@ -1743,7 +1747,7 @@ Stell **Flächen vereinfachen** höher. Jede Stufe fasst kleine Formen mit ihren
 
 ### Eine wichtige Einzelheit ist verschwunden
 
-Kleine Flächen, die sich im Farbton von ihrer Umgebung abheben, ein rotes Dach, die Lippen in einem Porträt, behalten eine eigene Mischung, wenn **Details** niedrig steht. Ist die Einzelheit auch klein, verschwindet sie beim Vereinfachen; sieh dir diesen Teil des Bildes mit **Ausschnitt** für sich an, dort bekommt er feinere Flächen und eigene Mischungen (Pro). Siehe [Bilder](https://watercolourlove.de/de/handbuch/bilder.html).
+Kleine Flächen, die sich im Farbton von ihrer Umgebung abheben, ein rotes Dach, die Lippen in einem Porträt, behalten eine eigene Mischung, wenn **Details** hoch steht. Ist die Einzelheit auch klein, verschwindet sie beim Vereinfachen; sieh dir diesen Teil des Bildes mit **Ausschnitt** für sich an, dort bekommt er feinere Flächen und eigene Mischungen (Pro). Siehe [Bilder](https://watercolourlove.de/de/handbuch/bilder.html).
 
 ### Die Farben wirken stumpf oder viel zu laut
 

@@ -17,7 +17,7 @@ Was du auf dem Bild, in der Farbliste und in den Rezepten liest.
 | 1, 2 (auf einer Schicht) | 1, 2 | Schichten, eine Schicht allein gezeigt: wie viele Lasuren eine Fläche bekommt. |
 | 1:9 mit Wasser | 1:9 with water | Schichten: ein Teil Farbe auf neun Teile Wasser, mit einem Vergleich wie „wie Kaffee“. |
 | 3 x P 672 | 3 x P 672 | Drei Teile der Farbe 672 aus dem Näpfchen. Die Teile zählst du in Pinselladungen. |
-| 52 in 20 Mischungen | 52 in 20 mixes | 52 Farben auf dem Papier, aus 20 Pfützen in verschiedenen Lasuren. |
+| 58 in 20 Mischungen | 58 in 20 mixes | 58 Farben auf dem Papier, aus 20 Pfützen in verschiedenen Lasuren. |
 | 6L, 6R | 6L, 6R | Mischung 6 als leichte (L) oder kräftige Lasur (R). Die Zahl ist die Mischung, der Buchstabe die Wassermenge. |
 | A1, A2 | A1, A2 | Schichten: Akzente, nummeriert in der Reihenfolge, in der sie gemalt werden, ganz zuletzt. |
 | C | C, concentrated | Konzentriert: Farbe, die kaum noch fließt. |
@@ -37,7 +37,7 @@ Was du auf dem Bild, in der Farbliste und in den Rezepten liest.
 | Ausschnitt | Detail | Ein Zoom auf einen Teil des Bildes: feinere Flächen in der Palette des ganzen Bildes. Pro. |
 | Auto | Auto | Die App wählt die Farben, die zum Bild passen, aus den Kästen mit **Für „Auto“ nutzen**. |
 | Deine Mischung | Your mix | Die Farbe, die das Rezept auf weißem Papier ergibt. |
-| Details | Details | Die Einstellung, ob die Mischungen feine Abstufungen im ganzen Bild geben (hoch) oder kleinen Flächen eines anderen Farbtons (niedrig). |
+| Details | Details | Die Einstellung, ob die Mischungen kleinen Flächen eines anderen Farbtons eine eigene geben (hoch) oder feine Abstufungen im ganzen Bild (niedrig). |
 | Farben | Colours | Die Einstellung für die Anzahl der Mischungen und ihre Liste. |
 | Farbfläche | Colour area | Eine Form des Bildes, die eine Lasur einer Mischung bekommt. |
 | Farbkasten | Paint box | Eine benannte Sammlung deiner Farben, zum Beispiel deine Näpfchen oder ein Reiseset. |

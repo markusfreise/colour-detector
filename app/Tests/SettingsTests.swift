@@ -53,10 +53,10 @@ final class SettingsTests: XCTestCase {
         XCTAssertEqual(try decode(#"{"grid": "grey", "gridColumns": 12}"#).gridColumns, 12)
     }
 
-    /// Pictures saved before 2026-10-18 have `variety`, the Details slider the other way round.
+    /// Pictures saved before 2026-10-18 have `variety`; since 2026-11-08 Details runs the same way.
     func testOldVarietyBecomesDetails() throws {
-        XCTAssertEqual(try decode(#"{"variety": 2}"#).details, 8)
+        XCTAssertEqual(try decode(#"{"variety": 2}"#).details, 2)
         XCTAssertEqual(try decode(#"{"variety": 2, "details": 3}"#).details, 3)
-        XCTAssertEqual(try decode(#"{"details": 9}"#).variety, 1)
+        XCTAssertEqual(try decode(#"{"details": 9}"#).variety, 9)
     }
 }

@@ -1,0 +1,43 @@
+photo and stage                    lights kept      darks kept       L dark       L mid        L light      pale: modelling steps paper   areas specks  dE
+bielefeld finest/found             100% (138/141)   100% (153/153)   3.1 (-0.1)   3.7 (+0.3)   1.0 (-0.1)              0.86     9    0%   10092   9069  2.37
+bielefeld finest/target             91% (109/141)    80% (98/153)    3.9 (+0.1)   4.6 (+0.2)   2.0 (-0.4)              0.68     5    3%    5343   4595  3.77
+bielefeld finest/mixed              82% (86/141)     74% (82/153)    4.3 (+1.9)   4.6 (-0.4)   2.2 (-1.0)              0.63     5    3%    5343   4595  4.90
+bielefeld s0/mixed                  71% (61/141)     72% (71/153)    4.2 (+2.2)   4.6 (+0.2)   2.1 (-1.0)              0.66     4    0%     531    210  5.28
+bielefeld s3/mixed                  64% (46/141)     63% (48/153)    4.4 (+2.1)   4.6 (+0.1)   2.6 (-1.6)              0.55     2    0%     199     73  5.72
+llyn-idwal finest/found             99% (244/249)   100% (266/268)   3.7 (+0.0)   3.0 (-0.0)   0.7 (-0.0)              0.91     7    0%   11446  10225  2.03
+llyn-idwal finest/target            90% (202/249)    94% (240/268)   5.0 (+0.7)   3.7 (-0.3)   1.0 (+0.3)              0.84     5   31%    6010   5097  3.10
+llyn-idwal finest/mixed             90% (203/249)    94% (241/268)   5.0 (+0.7)   3.7 (-0.3)   1.0 (+0.3)              0.84     5   31%    6010   5097  3.16
+llyn-idwal s0/mixed                 76% (153/249)    80% (173/268)   5.1 (+0.5)   3.7 (-0.2)   1.5 (+1.1)              0.74     4   46%     596    181  3.78
+llyn-idwal s3/mixed                 55% (83/249)     63% (106/268)   5.7 (+0.6)   4.1 (-0.2)   2.2 (+1.6)              0.47     3   66%     141     19  4.49
+old-town-snow finest/found         100% (495/495)   100% (189/190)   5.9 (-1.1)   8.3 (+0.4)   0.9 (-0.1)              0.02     3    0%   17842  16541  3.36
+old-town-snow finest/target        100% (488/495)    99% (185/190)   6.2 (+0.0)   8.8 (+0.5)   1.4 (-0.9)             -0.40     3    0%   10930   9533  4.43
+old-town-snow finest/mixed         100% (488/495)    99% (185/190)   6.2 (-0.0)   8.7 (+0.3)   2.0 (-1.6)             -1.00     3    0%   10930   9533  5.36
+old-town-snow s0/mixed              97% (452/495)    94% (157/190)   6.4 (-1.2)   9.2 (+1.3)   1.8 (-1.4)             -0.69     3    0%    1652    617  7.28
+old-town-snow s3/mixed              78% (293/495)    78% (101/190)   7.3 (+1.2)   10.0 (+1.9)  2.3 (-2.0)             -1.00     3    0%     580    206  9.04
+red-train finest/found              99% (209/216)    99% (108/110)   3.5 (+0.0)   8.0 (+0.2)   2.0 (-0.1)              0.63    10    0%   10327   9133  2.79
+red-train finest/target             98% (198/216)    99% (106/110)   4.2 (+0.6)   8.4 (-0.1)   2.2 (-0.1)              0.58     9    6%    8290   7163  3.43
+red-train finest/mixed              97% (194/216)    99% (106/110)   4.2 (+0.7)   8.4 (+0.0)   2.2 (-0.1)              0.58     9    6%    8290   7163  3.58
+red-train s0/mixed                  96% (185/216)    94% (88/110)    4.1 (+0.1)   8.3 (+0.8)   2.1 (+0.5)              0.62    12    4%    1166    496  4.19
+red-train s3/mixed                  85% (145/216)    81% (56/110)    4.2 (+0.0)   8.9 (+1.2)   2.5 (+0.9)              0.50    10    9%     453    166  4.88
+rooftops-dusk finest/found          99% (161/165)    98% (115/120)   2.2 (+0.0)   2.9 (-0.1)   0.9 (-0.0)              0.73    13    0%    7748   6542  1.92
+rooftops-dusk finest/target         82% (100/165)    72% (59/120)    4.2 (+0.4)   3.9 (-0.6)   1.2 (-0.1)              0.61     9    0%    3199   2485  3.61
+rooftops-dusk finest/mixed          80% (90/165)     72% (59/120)    4.4 (+0.7)   4.0 (-0.6)   1.2 (-0.1)              0.62     9    0%    3199   2485  3.82
+rooftops-dusk s0/mixed              77% (74/165)     66% (47/120)    4.9 (-0.9)   4.2 (-0.6)   1.1 (-0.2)              0.72     7    0%     400     95  4.44
+rooftops-dusk s3/mixed              63% (38/165)     60% (41/120)    4.1 (+0.2)   5.2 (-0.7)   1.3 (-0.2)              0.45     5    0%     136     23  4.57
+winter-fields finest/found         100% (66/67)      99% (120/122)   2.4 (+0.2)   2.9 (+0.0)   1.6 (-0.1)              0.68    14    0%    8258   7566  1.75
+winter-fields finest/target         99% (65/67)      97% (112/122)   2.8 (+0.4)   4.3 (+0.3)   2.1 (-0.4)              0.56     9    0%    5327   4837  2.65
+winter-fields finest/mixed          99% (65/67)      97% (112/122)   2.8 (+0.4)   4.3 (+0.3)   2.1 (-0.3)              0.56     9    0%    5327   4837  2.74
+winter-fields s0/mixed              88% (43/67)      88% (87/122)    2.9 (-0.3)   4.5 (+0.1)   2.1 (-0.2)              0.52     9    0%     389    190  3.32
+winter-fields s3/mixed              78% (24/67)      67% (54/122)    3.4 (+1.8)   4.4 (+0.6)   2.1 (+0.1)              0.59     9    0%     108     53  3.69
+woman-white-wall finest/found      100% (79/79)     100% (64/64)     2.1 (+0.1)   2.2 (+0.1)   1.0 (-0.1)              0.89    10    0%    5920   4910  1.70
+woman-white-wall finest/target      99% (76/79)      99% (61/64)     3.1 (+0.5)   3.1 (+0.1)   1.3 (-0.4)              0.83     7    0%    2310   1718  2.52
+woman-white-wall finest/mixed       99% (75/79)      99% (61/64)     3.5 (+1.4)   3.1 (-0.2)   1.5 (-0.6)              0.81     7    0%    2310   1718  3.38
+woman-white-wall s0/mixed           96% (67/79)      96% (54/64)     3.7 (+1.1)   3.4 (-0.2)   1.6 (-0.5)              0.77     8    0%     442    122  3.73
+woman-white-wall s3/mixed           90% (56/79)      88% (43/64)     4.5 (+1.6)   4.0 (+0.0)   1.8 (-0.9)              0.73     8    0%     151     12  4.26
+
+All photos:
+finest/found     lights kept 100%  darks kept 100%  L error in the lights 1.2  balanced 3.0  modelling of pale zones 0.74  areas 10233  specks 9141  dE 2.27
+finest/target    lights kept  94%  darks kept  92%  L error in the lights 1.6  balanced 3.7  modelling of pale zones 0.65  areas 5916  specks 5061  dE 3.36
+finest/mixed     lights kept  92%  darks kept  91%  L error in the lights 1.7  balanced 3.8  modelling of pale zones 0.63  areas 5916  specks 5061  dE 3.85
+s0/mixed         lights kept  86%  darks kept  84%  L error in the lights 1.8  balanced 3.9  modelling of pale zones 0.63  areas 739  specks 273  dE 4.57
+s3/mixed         lights kept  73%  darks kept  71%  L error in the lights 2.1  balanced 4.3  modelling of pale zones 0.50  areas 253  specks 79  dE 5.24
